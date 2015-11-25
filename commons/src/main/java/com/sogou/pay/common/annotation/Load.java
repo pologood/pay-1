@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * @ClassName Load
  * @Date 2015年03月11日
  * @Description:
- *               声明从指定的一个locator中注入依赖bean
+ *               声明从指定的DF一个locator中注入依赖bean
  *               该注解用于类的成员变量上面，支持静态变量和私有变量
  */
 @Target(ElementType.FIELD)
