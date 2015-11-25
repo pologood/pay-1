@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>商户订单数据(模拟)</title>
+<title>商户订单数据(模拟1)</title>
 <script type="text/javascript" src="static/js/jq.js"></script>
 <script type="text/javascript">
 	function doPay(){
