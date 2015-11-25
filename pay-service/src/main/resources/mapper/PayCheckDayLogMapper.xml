@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sogou.pay.service.dao.PayCheckDayLogDao">
+
+
+    <resultMap id="payCheckDayLogMap" type="com.sogou.pay.service.entity.PayCheckDayLog" autoMapping="true">
+        <result column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="version" property="version"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="agency_code" property="agencyCode"/>
+        <result column="check_date" property="checkDate"/>
+    </resultMap>
+
+
+    <sql id="tableColumns">
+        id,create_time,modify_time,version, status,remark, agency_code, check_date
+    </sql>
+
+    <insert id="insert" parameterType="PayCheckDayLog">
+        insert into t_pay_check_day_log (
+          create_time,
+          modify_time,
+          version,
+          status,
+          remark,
+          agency_code,
+          check_date
+        )
+        values (
+        	  now(), now(), 0 , 0,'',#{agencyCode},#{checkDate}
+        )
+    </insert>
+
+    <select id="getByCheckDateAndAgency" resultMap="payCheckDayLogMap">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_pay_check_day_log
+        WHERE agency_code = #{agencyCode} AND check_date = #{checkDate}
+        LIMIT 1
+    </select>
+
+    <update id="updateStatus">
+        UPDATE t_pay_check_day_log
+        SET status=#{status},
+        modify_time=now(),
+        version=version+1
+        <if test="remark != null ">
+            , remark= #{remark}
+        </if>
+        WHERE id = #{id} AND version=#{version}
+    </update>
+
+</mapper>

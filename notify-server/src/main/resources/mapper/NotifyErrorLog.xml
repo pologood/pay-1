@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sogou.pay.notify.dao.NotifyErrorLogDao">
+
+    <resultMap id="notifyErrorLogMap" type="com.sogou.pay.notify.entity.NotifyErrorLog" autoMapping="true">
+        <result column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="outer_id" property="outerId"/>
+        <result column="error_info" property="errorInfo"/>
+        <result column="notify_num" property="notifyNum"/>
+        <result column="status" property="status"/>
+        <result column="notify_type" property="notifyType"/>
+        <result column="notify_url" property="notifyUrl"/>
+        <result column="notify_params" property="notifyParams"/>
+        <result column="next_time" property="nextTime"/>
+    </resultMap>
+
+    <sql id="tableColumns">
+		id,
+		create_time,
+		update_time,
+		outer_id,
+		error_info,
+		notify_num,
+		status,
+		notify_type,
+		notify_url,
+		notify_params,
+		next_time
+	</sql>
+
+    <!--生成错误日志 -->
+    <insert id="insertErrorLog" parameterType="NotifyErrorLog">
+		INSERT INTO
+		t_notify_error_log (
+		create_time,
+		update_time,
+		outer_id,
+		error_info,
+		notify_num,
+		status,
+		notify_type,
+		notify_url,
+		notify_params,
+		next_time
+		)
+		VALUES
+		(
+		now(),
+		now(),
+		#{outerId,},
+		#{errorInfo},
+		1,
+		0,
+		#{notifyType},
+		#{notifyUrl},
+		#{notifyParams},
+		#{nextTime}
+		)
+	</insert>
+
+    <delete id="deleteErrorLog">
+        DELETE FROM t_notify_error_log WHERE id = #{id}
+    </delete>
+
+
+    <!-- 修改日志 为已处理 -->
+    <update id="updateErrorLog" parameterType="NotifyErrorLog">
+        UPDATE
+        t_notify_error_log
+        SET
+        <if test="errorInfo !=null">
+            error_info =#{errorInfo},
+        </if>
+        <if test="status !=0">
+            status = #{status},
+        </if>
+        <if test="nextTime !=null">
+            next_time =#{nextTime},
+        </if>
+        <if test="notifyNum !=null">
+            notify_num = #{notifyNum},
+        </if>
+        update_time = now()
+        WHERE ID =#{id}
+    </update>
+
+
+    <select id="queryByNotifyTypeStatus" resultMap="notifyErrorLogMap">
+    SELECT
+    <include refid="tableColumns"/>
+    FROM t_notify_error_log
+    WHERE  status =#{status}
+    AND next_time &lt; #{currentTime}
+    limit 50
+    </select>
+
+    <select id="queryById" resultMap="notifyErrorLogMap">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_notify_error_log
+        WHERE  id =#{id}
+    </select>
+
+</mapper>

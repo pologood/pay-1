@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.service.dao.PayBankAliasDao">
+
+    <resultMap id="resultMap" type="com.sogou.pay.service.entity.PayBankAlias">
+        <result column="alias_id" property="aliasId"/>
+        <result column="agency_code" property="agencyCode"/>
+        <result column="bank_code" property="bankCode"/>
+        <result column="alias_name" property="aliasName"/>
+        <result column="reserved" property="reserved"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <cache eviction="LRU" type="com.sogou.pay.common.cache.MybatisRedisCache"/>
+
+    <select id="selectPayBankAlias" resultMap="resultMap">
+        SELECT * FROM t_pay_bank_alias
+        WHERE agency_code = #{agencyCode}
+              AND bank_code = #{bankCode}
+              <if test="bankCardType != null">
+              AND (bank_card_type = 3 OR bank_card_type = #{bankCardType})
+              </if>
+              <if test="bankCardType == null">
+              AND bank_card_type = 3
+              </if>
+    </select>
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    ">
+
+    <!-- activemq -->
+    <bean id="prefetchPolicy" class="org.apache.activemq.ActiveMQPrefetchPolicy">
+        <property name="queuePrefetch" value="2000"/>
+    </bean>
+
+    <!-- 连接工厂：消息消费者的配置，指明MQ服务所在的服务器 -->
+    <bean id="amqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL">
+            <value>${activemq.producer.url}</value>
+        </property>
+        <!-- ActiveMQ异步发送设置 -->
+        <property name="dispatchAsync" value="true"/>
+        <property name="useAsyncSend" value="true"/>
+        <!-- 预读取限制 -->
+        <property name="prefetchPolicy" ref="prefetchPolicy"/>
+    </bean>
+
+    <!-- 连接池  apache 自带-->
+    <!--<bean id="activeMQConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"-->
+          <!--destroy-method="stop">-->
+        <!--<constructor-arg ref="amqConnectionFactory"/>-->
+        <!--&lt;!&ndash; LinkedList中connection的数目 &ndash;&gt;-->
+        <!--<property name="maxConnections" value="64"/>-->
+        <!--&lt;!&ndash; session的最大数目 &ndash;&gt;-->
+        <!--<property name="maximumActiveSessionPerConnection" value="100"/>-->
+        <!--&lt;!&ndash; Connection的回收时间 &ndash;&gt;-->
+        <!--<property name="idleTimeout" value="86400000"/>-->
+    <!--</bean>-->
+
+
+    <!--Todo:性能测试 spring 提供-->
+    <bean id="activeMQConnectionFactory"  class="org.springframework.jms.connection.CachingConnectionFactory">
+        <constructor-arg ref="amqConnectionFactory"/>
+        <!-- JMS会话缓存（每个JMS的Session类）所需的大小 -->
+        <property name="sessionCacheSize" value="10"/>
+    </bean>
+
+    <!-- 消息模板 -->
+    <bean id="jmsPayTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->
+        <property name="connectionFactory" ref="activeMQConnectionFactory"/>
+        <property name="defaultDestinationName" value="${activemq.pay.queue}"/>
+        <!-- 设置超时时长 -->
+        <property name="receiveTimeout" value="1000"/>
+        <property name="explicitQosEnabled" value="true"/>
+        <!-- 1:Non-Persistent,2:PERSISTENT -->
+        <property name="deliveryMode" value="2"/>
+        <property name="sessionAcknowledgeMode" value="1"/>
+        <!-- public static final int AUTO_ACKNOWLEDGE = 1; -->
+    </bean>
+
+    <bean id="jmsRefundTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->
+        <property name="connectionFactory" ref="activeMQConnectionFactory"/>
+        <property name="defaultDestinationName" value="${activemq.refund.queue}"/>
+        <!-- 设置超时时长 -->
+        <property name="receiveTimeout" value="1000"/>
+        <property name="explicitQosEnabled" value="true"/>
+        <property name="deliveryMode" value="2"/>
+        <property name="sessionAcknowledgeMode" value="1"/>
+        <!-- public static final int AUTO_ACKNOWLEDGE = 1; -->
+    </bean>
+
+
+</beans>

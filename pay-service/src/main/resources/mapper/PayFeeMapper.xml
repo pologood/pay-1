@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.service.dao.PayFeeDao">
+
+    <resultMap type="com.sogou.pay.service.entity.PayFee" id="payFee">
+        <result property="id" column="id"/>
+        <result property="payFeeType" column="pay_fee_type"/>
+        <result property="name" column="name"/>
+        <result property="feeType" column="fee_type"/>
+        <result property="fee" column="fee"/>
+        <result property="feeRate" column="fee_rate"/>
+        <result property="lowerLimit" column="lower_limit"/>
+        <result property="upperLimit" column="upp_limit"/>
+        <result column="merchant_no" property="merchantNo"/>
+        <result column="status" property="status"/>
+        <result column="agency_code" property="agencyCode"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="access_platform" property="accessPlatform"/>
+    </resultMap>
+
+    <cache eviction="LRU" type="com.sogou.pay.common.cache.MybatisRedisCache"/>
+
+    <!-- 获得手续费按商户号和付款方式-->
+    <select id="getPayFee" resultMap="payFee">
+        SELECT * from t_pay_fee 
+        where status = 1 
+        	  and merchant_no = #{merchantNo} 
+              and (pay_fee_type = #{payFeeType} or pay_fee_type = 99)
+              and (access_platform = #{accessPlatform} or access_platform = 99)
+        order by pay_fee_type limit 0,1
+    </select>
+ 
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+    ">
+
+    <bean id="prefetchPolicy" class="org.apache.activemq.ActiveMQPrefetchPolicy">
+        <property name="queuePrefetch" value="2000"/>
+    </bean>
+
+    <bean id="activeMQConnectionFactoryConsumer" class="org.apache.activemq.pool.PooledConnectionFactory"
+          destroy-method="stop">
+        <property name="connectionFactory">
+            <!-- ActiveMQ 连接工厂 -->
+            <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+                <property name="brokerURL">
+                    <value>${activemq.consumer.url}</value>
+                </property>
+                <!--是否异常分派消息（如果消费时间很长，采用异步分派就提高性能）-->
+                <property name="dispatchAsync" value="true"/>
+                <property name="useAsyncSend" value="true"/>
+                <property name="prefetchPolicy" ref="prefetchPolicy"/>
+            </bean>
+        </property>
+        <property name="maxConnections" value="64"/>
+        <property name="maximumActiveSessionPerConnection" value="100"/>
+        <property name="idleTimeout" value="86400000"/>
+    </bean>
+
+    <bean id="queuePayNotifyListener" class="com.sogou.pay.notify.listener.QueuePayNotifyListener"/>
+
+    <!-- Message队列消息监听 -->
+    <bean id="listenerContainerForPayNotify"
+          class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="concurrentConsumers" value="10"/>
+        <property name="connectionFactory" ref="activeMQConnectionFactoryConsumer"/>
+        <property name="destinationName">
+            <value>${activemq.pay.queue}</value>
+        </property>
+        <!-- 使用payNotifyConsumer来作为消息监听器 -->
+        <property name="messageListener" ref="queuePayNotifyListener"/>
+        <!--<property name="messageListener" ref="jmsConsumer"/>-->
+        <property name="pubSubNoLocal" value="false"/>
+    </bean>
+
+
+    <bean id="queueRefundNotifyListener" class="com.sogou.pay.notify.listener.QueueRefundNotifyListener"/>
+
+    <bean id="listenerContainerForRefundNotify"
+          class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="concurrentConsumers" value="2"/>
+        <property name="connectionFactory" ref="activeMQConnectionFactoryConsumer"/>
+        <property name="destinationName" value="${activemq.refund.queue}"/>
+        <property name="messageListener" ref="queueRefundNotifyListener"/>
+        <!--<property name="messageListener" ref="jmsConsumer"/>-->
+        <property name="pubSubNoLocal" value="false"/>
+    </bean>
+
+
+</beans>

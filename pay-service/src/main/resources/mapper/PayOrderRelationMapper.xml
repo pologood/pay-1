@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.service.dao.PayOrderRelationDao">
+
+    <resultMap id="resultMap" type="com.sogou.pay.service.entity.PayOrderRelation">
+        <result column="pay_detail_id" property="payDetailId"/>
+        <result column="pay_id" property="payId"/>
+        <result column="info_status" property="infoStatus"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <insert id="insertPayOrderRelation" parameterType="PayOrderRelation">
+        insert into t_pay_order_relation(
+            pay_detail_id,
+            pay_id,
+            info_status,
+            create_time
+        )
+        values
+        (
+            #{payDetailId},
+            #{payId},
+            #{infoStatus},
+            #{createTime}
+        )
+    </insert>
+
+    <select id="selectPayOrderRelation" parameterType="PayOrderRelation" resultMap="resultMap">
+        SELECT * FROM t_pay_order_relation
+        WHERE 1 = 1
+            <if test="payDetailId != null">
+                AND pay_detail_id = #{payDetailId}
+            </if>
+            <if test="payId != null">
+                AND pay_id = #{payId}
+            </if>
+            <if test="infoStatus != null">
+                AND info_status = #{infoStatus}
+            </if>
+    </select>
+
+    <select id="selectPayOrderId" resultType="string">
+        SELECT pay_id FROM t_pay_order_relation WHERE pay_detail_id = #{payDetailId}
+    </select>
+
+	<update id="updatePayOrderRelation">
+		UPDATE t_pay_order_relation
+		SET info_status = #{status}
+		WHERE pay_detail_id = #{payDetailId}
+	</update>
+</mapper>

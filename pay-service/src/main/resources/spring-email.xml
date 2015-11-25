@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans   
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+    ">
+
+    <!-- 注意:这里的参数(如用户名、密码)都是针对邮件发送者的 -->
+    <!--<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">-->
+        <!--<property name="host" value="smtp.gmail.com"/>-->
+        <!--<property name="username" value="sogoupay@gmail.com"/>-->
+        <!--<property name="password" value="asdf.1234"/>-->
+        <!--<property name="javaMailProperties">-->
+            <!--<props>-->
+                <!--<prop key="mail.smtp.auth">true</prop>-->
+                <!--<prop key="mail.smtp.timeout">25000</prop>-->
+                <!--<prop key="mail.smtp.port">465</prop>-->
+                <!--<prop key="mail.smtp.socketFactory.port">465</prop>-->
+                <!--<prop key="mail.smtp.socketFactory.fallback">false</prop>-->
+                <!--<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>-->
+                <!--<prop key="mail.from">sogoupay@gmail.com</prop>-->
+            <!--</props>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <bean id="JavaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host">
+            <value>smtp.163.com</value>
+        </property>
+        <property name="port">
+            <value>25</value>
+        </property>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.smtp.timeout">25000</prop>
+                <prop key="mail.from">qibaichao1013@163.com</prop>
+            </props>
+        </property>
+        <property name="username">
+            <value>qibaichao1013@163.com</value>
+        </property>
+        <property name="password">
+            <value>chaoli156</value>
+        </property>
+    </bean>
+
+</beans>    

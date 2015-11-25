@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.service.dao.PayAgencyMerchantDao">
+
+    <resultMap id="payAgencyMerchantMap" type="com.sogou.pay.service.entity.PayAgencyMerchant">
+        <result column="id" property="id"/>
+        <result column="agency_code" property="agencyCode"/>
+        <result column="company_code" property="companyCode"/>
+        <result column="merchant_no" property="merchantNo"/>
+        <result column="seller_email" property="sellerEmail"/>
+        <result column="encryption_type" property="encryptionType"/>
+        <result column="encrypt_key" property="encryptKey"/>
+        <result column="pub_keypath" property="pubKeypath"/>
+        <result column="private_keypath" property="privateKeypath"/>
+        <result column="page_back_url" property="pageBackUrl"/>
+        <result column="notify_back_url" property="notifyBackUrl"/>
+        <result column="is_used" property="isUsed"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <sql id="columnList">
+        id,
+        agency_code,
+        company_code,
+        merchant_no,
+        seller_email,
+        encryption_type,
+        encrypt_key,
+        pub_keypath,
+        private_keypath,
+        page_back_url,
+        notify_back_url,
+        is_used,
+        create_time,
+        modify_time
+    </sql>
+
+    <cache eviction="LRU" type="com.sogou.pay.common.cache.MybatisRedisCache"/>
+
+    <select id="selectPayAgencyMerchant" parameterType="PayAgencyMerchant" resultMap="payAgencyMerchantMap">
+        SELECT
+        <include refid="columnList" />
+        FROM t_pay_agency_merchant
+        WHERE 1 = 1
+        <if test = "agencyCode != null">
+          AND agency_code=#{agencyCode}
+        </if>
+        <if test = "companyCode != null">
+          AND company_code=#{companyCode}
+        </if>
+        <if test = "appId != null">
+          AND (app_id=#{appId} OR app_id IS NULL)
+        </if>
+        ORDER BY  app_id DESC LIMIT 1
+    </select>
+
+    <select id="selectPayAgencyMerchantById" parameterType="int" resultMap="payAgencyMerchantMap">
+        SELECT
+        <include refid="columnList" />
+        FROM t_pay_agency_merchant
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectPayAgencyMerchants"  resultMap="payAgencyMerchantMap">
+        SELECT
+        <include refid="columnList" />
+        FROM t_pay_agency_merchant
+        WHERE agency_code = #{agencyCode} and is_used=1
+    </select>
+
+    <select id="selectByAgencyAndMerchant"  resultMap="payAgencyMerchantMap">
+        SELECT
+        <include refid="columnList" />
+        FROM t_pay_agency_merchant
+        WHERE agency_code = #{agencyCode}  and merchant_no=#{merchantNo} limit 1
+    </select>
+
+
+</mapper>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sogou.pay.service.dao.PayCheckDao">
+
+    <resultMap id="payCheckMap" type="com.sogou.pay.service.entity.PayCheck" autoMapping="true">
+        <result column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="version" property="version"/>
+        <result column="instruct_id" property="instructId"/>
+        <result column="out_order_id" property="outOrderId"/>
+        <result column="biz_code" property="bizCode"/>
+        <result column="out_trans_time" property="outTransTime"/>
+        <result column="biz_amt" property="bizAmt"/>
+        <result column="commission_fee_amt" property="commissionFeeAmt"/>
+        <result column="status" property="status"/>
+        <result column="check_date" property="checkDate"/>
+        <result column="agency_code" property="agencyCode"/>
+        <result column="merchant_no" property="merchantNo"/>
+    </resultMap>
+
+    <sql id="tableColumns">
+        id,create_time,modify_time,version,
+        instruct_id,out_order_id,biz_code,
+        out_trans_time,biz_amt,
+        commission_fee_amt,status,check_date,agency_code,merchant_no
+    </sql>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO t_pay_check (
+        create_time,
+        modify_time,
+        version,
+        instruct_id,
+        out_order_id,
+        biz_code,
+        out_trans_time,
+        biz_amt,
+        commission_fee_amt,
+        status,
+        check_date,
+        agency_code,
+        merchant_no
+        )
+        VALUES
+        <foreach collection="list" item="obj" index="index" separator=",">
+            (
+            now(),
+            now(),
+            0,
+            #{obj.instructId},
+            #{obj.outOrderId},
+            #{obj.bizCode},
+            #{obj.outTransTime},
+            #{obj.bizAmt},
+            #{obj.commissionFeeAmt},
+            0,
+            #{obj.checkDate},
+            #{obj.agencyCode},
+            #{obj.merchantNo}
+            )
+        </foreach>
+    </insert>
+
+    <update id="batchUpdateStatus" parameterType="list">
+        UPDATE t_pay_check
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="status = CASE" suffix="ELSE status END,">
+                <foreach item="data" collection="list">
+                    WHEN ID = #{data.payCheckId} THEN #{data.payCheckStatus}
+                </foreach>
+            </trim>
+            modify_time = now()
+        </trim>
+        WHERE
+        <foreach item="data" collection="list" separator="or">
+            instruct_id = #{data.instructId}
+        </foreach>
+    </update>
+
+    <delete id="deleteInfo">
+        DELETE FROM t_pay_check WHERE check_date = #{checkDate} and agency_code=#{agencyCode} and merchant_no= #{merchantNo}
+    </delete>
+
+
+    <select id="getByInstructIdAndBizCode" resultMap="payCheckMap">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_pay_check
+        WHERE instruct_id = #{instructId} AND biz_code = #{bizCode}
+    </select>
+
+
+    <select id="queryByMerAndDateAndBizCode" resultType="Map">
+        <![CDATA[
+            SELECT 
+		   		   t1.id AS pay_check_id,
+		   		   t1.instruct_id,
+                   t1.biz_amt AS pc_amt,
+                   t1.biz_code AS biz_code,
+                   t2.biz_amt AS pcw_amt
+              FROM (SELECT
+              			id, instruct_id, biz_code, biz_amt
+                    FROM t_pay_check
+                    WHERE 
+                    	check_date = #{checkDate}
+			       		AND agency_Code = #{agencyCode}
+                        AND biz_code = #{bizCode}
+			            limit #{startRow},#{batchSize}
+                     ) t1
+              LEFT JOIN t_pay_check_waiting t2 ON t1.instruct_id = t2.instruct_id
+        ]]>
+    </select>
+
+    <update id="batchUpdateFee" parameterType="list">
+        UPDATE t_pay_check
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="commission_fee_amt = CASE" suffix="ELSE commission_fee_amt END,">
+                <foreach item="data" collection="list">
+                    WHEN instruct_id = #{data.payNo} THEN #{data.money}
+                </foreach>
+            </trim>
+            modify_time = now()
+        </trim>
+        WHERE
+        <foreach item="data" collection="list" separator="or">
+            instruct_id = #{data.payNo}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.service.dao.RefundInfoDAO">
+    <resultMap id="refundInfoList" type="com.sogou.pay.service.entity.RefundInfo">
+        <result column="app_id" property="appId"/>
+        <result column="refund_id" property="refundId"/>
+        <result column="pay_detail_id" property="payDetailId"/>
+        <result column="pay_id" property="payId"/>
+        <result column="order_money" property="orderMoney"/>
+        <result column="order_id" property="orderId"/>
+        <result column="app_bg_url" property="appBgUrl"/>
+        <result column="buy_home_account" property="buyHomeAccount"/>
+        <result column="agency_code" property="agencyCode"/>
+        <result column="merchant_no" property="merchantNo"/>
+        <result column="use_balance" property="useBalance"/>
+        <result column="pay_fee_type" property="payFeeType"/>
+        <result column="refund_money" property="refundMoney"/>
+        <result column="net_balance_refund" property="netBalanceRefund"/>
+        <result column="balance_refund" property="balanceRefund"/>
+        <result column="refund_status" property="refundStatus"/>
+        <result column="task_status" property="taskStatus"/>
+        <result column="refund_error_code" property="refundErrorCode"/>
+        <result column="refund_error_info" property="refundErrorInfo"/>
+        <result column="refund_req_time" property="refundReqTime"/>
+        <result column="refund_res_time" property="refundResTime"/>
+        <result column="check_date" property="checkDate"/>
+    </resultMap>
+    <sql id="tableColumns">
+        app_id,refund_id,pay_detail_id,pay_id,order_money,order_id,app_bg_url,buy_home_account,agency_code,merchant_no
+        ,use_balance,pay_fee_type,refund_money,net_balance_refund,balance_refund,refund_status,task_status,refund_error_code
+        ,refund_error_info,refund_req_time,refund_res_time,check_date
+    </sql>
+    <insert id="insert" parameterType="RefundInfo" keyProperty="refund_id">
+        insert into t_refund_info(
+            app_id,
+            refund_id,
+            pay_detail_id,
+            pay_id,
+            order_money,
+            order_id,
+            app_bg_url,
+            buy_home_account,
+            agency_code,
+            merchant_no,
+            use_balance,
+            pay_fee_type,
+            refund_money,
+            net_balance_refund,
+            balance_refund,
+            refund_status,
+            task_status,
+            refund_error_code,
+            refund_error_info,
+            refund_req_time,
+            refund_res_time,
+            check_date
+        ) values (
+            #{appId},
+            #{refundId},
+            #{payDetailId},
+            #{payId},
+            #{orderMoney},
+            #{orderId},
+            #{appBgUrl},
+            #{buyHomeAccount},
+            #{agencyCode},
+            #{merchantNo},
+            #{useBalance},
+            #{payFeeType},
+            #{refundMoney},
+            #{netBalanceRefund},
+            #{balanceRefund},
+            #{refundStatus},
+            #{taskStatus},
+            #{refundErrorCode},
+            #{refundErrorInfo},
+            #{refundReqTime},
+            #{refundResTime},
+            #{checkDate})
+    </insert>
+
+    <select id="selectByRefundId" parameterType="String" resultMap="refundInfoList">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_refund_info WHERE refund_id=#{refundId}
+    </select>
+
+    <select id="selectByPayIdAndRefundStatus" resultMap="refundInfoList">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_refund_info WHERE pay_id=#{payId} AND refund_status=#{refundStatus} AND pay_fee_type !=9
+    </select>
+
+    <update id="updateRefundStatusOldToNew">
+        UPDATE t_refund_info SET refund_status=#{newStatus}, refund_res_time=#{resTime} WHERE refund_id=#{refundId} AND refund_status=#{oldStatus}
+    </update>
+
+    <update id="updateRefundStatus">
+        UPDATE t_refund_info SET refund_status=#{newStatus}, refund_error_code=#{errorCode}, refund_error_info=#{errorInfo},
+        refund_res_time=#{resTime} WHERE refund_id=#{refundId}
+    </update>
+
+    <select id="selectRefundByOrderIdAndTimeDesc" resultMap="refundInfoList">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_refund_info WHERE order_id=#{orderId} ORDER BY refund_req_time
+    </select>
+</mapper>

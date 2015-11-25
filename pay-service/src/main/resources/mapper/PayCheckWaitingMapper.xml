@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sogou.pay.service.dao.PayCheckWaitingDao">
+
+    <resultMap id="payCheckWaitingMap" type="com.sogou.pay.service.entity.PayCheckWaiting" autoMapping="true">
+        <result column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="version" property="version"/>
+        <result column="instruct_id" property="instructId"/>
+        <result column="out_order_id" property="outOrderId"/>
+        <result column="biz_code" property="bizCode"/>
+        <result column="out_trans_time" property="outTransTime"/>
+        <result column="biz_amt" property="bizAmt"/>
+        <result column="fee_rate" property="feeRate"/>
+        <result column="commission_fee_amt" property="commissionFeeAmt"/>
+        <result column="status" property="status"/>
+        <result column="access_platform" property="accessPlatform"/>
+        <result column="app_id" property="appId"/>
+        <result column="pay_type" property="payType"/>
+        <result column="bank_code" property="bankCode"/>
+        <result column="check_date" property="checkDate"/>
+        <result column="agency_code" property="agencyCode"/>
+        <result column="merchant_no" property="merchantNo"/>
+    </resultMap>
+
+    <sql id="tableColumns">
+        id,create_time,modify_time,version,instruct_id,out_order_id,biz_code,out_trans_time,biz_amt,fee_rate,
+        commission_fee_amt,status,access_platform,app_id,pay_type,bank_code,check_date,agency_code,merchant_no
+    </sql>
+
+    <insert id="insert" parameterType="PayCheckWaiting">
+        INSERT INTO t_pay_check_waiting (
+        create_time,
+        modify_time,
+        version,
+        instruct_id,
+        out_order_id,
+        biz_code,
+        out_trans_time,
+        biz_amt,
+        fee_rate,
+        commission_fee_amt,
+        status,
+        access_platform,
+        app_id,
+        pay_type,
+        bank_code,
+        check_date,
+        agency_code,
+        merchant_no
+        )
+        VALUES
+        (
+        now(),
+        now(),
+        0,
+        #{instructId},
+        #{outOrderId},
+        #{bizCode},
+        #{outTransTime},
+        #{bizAmt},
+        #{feeRate},
+        #{commissionFeeAmt},
+        0,
+        #{accessPlatform},
+        #{appId},
+        #{payType},
+        #{bankCode},
+        #{checkDate},
+        #{agencyCode},
+        #{merchantNo}
+        )
+    </insert>
+
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO t_pay_check_waiting (
+        create_time,
+        modify_time,
+        version,
+        instruct_id,
+        out_order_id,
+        biz_code,
+        out_trans_time,
+        biz_amt,
+        fee_rate,
+        commission_fee_amt,
+        status,
+        access_platform,
+        app_id,
+        pay_type,
+        bank_code,
+        check_date,
+        agency_code,
+        merchant_no
+        )
+        VALUES
+        <foreach collection="list" item="obj" index="index" separator=",">
+            (
+            now(),
+            now(),
+            0,
+            #{obj.instructId},
+            #{obj.outOrderId},
+            #{obj.bizCode},
+            #{obj.outTransTime},
+            #{obj.bizAmt},
+            #{obj.feeRate},
+            #{obj.commissionFeeAmt},
+            0,
+            #{obj.accessPlatform},
+            #{obj.appId},
+            #{obj.payType},
+            #{obj.bankCode},
+            #{obj.checkDate},
+            #{obj.agencyCode},
+            #{obj.merchantNo}
+            )
+        </foreach>
+    </insert>
+
+
+    <select id="getByInstructId" resultMap="payCheckWaitingMap">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_pay_check_waiting
+        WHERE instruct_id = #{instructId}
+    </select>
+
+
+    <update id="batchUpdateStatus" parameterType="list">
+        UPDATE t_pay_check_waiting
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="status = CASE" suffix="ELSE status END,">
+                <foreach item="data" collection="list">
+                    WHEN instruct_id = #{data.instructId} THEN #{data.payCheckWaitingStatus}
+                </foreach>
+            </trim>
+            modify_time = now()
+        </trim>
+        WHERE
+        <foreach item="data" collection="list" separator="or">
+            instruct_id = #{data.instructId}
+        </foreach>
+    </update>
+
+
+    <update id="updateStatus">
+        UPDATE t_pay_check_waiting
+        SET STATUS = #{status}, modify_time = now(), VERSION = VERSION + 1
+        WHERE ID = #{id} AND VERSION = #{version}
+    </update>
+
+
+    <select id="sumAmtAndNum" resultType="Map">
+        SELECT
+        SUM(biz_amt) AS total_amt,
+        COUNT(*) AS total_num
+        FROM t_pay_check_waiting
+        WHERE check_date = #{checkDate} and agency_code =#{agencyCode} and biz_code = #{bizCode}
+    </select>
+
+    <select id="sumFeeAmtAndNum" resultType="Map">
+        SELECT
+        SUM(commission_fee_amt) AS total_fee,
+        COUNT(*) AS total_num
+        FROM t_pay_check_waiting
+        WHERE check_date = #{checkDate} and agency_code =#{agencyCode} and biz_code = #{bizCode} and status = 1
+    </select>
+
+
+</mapper>

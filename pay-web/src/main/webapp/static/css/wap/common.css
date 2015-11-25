@@ -1,0 +1,200 @@
+/**
+  * Copyright (C) 2014 yanni4night.com
+  *
+  * common.css
+  *
+  * changelog
+  * 2014-06-19[16:13:24]:authorized
+  *
+  * @info yinyong,osx-x64,UTF-8,10.129.161.40,css,/Volumes/yinyong/sogou-passport-front/static/css/wap
+  * @author yanni4night@gmail.com
+  * @version 0.1.0
+  * @since 0.1.0
+  */
+@import url(../reset.css?t=165104);
+
+a, input, button {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.f-f {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: flex;
+}
+
+.f-vc {
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    box-align: center;
+    align-items: center;
+}
+
+.f-hc {
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    -webkit-justify-content: center;
+    -moz-justify-content: center;
+    box-pack: center;
+    justify-content: center;
+}
+
+.f-hr {
+    -webkit-box-pack: end;
+    -moz-box-pack: end;
+    -webkit-justify-content: flex-end;
+    -moz-justify-content: flex-end;
+    box-pack: end;
+    justify-content: flex-end;
+}
+
+.f-hl {
+    -webkit-box-pack: start;
+    -moz-box-pack: start;
+    -webkit-justify-content: flex-start;
+    -moz-justify-content: flex-start;
+    box-pack: start;
+    justify-content: flex-start;
+}
+
+.f-j {
+    -webkit-box-pack: justify;
+    -moz-box-pack: justify;
+    -webkit-justify-content: space-between;
+    -moz-justify-content: space-between;
+    box-pack: justify;
+    justify-content: space-between;
+}
+
+.f-1 {
+    -webkit-box-flex: 1.0;
+    -moz-box-flex: 1.0;
+    -webkit-flex: 1;
+    -moz-flex: 1;
+    flex: 1;
+}
+
+.p24 {
+    font-size: 24px;
+}
+
+.p19 {
+    font-size: 19px;
+}
+
+.p18 {
+    font-size: 18px;
+}
+
+.p17 {
+    font-size: 17px;
+}
+
+.p16 {
+    font-size: 16px;
+}
+
+.p14 {
+    font-size: 14px;
+}
+
+.p15 {
+    font-size: 15px;
+}
+
+.p12 {
+    font-size: 12px;
+}
+
+.p9 {
+    font-size: 9px;
+}
+
+.tc {
+    text-align: center;
+}
+
+.re {
+    position: relative;
+}
+
+.ab {
+    position: absolute;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.hide {
+    display: none !important;
+}
+
+._90 {
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg)
+}
+
+.block {
+    display: block;
+}
+
+.fz0 {
+    font-size: 0;
+}
+
+/*COMMON*/
+.w-fil {
+    width: 100%;
+}
+
+.h-fil {
+    height: 100%;
+}
+
+.w-haf {
+    width: 50%;
+}
+
+.h-haf {
+    height: 50%;
+}
+
+.w-tit {
+}
+
+.w-wbg {
+    background-color: #fff;
+}
+
+.t-ell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.c-fot {
+    color: #000;
+}
+
+.c-fot:visited {
+    color: #000;
+}
+
+.cf:after {
+    display: block;
+    visibility: hidden;
+    clear: both;
+    height: 0;
+    content: "";
+    font-size: 0;
+}

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.service.dao.PayReqDetailDao">
+
+    <resultMap id="resultMap" type="com.sogou.pay.service.entity.PayReqDetail">
+        <result column="pay_detail_id" property="payDetailId"/>
+        <result column="access_platform" property="accessPlatform"/>
+        <result column="pay_fee_type" property="payFeeType"/>
+        <result column="balance" property="balance"/>
+        <result column="true_money" property="trueMoney"/>
+        <result column="merchant_no" property="merchantNo"/>
+        <result column="agency_code" property="agencyCode"/>
+        <result column="bank_code" property="bankCode"/>
+        <result column="bank_card_type" property="bankCardType"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <insert id="insertPayReqDetail" parameterType="PayReqDetail">
+        insert into t_pay_req_detail(
+            pay_detail_id,
+            access_platform,
+            pay_fee_type,
+            balance,
+            true_money,
+            merchant_no,
+            agency_code,
+            bank_code,
+            bank_card_type,
+            create_time
+        )
+        values
+        (
+            #{payDetailId},
+            #{accessPlatform},
+            #{payFeeType},
+            #{balance},
+            #{trueMoney},
+            #{merchantNo},
+            #{agencyCode},
+            #{bankCode},
+            #{bankCardType},
+            #{createTime}
+        )
+    </insert>
+
+	<select id="selectPayReqDetailById" parameterType="String" resultMap="resultMap">
+		SELECT pay_detail_id,access_platform,pay_fee_type,balance,
+			   true_money,agency_code,bank_code,bank_card_type,merchant_no,pay_fee_type
+		FROM t_pay_req_detail
+		WHERE pay_detail_id = #{payReqId}
+	</select>
+	
+	<select id="selectPayReqByReqIdList" resultMap="resultMap" parameterType="java.util.List">
+        SELECT * FROM t_pay_req_detail
+        WHERE pay_detail_id IN 
+       		<foreach item="item" index="index" collection="list" 
+                       open="(" separator="," close=")">
+                      #{item.payDetailId}
+              </foreach>
+    </select>
+</mapper>

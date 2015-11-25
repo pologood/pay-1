@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- jedis 连接池配置-->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="200"/>
+        <!-- 最大能够保持idel状态的对象数-->
+        <property name="maxIdle" value="100"/>
+        <property name="minIdle" value="50"/>
+        <property name="maxWaitMillis" value="1000"/>
+        <!-- 当调用borrow Object方法时，是否进行有效性检查-->
+        <property name="testOnBorrow" value="true"/>
+    </bean>
+
+    <!-- 工厂类实现-->
+    <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:usePool="true">
+        <property name="hostName" value="${pay.redis.url}"/>
+        <property name="port" value="${pay.redis.port}"/>
+        <constructor-arg index="0" ref="jedisPoolConfig"/>
+    </bean>
+
+    <!-- redis template definition -->
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
+          p:connectionFactory-ref="jedisConnectionFactory"/>
+
+
+    <bean id="redisUtils" class="com.sogou.pay.common.cache.RedisUtils">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+
+</beans>

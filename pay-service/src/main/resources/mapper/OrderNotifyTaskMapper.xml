@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.service.dao.OrderNotifyDao">
+
+    <resultMap id="orderNotifyMap" type="com.sogou.pay.service.entity.OrderNotify">
+        <result column="id" property="id"/>
+        <result column="task_id" property="taskId"/>
+        <result column="job" property="job"/>
+        <result column="app_id" property="appId"/>
+        <result column="owner" property="owner"/>
+        <result column="notify_num" property="notifyNum"/>
+        <result column="expect_time" property="expectTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insertTask" parameterType="OrderNotify">
+        insert into t_order_notify_task(
+        task_id,
+        job,
+        app_id,
+        owner,
+        notify_num,
+        expect_time,
+        update_time
+        )
+        values
+        (
+        #{taskId},
+        #{job},
+        #{appId},
+        #{owner},
+        #{notifyNum},
+        #{expectTime},
+        now()
+        )
+    </insert>
+
+    <update id="updateOwnerAndTimestamp">
+        UPDATE t_order_notify_task SET expect_time=#{expectTime},update_time =now() WHERE owner=#{owner} and expect_time &lt; #{limit}
+    </update>
+
+    <update id="updateTask">
+        UPDATE t_order_notify_task SET expect_time=#{expectTime}, update_time =now(),notify_num=#{notifyNum} WHERE task_id=#{taskId}
+    </update>
+
+    <update id="giveUpTasks">
+        UPDATE t_order_notify_task SET expect_time='2000-1-1' WHERE owner=#{owner}
+    </update>
+
+    <select id="listTasksByOwner" parameterType="String" resultMap="orderNotifyMap">
+        SELECT * FROM t_order_notify_task WHERE owner=#{owner}
+    </select>
+
+    <select id="selectByTaskId" parameterType="String" resultMap="orderNotifyMap">
+        SELECT * FROM t_order_notify_task WHERE task_id=#{taskId}
+    </select>
+
+    <delete id="deleteTask" parameterType="String">
+        DELETE FROM t_order_notify_task WHERE task_id=#{taskId}
+    </delete>
+
+    <select id="listAppIdNum" resultType="java.util.HashMap">
+        <![CDATA[
+
+            SELECT appid, count(*) as appid_count, sum(notify_num) as notify_num FROM t_order_notify_task where notify_num>0 AND appid=#{appId} GROUP BY appid;
+
+        ]]>
+    </select>
+
+
+</mapper>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sogou.pay.service.dao.PayTransferBatchDao">
+
+    <resultMap id="payTransferBatchMap" type="com.sogou.pay.service.entity.PayTransferBatch" autoMapping="true">
+        <id column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="app_id" property="appId"/>
+        <result column="batch_no" property="batchNo"/>
+        <result column="user_id" property="userId"/>
+        <result column="audit_time" property="auditTime"/>
+        <result column="trade_state" property="tradeState"/>
+        <result column="audit_desc" property="auditDesc"/>
+        <result column="result_desc" property="resultDesc"/>
+        <result column="req_nbr" property="reqNbr"/>
+        <result column="company_name" property="companyName"/>
+        <result column="dbt_acc" property="dbtAcc"/>
+        <result column="bbk_nbr" property="bbkNbr"/>
+        <result column="bus_cod" property="busCod"/>
+        <result column="bus_mod" property="busMod"/>
+        <result column="trs_typ" property="trsTyp"/>
+        <result column="plan_total" property="planTotal"/>
+        <result column="suc_total" property="sucTotal"/>
+        <result column="plan_amt" property="planAmt"/>
+        <result column="suc_amt" property="sucAmt"/>
+        <result column="memo" property="memo"/>
+        <result column="notify_flag" property="notifyFlag"/>
+        <result column="yurref" property="yurref"/>
+    </resultMap>
+
+    <sql id="tableColumns">
+        id,create_time,modify_time,app_id,batch_no,user_id,audit_Time,
+        trade_state,audit_desc,result_desc,req_nbr,company_name,dbt_Acc,bbk_nbr,bus_cod,
+        bus_mod,trs_typ,plan_total,suc_total,plan_amt,suc_amt,memo,notify_flag,yurref
+    </sql>
+
+    <insert id="insert" parameterType="PayTransferBatch">
+        insert into t_pay_transfer_batch (
+            create_time,
+            modify_time,
+            app_id,
+            batch_no,
+            trade_state,
+            audit_desc,
+            company_name,
+            dbt_Acc,
+            bbk_nbr,
+            bus_cod,
+            bus_mod,
+            trs_typ,
+            plan_total,
+            plan_amt,
+            memo,
+            yurref
+        )
+        values (
+            now(),
+            now(),
+            #{appId},
+            #{batchNo},
+            1,
+            #{auditDesc},
+            #{companyName},
+            #{dbtAcc},
+            #{bbkNbr},
+            #{busCod},
+            #{busMod},
+            #{trsTyp},
+            #{planTotal},
+            #{planAmt},
+            #{memo},
+            #{yurref}
+        )
+    </insert>
+
+    <select id="queryByTradeStatus" resultMap="payTransferBatchMap">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_pay_transfer_batch
+        WHERE trade_state = #{tradeState}
+    </select>
+
+    <select id="queryByNotifyFlag" resultMap="payTransferBatchMap">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_pay_transfer_batch
+        WHERE notify_flag = #{notifyFlag}
+        and  DATE_FORMAT(audit_time ,'%Y%m%d')  &gt; #{notifyDate}
+        and (trade_state=3 or trade_state=4)
+    </select>
+
+    <select id="queryByAppIdAndBatchNo" resultMap="payTransferBatchMap">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_pay_transfer_batch
+        WHERE app_id=#{appId} and batch_no = #{batchNo}
+    </select>
+
+    <update id="updateTradeStatusByBatchNo">
+        UPDATE t_pay_transfer_batch
+        SET
+        <if test="resultDesc != null ">
+            result_desc= #{resultDesc},
+        </if>
+        trade_state= #{tradeState},
+        modify_time=now()
+        WHERE batch_no = #{batchNo}
+    </update>
+
+    <update id="updateByBatchNo">
+        UPDATE t_pay_transfer_batch
+        SET
+        <if test="sucTotal != 0 ">
+            suc_total= #{sucTotal},
+        </if>
+        <if test="sucAmt != null ">
+            suc_amt= #{sucAmt},
+        </if>
+        <if test="resultDesc != null ">
+            result_desc= #{resultDesc},
+        </if>
+        <if test="userId != 0 ">
+            user_id= #{userId},
+        </if>
+        <if test="tradeState != 0 ">
+            trade_state= #{tradeState},
+        </if>
+        <if test="reqNbr != null ">
+            req_nbr= #{reqNbr},
+        </if>
+        modify_time=now()
+        WHERE app_id = #{appId} and batch_no = #{batchNo}
+    </update>
+
+    <update id="updateNotifyFlagByBatchNo">
+        UPDATE t_pay_transfer_batch
+        SET
+         notify_flag= #{notifyFlag},
+        modify_time=now()
+        WHERE app_id = #{appId} and batch_no = #{batchNo}
+    </update>
+
+    <select id="queryByYurref" resultMap="payTransferBatchMap">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_pay_transfer_batch
+        WHERE yurref=#{yurref}
+    </select>
+
+</mapper>

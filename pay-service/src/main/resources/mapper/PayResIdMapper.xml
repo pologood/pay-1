@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.service.dao.PayResIdDao">
+
+    <insert id="insertPayResId" parameterType="String">
+        insert into t_pay_res_id(
+            pay_detail_id
+        )
+        values
+        (
+            #{payDetailId}
+        )
+    </insert>
+</mapper>

@@ -1,0 +1,31 @@
+body.hm_style{
+    background-image: url('bg2.png'),url('bg1.png'), url('bg.jpg');
+    background-position: left 50px, right bottom, center center;
+    background-size:auto, auto, cover;
+    background-repeat:no-repeat, no-repeat, no-repeat;
+}
+body.hm_style .logo{
+    background-image: url('logo.png');
+}
+body.hm_style .payM,.header{
+    background: #fff;
+    background: rgba(255,255,255,0.9);
+}
+body.hm_style .logo-aside.hm{
+    width: 214px;
+    height: 60px;
+    background: url('hm_logo.png') no-repeat;
+    text-indent: -1000px;
+    margin: 0;
+}
+body.hm_style .logo-aside.wm{
+	float:right;
+	margin-top:15px;
+}
+body.hm_style .logo-aside.wm a{
+	color:#608fbf;
+	font-size:14px;
+	display:block;
+	border:1px solid #ccc;
+	padding:4px 12px;
+}

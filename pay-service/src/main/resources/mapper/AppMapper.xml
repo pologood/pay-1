@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.service.dao.AppDao">
+
+    <resultMap id="appMap" type="com.sogou.pay.service.entity.App" autoMapping="true">
+        <result column="id" property="id"/>
+        <result column="app_name" property="appName"/>
+        <result column="app_id" property="appId"/>
+        <result column="belong_company" property="belongCompany"/>
+        <result column="sign_key" property="signKey"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="wx_service_no" property="wxServiceNo"/>
+    </resultMap>
+
+    <cache eviction="LRU" type="com.sogou.pay.common.cache.MybatisRedisCache"/>
+
+    <insert id="insertApp" parameterType="App">
+        insert into t_app(
+        app_name,
+        app_id,
+        belong_company,
+        sign_key,
+        status,
+        wx_service_no,
+        create_time,
+        modify_time
+        )
+        values
+        (
+        #{appName},
+        #{appId},
+        #{belongCompany},
+        #{signKey},
+        #{status},
+        #{wxServiceNo},
+        #{createTime},
+        #{modifyTime}
+        )
+    </insert>
+
+    <select id="selectApp"  resultMap="appMap">
+        SELECT * FROM t_app WHERE app_id=#{appId} AND status = 1
+    </select>
+
+    <update id="updateApp" parameterType="App">
+        UPDATE t_app SET appkey=#{appkey} , appsecret=#{appsecret} WHERE appid=#{appid}
+    </update>
+
+    <delete id="deleteApp" parameterType="int">
+        DELETE FROM t_app WHERE appid=#{appid}
+    </delete>
+
+    <select id="selectAppList" resultMap="appMap">
+        SELECT * FROM t_app
+    </select>
+
+</mapper>

@@ -1,0 +1,760 @@
+.payC {
+  width: 960px;
+  margin: 0 auto;
+}
+.payC .payMain {
+  position: relative;
+  /*margin: 0 auto;*/
+  float: left;
+  width: 783px;
+  min-height: 700px;
+  padding: 10px 20px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+
+  _height: 700px;
+}
+.payC .toolTip {
+  height: 14px;
+  text-align: right;
+}
+a.helpLink {
+  color: #004d9b;
+}
+.toolTip span,
+.pa-other {
+  display: none;
+}
+.payC dl.dlset {
+  padding-left: 130px;
+  margin: 0;
+  clear: both;
+  line-height: 30px;
+  zoom: 1;
+}
+.payC dl.pay-account {
+  padding-bottom: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px dotted #ccc;
+}
+dl.dlset dt {
+  float: left;
+  width: 290px;
+  margin-left: -300px;
+  clear: both;
+  text-align: right;
+
+  _display: inline;
+}
+.payC dl.dlset dt {
+  float: left;
+  width: 120px;
+  margin-left: -130px;
+  clear: both;
+  font-weight: 700;
+  text-align: right;
+
+  _display: inline;
+}
+#otherTit {
+  display: none;
+}
+.payC dl.dlset:after {
+  display: block;
+  height: 0;
+  clear: both;
+  content: '\0020';
+}
+dl.dlset:after {
+  display: block;
+  height: 0;
+  clear: both;
+  content: '\0020';
+}
+dl.dlset dt {
+  float: left;
+  width: 290px;
+  margin-left: -300px;
+  clear: both;
+  text-align: right;
+
+  _display: inline;
+}
+.payC dl.dlset dt {
+  float: left;
+  width: 120px;
+  margin-left: -130px;
+  clear: both;
+  font-weight: 700;
+  text-align: right;
+
+  _display: inline;
+}
+dl.dlset dd {
+  position: relative;
+  z-index: 1;
+  float: left;
+  width: 100%;
+  padding: 0 0 15px;
+  margin: 0;
+  zoom: 1;
+}
+.payC dl.dlset dd {
+  position: relative;
+  float: left;
+  width: 100%;
+  padding: 0 0 15px;
+  margin: 0;
+  zoom: 1;
+}
+.payC .pa-me,
+.payC .pa-other,
+.payC .pa-other,
+.payC .pay-account dd label {
+  float: left;
+}
+.payC .pay-account dd label {
+  margin-left: 30px;
+}
+input#cPay-account {
+  vertical-align: middle;
+}
+.payC dl.pay-selectGS dd {
+  z-index: 10;
+}
+.payC #gSelect {
+  background-position: 0 0;
+}
+.payC #sSelect {
+  background-position: 0 -42px;
+}
+.payC .selector {
+  position: relative;
+  display: inline-block;
+  width: 215px;
+  height: 41px;
+  padding: 0;
+  margin: 0 20px 0 0;
+  line-height: 41px;
+  background-image: url(../img/payImg.png);
+  background-repeat: no-repeat;
+  border: 0;
+
+  _display: inline;
+}
+.selector {
+  position: relative;
+  display: inline-block;
+  width: 220px;
+  padding: 2px 30px 2px 0;
+  vertical-align: middle;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  background: url(../img/004.png) 100% -500px no-repeat;
+  border: 1px solid #ababab;
+  border-radius: 2px;
+
+   -khtml-user-select: none;
+}
+ul.mnList {
+  float: left;
+  line-height: 26px;
+}
+.nmp {
+  float: left;
+  width: 120px;
+}
+.payC input[type="radio"] {
+  margin-right: 5px;
+
+  _display: inline;
+}
+.nmpOther {
+  width: 200px;
+}
+input#inputMoney {
+  width: 60px;
+  padding: 2px;
+  margin-right: 5px;
+}
+/*===============新增===================*/
+.payC .pay-style h3 {
+  padding-left: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  background: url(../img/normal.png) no-repeat 2px 11px;
+}
+.payC .pay-style h3 span {
+  font-weight: normal;
+  color: #a0a0a0;
+}
+.payC .pay-style h3.on {
+  background: url(../img/down.png) no-repeat 0 11px;
+}
+.pay-style {
+  border-bottom: 1px dotted #ccc;
+  /*padding-bottom: 20px;*/
+}
+.pay-style ul {
+  position: relative;
+  padding: 0;
+  zoom: 1;
+}
+.pay-style .pay-platform {
+  display: none;
+}
+.pay-style .pay-platform:after {
+  display: block;
+  height: 0;
+  clear: both;
+  content: '\0020';
+}
+.pay-style ul li {
+  display: block;
+  float: left;
+  width: 160px;
+  padding: 0;
+  margin: 0 10px 20px 0;
+  overflow: hidden;
+  list-style: none outside;
+
+  _display: inline;
+}
+.pay-style ul li label {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: 0;
+}
+.pay-style ul li input {
+  float: left;
+  margin: 12px 10px 0 0;
+
+  _display: inline;
+}
+.pay-style ul li img {
+  display: block;
+  float: left;
+  width: 122px;
+  height: 32px;
+  text-indent: -9999px;
+  cursor: pointer;
+  border: 1px solid #b1b1b1;
+  border-radius: 2px;
+}
+.payMain .settle-list {
+  padding-left: 150px;
+}
+.payMain .settle-list dd:after {
+  display: block;
+  height: 0;
+  clear: both;
+  content: '\0020';
+}
+.payMain .settle-list label {
+  float: left;
+  height: 60px;
+  padding-right: 40px;
+  font-size: 14px;
+  line-height: 60px;
+}
+.payMain .settle-list label span {
+  font-weight: bold;
+}
+.payMain .settle-list label.accounts {
+  float: right;
+  padding-right: 0;
+}
+.payMain .settle-list label.accounts span {
+  font-size: 24px;
+  font-weight: bold;
+  color: #e21e0a;
+}
+.payMain .pay-Submit {
+  display: inline-block;
+  float: right;
+  padding-left: 10px;
+  margin-top: 8px;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  background: url(../img/005.png) 0 0 no-repeat;
+
+  _width: auto;
+}
+.payMain .pay-Submit span {
+  display: inline-block;
+  height: 36px;
+  padding: 0 30px 0 20px;
+  font-size: 14px;
+  line-height: 36px;
+  text-align: center;
+  background: url(../img/005.png) 100% 0 no-repeat;
+
+  _width: auto;
+}
+/*支付收银新*/
+.payM {
+  padding: 20px 30px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border: 1px solid #dfdfdf;
+}
+.payM dl.dlsett {
+  margin: 0;
+  clear: both;
+  line-height: 46px;
+  zoom: 1;
+}
+.payM dl.dlsett:after,
+.payM dl.payStyle ul:after {
+  display: block;
+  height: 0;
+  clear: both;
+  content: '\0020';
+}
+.payM dl.payable {
+  margin-bottom: 25px;
+  border-bottom: 1px dotted #dfdfdf;
+}
+.payM dl.dlsett dt {
+  float: left;
+  width: 116px;
+  clear: both;
+  text-align: right;
+
+  _display: inline;
+}
+.payM dl.dlsett dd {
+  position: relative;
+  width: 100%;
+  /*float: left;*/
+  margin: 0;
+  zoom: 1;
+
+  _display: inline;
+  /* *width: auto; */
+}
+.money {
+  font: 700 35px SimHei;
+  color: #e21e0a;
+}
+.payM dl.payStyle {
+  margin-top: -14px;
+}
+.payM .dotb {
+  padding: 6px 0;
+  border-bottom: 1px dotted #dfdfdf;
+}
+.payM dl.payStyle dd {
+  float: left;
+}
+.payM dl.payStyle h3 {
+  float: left;
+  width: 190px;
+  height: 50px;
+  padding-top: 14px;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.payM dl.payStyle h3 span {
+  display: block;
+  font-size: 12px;
+  font-weight: normal;
+  color: #a0a0a0;
+}
+.payM dl.payStyle ul {
+  height: 50px;
+  padding-top: 12px;
+  margin-left: 190px;
+  overflow: hidden;
+}
+.payM dl.payStyle ul li {
+  display: block;
+  float: left;
+  width: 160px;
+  padding: 0;
+  margin: 0 10px 20px 0;
+  overflow: hidden;
+  list-style: none outside;
+
+  _display: inline;
+}
+.payM dl.payStyle ul li input {
+  float: left;
+  margin: 12px 10px 0 0;
+
+  _display: inline;
+}
+.payM dl.payStyle input[type="radio"] {
+  margin-right: 5px;
+
+  _display: inline;
+}
+.payM dl.payStyle ul li img {
+  display: block;
+  float: left;
+  width: 122px;
+  height: 32px;
+  text-indent: -9999px;
+  cursor: pointer;
+  border: 1px solid #b1b1b1;
+  border-radius: 2px;
+}
+.QR-Code-WeChat{
+	margin-left: 220px;
+	display: none;
+}
+.QR-Code-WeChat img{
+	width: 310px;
+	height: 310px;
+}
+.QR-Code-Ali{
+	margin-left: 205px;
+	margin-top: 24px;
+	display: none;
+}
+.payM .paySubmit {
+  display: block;
+  height: 36px;
+  padding-left: 10px;
+  margin: 30px auto 55px;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  background: url(../img/005.png) 0 0 no-repeat;
+
+  _width: auto;
+}
+.payM .paySubmit:hover {
+  background-position: 0 -40px;
+}
+.payM .paySubmit:hover span {
+  background-position: 100% -40px;
+}
+.paySubmit.def {
+  background-position: 0 -280px;
+}
+.paySubmit.def span {
+  background-position: 100% -280px;
+}
+.paySubmit.def:hover {
+  background-position: 0 -240px;
+}
+.paySubmit.def:hover span {
+  background-position: 100% -240px;
+}
+.payM .paySubmit span {
+  display: inline-block;
+  height: 36px;
+  padding: 0 30px 0 20px;
+  font-size: 14px;
+  line-height: 36px;
+  text-align: center;
+  background: url(../img/005.png) 100% 0 no-repeat;
+
+  _width: auto;
+}
+.pay-bank {
+  position: relative;
+}
+.bankDown,
+.bankUp {
+  position: absolute;
+  right: 0;
+  bottom: 20px;
+  width: 45px;
+  height: 32px;
+  color: #676767;
+}
+.bankDown {
+  background: url(../img/down.png) no-repeat 34px 10px;
+}
+.bankUp {
+  display: none;
+  background: url(../img/up.png) no-repeat 34px 10px;
+}
+.pay-title {
+  font-family: "微软雅黑";
+  color: #000;
+  font-weight:bold;
+  width: auto;
+  margin-bottom: 8px;
+  font-size:18px;
+  
+}
+/* 支付平台header */
+.logo-area {
+  padding-bottom: 8px;
+  margin: 12px 0;
+  font-family: "微软雅黑";
+  color: #000;
+  border-bottom: 2px solid #606166;
+}
+.logo {
+  width: 61px;
+  height: 61px;
+  background: url(../img/logo.png) no-repeat;
+}
+.logo-title {
+  display: inline;
+  padding: 0 14px 0 10px ;
+  font-size: 29px;
+  font-weight: normal;
+  line-height: 60px;
+}
+.logo-aside {
+  margin-top: 23px;
+  font-size: 18px;
+  color: #000;
+}
+.logo-line {
+  height: 28px;
+  margin: 16px 14px 0 0 ;
+  border-left: 1px solid #999;
+}
+/* 问题列表 */
+.question-list {
+  font-size: 12px;
+  line-height: 2.2;
+}
+.question-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+.question-q {
+  font-weight: 700;
+}
+.question-a {
+  padding-left: 12px;
+}
+/* 版权信息 */
+.copyright {
+  padding: 18px 0;
+  text-align: center;
+}
+.copyright-item {
+  color: #676767;
+}
+.copyright-item:hover {
+  color: #e21e0a;
+}
+/* 弹出层 */
+.modal-backdrop {
+  position: fixed !important;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1040;
+  background-color: #000;
+  filter: alpha(opacity=0);
+  opacity: 0;
+
+  _position: absolute;
+  _top: 0;
+}
+.modal-backdrop.in {
+  filter: alpha(opacity=30);
+  opacity: .3;
+}
+.modal {
+  position: fixed !important;
+  top: 50%;
+  left: 50%;
+  z-index: 1050;
+  display: none;
+  width: 468px;
+  height: 276px;
+  padding: 10px;
+  margin-top: -139px;
+  margin-left: -295px;
+  font-family: "微软雅黑";
+  /* background:url(../img/background.png) no-repeat; */
+  background-clip: padding-box;
+  outline: none;
+
+  _position: absolute;
+  _top: 13%;
+  _margin-top: 0;
+}
+.modal .close {
+  margin-right: 10px;
+}
+.modal-body {
+  width: 448px;
+  height: 256px;
+  background: #fff;
+}
+.modal-content {
+  padding: 20px;
+}
+/* 支付弹出层样式 */
+.modal-title {
+  font-size: 14px;
+  line-height: 2.4;
+  color: #000;
+}
+/* .pay-content {
+  background: url(../img/goPay.png) no-repeat 40px 50px;
+}
+.pay-content .fail {
+  clear: right;
+}
+.pay-content .success {
+  margin-top: 42px;
+} */
+.pay-content .success,
+.pay-content .fail {
+  width: 50%;
+  margin: 36px 0;
+  text-align: left;
+}
+.pay-content .success p,
+.pay-content .fail p {
+  padding-top: 26px;
+  clear: both;
+  font-size: 12px;
+  line-height: 2;
+  color: #888;
+}
+.pay-content .success .btn,
+.pay-content .fail .btn {
+  margin: 0 10px;
+}
+.pay-content .success .btn span,
+.pay-content .fail .btn span {
+  width: 100px;
+}
+/* 关闭按钮 */
+.close {
+  float: right;
+  font-size: 37px;
+  line-height: 1;
+  color: #000;
+  cursor: pointer;
+  background: transparent;
+  filter: alpha(opacity=20);
+  border: 0;
+  outline: 0;
+  opacity: .2;
+
+  *height: 37px;
+}
+.close:hover {
+  filter: alpha(opacity=40);
+  opacity: .4;
+}
+/* 定端header */
+.header {
+  height: 36px;
+  border-bottom: 1px solid #dfdfdf;
+}
+/*  错误二维码*/
+.QR-fail {
+  margin-left: 270px;
+  width: 220px;
+  height: 160px;
+  padding-top: 36px;
+  padding-left: 50px;
+  font-size: 12px;
+  text-align: center;
+  background: url(../img/qr_error.png) no-repeat 30px 43px;
+  border: 1px solid #dfdfdf;
+  display: none;
+}
+.QR-fail a {
+  color: #ee330a;
+}
+.QR-fail a:hover {
+  color: #ee330a;
+  text-decoration: underline;
+}
+/* 订单信息*/
+.pay-details {
+  font-weight:bold;
+  position: relative;
+  width: 70%;
+  margin-top: 35px;
+}
+.pay-details-title {
+  font-family: "微软雅黑";
+  color: #000;
+  font-weight:bold;
+  position: relative;
+  font-size: 15px
+}
+.money-title {
+  color: #777;
+  position: relative;
+  font-size: 20px
+}
+.pay-code {
+  position: relative;
+  width: 20%;
+  margin: -15px -25px 0;
+}
+.pay-img {
+  text-align: center;
+}
+.pay-icon {
+  width: 10%;
+  height: 100px;
+  margin-top: 64px;
+  background: url(../img/success.png) no-repeat 100% 0;
+}
+.pay-money {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  white-space: nowrap;
+}
+.pay-money > * {
+  display: inline;
+  float: normal;
+}
+.box-border {
+  box-sizing: border-box;
+}
+/* 按钮样式 */
+.btn {
+  width: 120px;
+  height: 36px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 36px;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  background: #ff8500;
+  box-shadow: 1px 1px 0 #cf7c24;
+}
+.btn:hover {
+  background: #ff9019;
+}
+.btn.def {
+  color: #333;
+  background: #ededed;
+  box-shadow: 1px 1px 0 #d2d2d2;
+}
+.btn.def:hover {
+  background: #f2f2f2;
+}
+.modal-header {
+  padding: 6px 0 6px 20px;
+  font-size: 18px;
+  line-height: 37px;
+  background: #f3f3f3;
+}
+.pay-info dl.dlsett dd {
+	width:auto;
+}
+.exploreInfo{
+	color: #000;
+	font-size: 8px;
+	font-family: "微软雅黑";
+}

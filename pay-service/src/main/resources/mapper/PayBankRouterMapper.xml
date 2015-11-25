@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.service.dao.PayBankRouterDao">
+
+    <resultMap id="bankRouterList" type="com.sogou.pay.service.entity.PayBankRouter">
+        <result column="router_id" property="id"/>
+        <result column="bank_code" property="bankCode"/>
+        <result column="bank_card_type" property="bankCardType"/>
+        <result column="app_id" property="appId"/>
+        <result column="agency_code" property="agencyCode"/>
+        <result column="scale" property="scale"/>
+        <result column="router_status" property="routerStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <cache eviction="LRU" type="com.sogou.pay.common.cache.MybatisRedisCache"/>
+
+    <select id="selectPayBankRouterList" parameterType="com.sogou.pay.service.entity.PayBankRouter" resultMap="bankRouterList">
+        SELECT * FROM t_pay_bank_router
+        WHERE 1 = 1 AND scale > 0
+        <if test = "bankCode != null">
+          AND bank_code=#{bankCode}
+        </if>
+        <if test = "bankCardType != null">
+          AND (bank_card_type=#{bankCardType} OR bank_card_type = 3)
+        </if>
+        <if test = "appId != null">
+          AND app_id=#{appId}
+        </if>
+        <if test = "routerStatus != null">
+          AND router_status=#{routerStatus}
+        </if>
+    </select>
+
+</mapper>

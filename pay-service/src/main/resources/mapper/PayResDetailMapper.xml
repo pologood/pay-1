@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.service.dao.PayResDetailDao">
+
+    <resultMap id="PayResDetailMap" type="com.sogou.pay.service.entity.PayResDetail">
+        <result column="pay_detail_id" property="payDetailId"/>
+        <result column="access_platform" property="accessPlatform"/>
+        <result column="pay_fee_type" property="payFeeType"/>
+        <result column="balance" property="balance"/>
+        <result column="true_money" property="trueMoney"/>
+        <result column="pay_fee" property="payFee"/>
+        <result column="fee_rate" property="feeRate"/>
+        <result column="agency_code" property="agencyCode"/>
+        <result column="agency_order_id" property="agencyOrderId"/>
+        <result column="bank_card_type" property="bankCardType"/>
+        <result column="bank_code" property="bankCode"/>
+        <result column="bank_order_id" property="bankOrderId"/>
+        <result column="agency_pay_time" property="agencyPayTime"/>
+        <result column="refund_code" property="refundCode"/>
+        <result column="pay_status" property="payStatus"/>
+        <result column="merchant_no" property="merchantNo"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <insert id="insertPayResDetail" parameterType="PayResDetail">
+        insert into t_pay_order_res_detail(
+            pay_detail_id,
+            access_platform,
+            pay_fee_type,
+            balance,
+            true_money,
+            agency_code,
+            agency_order_id,
+            bank_card_type,
+            bank_code,
+            bank_order_id,
+            agency_pay_time,
+            refund_code,
+            pay_status,
+            merchant_no,
+            create_time,
+            pay_fee,
+            fee_rate
+        )
+        values
+        (
+            #{payDetailId},
+            #{accessPlatform},
+            #{payFeeType},
+            #{balance},
+            #{trueMoney},
+            #{agencyCode},
+            #{agencyOrderId},
+            #{bankCardType},
+            #{bankCode},
+            #{bankOrderId},
+            #{agencyPayTime},
+            #{refundCode},
+            #{payStatus},
+            #{merchantNo},
+            #{createTime},
+            #{payFee},
+            #{feeRate}
+        )
+    </insert>
+
+    <select id="selectPayResById" parameterType="String" resultMap="PayResDetailMap">
+        SELECT * FROM t_pay_order_res_detail WHERE pay_detail_id = #{payDetailId}
+    </select>
+    <select id="selectByAgencyOrderId" parameterType="String" resultMap="PayResDetailMap">
+        SELECT * FROM t_pay_order_res_detail WHERE agency_order_id = #{agencyOrderId}
+    </select>
+
+    <update id="updatePayResPayfeeById">
+        UPDATE t_pay_order_res_detail SET pay_fee = #{payFee},fee_rate = #{feeRate} WHERE pay_detail_id = #{payDetailId}
+    </update>
+
+</mapper>

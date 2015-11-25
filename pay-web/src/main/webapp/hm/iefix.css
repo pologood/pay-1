@@ -1,0 +1,9 @@
+body.hm_style body{
+    background-image: url('bg_ie.jpg');
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+}
+body.hm_style .payM,.header{
+    background: url('trans.png');
+}

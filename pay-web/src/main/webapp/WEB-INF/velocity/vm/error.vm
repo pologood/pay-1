@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>搜狗支付中心</title>
+    <link rel="stylesheet" href="/static/css/main.css?t=464609" type="text/css"/>
+</head>
+<body>
+<div class="header" id="Header">
+    <div class="inner">
+        <h1><a href="/"><img src="/static/img/logo.png" class="" alt="搜狗支付中心"/></a></h1>
+        <ul class="info" style="display:none;">
+
+        </ul>
+    </div>
+</div>
+
+<div class="wrapper">
+    <div class="banner">
+        <div class="inner reg">
+            <ul>
+                <li>首页</li>
+            </ul>
+        </div>
+        <span class="underline"></span>
+    </div>
+
+    <div class="main-content one-col">
+        <div class="inner sys-error">
+            <div class="desc" style="width: auto; text-align: center">
+                Error:&nbsp;$!{data.status},&nbsp;Message:&nbsp;$!{data.message}
+            </div>
+            <img src="/static/img/500.jpg" class="" alt=""/>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="inner">
+        <a href="/web/problem/addProblem">意见反馈</a>&nbsp;&nbsp;Copyright &copy;&nbsp;2015 Sogou.com.&nbsp;All Rights
+        Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
+    </div>
+</div>
+</body>
+
+</html>
+<!--zly-->

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sogou.pay.service.dao.PayCheckDiffDao">
+
+
+    <resultMap id="payCheckDiffMap" type="com.sogou.pay.service.entity.PayCheckDiff" autoMapping="true">
+        <result column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="version" property="version"/>
+        <result column="instruct_id" property="instructId"/>
+        <result column="biz_amt" property="bizAmt"/>
+        <result column="out_order_id" property="outOrderId"/>
+        <result column="out_biz_amt" property="outBizAmt"/>
+        <result column="biz_code" property="bizCode"/>
+        <result column="out_trans_time" property="outTransTime"/>
+        <result column="diff_type" property="diffType"/>
+        <result column="check_date" property="checkDate"/>
+        <result column="agency_code" property="agencyCode"/>
+        <result column="merchant_no" property="merchantNo"/>
+        <result column="handle_status" property="handleStatus"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+
+    <sql id="tableColumns">
+        id,create_time,modify_time,version, instruct_id,biz_amt, out_order_id, out_biz_amt, biz_code,
+        out_trans_time,diff_type,check_date,agency_code,merchant_no,handle_status,remark
+    </sql>
+
+    <delete id="delete">
+        DELETE FROM t_pay_check_diff WHERE check_date = #{checkDate} and agency_code=#{agencyCode}
+    </delete>
+
+    <insert id="insertAmtDiff">
+        insert into t_pay_check_diff (
+            create_time,
+            modify_time,
+            version,
+            instruct_id,
+            biz_amt,
+            out_order_id,
+            out_biz_amt,
+            biz_code,
+            out_trans_time,
+            diff_type,
+            check_date,
+            agency_code,
+            merchant_no,
+            handle_status
+        )
+        select
+            now(),
+            now(),
+            0,
+            t1.instruct_id,
+            t2.biz_amt,
+            t1.out_order_id,
+            t1.biz_amt,
+            t1.biz_code,
+            t1.out_trans_time,
+            t1.status as diff_type,
+            t1.check_date,
+            t1.agency_code,
+            t1.merchant_no,
+            0
+           from(select * from  t_pay_check
+                 where
+                    check_date=#{checkDate}
+                    and agency_code=#{agencyCode}
+                    and status =2
+               ) t1
+           left join t_pay_check_waiting  t2 on t1.instruct_id = t2.instruct_id
+    </insert>
+
+
+    <insert id="insertOutMoreDiff">
+        insert into t_pay_check_diff (
+        create_time,
+        modify_time,
+        version,
+        instruct_id,
+        biz_amt,
+        out_order_id,
+        out_biz_amt,
+        biz_code,
+        out_trans_time,
+        diff_type,
+        check_date,
+        agency_code,
+        merchant_no,
+        handle_status
+        )
+        select
+        now(),
+        now(),
+        0,
+        t.instruct_id,
+        0,
+        t.out_order_id,
+        t.biz_amt,
+        t.biz_code,
+        t.out_trans_time,
+        t.status as diff_type,
+        t.check_date,
+        t.agency_code,
+        t.merchant_no,
+        0
+        from
+        ( select * from  t_pay_check
+            where
+            check_date=#{checkDate}
+            and agency_code=#{agencyCode}
+            and status =3
+          ) t
+    </insert>
+
+
+    <insert id="insertOutLessDiff">
+        insert into t_pay_check_diff (
+        create_time,
+        modify_time,
+        version,
+        instruct_id,
+        biz_amt,
+        out_order_id,
+        out_biz_amt,
+        biz_code,
+        out_trans_time,
+        diff_type,
+        check_date,
+        agency_code,
+        merchant_no,
+        handle_status
+        )
+        select
+        now(),
+        now(),
+        0,
+        t.instruct_id,
+        t.biz_amt,
+        t.out_order_id,
+        0,
+        t.biz_code,
+        t.out_trans_time,
+        4,
+        t.check_date,
+        t.agency_code,
+        t.merchant_no,
+        0
+        from
+         ( select * from  t_pay_check_waiting
+            where
+            check_date=#{checkDate}
+            and agency_code=#{agencyCode}
+            and status =0
+          ) t
+    </insert>
+
+    <select id="selectUnResolvedCount" resultType="int">
+        SELECT
+        COUNT(1)
+        FROM t_pay_check_diff
+       WHERE handle_status = 0
+    </select>
+
+    <select id="selectUnResolvedList" resultMap="payCheckDiffMap">
+        SELECT
+          id,create_time,modify_time,version, instruct_id,biz_amt, out_order_id, out_biz_amt, biz_code,
+        out_trans_time,diff_type,check_date,agency_code,merchant_no,handle_status,remark
+        from t_pay_check_diff
+         WHERE handle_status = 0
+    </select>
+
+
+    <update id="updateStatus">
+        UPDATE t_pay_check_diff
+        SET handle_status=#{status},
+        modify_time=now(),
+        version=version+1
+        <if test="remark != null ">
+            , remark= #{remark}
+        </if>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

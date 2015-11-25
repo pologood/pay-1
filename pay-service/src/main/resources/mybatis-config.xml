@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <settings>
+        <!-- 全局的缓存启用或禁用缓存 -->
+        <setting name="cacheEnabled" value="true" />
+        <!-- 对于未知的SQL查询，允许返回不同的结果集以达到通用的效果 -->
+        <setting name="multipleResultSetsEnabled" value="true"/>
+        <!-- 配置默认的执行器。SIMPLE 执行器没有什么特别之处。REUSE 执行器重用预处理语句。BATCH 执行器重用语句和批量更新 -->
+        <setting name="defaultExecutorType" value="REUSE" />
+        <!-- 全局启用或禁用延迟加载。当禁用时，所有关联对象都会即时加载。 -->
+        <setting name="lazyLoadingEnabled" value="false" />
+        <setting name="aggressiveLazyLoading" value="true" />
+        <!-- 设置超时时间，它决定驱动等待一个数据库响应的时间。 -->
+        <setting name="defaultStatementTimeout" value="25000" />
+    </settings>
+
+    <!-- 命名空间 -->
+    <typeAliases>
+        <typeAlias alias="App" type="com.sogou.pay.service.entity.App"/>
+        <typeAlias alias="RefundInfo" type="com.sogou.pay.service.entity.RefundInfo"/>
+        <typeAlias alias="PayCheck" type="com.sogou.pay.service.entity.PayCheck"/>
+        <typeAlias alias="PayCheckDayLog" type="com.sogou.pay.service.entity.PayCheckDayLog"/>
+        <typeAlias alias="PayCheckResult" type="com.sogou.pay.service.entity.PayCheckResult"/>
+        <typeAlias alias="PayCheckWaiting" type="com.sogou.pay.service.entity.PayCheckWaiting"/>
+        <typeAlias alias="PayCheckDiff" type="com.sogou.pay.service.entity.PayCheckDiff"/>
+        <typeAlias alias="PayCheckFeeDiff" type="com.sogou.pay.service.entity.PayCheckFeeDiff"/>
+        <typeAlias alias="PayOrderInfo" type="com.sogou.pay.service.entity.PayOrderInfo"/>
+        <typeAlias alias="AgencyInfo" type="com.sogou.pay.service.entity.AgencyInfo"/>
+        <typeAlias alias="PayReqDetail" type="com.sogou.pay.service.entity.PayReqDetail"/>
+        <typeAlias alias="PayResDetail" type="com.sogou.pay.service.entity.PayResDetail"/>
+        <typeAlias alias="PayBankRouter" type="com.sogou.pay.service.entity.PayBankRouter"/>
+        <typeAlias alias="PayAgencyMerchant" type="com.sogou.pay.service.entity.PayAgencyMerchant"/>
+        <typeAlias alias="PayOrderRelation" type="com.sogou.pay.service.entity.PayOrderRelation"/>
+        <typeAlias alias="PayBankAlias" type="com.sogou.pay.service.entity.PayBankAlias"/>
+        <typeAlias alias="Channel" type="com.sogou.pay.service.entity.Channel"/>
+        <typeAlias alias="OrderNotify" type="com.sogou.pay.service.entity.OrderNotify"/>
+        <typeAlias alias="PayTransfer" type="com.sogou.pay.service.entity.PayTransfer"/>
+        <typeAlias alias="PayTransferBatch" type="com.sogou.pay.service.entity.PayTransferBatch"/>
+        <typeAlias alias="PayTransferLog" type="com.sogou.pay.service.entity.PayTransferLog"/>
+    </typeAliases>
+
+    <!-- 映射map -->
+    <mappers>
+    </mappers>
+
+</configuration>
