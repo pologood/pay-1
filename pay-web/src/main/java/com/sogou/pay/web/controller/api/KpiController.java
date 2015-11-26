@@ -451,7 +451,7 @@ public class KpiController extends BaseController{
     @RequestMapping("/checkPeak")
     public ModelAndView checkPeak(HttpServletRequest request){
         ModelAndView view = new ModelAndView("kpiSuccess");
-        String errorMsg = isConnect("https://api.mch.weixin.qq.com/pay/orderquery");
+        String errorMsg = isConnect("http://up.sohu.com/channel/gw/orderpay.up");
         if(!StringUtils.isEmpty(errorMsg)){
             view.setViewName("common/error");
         }
