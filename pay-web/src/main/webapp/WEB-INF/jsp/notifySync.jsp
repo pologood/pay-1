@@ -15,7 +15,7 @@
 <input type="hidden" value="${errorMessage }" id="errorMessage"/>
 <input type="hidden" value="${appUrl }" id="appUrl"/>
 <input type="hidden" value="${payFeeType }" id="payFeeType"/>
-<form action="${appUrl }" name="form" id="form" method="post">
+<form action="${appUrl }" name="form" id="form" method="get">
 	<c:forEach var="map" varStatus="status" items="${returnMap}">
 		<input type="hidden" name='${map.key }' value='${map.value}' class="flag"/>
 	</c:forEach>
