@@ -287,7 +287,7 @@ public class AliPayNotifyController extends BaseController {
             return setWapErrorPage(resultNotify.getStatus().getMessage(),
                     resultNotify.getStatus().getCode());
         }
-        view.addObject("payFeeType", '3');
+        view.addObject("payFeeType",  payReqDetail.getPayFeeType());
         view.addObject("errorCode", 0);
         view.addObject("appUrl", url);
         view.addObject("returnMap", resultNotify.getReturnValue());
