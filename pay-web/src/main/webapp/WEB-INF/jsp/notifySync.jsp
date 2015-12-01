@@ -23,7 +23,7 @@
 <script type="text/javascript">
     var errorCode = document.getElementById("errorCode").value;
     if(0 == errorCode){
-//        是否是支付宝扫码
+        //是否是支付宝扫码
         if($("#payFeeType").val() == "3"){
             var paramString = "";
             $("#from").find(".flag").each(function(){
