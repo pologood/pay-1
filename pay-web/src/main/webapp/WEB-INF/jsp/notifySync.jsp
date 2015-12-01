@@ -22,21 +22,21 @@
 </form>
 <script type="text/javascript">
     var errorCode = document.getElementById("errorCode").value;
-//    if(0 == errorCode){
-        是否是支付宝扫码
-//        if($("#payFeeType").val() == "3"){
+    if(0 == errorCode){
+//        是否是支付宝扫码
+        if($("#payFeeType").val() == "3"){
             var paramString = "";
             $("#from").find(".flag").each(function(){
                 paramString = paramString + $(this).attr("name") + "=" + $(this).val()+"&";
             });
             paramString = paramString.substring(0, paramString.length-1);
             window.parent.location.href=$("#appUrl").val()+"?"+paramString;
-//        } else {
-//            document.form.submit();
-//        }
-//    } else {
-//        window.parent.location.href='error.j';
-//    }
+        } else {
+            document.form.submit();
+        }
+    } else {
+        window.parent.location.href='error.j';
+    }
 </script>
 
 </body>
