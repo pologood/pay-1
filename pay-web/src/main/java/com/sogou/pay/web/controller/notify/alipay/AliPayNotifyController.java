@@ -238,14 +238,14 @@ public class AliPayNotifyController extends BaseController {
         PayReqDetail payReqDetail = payReqDetailService.selectPayReqDetailById(reqDetailId);
         if(null == payReqDetail){
             LOGGER.error("【支付回调】没有该支付流水信息！reqDetailId=" + reqDetailId);
-            return setWapErrorPage(ResultStatus.REQ_INFO_NOT_EXIST_ERROR.getMessage(), 
+            return setWapErrorPage(ResultStatus.REQ_INFO_NOT_EXIST_ERROR.getMessage(),
                     ResultStatus.REQ_INFO_NOT_EXIST_ERROR.getCode());
         }
         String partner = payReqDetail.getMerchantNo();
         ResultMap sign = (ResultMap) secureManager.verifyNotifySign(pMap, agency, partner);
         if (sign.getStatus() != ResultStatus.SUCCESS) {
             LOGGER.error("md5签名异常，参数:" + pMap);
-            return setWapErrorPage(sign.getStatus().getMessage(), 
+            return setWapErrorPage(sign.getStatus().getMessage(),
                     sign.getStatus().getCode());
         }
 
@@ -256,7 +256,7 @@ public class AliPayNotifyController extends BaseController {
         List<PayOrderRelation> relationList = payOrderRelationService.selectPayOrderRelation(paramRelation);
         if(null == relationList || relationList.size() == 0){
             LOGGER.error("There is no PayOrderRelation from reqId={}", pMap.getString("out_trade_no"));
-            return setWapErrorPage(ResultStatus.PAY_ORDER_RELATION_NOT_EXIST.getMessage(), 
+            return setWapErrorPage(ResultStatus.PAY_ORDER_RELATION_NOT_EXIST.getMessage(),
                     ResultStatus.PAY_ORDER_RELATION_NOT_EXIST.getCode());
         }
         //2.根据payIdList查询payOrder信息
@@ -267,13 +267,13 @@ public class AliPayNotifyController extends BaseController {
             url = payOrderInfo.getAppPageUrl();
         } else {
             LOGGER.error("There is no orderinfo from reqId={}", pMap.getString("out_trade_no"));
-            return setWapErrorPage(ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR.getMessage(), 
+            return setWapErrorPage(ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR.getMessage(),
                     ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR.getCode());
         }
         //获得通知参数
         ResultMap resultNotify = payNotifyManager.getNotifyMap(payOrderInfo);
         if(!Result.isSuccess(resultNotify)){
-            return setWapErrorPage(resultNotify.getStatus().getMessage(), 
+            return setWapErrorPage(resultNotify.getStatus().getMessage(),
                     resultNotify.getStatus().getCode());
         }
         view.addObject("payFeeType", payReqDetail.getPayFeeType());
@@ -322,7 +322,7 @@ public class AliPayNotifyController extends BaseController {
         }
         return "success";  // 返回结果只是表示收到回调
     }
-    
+
     private PayNotifyModel paramsConvert(Object notifyParams) {
         PMap paramMap = null;
         AliPayWebNotifyParams aliPayWebNotifyParams = null;
@@ -332,7 +332,7 @@ public class AliPayNotifyController extends BaseController {
             if (!"TRADE_FINISHED".equals(orderStatus) && !"TRADE_SUCCESS".equals(orderStatus)) {
                 return null;
             }
-            
+
             paramMap = PMapUtil.fromBean(aliPayWebNotifyParams); //因为aliPayWebNotifyParams作为controller封装对象都是String型的，不便于操作，此处转换为PMap便于处理
         } else if(notifyParams instanceof PMap)
             paramMap = (PMap)notifyParams;
@@ -349,7 +349,7 @@ public class AliPayNotifyController extends BaseController {
 
         return payNotifyModel;
     }
-    
+
     private PayNotifyModel sdkParamsConvert(PMap paramMap) {
         String orderStatus = paramMap.getString("trade_status");
         if (!"TRADE_FINISHED".equals(orderStatus) && !"TRADE_SUCCESS".equals(orderStatus)) {
@@ -366,7 +366,7 @@ public class AliPayNotifyController extends BaseController {
         payNotifyModel.setTrueMoney(true_money);
         return payNotifyModel;
     }
-    
+
     @RequestMapping("/testBgUrl")
     @ResponseBody
     public String testBgUrl(HttpServletRequest resquest) {
