@@ -120,7 +120,7 @@ public class PayManagerImpl implements PayManager {
         /*判断渠道是否是第三方余额支付*/
         String channelType = params.getString("channelType");
         String channelCode = params.getString("channelCode");
-        Channel channel = channelService.selectChannelByCode(params.getString("channelCode"));
+        Channel channel = channelService.selectChannelByCode(channelCode);
         String agencyCode = null;
         String bankCode = null;
         String insertBankCode = null;
@@ -129,9 +129,9 @@ public class PayManagerImpl implements PayManager {
         //若是SDK，则支付机构类型为第三方支付
         if(Integer.parseInt(params.getString("accessPlatform")) == 3){
           //渠道为第三方机构，机构编码即为渠道编码
-            agencyCode = channel.getChannelCode();
+            agencyCode = channelCode;
             //银行编码即为渠道编码
-            insertBankCode = agencyCode;
+            insertBankCode = channelCode;
             payFeeType = 2;
         } else {
             if(null == channelType){
@@ -143,20 +143,20 @@ public class PayManagerImpl implements PayManager {
                         result.withError(ResultStatus.PAY_BANK_ROUTER_NOT_EXIST);
                         return result;
                     }
-                    insertBankCode = channel.getChannelCode();
-                    bankCode = insertBankCode;
+                    insertBankCode = channelCode;
+                    bankCode = channelCode;
                     payFeeType = 1;
                 } else if(CHANNEL_TYPE_AGENCY == channel.getChannelType()){
                     //渠道为第三方机构，机构编码即为渠道编码
-                    agencyCode = channel.getChannelCode();
+                    agencyCode = channelCode;
                     //银行编码即为渠道编码
-                    insertBankCode = agencyCode;
+                    insertBankCode = channelCode;
                     payFeeType = 2;
                 } else {
                   //渠道为扫码支付，机构编码即为渠道编码
-                    agencyCode = channel.getChannelCode();
+                    agencyCode = channelCode;
                     //银行编码即为渠道编码
-                    insertBankCode = agencyCode;
+                    insertBankCode = channelCode;
                     payFeeType = 3;
                 }
             } else {
@@ -450,7 +450,7 @@ public class PayManagerImpl implements PayManager {
      * @Date 2015年3月4日
      * @Description: 根据请求参数组装支付网关所需要的参数
      */
-    public ResultMap getPayGateMap(PMap params) {
+    public ResultMap getPayGateParams(PMap params) {
         ResultMap<PMap> result = ResultMap.build();
         PMap payGateMap = new PMap();
         try{

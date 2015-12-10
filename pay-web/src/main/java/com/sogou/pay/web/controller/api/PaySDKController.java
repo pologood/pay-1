@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sogou.pay.common.cache.RedisUtils;
@@ -175,7 +174,7 @@ public class PaySDKController extends BaseController{
         params.put("payTime",payResult.getData().get("payTime"));
         params.put("payDetailId",payResult.getData().get("payDetailId"));
         params.put("payFeeType",payResult.getData().get("payFeeType"));
-        ResultMap getPayGateResult = payManager.getPayGateMap(params);
+        ResultMap getPayGateResult = payManager.getPayGateParams(params);
         if(!Result.isSuccess(getPayGateResult)){
             return getPayGateResult;
         }

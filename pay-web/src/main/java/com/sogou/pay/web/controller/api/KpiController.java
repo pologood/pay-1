@@ -496,7 +496,7 @@ public class KpiController extends BaseController{
         params.put("payTime",payResult.getData().get("payTime"));
         params.put("payDetailId",payResult.getData().get("payDetailId"));
         params.put("payFeeType",payResult.getData().get("payFeeType"));
-        ResultMap getPayGateResult = payManager.getPayGateMap(params);
+        ResultMap getPayGateResult = payManager.getPayGateParams(params);
         if(!Result.isSuccess(getPayGateResult)){
             return getPayGateResult;
         }

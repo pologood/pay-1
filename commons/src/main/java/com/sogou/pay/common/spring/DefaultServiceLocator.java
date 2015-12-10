@@ -159,13 +159,9 @@ public class DefaultServiceLocator {
             if (target != null) {
                 try {
                     boolean acc = field.isAccessible();
-                    if (!acc) {
-                        field.setAccessible(true);
-                    }
+                    field.setAccessible(true);
                     field.set(bean, target);
-                    if (!acc) {
-                        field.setAccessible(false);
-                    }
+                    field.setAccessible(acc);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException("resolve inject error", e);
                 }
