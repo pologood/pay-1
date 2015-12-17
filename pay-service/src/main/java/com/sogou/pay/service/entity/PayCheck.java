@@ -67,6 +67,10 @@ public class PayCheck {
      * 商户号
      */
     private String merchantNo;
+    /**
+     * 我方在第三方的账户余额
+     */
+    private BigDecimal balance;
 
     public long getId() {
         return id;
@@ -179,4 +183,8 @@ public class PayCheck {
     public void setMerchantNo(String merchantNo) {
         this.merchantNo = merchantNo;
     }
+
+    public BigDecimal getBalance() { return balance; }
+
+    public void setBalance(BigDecimal balance) { this.balance =  balance; }
 }

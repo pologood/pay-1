@@ -11,7 +11,7 @@ public enum OrderType {
     PAYCASH(1),         // 支付
     RECHARGE(2),    // 充值
     REFUND(3),      // 退款
-    //    WITHDRAW(4),    // 提现
+    WITHDRAW(5),    // 提现
     //    PAY_BALANCE(2),     // 余额支付
     ;
 

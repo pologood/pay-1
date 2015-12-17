@@ -1,5 +1,6 @@
 package com.sogou.pay.service.payment.manager;
 
+import com.sogou.pay.manager.payment.AppManager;
 import com.sogou.pay.manager.payment.PayCheckManager;
 import com.sogou.pay.service.BaseTest;
 import com.sogou.pay.service.dao.PayCheckDao;
@@ -15,7 +16,10 @@ import com.sogou.pay.service.enums.OrderType;
 import com.sogou.pay.service.enums.TerminalType;
 import com.sogou.pay.service.payment.PayAgencyMerchantService;
 import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -29,6 +33,7 @@ import java.util.Random;
  * Created by qibaichao on 2015/3/10.
  */
 public class PayCheckManagerTest extends BaseTest {
+    private static final Logger logger = LoggerFactory.getLogger(PayCheckManagerTest.class);
 
     @Autowired
     private PayCheckManager payCheckManager;
@@ -47,6 +52,7 @@ public class PayCheckManagerTest extends BaseTest {
 
     @Autowired
     private PayAgencyMerchantService payAgencyMerchantService;
+
 
     /**
      * 模拟数据
@@ -133,8 +139,9 @@ public class PayCheckManagerTest extends BaseTest {
      */
     @Test
     public void downloadData() {
-        String checkDate = "20150402";
-        String agencyCode = AgencyType.WECHAT.name();
+        String checkDate = "20151118";
+       // String agencyCode = AgencyType.WECHAT.name();
+        String agencyCode = AgencyType.ALIPAY.name();
         String merchantNo = "1234469202";
 
         try {
@@ -159,7 +166,7 @@ public class PayCheckManagerTest extends BaseTest {
     @Test
     public void checkData() {
         //财付通对账
-        String checkDate = "20151102";
+        String checkDate = "20151101";
         String agencyCode = AgencyType.TENPAY.name();
         try {
             payCheckManager.downloadCheckData(checkDate, agencyCode);

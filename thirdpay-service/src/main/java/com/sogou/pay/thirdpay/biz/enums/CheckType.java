@@ -8,9 +8,10 @@ package com.sogou.pay.thirdpay.biz.enums;
  */
 public enum CheckType {
     ALL(0),
-    PAYCASH(1),// 支付
-    REFUND(3),//退款
-    CHARGE(4);//收费
+    PAID(1),// 得到支付
+    REFUND(3),// 主动退款
+    CHARGED(4),// 被收费
+    WITHDRAW(5);// 主动提现
 
 
     private CheckType(int value) {

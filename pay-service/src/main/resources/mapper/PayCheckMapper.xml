@@ -19,13 +19,14 @@
         <result column="check_date" property="checkDate"/>
         <result column="agency_code" property="agencyCode"/>
         <result column="merchant_no" property="merchantNo"/>
+        <result column="balance" property="balance"/>
     </resultMap>
 
     <sql id="tableColumns">
         id,create_time,modify_time,version,
         instruct_id,out_order_id,biz_code,
         out_trans_time,biz_amt,
-        commission_fee_amt,status,check_date,agency_code,merchant_no
+        commission_fee_amt,status,check_date,agency_code,merchant_no,balance
     </sql>
 
     <insert id="batchInsert" parameterType="java.util.List">
@@ -42,7 +43,8 @@
         status,
         check_date,
         agency_code,
-        merchant_no
+        merchant_no,
+        balance
         )
         VALUES
         <foreach collection="list" item="obj" index="index" separator=",">
@@ -59,7 +61,8 @@
             0,
             #{obj.checkDate},
             #{obj.agencyCode},
-            #{obj.merchantNo}
+            #{obj.merchantNo},
+            #{obj.balance}
             )
         </foreach>
     </insert>

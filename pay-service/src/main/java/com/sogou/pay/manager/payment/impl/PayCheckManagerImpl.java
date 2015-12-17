@@ -3,13 +3,13 @@ package com.sogou.pay.manager.payment.impl;
 import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.common.result.Result;
 import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
 import com.sogou.pay.common.utils.PMap;
 import com.sogou.pay.manager.model.PayCheckUpdateModle;
 import com.sogou.pay.manager.model.notify.PayNotifyModel;
 import com.sogou.pay.manager.notify.PayNotifyManager;
+import com.sogou.pay.manager.notify.WithdrawNotifyManager;
 import com.sogou.pay.manager.payment.PayCheckManager;
-import com.sogou.pay.manager.payment.RefundNotifyManager;
+import com.sogou.pay.manager.notify.RefundNotifyManager;
 import com.sogou.pay.service.entity.*;
 import com.sogou.pay.service.enums.AgencyType;
 import com.sogou.pay.service.enums.CheckStatus;
@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -50,8 +49,9 @@ public class PayCheckManagerImpl implements PayCheckManager {
     private List<Integer> checkBizCodeList = new ArrayList<Integer>();
 
     {
-        checkBizCodeList.add(CheckType.PAYCASH.getValue());
+        checkBizCodeList.add(CheckType.PAID.getValue());
         checkBizCodeList.add(CheckType.REFUND.getValue());
+        checkBizCodeList.add(CheckType.WITHDRAW.getValue());
     }
 
     @Autowired
@@ -83,6 +83,9 @@ public class PayCheckManagerImpl implements PayCheckManager {
 
     @Autowired
     private RefundNotifyManager refundNotifyManager;
+
+    @Autowired
+    private WithdrawNotifyManager withdrawNotifyManager;
 
     @Autowired
     private CheckApi checkApi;
@@ -132,28 +135,31 @@ public class PayCheckManagerImpl implements PayCheckManager {
                 payCheckService.deleteInfo(checkDate, agencyCode, payAgencyMerchant.getMerchantNo());
                 //支付宝
                 if (agencyCode == AgencyType.ALIPAY.name()) {
-
-                    innerAddAlipayCheckData(checkDate, payAgencyMerchant, CheckType.PAYCASH);
+                    //获取支付记录
+                    innerAddAlipayCheckData(checkDate, payAgencyMerchant, CheckType.PAID);
+                    //获取退款记录
                     innerAddAlipayCheckData(checkDate, payAgencyMerchant, CheckType.REFUND);
                     //获取支付宝手续费
-                    innerAddAlipayCheckData(checkDate, payAgencyMerchant, CheckType.CHARGE);
+                    innerAddAlipayCheckData(checkDate, payAgencyMerchant, CheckType.CHARGED);
+                    //获取提现记录
+                    innerAddAlipayCheckData(checkDate, payAgencyMerchant, CheckType.WITHDRAW);
                 }
                 //财付通
-                if (agencyCode == AgencyType.TENPAY.name()) {
+                else if (agencyCode == AgencyType.TENPAY.name()) {
 
                     innerAddTenpayCheckData(checkDate, payAgencyMerchant, CheckType.ALL);
                 }
                 //微信
-                if (agencyCode == AgencyType.WECHAT.name()) {
+                else if (agencyCode == AgencyType.WECHAT.name()) {
 
-                    innerAddWechatCheckData(checkDate, payAgencyMerchant, CheckType.PAYCASH);
+                    innerAddWechatCheckData(checkDate, payAgencyMerchant, CheckType.PAID);
                     innerAddWechatCheckData(checkDate, payAgencyMerchant, CheckType.REFUND);
                 }
 
                 //快钱
-                if (agencyCode == AgencyType.BILL99.name()) {
+                else if (agencyCode == AgencyType.BILL99.name()) {
 
-                    innerAddBill99CheckData(checkDate, payAgencyMerchant, CheckType.PAYCASH);
+                    innerAddBill99CheckData(checkDate, payAgencyMerchant, CheckType.PAID);
                     innerAddBill99CheckData(checkDate, payAgencyMerchant, CheckType.REFUND);
                 }
             }
@@ -345,9 +351,8 @@ public class PayCheckManagerImpl implements PayCheckManager {
     private Result repairNotify(PayCheck payCheck) {
 
         Result result = ResultMap.build();
-        //支付补单
         if (payCheck.getBizCode() == OrderType.PAYCASH.getValue()) {
-
+            //支付补单
             PayNotifyModel payNotifyModel = new PayNotifyModel();
             payNotifyModel.setPayDetailId(payCheck.getInstructId());
             payNotifyModel.setAgencyOrderId(payCheck.getOutOrderId());
@@ -359,6 +364,20 @@ public class PayCheckManagerImpl implements PayCheckManager {
         } else if (payCheck.getBizCode() == OrderType.REFUND.getValue()) {
             //退款补单
             result = refundNotifyManager.repairRefundOrder(payCheck.getInstructId(), payCheck.getOutOrderId());
+        } else if (payCheck.getBizCode() == OrderType.WITHDRAW.getValue()) {
+            //提现补单
+            PMap params = new PMap<String, Object>();
+            params.put("instructId", payCheck.getInstructId());
+            params.put("outOrderId", payCheck.getOutOrderId());
+            params.put("outTransTime", payCheck.getOutTransTime());
+            params.put("bizAmt", payCheck.getBizAmt());
+            params.put("accessPlatform", 1);
+            params.put("appId", 0);
+            params.put("agencyCode", payCheck.getAgencyCode());
+            params.put("merchantNo", payCheck.getMerchantNo());
+            params.put("payType", 99);
+            params.put("bankCode", payCheck.getAgencyCode());
+            result = withdrawNotifyManager.doProcess(params);
         }
         return result;
     }
@@ -505,7 +524,7 @@ public class PayCheckManagerImpl implements PayCheckManager {
             List<OutCheckRecord> records = (List<OutCheckRecord>) result.getData().get("records");
             if (CollectionUtils.isNotEmpty(records)) {
                 //修改
-                if (checkType.getValue() == CheckType.CHARGE.getValue()) {
+                if (checkType.getValue() == CheckType.CHARGED.getValue()) {
                     payCheckService.batchUpdateFee(records);
                 } else {
                     //批量插入
@@ -556,7 +575,7 @@ public class PayCheckManagerImpl implements PayCheckManager {
         List<OutCheckRecord> payRecords = (List<OutCheckRecord>) result.getData().get("payRecords");
         if (CollectionUtils.isNotEmpty(payRecords)) {
             //批量插入
-            doBatchInsert(checkDate, agencyCode, merchantNo, CheckType.PAYCASH.getValue(), payRecords);
+            doBatchInsert(checkDate, agencyCode, merchantNo, CheckType.PAID.getValue(), payRecords);
         }
         //退款数据入库
         List<OutCheckRecord> refRecords = (List<OutCheckRecord>) result.getData().get("refRecords");
@@ -622,7 +641,7 @@ public class PayCheckManagerImpl implements PayCheckManager {
         String startTime = "";
         String endTime = "";
 
-        if (checkType == CheckType.PAYCASH) {
+        if (checkType == CheckType.PAID) {
             startTime = checkDate + "000000";
             endTime = checkDate + "235959";
         } else if (checkType == CheckType.REFUND) {
@@ -642,7 +661,7 @@ public class PayCheckManagerImpl implements PayCheckManager {
         while (true) {
 
             params.put("pageNo", pageNo);
-            if (checkType == CheckType.PAYCASH) {
+            if (checkType == CheckType.PAID) {
                 result = checkApi.doPayQueryBill99(params);
             } else if (checkType == CheckType.REFUND) {
                 result = checkApi.doRefundQueryBill99(params);
@@ -673,12 +692,12 @@ public class PayCheckManagerImpl implements PayCheckManager {
 //     */
 //    private CheckType getCheckType(CheckType CheckType) {
 //        switch (orderType) {
-//            case PAYCASH:
-//                return CheckType.PAYCASH;
+//            case PAID:
+//                return CheckType.PAID;
 //            case REFUND:
 //                return CheckType.REFUND;
-//            case CHARGE:
-//                return CheckType.PAYCASH;
+//            case CHARGED:
+//                return CheckType.PAID;
 //            default:
 //                throw new IllegalArgumentException("can't handle bizCode: " + orderType.getValue());
 //        }
@@ -712,6 +731,7 @@ public class PayCheckManagerImpl implements PayCheckManager {
             payCheck.setCheckDate(checkDate);
             payCheck.setAgencyCode(agencyCode);
             payCheck.setMerchantNo(merchantNo);
+            payCheck.setBalance(outClearRecord.getBalance());
             payCheckList.add(payCheck);
             i++;
             if (i % BATCH_SIZE == 0) {

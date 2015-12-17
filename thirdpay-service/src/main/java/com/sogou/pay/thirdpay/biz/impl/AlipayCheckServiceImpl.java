@@ -54,15 +54,18 @@ public class AlipayCheckServiceImpl implements AlipayCheckService {
         requestPMap.put("gmt_end_time", endTime);//账务查询结束时间
         requestPMap.put("pageSize", pageSize);
 //        requestPMap.put("merchant_out_order_no", "ZF20150410160304291001");
-        if (checkType == CheckType.PAYCASH) {
+        if (checkType == CheckType.PAID) {
             // 6001代表在线支付数据
             requestPMap.put("trans_code", AlipayTradeCode.TRADE_CODE_PAY.getValue());
         } else if (checkType == CheckType.REFUND) {
             // 3011代表转账，其中包含退款
             requestPMap.put("trans_code", AlipayTradeCode.TRADE_CODE_TRANSFER.getValue());
-        } else if (checkType == CheckType.CHARGE) {
+        } else if (checkType == CheckType.CHARGED) {
             // 3012代表收费
             requestPMap.put("trans_code", AlipayTradeCode.TRADE_CODE_CHARGE.getValue());
+        } else if (checkType == CheckType.WITHDRAW) {
+            // 5004代表提现
+            requestPMap.put("trans_code", AlipayTradeCode.TRADE_CODE_CASH.getValue());
         }
         //获取md5签名
         ResultMap sign = SecretKeyUtil.aliMd5sign(requestPMap, key, AliPayUtil.INPUT_CHARSET);
@@ -74,7 +77,6 @@ public class AlipayCheckServiceImpl implements AlipayCheckService {
         // 获取支付机构请求报文处理配置
         ResultMap httpResponse = HttpClient.buildRequest(AliPayUtil.CHECK_URL, requestPMap, "POST", "gbk");
         logger.info("url：" + HttpUtil.packHttpsGetUrl(AliPayUtil.CHECK_URL, requestPMap));
-        System.out.println("url：" + HttpUtil.packHttpsGetUrl(AliPayUtil.CHECK_URL, requestPMap));
         if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
             logger.error("支付宝对账分页查询订单信息http请求失败，参数" + requestPMap);
             return httpResponse;
@@ -98,7 +100,6 @@ public class AlipayCheckServiceImpl implements AlipayCheckService {
      * @return解析xml
      */
     private ResultMap parseMessage(String checkMessage, CheckType type) throws DocumentException {
-
         ResultMap result = ResultMap.build();
         SAXReader reader = new SAXReader();
         reader.setEncoding(AliPayUtil.INPUT_CHARSET);
@@ -124,10 +125,13 @@ public class AlipayCheckServiceImpl implements AlipayCheckService {
         logger.info("alipay check result size " + accountLogVoList.size());
         List<OutCheckRecord> records = new LinkedList<OutCheckRecord>();
         //支付数据解析
-        if (type == CheckType.PAYCASH) {
+        if (type == CheckType.PAID) {
             for (Node accountLogVo : accountLogVoList) {
 
                 OutCheckRecord record = new OutCheckRecord();
+                //第三方账户余额
+                item = accountLogVo.selectSingleNode("balance");
+                record.setBalance(BigDecimal.valueOf(Double.parseDouble(item.getText())));
                 //手续费
                 item = accountLogVo.selectSingleNode("service_fee");
                 record.setCommssionFee(BigDecimal.valueOf(Double.parseDouble(item.getText())));
@@ -154,6 +158,9 @@ public class AlipayCheckServiceImpl implements AlipayCheckService {
         } else if (type == CheckType.REFUND) {
             for (Node accountLogVo : accountLogVoList) {
                 OutCheckRecord record = new OutCheckRecord();
+                //第三方账户余额
+                item = accountLogVo.selectSingleNode("balance");
+                record.setBalance(BigDecimal.valueOf(Double.parseDouble(item.getText())));
                 item = accountLogVo.selectSingleNode("sub_trans_code_msg");
 //                if (!AlipayTradeCode.TRADE_CODE_SUB_REFUND.getValue().equals(item.getText())) {
 //                    // 非交易退款记录，跳过
@@ -180,10 +187,41 @@ public class AlipayCheckServiceImpl implements AlipayCheckService {
                 }
                 records.add(record);
             }
-        } else if (type == CheckType.CHARGE) {
+        } else if (type == CheckType.CHARGED) {
             //收费数据解析
             for (Node accountLogVo : accountLogVoList) {
                 OutCheckRecord record = new OutCheckRecord();
+                //第三方账户余额
+                item = accountLogVo.selectSingleNode("balance");
+                record.setBalance(BigDecimal.valueOf(Double.parseDouble(item.getText())));
+                //手续费
+                record.setCommssionFee(BigDecimal.valueOf(0));
+                //交易金额
+                item = accountLogVo.selectSingleNode("outcome");
+                record.setMoney(BigDecimal.valueOf(Double.parseDouble(item.getText())));
+                //我方订单号
+                item = accountLogVo.selectSingleNode("merchant_out_order_no");
+                record.setPayNo(item.getText());
+                // 支付宝交易号
+                item = accountLogVo.selectSingleNode("trade_no");
+                record.setOutPayNo(item.getText());
+                //交易完成时间
+                item = accountLogVo.selectSingleNode("trans_date");
+                try {
+                    Date date = simpleDateFormat.parse(item.getText());
+                    record.setOutTransTime(date);
+                } catch (ParseException e) {
+                    logger.error("parse date string " + item.getText() + " failed.", e);
+                }
+                records.add(record);
+            }
+        } else if (type == CheckType.WITHDRAW){
+            //提现数据解析
+            for(Node accountLogVo: accountLogVoList){
+                OutCheckRecord record = new OutCheckRecord();
+                //第三方账户余额
+                item = accountLogVo.selectSingleNode("balance");
+                record.setBalance(BigDecimal.valueOf(Double.parseDouble(item.getText())));
                 //手续费
                 record.setCommssionFee(BigDecimal.valueOf(0));
                 //交易金额

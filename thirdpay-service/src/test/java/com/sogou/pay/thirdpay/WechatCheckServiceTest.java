@@ -26,7 +26,7 @@ public class WechatCheckServiceTest extends BaseTest {
             //商户号
             String merchantNo = "1234469202";
             //对账类型
-            CheckType checkType = CheckType.PAYCASH;
+            CheckType checkType = CheckType.PAID;
             //对账日期
             String checkDate = "20151110";
             //加密密钥
