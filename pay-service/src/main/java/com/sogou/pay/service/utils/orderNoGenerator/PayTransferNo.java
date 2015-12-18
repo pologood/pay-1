@@ -23,6 +23,6 @@ public class PayTransferNo extends AbstractSequence {
 
     @Override
     public int getSecondPartLength() {
-        return 4;
+        return 3;
     }
 }
