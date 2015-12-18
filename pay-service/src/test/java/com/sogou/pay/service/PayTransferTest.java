@@ -129,8 +129,8 @@ public class PayTransferTest extends BaseTest {
             //http://localhost:8080/payTrans/doPay?version=1.0&batchNo=1234&appId=1999&companyName=%E6%90%9C%E7%8B%97%E7%A7%91%E6%8A%80&dbtAcc=591902896010504&bbkNbr=59&memo=%E4%BB%A3%E5%8F%91&recordList=
             StringBuffer sb = new StringBuffer();
             String batchNo = payTransferBatchNo.getNo();
-            sb.append(" http://localhost:8080/payTrans/doPay?");
-            sb.append("&");
+            //sb.append(" http://localhost:8080/payTrans/doPay?");
+            //sb.append("&");
             sb.append("version=1.0&batchNo="+batchNo+"&appId=1999&companyName=搜狗科技&dbtAcc=591902896010504&bbkNbr=59&memo=代发&&signType=0&sign=50D29CF5740C27E9419CB9BDA426B3A6");
             String recordStr = "";
             Record record = null;
@@ -144,12 +144,12 @@ public class PayTransferTest extends BaseTest {
 //                record.setDesc("");
 //                record.setEacBank("");
 //                record.setEacCity("");
-                record.setPayAmt("1");
+                record.setPayAmt("1.00");
                 list.add(record);
 
             }
             sb.append("&recordList=" + JSON.toJSON(list));
-            HttpUtil.sendPost("http://localhost:8080/payTrans/doPay", "");
+            HttpUtil.sendPost("http://localhost:8080/payTrans/doPay", sb.toString());
             System.out.println(sb.toString());
         } catch (Exception e) {
             e.printStackTrace();
