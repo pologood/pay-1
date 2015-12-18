@@ -142,7 +142,6 @@ public class PayTransferTest extends BaseTest {
                 record.setRecName("Judy Zeng");
 //                record.setBankFlg("");
 //                record.setDesc("");
-//                record.setEacBank("");
 //                record.setEacCity("");
                 record.setPayAmt("1.00");
                 list.add(record);
