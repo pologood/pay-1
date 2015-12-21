@@ -40,7 +40,7 @@
 
     <select id="queryNumByStatusAndBatchNo" resultType="int">
         SELECT
-        <include refid="tableColumns"/>
+        COUNT(1)
         FROM t_pay_transfer_log
         WHERE status = #{status} and batch_no=#{batchNo}
     </select>

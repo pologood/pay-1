@@ -46,22 +46,23 @@ public class PayTransferBatchDaoTest extends BaseTest {
         PayTransferBatch payTransferBatch = new PayTransferBatch();
         payTransferBatch.setBatchNo("2015061601");
         payTransferBatch.setTradeState(PayTransferBatchStatus.AUDIT_PASS.getValue());
-        int num = payTransferBatchDao.updateByBatchNo(payTransferBatch);
+        int num = payTransferBatchDao.updateTransferBatch(payTransferBatch);
         System.out.println(num);
     }
 
     @Test
     public void queryByBatchNo() {
         String batchNo = "1";
-        PayTransferBatch payTransferBatch = payTransferBatchDao.queryByAppIdAndBatchNo(null,batchNo);
+        PayTransferBatch payTransferBatch = payTransferBatchDao.queryByBatchNo(null,batchNo);
         System.out.println(JSON.toJSON(payTransferBatch));
     }
 
     @Test
     public void updateTradeStatusByBatchNo() {
+        String appId = "1999";
         String batchNo = "1231737712";
         int status = 6;
-        int num =  payTransferBatchDao.updateTradeStatusByBatchNo(batchNo,status,null);
+        int num =  payTransferBatchDao.updateTradeStatusByBatchNo(appId,batchNo,status,null);
         System.out.println(num);
     }
 

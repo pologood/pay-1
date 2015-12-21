@@ -13,16 +13,16 @@ public interface PayTransferBatchService {
 
     public void insert(PayTransferBatch payTransferBatch) throws ServiceException;
 
-    public PayTransferBatch queryByAppIdAndBatchNo(String appId,String batchNo);
+    public PayTransferBatch queryByBatchNo(String appId, String batchNo);
 
     public List<PayTransferBatch> queryByTradeStatus(int tradeStatus);
 
     public List<PayTransferBatch> queryByNotifyFlag(int nofityFlag, String norifyDate);
 
-    public void updateTradeStatusByBatchNo(String batchNo, int tradeStatus, String resultDesc);
+    public void updateTradeStatusByBatchNo(String appId, String batchNo, int tradeStatus, String resultDesc);
 
-    public void updateByBatchNo(PayTransferBatch payTransferBatch);
+    public void updateTransferBatch(PayTransferBatch payTransferBatch);
 
-    public void updateNotifyFlagByBatchNo(String batchNo, int nofityFlag);
+    public void updateNotifyFlagByBatchNo(String appId, String batchNo, int nofityFlag);
 
 }

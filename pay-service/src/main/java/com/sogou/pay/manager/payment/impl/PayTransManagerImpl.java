@@ -146,7 +146,7 @@ public class PayTransManagerImpl implements PayTransManager {
 
         AppXmlPacket appXmlPacket = new AppXmlPacket();
         try {
-            PayTransferBatch payTransferBatch = payTransferBatchService.queryByAppIdAndBatchNo(appId,batchNo);
+            PayTransferBatch payTransferBatch = payTransferBatchService.queryByBatchNo(appId,batchNo);
             //验证代付批次是否存在
             if (payTransferBatch == null) {
                 logger.error("payTransferBatch is not found,batchNo = " + batchNo);

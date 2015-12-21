@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -52,7 +51,7 @@ public class PayTransferQueryManagerImpl implements PayTransferQueryManager {
 
         Result result = ResultBean.build();
         try {
-            PayTransferBatch payTransferBatch = payTransferBatchService.queryByAppIdAndBatchNo(appId, batchNo);
+            PayTransferBatch payTransferBatch = payTransferBatchService.queryByBatchNo(appId, batchNo);
             if (payTransferBatch == null) {
                 logger.error("【代发批次信息不存在!】,batchNo = " + batchNo);
                 result.withError(ResultStatus.PAY_TRANFER_BATCH_NOT_EXIST);
@@ -109,7 +108,7 @@ public class PayTransferQueryManagerImpl implements PayTransferQueryManager {
         TransactionStatus txStatus = transactionManager.getTransaction(txDefinition);
         try {
             PayTransfer payTransfer = null;
-            payTransferBatchService.updateByBatchNo(updatePayTransferBatch);
+            payTransferBatchService.updateTransferBatch(updatePayTransferBatch);
             for (PayTransfer updatePayTransfer : updateList) {
                 //首选查询一遍，如果代付单状态为成功，要修改为失败，说明是退票
                 payTransfer = payTransferService.queryBySerialNo(updatePayTransfer.getSerialNo());

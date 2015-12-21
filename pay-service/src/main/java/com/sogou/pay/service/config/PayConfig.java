@@ -50,7 +50,7 @@ public class PayConfig {
             mailServiceUrl = prop.getProperty("mail.service.url").trim();
             mailServiceUid = prop.getProperty("mail.service.uid").trim();
             mailServiceUname = prop.getProperty("mail.service.uname").trim();
-//            payTranferNotifyUrl = prop.getProperty("pay.tranfer.notify.url").trim();
+            payTranferNotifyUrl = prop.getProperty("pay.tranfer.notify.url").trim();
         } catch (IOException e) {
             e.printStackTrace();
         }

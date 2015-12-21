@@ -17,17 +17,17 @@ public interface PayTransferBatchDao {
 
     public int insert(PayTransferBatch payTransferBatch);
 
-    public PayTransferBatch queryByAppIdAndBatchNo(@Param("appId")String appId,@Param("batchNo")String batchNo);
+    public PayTransferBatch queryByBatchNo(@Param("appId")String appId, @Param("batchNo")String batchNo);
 
     public List<PayTransferBatch> queryByTradeStatus(@Param("tradeState") int tradeState);
 
     public List<PayTransferBatch> queryByNotifyFlag(@Param("notifyFlag")int notifyFlag,@Param("notifyDate")String notifyDate);
 
-    public int updateTradeStatusByBatchNo(@Param("batchNo")String batchNo,@Param("tradeState") int tradeState, @Param("resultDesc")String resultDesc);
+    public int updateTradeStatusByBatchNo(@Param("appId")String appId, @Param("batchNo")String batchNo,@Param("tradeState") int tradeState, @Param("resultDesc")String resultDesc);
 
-    public int updateByBatchNo(PayTransferBatch payTransferBatch);
+    public int updateTransferBatch(PayTransferBatch payTransferBatch);
 
-    public int updateNotifyFlagByBatchNo(@Param("batchNo")String batchNo, @Param("notifyFlag")int notifyFlag);
+    public int updateNotifyFlagByBatchNo(@Param("appId")String appId, @Param("batchNo")String batchNo, @Param("notifyFlag")int notifyFlag);
 
     public PayTransferBatch queryByYurref(String Yurref);
 
