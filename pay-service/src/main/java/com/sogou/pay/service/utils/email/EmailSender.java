@@ -7,6 +7,10 @@
  */
 package com.sogou.pay.service.utils.email;
 
+import com.sogou.pay.common.http.model.RequestModel;
+import com.sogou.pay.common.utils.DateUtil;
+import com.sogou.pay.service.config.PayConfig;
+import com.sogou.pay.service.connect.HttpClientService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import javax.mail.internet.MimeMessage;
+import java.util.Date;
 
 /**
  * @Author qibaichao
@@ -28,7 +33,7 @@ public class EmailSender extends EmailSenderAbstract implements EmailSenderInter
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(EmailSender.class);
 
     @Autowired
-    private JavaMailSender javaMailSender;
+    private HttpClientService httpClientService;
 
     @Autowired
     private FreeMarkerConfigurer freeMarkerConfigurer;
@@ -45,20 +50,27 @@ public class EmailSender extends EmailSenderAbstract implements EmailSenderInter
      */
     @Override
     public void sendEmail(String templateFtl, String subject, String content, String... toAddress) {
-
-        MimeMessage msg = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(msg, "utf-8");
+        RequestModel request = new RequestModel(PayConfig.mailServiceUrl);
+        request.setCharset("GBK");
+        request.addParam("uid", PayConfig.mailServiceUid);
+        request.addParam("fr_name", PayConfig.mailServiceUname);
+        request.addParam("fr_addr", PayConfig.mailServiceUid);
+        request.addParam("mode", "html");
+        subject = "[AutoMail][搜狗支付]" + subject + "[" + DateUtil.formatDate(new Date()) + "]";
+        request.addParam("title", subject);
+        String htmlContent = getMailText(freeMarkerConfigurer,templateFtl,content);
+        request.addParam("body", htmlContent);
+        String mailList="";
+        for(String mailAddr: toAddress){
+            mailList+=mailAddr+";";
+        }
+        mailList = mailList.substring(0, mailList.length()-1);
+        request.addParam("maillist", mailList);
         try {
-            helper.setTo(toAddress);
-            helper.setSubject(subject);
-            String htmlText = getMailText(freeMarkerConfigurer, templateFtl, content);
-            // 邮件内容，注意加参数true，表示启用html格式
-            helper.setText(htmlText, true);
-            javaMailSender.send(msg);
-        } catch (Exception e) {
+            httpClientService.executeStr(request);
+        }catch (Exception e){
             logger.error(e.getMessage());
         }
-
     }
 
 }

@@ -34,6 +34,12 @@ public class PayConfig {
     //通知url
     public static String payTranferNotifyUrl = "";
 
+    public static String mailServiceUrl = "";
+
+    public static String mailServiceUid = "";
+
+    public static String mailServiceUname = "";
+
     static {
         try {
             Properties prop = new Properties();
@@ -41,6 +47,9 @@ public class PayConfig {
             prop.load(in);
             payTranferLgnName = prop.getProperty("pay.tranfer.lgnName").trim();
             payTranferHost = prop.getProperty("pay.tranfer.host").trim();
+            mailServiceUrl = prop.getProperty("mail.service.url").trim();
+            mailServiceUid = prop.getProperty("mail.service.uid").trim();
+            mailServiceUname = prop.getProperty("mail.service.uname").trim();
 //            payTranferNotifyUrl = prop.getProperty("pay.tranfer.notify.url").trim();
         } catch (IOException e) {
             e.printStackTrace();

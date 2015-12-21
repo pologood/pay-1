@@ -208,8 +208,7 @@ public class KpiQueryController extends BaseController {
 
     private void sendEmail(String subject, String content) {
         emailSender.sendEmail("error.ftl", subject, content,
-                "wujingpan@sogou-inc.com", "huangguoqing@sogou-inc.com",
-                "qibaichao@sogou-inc.com", "gaopenghui@sogou-inc.com");
+                "gaopenghui@sogou-inc.com", "xiepeidong@sogou-inc.com");
     }
 
 }

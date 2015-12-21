@@ -404,7 +404,7 @@ public class KpiController extends BaseController{
                if(!StringUtils.isEmpty(errorMsg)){
                    //发邮件
                    String content = "支付宝PC接口异常，请查看！" + errorMsg;
-                   emailSender.sendEmail("error.ftl", subject, content,"gaopenghui@sogou-inc.com");
+                   sendEmail(subject, content);
                }
            }
         };
@@ -415,7 +415,7 @@ public class KpiController extends BaseController{
                 if(!StringUtils.isEmpty(errorMsg)){
                     //发邮件
                     String content = "支付宝WAP接口异常，请查看！" + errorMsg;
-                    emailSender.sendEmail("error.ftl", subject, content,"gaopenghui@sogou-inc.com");
+                    sendEmail(subject, content);
                 }
            }
         };
@@ -426,7 +426,7 @@ public class KpiController extends BaseController{
                 if(!StringUtils.isEmpty(errorMsg)){
                     //发邮件
                     String content = "微信支付接口异常，请查看！" + errorMsg;
-                    emailSender.sendEmail("error.ftl", subject, content,"gaopenghui@sogou-inc.com");
+                    sendEmail(subject, content);
                 }
            }
         };
@@ -437,7 +437,7 @@ public class KpiController extends BaseController{
                 if(!StringUtils.isEmpty(errorMsg)){
                     //发邮件
                     String content = "微信查询接口异常，请查看！" + errorMsg;
-                    emailSender.sendEmail("error.ftl", subject, content,"gaopenghui@sogou-inc.com");
+                    sendEmail(subject, content);
                 }
            }
         };
@@ -801,8 +801,7 @@ public class KpiController extends BaseController{
     }
     
     private void sendEmail(String subject,String content){
-        emailSender.sendEmail("error.ftl", subject, content, 
-                "wujingpan@sogou-inc.com","huangguoqing@sogou-inc.com",
-                "qibaichao@sogou-inc.com","gaopenghui@sogou-inc.com");
+        emailSender.sendEmail("error.ftl", subject, content,
+                "gaopenghui@sogou-inc.com", "xiepeidong@sogou-inc.com");
     }
 }
