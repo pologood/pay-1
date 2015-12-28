@@ -27,7 +27,7 @@ public interface PayTransManager {
      * @param batchNo
      * @return
      */
-    public AppXmlPacket queryByBatchNo(String appId,String batchNo);
+    public ResultMap queryByBatchNo(String appId,String batchNo);
 
     /**
      *业务系统-->退票查询
@@ -37,5 +37,5 @@ public interface PayTransManager {
      * @param recName
      * @return
      */
-    public AppXmlPacket queryRefund(String startTime, String endTime, String recBankacc, String recName);
+    public ResultMap queryRefund(String startTime, String endTime, String recBankacc, String recName);
 }
