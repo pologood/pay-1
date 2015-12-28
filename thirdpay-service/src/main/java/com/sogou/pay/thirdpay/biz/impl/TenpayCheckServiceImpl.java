@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
@@ -52,7 +51,7 @@ public class TenpayCheckServiceImpl implements TenpayCheckService {
          */
         if (checkType == CheckType.ALL) {
             sb.append("mchtype=0");
-        } else if (checkType == CheckType.PAYCASH) {
+        } else if (checkType == CheckType.PAID) {
             sb.append("mchtype=1");
         } else if (checkType == CheckType.REFUND) {
             sb.append("mchtype=2");
@@ -207,7 +206,7 @@ public class TenpayCheckServiceImpl implements TenpayCheckService {
                 size++;
                 String[] parts = line.split(",");
                 OutCheckRecord record = new OutCheckRecord();
-                if (type == CheckType.PAYCASH) {
+                if (type == CheckType.PAID) {
                     //交易时间
                     record.setOutTransTime(df.parse(parts[0].trim()));
                     //第三方流水号

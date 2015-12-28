@@ -114,7 +114,7 @@ public class PayTranferTicketRefundQueryJob {
         MerchantResponse merchantResponse = MerchantHttpClient.getInstance().doPost(PayConfig.payTranferNotifyUrl, notifyData);
         if (merchantResponse.isSuccess() == true) {
             //通知
-            payTransferBatchService.updateNotifyFlagByBatchNo(payTransferBatch.getBatchNo(), NOTIFY_OK);
+            payTransferBatchService.updateNotifyFlagByBatchNo(String.valueOf(payTransferBatch.getAppId()),payTransferBatch.getBatchNo(), NOTIFY_OK);
         }
     }
 

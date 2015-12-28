@@ -7,9 +7,12 @@
  */
 package com.sogou.pay.service;
 
+import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.service.utils.email.EmailSenderInterface;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
 
 /**
  * @Author qibaichao
@@ -28,10 +31,10 @@ public class EmailTest extends  BaseTest{
 
         try {
             String templateFtl = "error.ftl";
-            String subject = "报警邮件";
-            String content = "aa";
+            String subject = "测试邮件";
+            String content = "这是一封测试邮件，请忽略！<br>This is a test email, ignore it!";
             String[] addressList = {
-                "qibaichao@sogou-inc.com"
+                "xiepeidong@sogou-inc.com"
             };
             emailSender.sendEmail(templateFtl, subject, content, addressList);
         } catch (Exception e) {

@@ -94,7 +94,7 @@ public class PayTranferNotifyJob {
             resultDetail.put("rec_bankacc", payTransfer.getRecBankAcc());
             resultDetail.put("rec_name", payTransfer.getRecName());
             resultDetail.put("pay_amt", String.valueOf(payTransfer.getPayAmt()));
-            resultDetail.put("pay_status", payTransfer.getPayStatus());
+            resultDetail.put("pay_status", String.valueOf(payTransfer.getPayStatus()));
             resultDetail.put("result_msg", payTransfer.getResultDesc());
             appXmlPacket.putResultDetail("result_detail", resultDetail);
         }
@@ -104,7 +104,7 @@ public class PayTranferNotifyJob {
         MerchantResponse merchantResponse = MerchantHttpClient.getInstance().doPost(PayConfig.payTranferNotifyUrl, notifyData);
         if (merchantResponse.isSuccess() == true) {
             //通知
-            payTransferBatchService.updateNotifyFlagByBatchNo(payTransferBatch.getBatchNo(), NOTIFY_OK);
+            payTransferBatchService.updateNotifyFlagByBatchNo(String.valueOf(payTransferBatch.getAppId()), payTransferBatch.getBatchNo(), NOTIFY_OK);
         }
     }
 }

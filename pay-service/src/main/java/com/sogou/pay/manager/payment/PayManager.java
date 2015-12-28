@@ -53,7 +53,7 @@ public interface PayManager {
      * @Date 2015年3月4日
      * @Description: 根据请求参数组装支付网关所需要的参数
      */
-    public ResultMap getPayGateMap(PMap params);
+    public ResultMap getPayGateParams(PMap params);
 
     /**
      * @Author	huangguoqing 

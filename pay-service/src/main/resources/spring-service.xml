@@ -23,6 +23,5 @@
     <import resource="classpath:spring-redis.xml"/>
     <import resource="classpath:spring-httpclient.xml"/>
     <import resource="classpath:spring-other-beans.xml"/>
-    <import resource="classpath:spring-email.xml"/>
     <import resource="classpath:spring-freemarker.xml"/>
 </beans>

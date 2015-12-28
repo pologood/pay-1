@@ -29,8 +29,8 @@ public class AgencyInfoTest extends BaseTest {
     @Test
     public void testSelectAgencyInfo(){
 
-        String agencyCode = "TENPAY";
-        AgencyInfo info = dao.getAgencyInfoByConn(agencyCode, "1", "1");
+        String agencyCode = "ALIPAY";
+        AgencyInfo info = dao.getAgencyInfoByConn(agencyCode, "99", "99");
         //assertEquals("支付宝",info.getAgencyName());
         System.out.println(info.toString());
     }

@@ -22,8 +22,8 @@ public class AppTest extends BaseTest {
     @Test
     public void addApp(){
         App app = new App();
-        app.setAppName("搜狗彩票");
-        app.setAppId(2000);
+        app.setAppName("搜狗某产品");
+        app.setAppId(2001);
         app.setBelongCompany(1);
         app.setSignKey("862653da5865293b1ec8cc");
         app.setStatus(1);
@@ -54,18 +54,18 @@ public class AppTest extends BaseTest {
 
 
 
-    @Test
+/*   @Test
     public void updateApp() {
         App app = new App();
         app.setAppId(1100);
         app.setSignKey("110b57b4671f307372cb0c67caae42d27af0ab1b9f21c32b72698ba4f507c570");
         appService.updateApp(app);
         System.out.println("updateApp success");
-    }
+    }*/
 
     @Test
     public void deleteApp() {
-        appService.deleteApp(1100);
+        appService.deleteApp(2001);
         System.out.println("deleteApp success");
     }
 

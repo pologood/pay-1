@@ -25,8 +25,6 @@ public class AppServiceImpl implements AppService {
         return  appDao.selectApp(appId);
     }
     @Override
-    public void updateApp(App app) { appDao.updateApp(app);}
-    @Override
     public void deleteApp(int appId) { appDao.deleteApp(appId);}
     @Override
     public List selectAppList() { return  appDao.selectAppList();}

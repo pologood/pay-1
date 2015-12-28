@@ -2,7 +2,7 @@ package com.sogou.pay.service.payment.manager;
 
 import com.sogou.pay.common.result.Result;
 import com.sogou.pay.common.utils.JsonUtil;
-import com.sogou.pay.manager.payment.RefundNotifyManager;
+import com.sogou.pay.manager.notify.RefundNotifyManager;
 import com.sogou.pay.service.BaseTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

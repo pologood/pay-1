@@ -31,7 +31,7 @@ public class PayTransferJob {
     private PayTranferTicketRefundQueryJob payTranferTicketRefundQueryJob;
 
     /**
-     * 代付提交任务
+     * 代付提交任务(向银行正式发起付款申请)
      */
     public void doRequestJob() {
 
@@ -46,7 +46,7 @@ public class PayTransferJob {
     }
 
     /**
-     * 代付查询任务
+     * 代付查询任务(向银行查询付款申请的结果)
      */
     public void doQueryJob() {
 
@@ -60,6 +60,9 @@ public class PayTransferJob {
         }
     }
 
+    /**
+     * 代付查询任务(向银行查询退票的原因)
+     */
     public void doRefundQueryJob() {
 
         try {

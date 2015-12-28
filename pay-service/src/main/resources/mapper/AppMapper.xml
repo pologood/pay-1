@@ -46,10 +46,6 @@
         SELECT * FROM t_app WHERE app_id=#{appId} AND status = 1
     </select>
 
-    <update id="updateApp" parameterType="App">
-        UPDATE t_app SET appkey=#{appkey} , appsecret=#{appsecret} WHERE appid=#{appid}
-    </update>
-
     <delete id="deleteApp" parameterType="int">
         DELETE FROM t_app WHERE appid=#{appid}
     </delete>

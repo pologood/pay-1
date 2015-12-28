@@ -8,7 +8,7 @@ import com.sogou.pay.common.result.ResultStatus;
 import com.sogou.pay.common.utils.JsonUtil;
 import com.sogou.pay.manager.model.RefundModel;
 import com.sogou.pay.manager.payment.RefundManager;
-import com.sogou.pay.manager.payment.RefundNotifyManager;
+import com.sogou.pay.manager.notify.RefundNotifyManager;
 import com.sogou.pay.manager.secure.SecureManager;
 import com.sogou.pay.web.form.RefundParams;
 import com.sogou.pay.web.utils.ControllerUtil;

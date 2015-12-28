@@ -26,8 +26,8 @@ public class PayTransferBatchServiceImpl implements PayTransferBatchService {
     }
 
     @Override
-    public PayTransferBatch queryByAppIdAndBatchNo(String appId,String batchNo) {
-        return payTransferBatchDao.queryByAppIdAndBatchNo(appId,batchNo);
+    public PayTransferBatch queryByBatchNo(String appId, String batchNo) {
+        return payTransferBatchDao.queryByBatchNo(appId,batchNo);
     }
 
     @Override
@@ -41,18 +41,18 @@ public class PayTransferBatchServiceImpl implements PayTransferBatchService {
     }
 
     @Override
-    public void updateTradeStatusByBatchNo(String batchNo, int tradeStatus, String resultDesc) {
-        payTransferBatchDao.updateTradeStatusByBatchNo(batchNo, tradeStatus, resultDesc);
+    public void updateTradeStatusByBatchNo(String appId, String batchNo, int tradeStatus, String resultDesc) {
+        payTransferBatchDao.updateTradeStatusByBatchNo(appId, batchNo, tradeStatus, resultDesc);
     }
 
     @Override
-    public void updateByBatchNo(PayTransferBatch payTransferBatch) {
-        payTransferBatchDao.updateByBatchNo(payTransferBatch);
+    public void updateTransferBatch(PayTransferBatch payTransferBatch) {
+        payTransferBatchDao.updateTransferBatch(payTransferBatch);
     }
 
     @Override
-    public void updateNotifyFlagByBatchNo(String batchNo, int nofityFlag) {
-        payTransferBatchDao.updateNotifyFlagByBatchNo(batchNo, nofityFlag);
+    public void updateNotifyFlagByBatchNo(String appId, String batchNo, int nofityFlag) {
+        payTransferBatchDao.updateNotifyFlagByBatchNo(appId, batchNo, nofityFlag);
     }
 
 }

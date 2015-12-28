@@ -12,7 +12,6 @@ import java.util.List;
 public interface AppService {
     public int insertApp(App app);
     public App selectApp(int appId);
-    public void updateApp(App app);
     public void deleteApp(int appId);
     public List selectAppList();
 }

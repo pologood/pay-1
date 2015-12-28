@@ -103,6 +103,7 @@ public enum ResultStatus {
     THIRD_REFUND_99BILL_BACK_SIGN_ERROR(4703, "快钱退款返回参数验证签名异常"),
     THIRD_REFUND_99BILL_XMLTOMAP_ERROR(4704, "快钱退款请求返回XML参数转换Map异常"),
     //----------------------对账错误码--------5000至5999------------
+    INSERT_PAY_CHECK_WAITING_ERROR(5000, "插入在线支付流水对帐单表错误"),
 
     //----------------------查询订单错误码--------6000至6999------------
     THIRD_QUERY_PARAM_ERROR(6000, "缺少必选参数或存在非法参数"),

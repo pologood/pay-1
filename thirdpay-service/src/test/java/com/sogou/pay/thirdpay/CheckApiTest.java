@@ -31,7 +31,7 @@ public class CheckApiTest  extends BaseTest{
     public  void testCheckData(){
 
         try{
-            CheckType checkType =CheckType.PAYCASH;
+            CheckType checkType =CheckType.PAID;
             String merchantNo="123";
             String startTime="2015-03-05 00:00:00";
             String endTime="2015-03-05 23:59:59";

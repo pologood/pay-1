@@ -31,6 +31,10 @@ public class OutCheckRecord {
      * 手续费
      */
     private BigDecimal commssionFee;
+    /**
+     * 我方在第三方的账户余额
+     */
+    private BigDecimal balance;
 
     public String getPayNo() {
         return payNo;
@@ -71,6 +75,10 @@ public class OutCheckRecord {
     public void setCommssionFee(BigDecimal commssionFee) {
         this.commssionFee = commssionFee;
     }
+
+    public BigDecimal getBalance() { return balance; }
+
+    public void setBalance(BigDecimal balance) { this.balance=balance; }
 
     @Override
     public String toString() {

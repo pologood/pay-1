@@ -297,7 +297,7 @@ public class PayNotifyManagerImpl implements PayNotifyManager {
             PayResDetail payResDetail = payResDetailService.selectPayResById(payReqDetail.getPayDetailId());
             payCheckWaiting.setOutOrderId(payResDetail.getAgencyOrderId());//第三方流水号
             payCheckWaiting.setInstructId(payResDetail.getPayDetailId());//请求流水号
-            payCheckWaiting.setBizCode(CheckType.PAYCASH.getValue());//业务代码 1.支付、2.充值、3.退款
+            payCheckWaiting.setBizCode(CheckType.PAID.getValue());//业务代码 1.支付、2.充值、3.退款
             payCheckWaiting.setOutTransTime(payResDetail.getAgencyPayTime());//交易时间
             payCheckWaiting.setBizAmt(payResDetail.getTrueMoney());//交易金额
             payCheckWaiting.setFeeRate(payResDetail.getFeeRate());//费率

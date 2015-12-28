@@ -25,7 +25,7 @@ public class TenpayCheckServiceTest extends BaseTest {
 
         try {
             String transTime = "2015-05-12";
-            CheckType checkType = CheckType.PAYCASH;
+            CheckType checkType = CheckType.PAID;
             String merchantNo = "1900000109";
             String key = "8934e7d15453e97507ef794cf7b0519d";
             ResultMap resultMap = tenpayCheckService.doQuery(merchantNo, checkType, transTime, key);
@@ -59,7 +59,7 @@ public class TenpayCheckServiceTest extends BaseTest {
          * 1：返回当日成功支付的订单
          * 2：返回当日退款的订单
          */
-//        if (checkType == CheckType.PAYCASH) {
+//        if (checkType == CheckType.PAID) {
 //            sb.append("mchtype=1");
 //        } else if (checkType == CheckType.REFUND) {
 //            sb.append("mchtype=2");

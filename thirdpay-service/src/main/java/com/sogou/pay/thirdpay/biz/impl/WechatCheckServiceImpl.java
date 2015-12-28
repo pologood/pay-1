@@ -1,7 +1,6 @@
 package com.sogou.pay.thirdpay.biz.impl;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.http.utils.HttpUtil;
 import com.sogou.pay.common.result.ResultMap;
 import com.sogou.pay.common.result.ResultStatus;
 import com.sogou.pay.common.utils.*;
@@ -14,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
@@ -40,7 +38,7 @@ public class WechatCheckServiceImpl implements WechatCheckService {
         requestPMap.put("mch_id", merchantNo);//商户号
         requestPMap.put("nonce_str", RandomUtils.getUUID()); //随机32位字符串
         requestPMap.put("bill_date", checkDate);//对账单日起
-        if (checkType == CheckType.PAYCASH) {
+        if (checkType == CheckType.PAID) {
             // 成功支付的订单
             requestPMap.put("bill_type", "SUCCESS");
         } else if (checkType == CheckType.REFUND) {
@@ -115,7 +113,7 @@ public class WechatCheckServiceImpl implements WechatCheckService {
                 }
                 String[] parts = line.split(",");
                 OutCheckRecord record = new OutCheckRecord();
-                if (type == CheckType.PAYCASH) {
+                if (type == CheckType.PAID) {
                     //第三方交易时间
                     record.setOutTransTime(df.parse(parts[0].trim().replaceFirst("`", "")));
                     // 第三方订单号

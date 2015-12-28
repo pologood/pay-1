@@ -19,6 +19,5 @@
 
     <import resource="classpath:spring-mybatis.xml"/>
     <import resource="classpath:spring-httpclient.xml"/>
-    <import resource="classpath:spring-email.xml"/>
     <import resource="classpath:spring-freemarker.xml"/>
 </beans>

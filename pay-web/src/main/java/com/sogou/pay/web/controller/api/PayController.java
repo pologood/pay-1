@@ -371,14 +371,14 @@ public class PayController extends BaseController{
         params.put("payTime",payResult.getData().get("payTime"));
         params.put("payDetailId",payResult.getData().get("payDetailId"));
         params.put("payFeeType",payResult.getData().get("payFeeType"));
-        ResultMap getPayGateResult = payManager.getPayGateMap(params);
-        if(!Result.isSuccess(getPayGateResult)){
-            return getPayGateResult;
+        ResultMap result2 = payManager.getPayGateParams(params);
+        if(!Result.isSuccess(result2)){
+            return result2;
         }
-        PMap payGateMap = (PMap)getPayGateResult.getData().get("payGateMap");
+        PMap payGateParams = (PMap)result2.getData().get("payGateMap");
         //调用支付网关
-        logger.info("【支付请求】调用支付网关开始，参数为："+payGateMap);
-        ResultMap<String> payGateResult = payApi.preparePay(payGateMap);
+        logger.info("【支付请求】调用支付网关开始，参数为："+payGateParams);
+        ResultMap<String> payGateResult = payApi.preparePay(payGateParams);
         logger.info("【支付请求】调用支付网关结束,返回值为："+payGateResult.getData().get("returnUrl"));
         if(!Result.isSuccess(payGateResult)){
             return payGateResult;

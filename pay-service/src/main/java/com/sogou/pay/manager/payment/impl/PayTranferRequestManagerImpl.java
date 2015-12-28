@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -60,7 +59,7 @@ public class PayTranferRequestManagerImpl implements PayTranferRequestManager {
         lock.lock();
         ResultBean result = ResultBean.build();
         try {
-            PayTransferBatch payTransferBatch = payTransferBatchService.queryByAppIdAndBatchNo(appId, batchNo);
+            PayTransferBatch payTransferBatch = payTransferBatchService.queryByBatchNo(appId, batchNo);
             //验证代发单批次是否存在
             if (payTransferBatch == null) {
                 logger.error("【代发批次信息不存在!】,batchNo = " + batchNo);
@@ -166,7 +165,7 @@ public class PayTranferRequestManagerImpl implements PayTranferRequestManager {
         }
         if (pktRsp.isError()) {
             logger.error("【代发请求错误!】 batchNo：" + batchNo + "error:" + pktRsp.getERRMSG());
-            payTransferBatchService.updateTradeStatusByBatchNo(batchNo, PayTransferBatchStatus.FAIL.getValue(), pktRsp.getERRMSG());
+            payTransferBatchService.updateTradeStatusByBatchNo(appId, batchNo, PayTransferBatchStatus.FAIL.getValue(), pktRsp.getERRMSG());
             return;
         }
         Map propAcc = pktRsp.getProperty("NTREQNBRY", 0);
@@ -185,7 +184,7 @@ public class PayTranferRequestManagerImpl implements PayTranferRequestManager {
         //开启事务
         TransactionStatus txStatus = transactionManager.getTransaction(txDefinition);
         try {
-            payTransferBatchService.updateByBatchNo(payTransferBatch);
+            payTransferBatchService.updateTransferBatch(payTransferBatch);
             //修改代发单状态
             payTransferService.updateStatusByBatchNo(appId, batchNo, PayTransferStatus.IN_PROCESSING.getValue());
             //提交事务

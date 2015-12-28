@@ -23,7 +23,7 @@ public class AlipayCheckServiceTest extends BaseTest {
 
         try {
 //            <rate>0.01</rate>
-            CheckType checkType = CheckType.PAYCASH;
+            CheckType checkType = CheckType.PAID;
             String startTime = "2015-05-20 00:00:00";
             String endTime = "2015-05-20 23:59:59";
             String pageNo = "1";
