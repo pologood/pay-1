@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -519,9 +520,9 @@ public class PayController extends BaseController{
 
     @RequestMapping("getSignData")
     @ResponseBody
-    public String signData(PayParams params, HttpServletRequest request){
-        Map paramMap = convertToMap(params);
-        Result<App> appresult = appManager.selectAppInfo(Integer.parseInt(params.getAppId()));
+    public String signData(@RequestParam Map<String, String> paramMap, HttpServletRequest request){
+        //Map paramMap = convertToMap(params);
+        Result<App> appresult = appManager.selectAppInfo(Integer.parseInt(paramMap.get("appId")));
         App app = appresult.getReturnValue();
         String key = app.getSignKey();
         String sign = DataSignUtil.sign(packParams(paramMap, key), "0");
