@@ -55,26 +55,25 @@ public class OrderQueryController {
     @RequestMapping("pay")
     @ResponseBody
     public String pay(PayOrderQueryParams params, HttpServletRequest request) {
-        QueryOrderResult queryOrderResult = new QueryOrderResult();
+        ResultMap result = ResultMap.build();
+        //QueryOrderResult queryOrderResult = new QueryOrderResult();
         // 0.记录请求日志
         String ip = ServletUtil.getRealIp(request);
         logger.info("Query Order Request Start!Ip：" + ip + "params:" + params);
         // 1.检查参数的完整性和合法性
         List validateResult = ControllerUtil.validateParams(params);
         if (validateResult.size() != 0) {
-            queryOrderResult.setStatus(ResultStatus.QUERY_ORDER_PARAM_ERROR.toString());
-            queryOrderResult.setMessage(ResultStatus.QUERY_ORDER_PARAM_ERROR.getMessage());
-            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(queryOrderResult));
-            return JSONObject.toJSONString(queryOrderResult);
+            result.withError(ResultStatus.QUERY_ORDER_PARAM_ERROR);
+            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(result));
+            return JSONObject.toJSONString(result);
         }
 
         // 2.检查商户签名
         Result secResult = secureManager.verifyAppSign(params);
         if (!Result.isSuccess(secResult)) {
-            queryOrderResult.setStatus(ResultStatus.QUERY_ORDER_SIGN_ERROR.toString());
-            queryOrderResult.setMessage(ResultStatus.QUERY_ORDER_SIGN_ERROR.getMessage());
-            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(queryOrderResult));
-            return JSONObject.toJSONString(queryOrderResult);
+            result.withError(ResultStatus.QUERY_ORDER_SIGN_ERROR);
+            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(result));
+            return JSONObject.toJSONString(result);
         }
         // 3.处理支付订单查询
         PayOrderQueryModel payOrderModel = new PayOrderQueryModel();
@@ -83,16 +82,12 @@ public class OrderQueryController {
         ResultMap queryResult = orderQueryManager.queryPayOrder(payOrderModel);
         logger.info("orderQueryManager.queryPayOrder Returns the result:" + queryResult.toString());
         if (!Result.isSuccess(queryResult)) {
-            queryOrderResult.setStatus(queryResult.getStatus().toString());
-            queryOrderResult.setMessage(queryResult.getMessage());
             logger.error("Query Order Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(queryResult));
-            return JSONObject.toJSONString(queryOrderResult);
+            return JSONObject.toJSONString(queryResult);
         }
-        queryOrderResult.setStatus(ResultStatus.SUCCESS.toString());
-        queryOrderResult.setMessage(ResultStatus.SUCCESS.getMessage());
-        queryOrderResult.setPayStatus(queryResult.getReturnValue());
-        logger.info("Query Order Request End!Ip：" + ip + "Result:" + JSONObject.toJSONString(queryOrderResult));
-        return JSONObject.toJSONString(queryOrderResult);
+        result.addItem("payStatus",queryResult.getReturnValue());
+        logger.info("Query Order Request End!Ip：" + ip + "Result:" + JSONObject.toJSONString(result));
+        return JSONObject.toJSONString(result);
     }
 
     /**
