@@ -102,23 +102,21 @@ public class OrderQueryController {
     @ResponseBody
     @RequestMapping("/refund")
     public String queryRefund(QueryRefundParams params) {
-        QueryRefundResult queryRefundResult = new QueryRefundResult();
+        ResultMap result = ResultMap.build();
         logger.info("Query Order Refund Request Start!params:" + params);
         // 1.检查参数的完整性和合法性
         List validateResult = ControllerUtil.validateParams(params);
         if (validateResult.size() != 0) {
-            queryRefundResult.setStatus(ResultStatus.THIRD_Q_RF_PARAM_ERROR.toString());
-            queryRefundResult.setMessage(ResultStatus.THIRD_Q_RF_PARAM_ERROR.getMessage());
-            logger.info("Query Order Refund Request End!Result:" + JsonUtil.beanToJson(queryRefundResult));
-            return JSONObject.toJSONString(queryRefundResult);
+            result.withError(ResultStatus.THIRD_Q_RF_PARAM_ERROR);
+            logger.info("Query Order Refund Request End!Result:" + JsonUtil.beanToJson(result));
+            return JSONObject.toJSONString(result);
         }
         // 2.检查商户签名
         Result secResult = secureManager.verifyAppSign(params);
         if (!Result.isSuccess(secResult)) {
-            queryRefundResult.setStatus(ResultStatus.REFUND_PARAM_ERROR.toString());
-            queryRefundResult.setMessage(ResultStatus.REFUND_PARAM_ERROR.getMessage());
-            logger.error("Query Order Refund Request End!Result:" + JsonUtil.beanToJson(queryRefundResult));
-            return JSONObject.toJSONString(queryRefundResult);
+            result.withError(ResultStatus.SIGNATURE_ERROR);
+            logger.error("Query Order Refund Request End!Result:" + JsonUtil.beanToJson(result));
+            return JSONObject.toJSONString(result);
         }
         // 3.处理退款订单查询
         QueryRefundModel model = new QueryRefundModel();
@@ -127,18 +125,15 @@ public class OrderQueryController {
         model.setSign(params.getSign());                     //签名
         model.setSignType(params.getSignType());            //签名类型
         ResultMap queryRefundMap = queryRefundManager.queryRefund(model);
-        logger.info("Query Order Refund Request,RefundManager.refund Returns the result:" + JSONObject.toJSONString(queryRefundResult));
+        logger.info("Query Order Refund Request,RefundManager.refund Returns the result:" + JSONObject.toJSONString(queryRefundMap));
         if (!Result.isSuccess(queryRefundMap)) {
-            queryRefundResult.setStatus(queryRefundMap.getStatus().toString());
-            queryRefundResult.setMessage(queryRefundMap.getMessage());
-            logger.error("Query Order Refund Request End!Result:" + JsonUtil.beanToJson(queryRefundResult));
-            return JSONObject.toJSONString(queryRefundResult);
+            result.withError(queryRefundMap.getStatus());
+            logger.error("Query Order Refund Request End!Result:" + JsonUtil.beanToJson(result));
+            return JSONObject.toJSONString(result);
         }
-        queryRefundResult.setStatus(ResultStatus.SUCCESS.toString());
-        queryRefundResult.setMessage(ResultStatus.SUCCESS.getMessage());
-        queryRefundResult.setRefundStatus(queryRefundMap.getReturnValue());
-        logger.info("Query Order Refund Request End!Back Params:" + JSONObject.toJSONString(queryRefundResult));
-        return JSONObject.toJSONString(queryRefundResult);
+        result.addItem("refundStatus", queryRefundMap.getReturnValue());
+        logger.info("Query Order Refund Request End!Back Params:" + JSONObject.toJSONString(result));
+        return JSONObject.toJSONString(result);
 
     }
 }
