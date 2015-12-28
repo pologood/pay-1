@@ -12,6 +12,7 @@ import com.sogou.pay.common.utils.XMLParseUtil;
 import com.sogou.pay.common.utils.XMLUtil;
 import com.sogou.pay.thirdpay.biz.WechatPayService;
 import com.sogou.pay.thirdpay.biz.enums.OrderRefundState;
+import com.sogou.pay.thirdpay.biz.enums.OrderState;
 import com.sogou.pay.thirdpay.biz.utils.ClientCustomSSL;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
 import com.sogou.pay.thirdpay.biz.utils.Sha1Util;
@@ -348,7 +349,7 @@ public class WechatPayServiceImpl implements WechatPayService {
             return ResultMap.build(ResultStatus.THIRD_QUERY_WECHAT_BACK_SIGN_ERROR);
         }
         //6.返回交易状态
-        result.addItem("order_state", orderPMap.getString("trade_state").toUpperCase());
+        result.addItem("order_state", getTradeState(orderPMap.getString("trade_state").toUpperCase()));
         return result;
     }
 
@@ -494,6 +495,42 @@ public class WechatPayServiceImpl implements WechatPayService {
         }
         return result;
     }
+
+    /**
+     * 微信查询订单状态转换为通用
+     */
+    private String getTradeState(String trade_status) {
+        String tradeStatus;
+        if (Utils.isEmpty(trade_status)) {
+            return OrderState.FAILURE.name();
+        }
+        switch (trade_status) {
+            case "SUCCESS":                    //支付成功
+                tradeStatus = OrderState.SUCCESS.name();
+                break;
+            case "NOTPAY":                   //等待买家付款
+                tradeStatus = OrderState.NOTPAY.name();
+                break;
+            case "CLOSED":                     //交易中途关闭
+            case "REVOKED":
+                tradeStatus = OrderState.CLOSED.name();
+                break;
+            case "USERPAYING":             //买家支付中
+                tradeStatus = OrderState.USERPAYING.name();
+                break;
+            case "PAYERROR":                     //支付失败
+                tradeStatus = OrderState.FAILURE.name();
+                break;
+            case "REFUND":
+                tradeStatus = OrderState.REFUND.name();
+                break;
+            default:
+                tradeStatus = OrderState.FAILURE.name();
+
+        }
+        return tradeStatus;
+    }
+
 
     /**
      * 2.1.组装微信第三方支付所需参数
