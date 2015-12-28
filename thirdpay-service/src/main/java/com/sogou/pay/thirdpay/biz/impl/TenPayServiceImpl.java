@@ -420,6 +420,7 @@ public class TenPayServiceImpl implements TenPayService {
             log.error("财付通查询订单退款请求返回参数异常，retcode!=0，参数:" + params + "返回串" + resContent);
             return ResultMap.build(ResultStatus.THIRD_Q_RF_TEN_PAY_INFO_ERROR);
         }
+        //财付通文档中是refund_status_0？
         String refund_state = getRefundState(queryPmap.getString("refund_state_0"));
         result.addItem("refund_status", refund_state);
         return result;
