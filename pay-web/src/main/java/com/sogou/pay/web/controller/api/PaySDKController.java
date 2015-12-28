@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
@@ -89,7 +90,7 @@ public class PaySDKController extends BaseController{
     @RequestMapping("/doPay")
     @ResponseBody
     public String doPay(PayParams params, HttpServletRequest request,HttpServletResponse response){
-        ResultBean resultBean = ResultBean.build();
+        ResultMap result = ResultMap.build();
         logger.info("【支付请求】进入dopay,请求参数为：" + JsonUtil.beanToJson(params));
         //将参数转化为map
         PMap<String,String> paramMap = PMapUtil.fromBean(params);
@@ -102,7 +103,8 @@ public class PaySDKController extends BaseController{
         if(!Result.isSuccess(signResult)){
             logger.error("【支付请求】验证签名错误！");
           //获取业务平台签名失败
-          return String.valueOf(signResult.getStatus().getCode());
+            result.withError(signResult.getStatus());
+            return JSONObject.toJSONString(result);
         }
         logger.info("【支付请求】通过验证签名！");
         /**2.验证参数**/
@@ -110,7 +112,8 @@ public class PaySDKController extends BaseController{
         if (validateResult.size() != 0) {
             //验证参数失败
             logger.error("【支付请求】" + validateResult.toString().substring(1,validateResult.toString().length()-1));
-            return String.valueOf(ResultStatus.PARAM_ERROR.getCode());
+            result.withError(ResultStatus.PARAM_ERROR);
+            return JSONObject.toJSONString(result);
         }
         //转义商品名称与描述
         paramMap = escapeSequence(paramMap);
@@ -121,7 +124,7 @@ public class PaySDKController extends BaseController{
         if(!Result.isSuccess(orderResult)){
             logger.error("【支付请求】检查订单信息错误！selectPayOrderInfoByOrderId()..");
             //系统错误或者该支付单已经支付完成
-            return String.valueOf(orderResult.getStatus().getCode());
+            return JSONObject.toJSONString(orderResult);
         }
         String payId = null;
         if(null != orderResult.getReturnValue()){
@@ -130,7 +133,7 @@ public class PaySDKController extends BaseController{
             ResultMap payOrderResult = payManager.insertPayOrder(paramMap);
             if(!Result.isSuccess(payOrderResult)){
                 //插入支付单失败
-                return String.valueOf(payOrderResult.getStatus().getCode());
+                return JSONObject.toJSONString(payOrderResult);
             }
             payId = payOrderResult.getReturnValue().toString();
         }
@@ -139,15 +142,16 @@ public class PaySDKController extends BaseController{
         if(StringUtils.isBlank(params.getBankId())){
             //支付渠道为空
             logger.error("【支付请求】支付渠道为空");
-            return String.valueOf(ResultStatus.PAY_BANKID_IS_NULL.getCode());
-        } 
+            result.withError(ResultStatus.PAY_BANKID_IS_NULL);
+            return JSONObject.toJSONString(result);
+        }
         /**5.支付业务处理**/
         //将支付单ID放入map
         paramMap.put("payId",payId);
         ResultMap payResult = this.commonPay(paramMap);
         if(!Result.isSuccess(payResult)){
             //支付业务失败
-            return String.valueOf(payResult.getStatus().getCode());
+            return JSONObject.toJSONString(payResult);
         }
         return JSONObject.toJSONString(payResult);
     }
