@@ -1,11 +1,7 @@
 package com.sogou.pay.manager.payment.impl;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.perf4j.aop.Profiled;
@@ -142,51 +138,49 @@ public class PayTransManagerImpl implements PayTransManager {
      * @return
      */
     @Override
-    public AppXmlPacket queryByBatchNo(String appId,String batchNo) {
-
-        AppXmlPacket appXmlPacket = new AppXmlPacket();
+    public ResultMap queryByBatchNo(String appId,String batchNo) {
+        ResultMap result = ResultMap.build();
         try {
             PayTransferBatch payTransferBatch = payTransferBatchService.queryByAppIdAndBatchNo(appId,batchNo);
             //验证代付批次是否存在
             if (payTransferBatch == null) {
                 logger.error("payTransferBatch is not found,batchNo = " + batchNo);
-                appXmlPacket.withError(ResultStatus.PAY_TRANFER_BATCH_NOT_EXIST);
-                return appXmlPacket;
+                result.withError(ResultStatus.PAY_TRANFER_BATCH_NOT_EXIST);
+                return result;
             }
             //验证代发单是否存在
             List<PayTransfer> payTransferList = payTransferService.queryByBatchNo(appId,batchNo);
             if (CollectionUtils.isEmpty(payTransferList)) {
                 logger.error("payTransfer is not found , batchNo = " + batchNo);
-                appXmlPacket.withError(ResultStatus.PAY_TRANFER_NOT_EXIST);
-                return appXmlPacket;
+                result.withError(ResultStatus.PAY_TRANFER_NOT_EXIST);
+                return result;
             }
-            Map resultMap = new LinkedHashMap();
             //组装结果数据
-            resultMap.put("batch_no", payTransferBatch.getBatchNo());
-            resultMap.put("trade_status", String.valueOf(payTransferBatch.getTradeState()));
-            resultMap.put("total_count", payTransferBatch.getPlanTotal());
-            resultMap.put("total_amt", String.valueOf(payTransferBatch.getPlanAmt()));
-            resultMap.put("succ_count", payTransferBatch.getSucTotal());
-            resultMap.put("succ_amt", String.valueOf(payTransferBatch.getSucAmt()));
-            resultMap.put("result_desc", payTransferBatch.getResultDesc());
-            appXmlPacket.setResult(resultMap);
-            Map resultDetail = null;
+            LinkedList resultDetails = new LinkedList();
             //组装明细数据
             for (PayTransfer payTransfer : payTransferList) {
-                resultDetail = new LinkedHashMap();
+                Map resultDetail = new LinkedHashMap();
                 resultDetail.put("pay_id", payTransfer.getOutRef());
                 resultDetail.put("rec_bankacc", payTransfer.getRecBankAcc());
                 resultDetail.put("rec_name", payTransfer.getRecName());
                 resultDetail.put("pay_amt", String.valueOf(payTransfer.getPayAmt()));
                 resultDetail.put("pay_status", String.valueOf(payTransfer.getPayStatus()));
                 resultDetail.put("err_msg", payTransfer.getResultDesc());
-                appXmlPacket.putResultDetail("result_detail", resultDetail);
+                resultDetails.add(resultDetail);
             }
+            result.addItem("batch_no", payTransferBatch.getBatchNo());
+            result.addItem("trade_status", String.valueOf(payTransferBatch.getTradeState()));
+            result.addItem("total_count", payTransferBatch.getPlanTotal());
+            result.addItem("total_amt", String.valueOf(payTransferBatch.getPlanAmt()));
+            result.addItem("succ_count", payTransferBatch.getSucTotal());
+            result.addItem("succ_amt", String.valueOf(payTransferBatch.getSucAmt()));
+            result.addItem("result_desc", payTransferBatch.getResultDesc());
+            result.addItem("result_detail", resultDetails);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            appXmlPacket.withError(ResultStatus.SYSTEM_DB_ERROR);
+            result.withError(ResultStatus.SYSTEM_DB_ERROR);
         }
-        return appXmlPacket;
+        return result;
     }
 
     /**
@@ -198,37 +192,34 @@ public class PayTransManagerImpl implements PayTransManager {
      * @return
      */
     @Override
-    public AppXmlPacket queryRefund(String startTime, String endTime, String recBankacc, String recName) {
-
-        AppXmlPacket appXmlPacket = new AppXmlPacket();
+    public ResultMap queryRefund(String startTime, String endTime, String recBankacc, String recName) {
+        ResultMap result = ResultMap.build();
         try {
-            Map resultMap = new LinkedHashMap();
             List<PayTransfer> payTransferList = payTransferService.queryRefund(startTime,endTime,recBankacc,recName);
             if (CollectionUtils.isEmpty(payTransferList)) {
                 //组装结果数据
-                resultMap.put("cancel_count", 0);
-                appXmlPacket.setResult(resultMap);
-                return appXmlPacket;
+                result.addItem("cancel_count", 0);
+                return result;
             }
             //组装结果数据
-            resultMap.put("cancel_count", payTransferList.size());
-            appXmlPacket.setResult(resultMap);
-            Map resultDetail = null;
+            LinkedList resultDetails = new LinkedList();
             //组装明细数据
             for (PayTransfer payTransfer : payTransferList) {
-                resultDetail = new LinkedHashMap();
+                Map resultDetail = new LinkedHashMap();
                 resultDetail.put("pay_id", payTransfer.getOutRef());
                 resultDetail.put("batch_no",payTransfer.getBatchNo());
                 resultDetail.put("pay_amt", String.valueOf(payTransfer.getPayAmt()));
                 resultDetail.put("cancel_time", DateUtil.formatTime(payTransfer.getModifyTime()));
-                resultDetail.put("err_msg", payTransfer.getResultDesc());
-                appXmlPacket.putResultDetail("cancel_rec", resultDetail);
+                resultDetail.put("cancel_res", payTransfer.getResultDesc());
+                resultDetails.add(resultDetail);
             }
+            result.addItem("cancel_count", payTransferList.size());
+            result.addItem("cancel_set", resultDetails);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            appXmlPacket.withError(ResultStatus.SYSTEM_DB_ERROR);
+            result.withError(ResultStatus.SYSTEM_DB_ERROR);
         }
-        return appXmlPacket;
+        return result;
     }
 
 

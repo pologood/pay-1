@@ -168,33 +168,36 @@ public class PayTransferController extends BaseController {
     @ResponseBody
     public String queryByBatchNo(PayTransferQueryParams payTransferQueryParams) {
         logger.info("【代付查询】queryByBatchNo,请求参数为：" + JsonUtil.beanToJson(payTransferQueryParams));
-        AppXmlPacket appXmlPacket = new AppXmlPacket();
+        //AppXmlPacket appXmlPacket = new AppXmlPacket();
+        ResultMap result;
         /**2.验证参数**/
         if (StringUtil.isBlank(payTransferQueryParams.getAppId())
                 || StringUtil.isBlank(payTransferQueryParams.getBatchNo())
                 || StringUtil.isBlank(payTransferQueryParams.getSign())
                 || StringUtil.isBlank(payTransferQueryParams.getSignType())) {
             logger.error("【代付查询参数错误】");
-            appXmlPacket.withError(ResultStatus.PARAM_ERROR);
-            return appXmlPacket.toQueryXmlString();
+            result = ResultMap.build(ResultStatus.PARAM_ERROR);
+            return JSONObject.toJSONString(result);
         }
         /**1.验证签名**/
-//        Result signResult = secureManager.verifyAppSign(payTransferQueryParams);
-//        if(!Result.isSuccess(signResult)){
-//            logger.error("【支付请求】验证签名错误！");
-//          //获取业务平台签名失败,跳到错误页面
-//          return signResult.toString();
-//        }
-        appXmlPacket = payTransManager.queryByBatchNo(payTransferQueryParams.getAppId(), payTransferQueryParams.getBatchNo());
+        Result signResult = secureManager.verifyAppSign(payTransferQueryParams);
+        if(!Result.isSuccess(signResult)){
+            logger.error("【支付请求】验证签名错误！");
+            //获取业务平台签名失败
+            result = ResultMap.build(ResultStatus.SIGNATURE_ERROR);
+            return JSONObject.toJSONString(result);
+        }
+        result = payTransManager.queryByBatchNo(payTransferQueryParams.getAppId(), payTransferQueryParams.getBatchNo());
         logger.info("【代付查询结束】");
-        return appXmlPacket.toQueryXmlString();
+        return JSONObject.toJSONString(result);
     }
 
     @RequestMapping("/queryRefund")
     @ResponseBody
     public String queryRefund(PayTransferRefundQueryParams payTransferRefundQueryParams) {
         logger.info("【代付退票查询】queryRefund,请求参数为：" + JsonUtil.beanToJson(payTransferRefundQueryParams));
-        AppXmlPacket appXmlPacket = new AppXmlPacket();
+        //AppXmlPacket appXmlPacket = new AppXmlPacket();
+        ResultMap result;
         /**2.验证参数**/
         if (StringUtil.isBlank(payTransferRefundQueryParams.getAppId())
                 || StringUtil.isBlank(payTransferRefundQueryParams.getStartTime())
@@ -202,20 +205,21 @@ public class PayTransferController extends BaseController {
                 || StringUtil.isBlank(payTransferRefundQueryParams.getSign())
                 || StringUtil.isBlank(payTransferRefundQueryParams.getSignType())) {
             logger.error("【代付退票查询参数错误】");
-            appXmlPacket.withError(ResultStatus.PARAM_ERROR);
-            return appXmlPacket.toRefundXmlString();
+            result = ResultMap.build(ResultStatus.PARAM_ERROR);
+            return JSONObject.toJSONString(result);
         }
         /**1.验证签名**/
-//        Result signResult = secureManager.verifyAppSign(payTransferQueryParams);
-//        if(!Result.isSuccess(signResult)){
-//            logger.error("【支付请求】验证签名错误！");
-//          //获取业务平台签名失败,跳到错误页面
-//          return signResult.toString();
-//        }
-        appXmlPacket = payTransManager.queryRefund(payTransferRefundQueryParams.getStartTime(), payTransferRefundQueryParams.getEndTime(),
+        Result signResult = secureManager.verifyAppSign(payTransferRefundQueryParams);
+        if(!Result.isSuccess(signResult)){
+            logger.error("【支付请求】验证签名错误！");
+            //获取业务平台签名失败,跳到错误页面
+            result = ResultMap.build(ResultStatus.SIGNATURE_ERROR);
+            return JSONObject.toJSONString(result);
+        }
+        result = payTransManager.queryRefund(payTransferRefundQueryParams.getStartTime(), payTransferRefundQueryParams.getEndTime(),
                 payTransferRefundQueryParams.getRecBankacc(), payTransferRefundQueryParams.getRecName());
         logger.info("【代付退票查询结束】");
-        return appXmlPacket.toRefundXmlString();
+        return JSONObject.toJSONString(result);
     }
 
 
