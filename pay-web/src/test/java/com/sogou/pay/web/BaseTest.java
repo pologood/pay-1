@@ -134,7 +134,7 @@ public class BaseTest extends Assert {
             out.println("Request Url: \t\t" + url);
             out.println("Request Params: \t" + params);
             if (method == HttpMethod.GET) {
-                out.println("Request Get Url: " + HttpUtil.packHttpGetUrl("http://localhost:8090" + url, params));
+                out.println("Request Get Url: " + HttpUtil.packHttpGetUrl("http://localhost:8080" + url, params));
             }
             out.println();
             out.println("Response Status: \t" + statusCode);

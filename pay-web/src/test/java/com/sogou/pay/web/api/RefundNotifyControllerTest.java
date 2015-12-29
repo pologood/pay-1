@@ -24,7 +24,7 @@ public class RefundNotifyControllerTest extends BaseTest {
     
     @Test
     public void testAliRefundNotify() {
-        String url = "http://localhost:8090/notify/refund/alipay/30";
+        String url = "/notify/refund/alipay/30";
         AliRefundNotifyParams params = new AliRefundNotifyParams();
         params.setBatch_no("20151030172229140001");
         params.setNotify_id("dc74743ea959b5c33adf659ff00e9ffk8s");

@@ -49,7 +49,7 @@ import com.sogou.pay.web.utils.ServletUtil;
  * @Description: 支付请求controller
  */
 @Controller
-@RequestMapping(value = "/payTrans")
+//@RequestMapping(value = "/payTrans")
 @SuppressWarnings("all")
 public class PayTransferController extends BaseController {
 
@@ -94,7 +94,7 @@ public class PayTransferController extends BaseController {
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/payTrans/doPay",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/doPay")
+    @RequestMapping({"/payTrans/doPay", "/api/transfer"})
     @ResponseBody
     public String doPay(PayTransParams params, HttpServletRequest request, HttpServletResponse response) {
         logger.info("【支付请求】进入dopay,请求参数为：" + JsonUtil.beanToJson(params));
@@ -138,7 +138,7 @@ public class PayTransferController extends BaseController {
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/payTrans/doRequest",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/doRequest")
+    @RequestMapping("/payTrans/doRequest")
     @ResponseBody
     public String doRequest(String appId, String batchNo) {
         logger.info("【代付提交】进入doRequest,请求参数为appId:" + appId + ",batchNo：" + batchNo);
@@ -164,7 +164,7 @@ public class PayTransferController extends BaseController {
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/payTrans/queryByBatchNo",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/queryByBatchNo")
+    @RequestMapping({"/payTrans/queryByBatchNo", "/api/transfer/query"})
     @ResponseBody
     public String queryByBatchNo(PayTransferQueryParams payTransferQueryParams) {
         logger.info("【代付查询】queryByBatchNo,请求参数为：" + JsonUtil.beanToJson(payTransferQueryParams));
@@ -192,7 +192,7 @@ public class PayTransferController extends BaseController {
         return JSONObject.toJSONString(result);
     }
 
-    @RequestMapping("/queryRefund")
+    @RequestMapping({"/payTrans/queryRefund", "/api/transfer/refund/query"})
     @ResponseBody
     public String queryRefund(PayTransferRefundQueryParams payTransferRefundQueryParams) {
         logger.info("【代付退票查询】queryRefund,请求参数为：" + JsonUtil.beanToJson(payTransferRefundQueryParams));

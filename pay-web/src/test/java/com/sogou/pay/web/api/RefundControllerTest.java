@@ -1,5 +1,6 @@
 package com.sogou.pay.web.api;
 
+import com.alibaba.fastjson.JSONObject;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.common.utils.MD5Util;
 import com.sogou.pay.web.BaseTest;
@@ -22,32 +23,18 @@ public class RefundControllerTest extends BaseTest {
     @Autowired
     PayController controller;
 
-
     @Test
-    public void testTenRefund() {
-        String url = "/refund";
+    public void testRefund() {
+        //String url = "/refund";
+        String url = "/api/refund";
         RefundParams params = new RefundParams();
         params.setAppId("1999");
-        params.setBgUrl("http://sg.pay.sogou.com/pay-web/notify/ali/pay/webAsync");
-        params.setSignType("MD5");
-        params.setSign("8b48f9376069eb1b654d7bed8e025b9f");
-        params.setOrderId("TESTORDER20150428163308288001");
+        params.setBgUrl("http://127.0.0.1:8080/notify/ali/pay/testBgUrl");
+        params.setSignType("0");
+        params.setOrderId("OD20150511110454649");
         params.setRefundAmount("0.01");
         Map map = BeanUtil.beanToMap(params);
-        testGet(url, map);
-    }
-
-    @Test
-    public void testAliRefund() {
-        String url = "/refund";
-        RefundParams params = new RefundParams();
-        params.setAppId("1999");
-        params.setBgUrl("http://sg.pay.sogou.com/pay-web/notify/ali/pay/webAsync");
-        params.setSignType("MD5");
-        params.setSign("8b48f9376069eb1b654d7bed8e025b9f");
-        params.setOrderId("OD20150430165852822");
-        params.setRefundAmount("0.01");
-        Map map = BeanUtil.beanToMap(params);
+        map.put("sign", JSONObject.parse(controller.signData(map, null)));
         testGet(url, map);
     }
 }
