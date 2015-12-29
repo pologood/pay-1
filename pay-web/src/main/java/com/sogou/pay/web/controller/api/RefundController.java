@@ -34,7 +34,7 @@ import java.util.List;
  * @date 2015/3/2 10:08
  */
 @Controller
-@RequestMapping("/refund")
+//@RequestMapping("/refund")
 public class RefundController {
 
     private static final Logger logger = LoggerFactory.getLogger(RefundController.class);
@@ -46,9 +46,9 @@ public class RefundController {
     @Autowired
     private RefundNotifyManager refundNotifyManager;
 
-    @Profiled(el = true, logger = "webTimingLogger", tag = "/refund/refund",
+    @Profiled(el = true, logger = "webTimingLogger", tag = "/api/refund",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping
+    @RequestMapping("/api/refund")
     @ResponseBody
     public Object refund(RefundParams params, HttpServletRequest request) {
         // 0.记录请求日志
@@ -99,4 +99,64 @@ public class RefundController {
         logger.info("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(result));
         return JSONObject.toJSONString(result);
     }
+
+    @Profiled(el = true, logger = "webTimingLogger", tag = "/refund",
+            timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @RequestMapping("/refund")
+    @ResponseBody
+    public Object refund_deprecated(RefundParams params, HttpServletRequest request) {
+        // 0.记录请求日志
+        String ip = ServletUtil.getRealIp(request);
+        logger.info("Refund Request Start!Ip：" + ip + "params:" + JsonUtil.beanToJson(params));
+        RefundResult refundResult = new RefundResult();
+        // 1.检查参数的完整性和合法性
+        List validateResult = ControllerUtil.validateParams(params);
+        if (validateResult.size() != 0) {
+            refundResult.setStatus(ResultStatus.REFUND_PARAM_ERROR.toString());
+            refundResult.setMessage(ResultStatus.REFUND_PARAM_ERROR.getMessage());
+            logger.error("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(refundResult));
+            return JSONObject.toJSONString(refundResult);
+        }
+        // 2.检查商户签名
+        Result secResult = secureManager.verifyAppSign(params);
+        if (!Result.isSuccess(secResult)) {
+            refundResult.setStatus(ResultStatus.REFUND_SIGN_ERROR.toString());
+            refundResult.setMessage(ResultStatus.REFUND_SIGN_ERROR.getMessage());
+            logger.error("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(refundResult));
+            return JSONObject.toJSONString(refundResult);
+        }
+        // 3.组装参数,处理退款订单
+        RefundModel refundModel = new RefundModel();
+        refundModel.setAppId(Integer.parseInt(params.getAppId()));              //业务线id
+        refundModel.setOrderId(params.getOrderId());                            //订单id
+        refundModel.setRefundAmount(new BigDecimal(params.getRefundAmount()));  //订单退款金额
+        refundModel.setBgurl(params.getBgUrl());                                //回调url
+        ResultMap refResult = refundManager.refund(refundModel);
+        logger.info("Refund Request,RefundManager.refund Returns Result:" + JsonUtil.beanToJson(refResult));
+        if (!Result.isSuccess(refResult)) {
+            refundResult.setStatus(refResult.getStatus().toString());
+            refundResult.setMessage(refResult.getMessage());
+            if (null != refResult.getData().get("error_code")) {
+                refundResult.setErrorCode(refResult.getData().get("error_code").toString());
+            }
+            if (null != refResult.getData().get("error_info")) {
+                refundResult.setErrorMsg(refResult.getData().get("error_info").toString());
+            }
+            logger.error("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(refundResult));
+            return JSONObject.toJSONString(refundResult);
+        }
+        // 4.只针对微信、快钱退款无异步回调处理处理，如果有Return Value，则在此步骤回调商户
+        Object retValue = refResult.getReturnValue();
+        if (retValue != null) {
+            //对回调业务线参数进行加密
+            Result secureResult = secureManager.appSign(retValue);
+            refResult.withReturn(secureResult.getReturnValue());
+            refundNotifyManager.notifyApp((ResultMap) refResult);
+        }
+        refundResult.setStatus(ResultStatus.SUCCESS.toString());
+        refundResult.setMessage(ResultStatus.SUCCESS.getMessage());
+        logger.info("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(refundResult));
+        return JSONObject.toJSONString(refundResult);
+    }
+
 }

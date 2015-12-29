@@ -43,7 +43,7 @@ import com.sogou.pay.web.utils.ServletUtil;
  * @Description: 支付请求controller
  */
 @Controller
-@RequestMapping(value = "/paywap")
+//@RequestMapping(value = "/paywap")
 @SuppressWarnings("all")
 public class PayWapController extends BaseController{
     
@@ -86,7 +86,7 @@ public class PayWapController extends BaseController{
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/paywap/doPay",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/doPay")
+    @RequestMapping({"/paywap/doPay", "/gw/pay/wap"})
     public ModelAndView doPay(PayParams params, HttpServletRequest request,HttpServletResponse response){
         ModelAndView view = new ModelAndView("toAlipayWap");
         logger.info("【支付请求】进入dopay,请求参数为：" + JsonUtil.beanToJson(params));
@@ -96,14 +96,6 @@ public class PayWapController extends BaseController{
         String ip = ServletUtil.getRealIp(request);
         paramMap.put("userIp", ip);
         paramMap.put("channelCode",params.getBankId());
-        /**1.验证签名**/
-        Result signResult = secureManager.verifyAppSign(params);
-        if(!Result.isSuccess(signResult)){
-            logger.error("【支付请求】验证签名错误！");
-          //获取业务平台签名失败,跳到错误页面
-          return setWapErrorPage(signResult.getStatus().getMessage(), signResult.getStatus().getCode());
-        }
-        logger.info("【支付请求】通过验证签名！");
         /**2.验证参数**/
         List validateResult = ControllerUtil.validateParams(params);
         if (validateResult.size() != 0) {
@@ -114,9 +106,18 @@ public class PayWapController extends BaseController{
         if(StringUtils.isBlank(params.getBankId())){
             //支付渠道为空
             logger.error("【支付请求】支付渠道为空");
-            return setWapErrorPage(ResultStatus.PAY_BANKID_IS_NULL.getMessage(), 
+            return setWapErrorPage(ResultStatus.PAY_BANKID_IS_NULL.getMessage(),
                     ResultStatus.PAY_BANKID_IS_NULL.getCode());
-        } 
+        }
+        /**1.验证签名**/
+        Result signResult = secureManager.verifyAppSign(params);
+        if(!Result.isSuccess(signResult)){
+            logger.error("【支付请求】验证签名错误！");
+          //获取业务平台签名失败,跳到错误页面
+          return setWapErrorPage(signResult.getStatus().getMessage(), signResult.getStatus().getCode());
+        }
+        logger.info("【支付请求】通过验证签名！");
+
         //转义商品名称与描述
         paramMap = escapeSequence(paramMap);
         logger.info("【支付请求】通过验证参数！");
@@ -181,6 +182,7 @@ public class PayWapController extends BaseController{
         logger.info("【支付请求】支付请求结束！");
         return view;
     }
+
     /**
      * @Author	huangguoqing 
      * @MethodName	commonPay 

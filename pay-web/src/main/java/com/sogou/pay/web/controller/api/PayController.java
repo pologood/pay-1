@@ -66,7 +66,7 @@ import com.sogou.pay.web.utils.ServletUtil;
  * @Description: 支付请求controller
  */
 @Controller
-@RequestMapping(value = "/pay")
+//@RequestMapping(value = "/pay")
 public class PayController extends BaseController{
     
     private static final Logger logger = LoggerFactory.getLogger(PayController.class);
@@ -112,7 +112,7 @@ public class PayController extends BaseController{
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/pay/doPay",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/doPay")
+    @RequestMapping({"/pay/doPay", "/gw/pay/web"})
     public ModelAndView doPay(PayParams params, HttpServletRequest request){
         ModelAndView view = new ModelAndView("toAgency");
         logger.info("【支付请求】进入dopay,请求参数为：" + JsonUtil.beanToJson(params));
@@ -122,13 +122,6 @@ public class PayController extends BaseController{
         String ip = ServletUtil.getRealIp(request);
         paramMap.put("userIp", ip);
         paramMap.put("channelCode",params.getBankId());
-        /**1.验证签名**/
-        Result signResult = secureManager.verifyAppSign(params);
-        if(!Result.isSuccess(signResult)){
-          //获取业务平台签名失败,跳到错误页面
-          return setErrorPage(signResult.getStatus().getMessage(), signResult.getStatus().getCode());
-        }
-        logger.info("【支付请求】通过验证签名！");
         /**2.验证参数**/
         List validateResult = ControllerUtil.validateParams(params);
         if (validateResult.size() != 0) {
@@ -139,6 +132,13 @@ public class PayController extends BaseController{
         //转义商品名称与描述
         paramMap = escapeSequence(paramMap);
         logger.info("【支付请求】通过验证参数！");
+        /**1.验证签名**/
+        Result signResult = secureManager.verifyAppSign(params);
+        if(!Result.isSuccess(signResult)){
+          //获取业务平台签名失败,跳到错误页面
+          return setErrorPage(signResult.getStatus().getMessage(), signResult.getStatus().getCode());
+        }
+        logger.info("【支付请求】通过验证签名！");
         /**3.生成支付单信息**/
         //查询该订单是否已经支付
         ResultMap orderResult = payManager.selectPayOrderInfoByOrderId(params.getOrderId(),params.getAppId());
@@ -256,7 +256,7 @@ public class PayController extends BaseController{
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/pay/doCashierPay",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/doCashierPay")
+    @RequestMapping("/pay/doCashierPay")
     public ModelAndView doCashierPay( HttpServletRequest request,HttpServletResponse response){
         ModelAndView view = new ModelAndView("toAgency");
         Map<String, String> parameterMap = getRequestParameterMap(request);
@@ -290,7 +290,7 @@ public class PayController extends BaseController{
      * @Date	2015年3月20日
      * @Description:扫码支付链接或微信扫码字符串
      */
-    @RequestMapping("/getQrCode")
+    @RequestMapping("/pay/getQrCode")
     @ResponseBody
     public String getQrCode(HttpServletRequest request,HttpServletResponse response){
         ResultMap result = ResultMap.build();
@@ -422,7 +422,7 @@ public class PayController extends BaseController{
      * @Date	2015年2月28日
      * @Description:商户微信扫码支付返回code
      */
-    @RequestMapping("doPayForWechat")
+    @RequestMapping({"/pay/doPayForWechat", "/api/pay/qrcode"})
     @ResponseBody
     public String doPayForWechat(PayParams params, HttpServletRequest request){
         ResultMap result = ResultMap.build();
@@ -433,6 +433,7 @@ public class PayController extends BaseController{
         String ip = ServletUtil.getRealIp(request);
         paramMap.put("userIp", ip);
         paramMap.put("channelCode",params.getBankId());
+        paramMap.put("channelType", "3");//支付渠道类型为3，即扫码支付
         /**1.验证签名**/
         Result signResult = secureManager.verifyAppSign(params);
         if(!Result.isSuccess(signResult)){
@@ -518,7 +519,7 @@ public class PayController extends BaseController{
         return false;
     }
 
-    @RequestMapping("getSignData")
+    @RequestMapping("/pay/getSignData")
     @ResponseBody
     public String signData(@RequestParam Map<String, String> paramMap, HttpServletRequest request){
         //Map paramMap = convertToMap(params);
