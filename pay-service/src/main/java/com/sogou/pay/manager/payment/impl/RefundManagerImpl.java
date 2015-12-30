@@ -163,7 +163,9 @@ public class RefundManagerImpl implements RefundManager {
             BigDecimal payMoney = payOrderInfo.getOrderMoney();            //订单支付金额
             // BigDecimal notRefund = payMoney.subtract(payRefundMoney);   //没有退款的金额
             // BigDecimal payRefundMoney = payOrderInfo.getRefundMoney();  //订单退款金额
-            if (refundAmount.compareTo(payMoney) != 0) {
+            if(refundAmount==null){
+                model.setRefundAmount(payMoney);
+            }else if (refundAmount.compareTo(payMoney) != 0) {
                 // 退款金额不等于余额
                 logger.error("Refund Request ,The Refund Amount Ss Not Equal Pay Amount,params :" + JsonUtil.beanToJson(model));
                 return ResultMap.build(ResultStatus.REFUND_PARAM_MON_ERROR);

@@ -31,8 +31,8 @@ public class RefundControllerTest extends BaseTest {
         params.setAppId("1999");
         params.setBgUrl("http://127.0.0.1:8080/notify/ali/pay/testBgUrl");
         params.setSignType("0");
-        params.setOrderId("OD20150511110454649");
-        params.setRefundAmount("0.01");
+        params.setOrderId("OD20151207144518565");
+        //params.setRefundAmount("");
         Map map = BeanUtil.beanToMap(params);
         map.put("sign", JSONObject.parse(controller.signData(map, null)));
         testGet(url, map);

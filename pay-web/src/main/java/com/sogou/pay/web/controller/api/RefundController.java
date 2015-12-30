@@ -72,8 +72,9 @@ public class RefundController {
         // 3.组装参数,处理退款订单
         RefundModel refundModel = new RefundModel();
         refundModel.setAppId(Integer.parseInt(params.getAppId()));              //业务线id
-        refundModel.setOrderId(params.getOrderId());                            //订单id
-        refundModel.setRefundAmount(new BigDecimal(params.getRefundAmount()));  //订单退款金额
+        refundModel.setOrderId(params.getOrderId());//订单id
+        if(params.getRefundAmount()!=null)
+            refundModel.setRefundAmount(new BigDecimal(params.getRefundAmount()));  //订单退款金额
         refundModel.setBgurl(params.getBgUrl());                                //回调url
         ResultMap refResult = refundManager.refund(refundModel);
         logger.info("Refund Request,RefundManager.refund Returns Result:" + JsonUtil.beanToJson(refResult));
@@ -129,8 +130,8 @@ public class RefundController {
         RefundModel refundModel = new RefundModel();
         refundModel.setAppId(Integer.parseInt(params.getAppId()));              //业务线id
         refundModel.setOrderId(params.getOrderId());                            //订单id
-        refundModel.setRefundAmount(new BigDecimal(params.getRefundAmount()));  //订单退款金额
-        refundModel.setBgurl(params.getBgUrl());                                //回调url
+        if(params.getRefundAmount()!=null)
+            refundModel.setRefundAmount(new BigDecimal(params.getRefundAmount()));  //订单退款金额        refundModel.setBgurl(params.getBgUrl());                                //回调url
         ResultMap refResult = refundManager.refund(refundModel);
         logger.info("Refund Request,RefundManager.refund Returns Result:" + JsonUtil.beanToJson(refResult));
         if (!Result.isSuccess(refResult)) {
