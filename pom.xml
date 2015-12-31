@@ -20,16 +20,37 @@
 
     <repositories>
         <repository>
+            <releases>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
             <id>Nexus</id>
             <name>Nexus Public Repository</name>
             <url>http://repo.upd.sogou-inc.com/nexus/content/groups/public</url>
+            <layout>default</layout>
         </repository>
         <repository>
-            <id>Nexus Thrird</id>
+            <releases>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+            <id>NexusThird</id>
             <name>Nexus Thirdparty Repository</name>
             <url>http://repo.upd.sogou-inc.com/nexus/content/repositories/thirdparty/</url>
+            <layout>default</layout>
         </repository>
-
     </repositories>
 
     <properties>
