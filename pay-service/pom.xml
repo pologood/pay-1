@@ -68,7 +68,7 @@
         </dependency>
 
 
-        <dependency>
+<!--        <dependency>
             <groupId>com.sogou.passport</groupId>
             <artifactId>logback-kafka</artifactId>
             <version>1.2.0</version>
@@ -78,7 +78,7 @@
                     <artifactId>slf4j-simple</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
 
                 <!-- 日志输出依赖包 -->
 <!--        <dependency>
@@ -135,11 +135,11 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
+<!--        <dependency>
             <groupId>sogou-passport</groupId>
             <artifactId>passport-session-sdk</artifactId>
             <version>1.0</version>
-        </dependency>
+        </dependency>-->
         <!-- email -->
         <dependency>
             <groupId>javax.mail</groupId>
