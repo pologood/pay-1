@@ -56,7 +56,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <java-version>1.7</java-version>
+        <java-version>1.8</java-version>
         <slf4j.version>1.7.5</slf4j.version>
         <junit.version>4.11</junit.version>
         <mockito-all.version>1.9.5</mockito-all.version>
@@ -273,11 +273,11 @@
                 <version>${slf4j.version}</version>
             </dependency>
 
-            <dependency>
+<!--            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.version}</version>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -350,11 +350,11 @@
                 <artifactId>jcl-over-slf4j</artifactId>
                 <version>1.7.5</version>
             </dependency>
-            <dependency>
+<!--            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>log4j-over-slf4j</artifactId>
                 <version>1.7.5</version>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>org.perf4j</groupId>
