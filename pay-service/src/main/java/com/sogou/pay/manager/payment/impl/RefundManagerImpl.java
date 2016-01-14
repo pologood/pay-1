@@ -14,6 +14,7 @@ import com.sogou.pay.service.entity.*;
 import com.sogou.pay.service.enums.*;
 import com.sogou.pay.service.payment.*;
 import com.sogou.pay.service.utils.Constant;
+import com.sogou.pay.service.utils.DateUtils;
 import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
 import com.sogou.pay.thirdpay.api.RefundApi;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
@@ -71,10 +72,11 @@ public class RefundManagerImpl implements RefundManager {
             }
             PayOrderInfo payOrderInfo = (PayOrderInfo) orderCheckMap.getReturnValue();
             //2.根据支付单payId查询退款表里面所有初始化的退款记录
-            List<RefundInfo> refundInfoList = refundService.selectByPayIdAndRefundStatus(payOrderInfo.getPayId(), RefundStatus.INIT.getValue());
-            if (CollectionUtils.isNotEmpty(refundInfoList)) {    // 已有退款单在执行中
-                logger.error("Refund Request ,In The Implementation Of The Existing Refund,params :" + JsonUtil.beanToJson(model));
-                return ResultMap.build(ResultStatus.REFUND_EXIST_REFUNDID);
+            List<RefundInfo> refundInfoList = refundService.selectByPayIdAndRefundStatus(payOrderInfo.getPayId(), RefundStatus.SUCCESS.getValue());
+            if (CollectionUtils.isNotEmpty(refundInfoList)) {
+                // 已经退款成功
+                logger.error("Refund Request ,Already SUCCESS,params :" + JsonUtil.beanToJson(model));
+                return ResultMap.build(ResultStatus.REFUND_EXIST_REFUND_SUCCESS);
             }
             //3.查订单与流水关联表
             PayOrderRelation payOrderRelation = new PayOrderRelation();
