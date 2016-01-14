@@ -43,6 +43,16 @@ public class RefundServiceImpl implements RefundService {
     }
 
     @Override
+    public List<RefundInfo> selectByPayId(String payId) throws ServiceException {
+        try {
+            return refundInfoDAO.selectByPayId(payId);
+        } catch (Exception e) {
+            throw new ServiceException(e, ResultStatus.SYSTEM_DB_ERROR);
+        }
+    }
+
+
+    @Override
     public List<RefundInfo> selectByPayIdAndRefundStatus(String payId, int refundStatus) throws ServiceException {
         try {
             return refundInfoDAO.selectByPayIdAndRefundStatus(payId, refundStatus);

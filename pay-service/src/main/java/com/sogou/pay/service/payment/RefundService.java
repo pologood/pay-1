@@ -33,6 +33,14 @@ public interface RefundService {
     public RefundInfo selectByRefundId(String refundId) throws ServiceException;
 
     /**
+     * 查询退款信息
+     * @param payId 支付中心产生的支付单ID
+     * @return 查询结果
+     * @throws ServiceException
+     */
+    public List<RefundInfo> selectByPayId(String payId) throws ServiceException;
+
+    /**
      * 根据支付单和退款状态查询退款单
      * @param payId 支付单号
      * @param refundStatus 退款状态
