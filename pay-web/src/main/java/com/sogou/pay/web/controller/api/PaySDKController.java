@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ import com.sogou.pay.web.utils.ServletUtil;
  * @Description: 支付请求controller
  */
 @Controller
-@RequestMapping(value = "/paysdk")
+//@RequestMapping(value = "/paysdk")
 @SuppressWarnings("all")
 public class PaySDKController extends BaseController{
     
@@ -84,12 +85,12 @@ public class PaySDKController extends BaseController{
      *               4.判断参数中是否有支付渠道
      *               5.支付业务处理
      */
-    @Profiled(el = true, logger = "webTimingLogger", tag = "/paysdk/doPay",
+    @Profiled(el = true, logger = "webTimingLogger", tag = "/api/pay/sdk",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/doPay")
+    @RequestMapping("/api/pay/sdk")
     @ResponseBody
     public String doPay(PayParams params, HttpServletRequest request,HttpServletResponse response){
-        ResultBean resultBean = ResultBean.build();
+        ResultMap result = ResultMap.build();
         logger.info("【支付请求】进入dopay,请求参数为：" + JsonUtil.beanToJson(params));
         //将参数转化为map
         PMap<String,String> paramMap = PMapUtil.fromBean(params);
@@ -102,7 +103,78 @@ public class PaySDKController extends BaseController{
         if(!Result.isSuccess(signResult)){
             logger.error("【支付请求】验证签名错误！");
           //获取业务平台签名失败
-          return String.valueOf(signResult.getStatus().getCode());
+            result.withError(signResult.getStatus());
+            return JSONObject.toJSONString(result);
+        }
+        logger.info("【支付请求】通过验证签名！");
+        /**2.验证参数**/
+        List validateResult = ControllerUtil.validateParams(params);
+        if (validateResult.size() != 0) {
+            //验证参数失败
+            logger.error("【支付请求】" + validateResult.toString().substring(1,validateResult.toString().length()-1));
+            result.withError(ResultStatus.PARAM_ERROR);
+            return JSONObject.toJSONString(result);
+        }
+        //转义商品名称与描述
+        paramMap = escapeSequence(paramMap);
+        logger.info("【支付请求】通过验证参数！");
+        /**3.生成支付单信息**/
+        //查询该订单是否已经支付
+        ResultMap orderResult = payManager.selectPayOrderInfoByOrderId(params.getOrderId(),params.getAppId());
+        if(!Result.isSuccess(orderResult)){
+            logger.error("【支付请求】检查订单信息错误！selectPayOrderInfoByOrderId()..");
+            //系统错误或者该支付单已经支付完成
+            return JSONObject.toJSONString(orderResult);
+        }
+        String payId = null;
+        if(null != orderResult.getReturnValue()){
+            payId = ((PayOrderInfo)orderResult.getReturnValue()).getPayId();
+        } else {
+            ResultMap payOrderResult = payManager.insertPayOrder(paramMap);
+            if(!Result.isSuccess(payOrderResult)){
+                //插入支付单失败
+                return JSONObject.toJSONString(payOrderResult);
+            }
+            payId = payOrderResult.getReturnValue().toString();
+        }
+        logger.info("【支付请求】成功生成支付单信息！支付单号为：" + payId);
+        /**4.判断是否有渠道支付信息，若无，则进行银行适配**/
+        if(StringUtils.isBlank(params.getBankId())){
+            //支付渠道为空
+            logger.error("【支付请求】支付渠道为空");
+            result.withError(ResultStatus.PAY_BANKID_IS_NULL);
+            return JSONObject.toJSONString(result);
+        }
+        /**5.支付业务处理**/
+        //将支付单ID放入map
+        paramMap.put("payId",payId);
+        ResultMap payResult = this.commonPay(paramMap);
+        if(!Result.isSuccess(payResult)){
+            //支付业务失败
+            return JSONObject.toJSONString(payResult);
+        }
+        return JSONObject.toJSONString(payResult);
+    }
+
+    @Profiled(el = true, logger = "webTimingLogger", tag = "/paysdk/doPay",
+            timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @RequestMapping("/paysdk/doPay")
+    @ResponseBody
+    public String doPay_deprecated(PayParams params, HttpServletRequest request,HttpServletResponse response){
+        ResultBean resultBean = ResultBean.build();
+        logger.info("【支付请求】进入dopay,请求参数为：" + JsonUtil.beanToJson(params));
+        //将参数转化为map
+        PMap<String,String> paramMap = PMapUtil.fromBean(params);
+        //获得用户IP
+        String ip = ServletUtil.getRealIp(request);
+        paramMap.put("userIp", ip);
+        paramMap.put("channelCode",params.getBankId());
+        /**1.验证签名**/
+        Result signResult = secureManager.verifyAppSign(params);
+        if(!Result.isSuccess(signResult)){
+            logger.error("【支付请求】验证签名错误！");
+            //获取业务平台签名失败
+            return String.valueOf(signResult.getStatus().getCode());
         }
         logger.info("【支付请求】通过验证签名！");
         /**2.验证参数**/
@@ -140,7 +212,7 @@ public class PaySDKController extends BaseController{
             //支付渠道为空
             logger.error("【支付请求】支付渠道为空");
             return String.valueOf(ResultStatus.PAY_BANKID_IS_NULL.getCode());
-        } 
+        }
         /**5.支付业务处理**/
         //将支付单ID放入map
         paramMap.put("payId",payId);
@@ -151,6 +223,9 @@ public class PaySDKController extends BaseController{
         }
         return JSONObject.toJSONString(payResult);
     }
+
+
+
     /**
      * @Author	huangguoqing 
      * @MethodName	commonPay 

@@ -80,7 +80,7 @@
         <property name="mergeSql" value="true" />
     </bean>
 
-    <bean id="log-filter" class="com.alibaba.druid.filter.logging.Log4jFilter">
+    <bean id="log-filter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter">
         <property name="statementExecutableSqlLogEnable" value="true" />
         <property name="resultSetLogEnabled" value="true" />
     </bean>

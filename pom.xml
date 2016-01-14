@@ -20,22 +20,43 @@
 
     <repositories>
         <repository>
+            <releases>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
             <id>Nexus</id>
             <name>Nexus Public Repository</name>
             <url>http://repo.upd.sogou-inc.com/nexus/content/groups/public</url>
+            <layout>default</layout>
         </repository>
         <repository>
-            <id>Nexus Thrird</id>
+            <releases>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+            <id>NexusThird</id>
             <name>Nexus Thirdparty Repository</name>
             <url>http://repo.upd.sogou-inc.com/nexus/content/repositories/thirdparty/</url>
+            <layout>default</layout>
         </repository>
-
     </repositories>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <java-version>1.7</java-version>
+        <java-version>1.8</java-version>
         <slf4j.version>1.7.5</slf4j.version>
         <junit.version>4.11</junit.version>
         <mockito-all.version>1.9.5</mockito-all.version>
@@ -240,11 +261,11 @@
                 <version>${logback.version}</version>
             </dependency>
 
-            <dependency>
+<!--            <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-access</artifactId>
                 <version>${logback.version}</version>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -252,11 +273,11 @@
                 <version>${slf4j.version}</version>
             </dependency>
 
-            <dependency>
+<!--            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.version}</version>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -319,21 +340,24 @@
                 <artifactId>logback-ext-spring</artifactId>
                 <version>0.1.1</version>
             </dependency>
-            <dependency>
+
+<!--            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
                 <version>1.7.5</version>
             </dependency>
+
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
                 <version>1.7.5</version>
-            </dependency>
-            <dependency>
+            </dependency>-->
+
+<!--            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>log4j-over-slf4j</artifactId>
                 <version>1.7.5</version>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>org.perf4j</groupId>

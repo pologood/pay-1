@@ -13,6 +13,7 @@ public enum OrderState {
     SUCCESS(3),         // SUCCESS—支付完成
     FAILURE(4),        // FAILURE--支付失败
     CLOSED(5),          // CLOSED—已关闭
+    REFUND(6),          //REFUND-转入退款
     ;
 
     private OrderState(int value) {

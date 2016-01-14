@@ -1,6 +1,7 @@
 package com.sogou.pay.common.result;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -8,7 +9,7 @@ import java.util.Map;
  */
 public class ResultMap<T> extends Result<T> {
 
-    private Map<String, Object> data = new HashMap<>();
+    private Map<String, Object> data = new LinkedHashMap<>();
 
     protected ResultMap(ResultStatus status, String message) {
         super(status, message);

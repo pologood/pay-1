@@ -39,6 +39,11 @@
             <artifactId>logback-ext-spring</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
         <!-- helper libraries -->
         <dependency>
             <groupId>commons-collections</groupId>

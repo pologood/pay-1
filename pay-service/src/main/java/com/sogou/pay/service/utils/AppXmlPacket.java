@@ -1,5 +1,6 @@
 package com.sogou.pay.service.utils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogou.pay.common.result.ResultStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,7 @@ import java.util.*;
  * Created by qibaichao on 2015/6/23.
  */
 public class AppXmlPacket {
-
+    @JsonIgnore
     private static final Logger logger = LoggerFactory.getLogger(AppXmlPacket.class);
     //返回码
     private int retcode;

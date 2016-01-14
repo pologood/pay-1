@@ -21,7 +21,7 @@ public class RefundParams {
     @Length(max = 30)
     private String orderId;         // 商户订单ID
 
-    @NotBlank(message = "订单金额不能空,！")
+    //@NotBlank(message = "订单金额不能空,！")
     @DecimalMin(value="0.01",message="金额最小为0.01元")
     @Amount(message = "订单金额格式为必须是大于0的浮点数，整数部分最多10位，两位小数")
     private String refundAmount;    // 退款金额，以元为单位小数

@@ -87,6 +87,12 @@
         FROM t_refund_info WHERE refund_id=#{refundId}
     </select>
 
+    <select id="selectByPayId" parameterType="String" resultMap="refundInfoList">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_refund_info WHERE pay_id=#{payId}
+    </select>
+
     <select id="selectByPayIdAndRefundStatus" resultMap="refundInfoList">
         SELECT
         <include refid="tableColumns"/>

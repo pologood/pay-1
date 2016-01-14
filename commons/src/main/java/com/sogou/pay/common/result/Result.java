@@ -16,7 +16,10 @@ public abstract class Result<T> {
 
     protected Result(ResultStatus status, String message) {
         this.status = status;
-        this.message = message;
+        if (message == null)
+            this.message = status.getMessage();
+        else
+            this.message = message;
     }
 
     /**
@@ -37,6 +40,7 @@ public abstract class Result<T> {
      */
     public Result<T> withError(ResultStatus status) {
         this.status = status;
+        this.message = status.getMessage();
         return this;
     }
 
@@ -47,6 +51,7 @@ public abstract class Result<T> {
      */
     public Result<T> withSuccess() {
         this.status = ResultStatus.SUCCESS;
+        this.message = ResultStatus.SUCCESS.getMessage();
         return this;
     }
 

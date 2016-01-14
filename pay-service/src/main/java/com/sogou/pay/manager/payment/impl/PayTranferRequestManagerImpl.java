@@ -53,7 +53,8 @@ public class PayTranferRequestManagerImpl implements PayTranferRequestManager {
     private Lock lock = new ReentrantLock();    //注意这个地方
 
     @Override
-    public Result doProcess(String appId,String batchNo) {
+    public Result doProcess(String appId, String batchNo) {
+        logger.info("【代发批次处理开始!】,batchNo = " + batchNo);
         // 取得锁
         lock.lock();
         ResultBean result = ResultBean.build();
@@ -71,7 +72,7 @@ public class PayTranferRequestManagerImpl implements PayTranferRequestManager {
                 return result;
             }
             //验证代发单是否存在
-            List<PayTransfer> payTransferList = payTransferService.queryByBatchNo(appId,batchNo);
+            List<PayTransfer> payTransferList = payTransferService.queryByBatchNo(appId, batchNo);
             if (CollectionUtils.isEmpty(payTransferList)) {
                 logger.error("【代发单信息不存在!】,batchNo = " + batchNo);
                 result.withError(ResultStatus.PAY_TRANFER_NOT_EXIST);
@@ -90,7 +91,7 @@ public class PayTranferRequestManagerImpl implements PayTranferRequestManager {
             String responseStr = HttpUtil.sendPost(PayConfig.payTranferHost, requestData);
             logger.info("【代发请求返回数据】xml：" + responseStr);
             //处理返回结果
-            processResult(responseStr, appId,batchNo);
+            processResult(responseStr, appId, batchNo);
         } catch (Exception e) {
             logger.error("代发请求异常,batchNo :" + batchNo + "error：" + e);
             result.withError(ResultStatus.SYSTEM_ERROR);
@@ -98,6 +99,7 @@ public class PayTranferRequestManagerImpl implements PayTranferRequestManager {
             // 释放锁
             lock.unlock();
         }
+        logger.info("【代发批次处理结束!】,batchNo = " + batchNo);
         return result;
     }
 
@@ -155,7 +157,7 @@ public class PayTranferRequestManagerImpl implements PayTranferRequestManager {
      *
      * @param resultData
      */
-    private void processResult(String resultData,String appId,String batchNo) throws Exception {
+    private void processResult(String resultData, String appId, String batchNo) throws Exception {
 
         XmlPacket pktRsp = XmlPacket.valueOf(resultData);
         if (pktRsp == null) {
@@ -184,7 +186,7 @@ public class PayTranferRequestManagerImpl implements PayTranferRequestManager {
         try {
             payTransferBatchService.updateTransferBatch(payTransferBatch);
             //修改代发单状态
-            payTransferService.updateStatusByBatchNo(appId,batchNo, PayTransferStatus.IN_PROCESSING.getValue());
+            payTransferService.updateStatusByBatchNo(appId, batchNo, PayTransferStatus.IN_PROCESSING.getValue());
             //提交事务
             transactionManager.commit(txStatus);
         } catch (Exception e) {
