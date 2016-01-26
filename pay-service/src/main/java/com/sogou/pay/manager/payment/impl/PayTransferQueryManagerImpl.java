@@ -151,9 +151,9 @@ public class PayTransferQueryManagerImpl implements PayTransferQueryManager {
         queryMap.put("BGNDAT", DateUtil.formatCompactDate(payTransferBatch.getCreateTime()));
         //结束日期
         queryMap.put("ENDDAT", DateUtil.formatCompactDate(new Date()));
-//        queryMap.put("BGNDAT", "20150308");
+        queryMap.put("BGNDAT", "20150520");
 //        //结束日期
-//        queryMap.put("ENDDAT", "20150308");
+        queryMap.put("ENDDAT", "20150520");
         //业务参考号
         queryMap.put("YURREF", payTransferBatch.getYurref());
         xmlPkt.putProperty("SDKATSQYX", queryMap);
