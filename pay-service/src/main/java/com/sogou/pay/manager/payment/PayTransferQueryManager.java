@@ -1,6 +1,6 @@
 package com.sogou.pay.manager.payment;
 
-import com.sogou.pay.common.result.Result;
+import com.sogou.pay.common.types.Result;
 import com.sogou.pay.service.entity.PayTransferBatch;
 
 /**

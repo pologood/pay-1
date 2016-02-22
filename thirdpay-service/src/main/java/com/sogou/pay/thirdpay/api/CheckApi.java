@@ -1,9 +1,8 @@
 package com.sogou.pay.thirdpay.api;
 
 
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.thirdpay.biz.modle.*;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.PMap;
 
 /**
  * Created by qibaichao on 2015/3/4.
@@ -17,23 +16,9 @@ public interface CheckApi {
      * @param params
      * @return
      */
-    public ResultMap doQueryAlipay(PMap params);
+    public ResultMap doQuery(PMap params);
 
-    /**
-     * 财付通对账数据获取
-     *
-     * @param params
-     * @return
-     */
-    public ResultMap doQueryTenpay(PMap params);
 
-    /**
-     * 微信对账数据获取
-     *
-     * @param params
-     * @return
-     */
-    public ResultMap doQueryWechat(PMap params);
     /**
      * 快钱支付对账数据获取
      *

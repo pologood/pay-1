@@ -2,7 +2,7 @@ package com.sogou.pay.service.dao;
 
 import java.util.Date;
 
-import com.sogou.pay.service.enums.AgencyType;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.enums.OperationLogStatus;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

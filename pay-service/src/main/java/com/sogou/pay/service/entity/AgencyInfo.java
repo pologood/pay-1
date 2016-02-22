@@ -63,6 +63,11 @@ public class AgencyInfo implements Serializable{
     private String queryRefundUrl;
 
     /**
+     * 下载对账单URL
+     */
+    private String downloadUrl;
+
+    /**
      * 发手机验证码URL
      */
     private String sendPhoneUrl;
@@ -164,6 +169,14 @@ public class AgencyInfo implements Serializable{
 
     public void setPrepayUrl(String prepayUrl) {
         this.prepayUrl = prepayUrl;
+    }
+
+    public String getDownloadUrl() {
+        return downloadUrl;
+    }
+
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
     }
 
     public Date getCreateTime() {

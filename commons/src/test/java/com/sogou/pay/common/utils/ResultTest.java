@@ -1,10 +1,10 @@
 package com.sogou.pay.common.utils;
 
 import com.sogou.pay.common.BaseTest;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultList;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultList;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import org.junit.Test;
 
 import java.util.Arrays;

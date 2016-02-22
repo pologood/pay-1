@@ -3,7 +3,7 @@ package com.sogou.pay.service.payment.manager;
 import com.sogou.pay.service.BaseTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.payment.PayManager;
 
 public class PayManagerTest extends BaseTest {

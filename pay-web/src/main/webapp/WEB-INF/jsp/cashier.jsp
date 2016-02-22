@@ -7,12 +7,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>搜狗支付中心收银台</title>
-<link rel="stylesheet" type="text/css" href="../static/css/base.css"/>
-<link rel="stylesheet" type="text/css" href="../static/css/index.css"/>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/base.css"/>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/index.css"/>
     <!--HM开始-->
-<link rel="stylesheet" type="text/css" href="../hm/cssfix.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/hm/cssfix.css">
 <!--[if lt IE 9]>
-    <link rel="stylesheet" type="text/css" href="../hm/iefix.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/hm/iefix.css">
 <![endif]-->
     <!--HM结束-->
 <script>
@@ -25,7 +25,7 @@
 		if("WECHAT" == channelcode){
 			$.ajax({ 
 		            type: "post", 
-		            url: "getQrCode.j",
+		            url: "${pageContext.request.contextPath}/pay/getQrCode",
 		            data:{channelCode:channelcode,
 		            	  appId:$("input[name='appId']").val(),
 		            	  accessPlatform:$("input[name='accessPlatform']").val(),
@@ -64,7 +64,7 @@
 		} else {
 			$.ajax({ 
 	            type: "post", 
-	            url: "getQrCode.j",
+	            url: "${pageContext.request.contextPath}/pay/getQrCode",
 	            data:{channelCode:channelcode,
 	            	  appId:$("input[name='appId']").val(),
 	            	  accessPlatform:$("input[name='accessPlatform']").val(),
@@ -103,7 +103,7 @@
 			return;
 		$.ajax({ 
             type: "post", 
-            url: "../notify/wechat/pay/getWechatStatus.j", 
+            url: "${pageContext.request.contextPath}/notify/wechat/pay/getWechatStatus.j",
             data:{payReqId:payReqId,
             	     appId:$("input[name='appId']").val()
           	     },
@@ -114,7 +114,7 @@
             	if(json.status == "SUCCESS"){
             		var payStatus = json.data.payStatus;
             		if(payStatus == "SUCCESS" || payStatus == "REFUND"){
-            			window.location.href="../notify/wechat/pay/webSync.j?payReqId="+$("input[name='payDetailId']").val();
+            			window.location.href="${pageContext.request.contextPath}/notify/wechat/pay/webSync.j?payReqId="+$("input[name='payDetailId']").val();
             		}
             	}
             }
@@ -136,7 +136,7 @@
 <div class="header">
 	
 </div>
-<form action="doCashierPay.j" method="post" name="payForm" id="payForm">
+<form action="${pageContext.request.contextPath}/pay/doCashierPay" method="post" name="payForm" id="payForm">
 <c:forEach items="${commonMap}" var="entry">  
        <input type="hidden" name="${entry.key}" value="${entry.value}"/>
 </c:forEach>
@@ -179,7 +179,7 @@
 		<div class="pay-code rg ">
 			<div class="pay-img">
 				<img id="detailWxImg" style="width:100%;" src="${qrCode}"/>
-				<img src="../static/img/wx.jpg"/>
+				<img src="${pageContext.request.contextPath}/static/img/wx.jpg"/>
 				<dd class="exploreInfo">微信二维码暂不支持IE7及以下版本</dd>
 			</div>
 		</div>
@@ -218,10 +218,10 @@
 						</c:forEach>
 					</ul>
 					<div class="QR-Code-WeChat">
-						<img id="syImg" src="../static/img/loading.gif">
+						<img id="syImg" src="${pageContext.request.contextPath}/static/img/loading.gif">
 					</div>
 					<div class="QR-Code-Ali">
-						<iframe id="if1" frameborder="0" height="300" width="600" src="../static/img/loading.gif"></iframe>
+						<iframe id="if1" frameborder="0" height="300" width="600" src="${pageContext.request.contextPath}/static/img/loading.gif"></iframe>
 					</div>
 					<div class="QR-fail">
 						<div class="QR-content">
@@ -329,7 +329,7 @@
     </div>
 </div>
 </form>
-<script type="text/javascript" src="../static/js/jq.js"></script>
-<script type="text/javascript" src="../static/js/index.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/jq.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/index.js"></script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 package com.sogou.pay.web.controller.api;
 
 import com.sogou.pay.common.http.utils.MyThread;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.*;
 import com.sogou.pay.manager.model.RefundModel;
 import com.sogou.pay.manager.payment.*;
@@ -181,15 +181,15 @@ public class KpiRefundController extends BaseController {
             //2.根据业务线订单号、业务线ID查询唯一订单信息
             PayOrderInfo payOrderInfo = payOrderService.selectPayOrderInfoByOrderId(orderId, appId);
             if (null == payOrderInfo) {
-                return ResultMap.build(ResultStatus.REFUND_UNEXIST_ORDER);
+                return ResultMap.build(ResultStatus.REFUND_ORDER_NOT_EXIST);
             }
 
             if (PayOrderStatus.SUCCESS.getValue() != payOrderInfo.getPayOrderStatus()) {
-                return ResultMap.build(ResultStatus.REFUND_ORDER_UNPAY);
+                return ResultMap.build(ResultStatus.REFUND_ORDER_NOT_PAY);
             }
             //3.检查支付订单是否已经退款
             if (RefundFlag.SUCCESS.getValue() == payOrderInfo.getRefundFlag()) {
-                return ResultMap.build(ResultStatus.REFUND_EXIST_REFUND_SUCCESS);
+                return ResultMap.build(ResultStatus.REFUND_REFUND_ALREADY_DONE);
             }
             //4.检查退款金额与支付金额是否相同
             BigDecimal payMoney = payOrderInfo.getOrderMoney();            //订单支付金额
@@ -197,7 +197,7 @@ public class KpiRefundController extends BaseController {
             // BigDecimal payRefundMoney = payOrderInfo.getRefundMoney();  //订单退款金额
             if (refundAmount.compareTo(payMoney) != 0) {
                 // 退款金额不等于余额
-                return ResultMap.build(ResultStatus.REFUND_PARAM_MON_ERROR);
+                return ResultMap.build(ResultStatus.REFUND_PARTIAL_REFUND);
             }
             result.withReturn(payOrderInfo);
             return result;
@@ -243,7 +243,7 @@ public class KpiRefundController extends BaseController {
         if (params instanceof Map) {
             return MapUtil.dropNulls((Map) params);
         } else {
-            return BeanUtil.beanToMapNotNull(params);
+            return BeanUtil.Bean2MapNotNull(params);
         }
     }
 

@@ -1,7 +1,6 @@
 package com.sogou.pay.manager.payment;
 
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
+import com.sogou.pay.common.types.Result;
 
 /**
  * Created by qibaichao on 2015/6/12.

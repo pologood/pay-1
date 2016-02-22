@@ -1,11 +1,11 @@
 package com.sogou.pay.manager.payment.impl;
 
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
-import com.sogou.pay.common.utils.JsonUtil;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.utils.JSONUtil;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.manager.model.RefundModel;
 import com.sogou.pay.manager.model.thirdpay.FairAccRefundModel;
@@ -14,9 +14,10 @@ import com.sogou.pay.service.entity.*;
 import com.sogou.pay.service.enums.*;
 import com.sogou.pay.service.payment.*;
 import com.sogou.pay.service.utils.Constant;
-import com.sogou.pay.service.utils.DateUtils;
 import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
-import com.sogou.pay.thirdpay.api.RefundApi;
+//import com.sogou.pay.thirdpay.api.RefundApi;
+import com.sogou.pay.thirdpay.api.PayPortal;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
 import org.apache.commons.collections.CollectionUtils;
 import org.perf4j.aop.Profiled;
@@ -41,8 +42,10 @@ public class RefundManagerImpl implements RefundManager {
 
     private static final BigDecimal ZERO = BigDecimal.ZERO;
 
+//    @Autowired
+//    private RefundApi refundApi;
     @Autowired
-    private RefundApi refundApi;
+    private PayPortal payPortal;
     @Autowired
     private PayOrderService payOrderService;
     @Autowired
@@ -75,8 +78,8 @@ public class RefundManagerImpl implements RefundManager {
             List<RefundInfo> refundInfoList = refundService.selectByPayIdAndRefundStatus(payOrderInfo.getPayId(), RefundStatus.SUCCESS.getValue());
             if (CollectionUtils.isNotEmpty(refundInfoList)) {
                 // 已经退款成功
-                logger.error("Refund Request ,Already SUCCESS,params :" + JsonUtil.beanToJson(model));
-                return ResultMap.build(ResultStatus.REFUND_EXIST_REFUND_SUCCESS);
+                logger.error("Refund Request ,Already SUCCESS,params :" + JSONUtil.Bean2JSON(model));
+               // return ResultMap.build(ResultStatus.REFUND_REFUND_ALREADY_DONE);
             }
             //3.查订单与流水关联表
             PayOrderRelation payOrderRelation = new PayOrderRelation();
@@ -85,7 +88,7 @@ public class RefundManagerImpl implements RefundManager {
             List<PayOrderRelation> relations = payOrderRelationService.selectPayOrderRelation(payOrderRelation);
             if (CollectionUtils.isEmpty(relations)) {
                 // 无Refund Request 单
-                logger.error("Refund Request ,No Payment Request,params :" + JsonUtil.beanToJson(model));
+                logger.error("Refund Request ,No Payment Request,params :" + JSONUtil.Bean2JSON(model));
                 return ResultMap.build(ResultStatus.REFUND_PARAM_ERROR);
             }
             //4.查支付回调流水表
@@ -115,8 +118,8 @@ public class RefundManagerImpl implements RefundManager {
             String refundId = sequencerGenerator.getRefundDetailId(); //订单号
             boolean insertResult = insertRefundInfo(refundId, model, payOrderInfo.getPayId(), payOrderInfo.getOrderMoney(), payResDetail);
             if (!insertResult) {
-                logger.error("FairAccountRefund Request,Add The Order Abnormal,params :" + JsonUtil.beanToJson(model));
-                return ResultMap.build(ResultStatus.REFUND_SERVICE_ERROR);
+                logger.error("FairAccountRefund Request,Add The Order Abnormal,params :" + JSONUtil.Bean2JSON(model));
+                return ResultMap.build(ResultStatus.REFUND_DB_ERROR);
             }
             //7.调用退款网关
             ResultMap refundResult = refundOrder(payResDetail, model.getRefundAmount(), payOrderInfo.getOrderMoney(), agencyInfo, agencyMerchant, refundId);
@@ -127,7 +130,7 @@ public class RefundManagerImpl implements RefundManager {
             ResultMap wechatResult = refundSuccessInfo(model, payResDetail, payOrderInfo, refundResult, refundId, agencyCode, merchantNo);
             return wechatResult;
         } catch (Exception e) {
-            logger.error("Refund Request error,params :" + JsonUtil.beanToJson(model) + "error：" + e);
+            logger.error("Refund Request error,params :" + JSONUtil.Bean2JSON(model) + "error：" + e);
             return ResultMap.build(ResultStatus.SYSTEM_ERROR);
         }
     }
@@ -148,18 +151,18 @@ public class RefundManagerImpl implements RefundManager {
             //2.根据业务线订单号、业务线ID查询唯一订单信息
             PayOrderInfo payOrderInfo = payOrderService.selectPayOrderInfoByOrderId(orderId, appId);
             if (null == payOrderInfo) {
-                logger.error("Refund Request ,Check PayOrder Anomaly,params :" + JsonUtil.beanToJson(model));
-                return ResultMap.build(ResultStatus.REFUND_UNEXIST_ORDER);
+                logger.error("Refund Request ,Check PayOrder Anomaly,params :" + JSONUtil.Bean2JSON(model));
+                return ResultMap.build(ResultStatus.REFUND_ORDER_NOT_EXIST);
             }
 
             if (PayOrderStatus.SUCCESS.getValue() != payOrderInfo.getPayOrderStatus()) {
-                logger.error("Refund Request ,PayOrder Not To Pay Success,params :" + JsonUtil.beanToJson(model));
-                return ResultMap.build(ResultStatus.REFUND_ORDER_UNPAY);
+                logger.error("Refund Request ,PayOrder Not To Pay Success,params :" + JSONUtil.Bean2JSON(model));
+                return ResultMap.build(ResultStatus.REFUND_ORDER_NOT_PAY);
             }
             //3.检查支付订单是否已经退款
             if (RefundFlag.SUCCESS.getValue() == payOrderInfo.getRefundFlag()) {
-                logger.error("Refund Request ,PayOrder Already Refund,params :" + JsonUtil.beanToJson(model));
-                return ResultMap.build(ResultStatus.REFUND_EXIST_REFUND_SUCCESS);
+                logger.error("Refund Request ,PayOrder Already Refund,params :" + JSONUtil.Bean2JSON(model));
+              //  return ResultMap.build(ResultStatus.REFUND_REFUND_ALREADY_DONE);
             }
             //4.检查退款金额与支付金额是否相同
             BigDecimal payMoney = payOrderInfo.getOrderMoney();            //订单支付金额
@@ -169,13 +172,13 @@ public class RefundManagerImpl implements RefundManager {
                 model.setRefundAmount(payMoney);
             }else if (refundAmount.compareTo(payMoney) != 0) {
                 // 退款金额不等于余额
-                logger.error("Refund Request ,The Refund Amount Ss Not Equal Pay Amount,params :" + JsonUtil.beanToJson(model));
-                return ResultMap.build(ResultStatus.REFUND_PARAM_MON_ERROR);
+                logger.error("Refund Request ,The Refund Amount Ss Not Equal Pay Amount,params :" + JSONUtil.Bean2JSON(model));
+                return ResultMap.build(ResultStatus.REFUND_PARTIAL_REFUND);
             }
             result.withReturn(payOrderInfo);
             return result;
         } catch (Exception e) {
-            logger.error("Refund Request error,params :" + JsonUtil.beanToJson(model) + "error：" + e);
+            logger.error("Refund Request error,params :" + JSONUtil.Bean2JSON(model) + "error：" + e);
             return ResultMap.build(ResultStatus.SYSTEM_ERROR);
         }
     }
@@ -214,7 +217,7 @@ public class RefundManagerImpl implements RefundManager {
                 return false;
             }
         } catch (Exception e) {
-            logger.error("Refund Request error,params :" + JsonUtil.beanToJson(model) + "error：" + e);
+            logger.error("Refund Request error,params :" + JSONUtil.Bean2JSON(model) + "error：" + e);
             return false;
         }
         return true;
@@ -252,16 +255,17 @@ public class RefundManagerImpl implements RefundManager {
             pMap.put("totalAmount", String.valueOf(orderMoney.doubleValue()));                        //支付金额
             String sellerEmail = agencyMerchant.getSellerEmail();
             pMap.put("sellerEmail", sellerEmail);                                                     //商户邮箱或者公众号ID
-            ResultMap refundResult = refundApi.refundOrder(pMap);
+            //ResultMap refundResult = refundApi.refundOrder(pMap);
+            ResultMap refundResult = payPortal.refundOrder(pMap);
             if (!Result.isSuccess(refundResult)) {
                 String errorCode = (String) refundResult.getData().get("error_code");                 //退款错误码
                 String errorInfo = (String) refundResult.getData().get("error_info");                 //退款错误信息
                 refundService.updateRefundFail(refundId, errorCode, errorInfo);
-                return ResultMap.build(ResultStatus.REFUND_SERVICE_ERROR);
+                return ResultMap.build(ResultStatus.THIRD_REFUND_ERROR);
             }
             return refundResult;
         } catch (Exception e) {
-            logger.error("Refund Request RefundOrder error,params :" + JsonUtil.beanToJson(payResDetail) + "error：" + e);
+            logger.error("Refund Request RefundOrder error,params :" + JSONUtil.Bean2JSON(payResDetail) + "error：" + e);
             return ResultMap.build(ResultStatus.SYSTEM_ERROR);
         }
     }
@@ -291,8 +295,8 @@ public class RefundManagerImpl implements RefundManager {
                 int payUpdateResult = payOrderService.updateAddRefundMoney(payOrderInfo.getPayId(), model.getRefundAmount(), payRefundFlag);
                 if (payUpdateResult != 1) {
                     // 支付单退款状态修改错误
-                    logger.info("Refund Request ,update payOrder refund status error!,params :" + JsonUtil.beanToJson(model));
-                    return ResultMap.build(ResultStatus.REFUND_SERVICE_ERROR);
+                    logger.info("Refund Request ,update payOrder refund status error!,params :" + JSONUtil.Bean2JSON(model));
+                    return ResultMap.build(ResultStatus.REFUND_DB_ERROR);
                 }
                 refundService.updateRefundSuccess(refundId, sucDate);
                 PayCheckWaiting payCheckWaiting = new PayCheckWaiting();
@@ -317,7 +321,7 @@ public class RefundManagerImpl implements RefundManager {
                 payCheckWaitingService.insert(payCheckWaiting);
 
                 // 4.发送Refund Request 通知入队列
-                logger.info("Send out  Refund Request to queue,params:" + JsonUtil.beanToJson(model));
+                logger.info("Send out  Refund Request to queue,params:" + JSONUtil.Bean2JSON(model));
                 String appBgUrl = model.getBgurl();
                 if (!StringUtil.isBlank(appBgUrl)) {
                     Map<String, String> data = new HashMap<>();
@@ -338,7 +342,7 @@ public class RefundManagerImpl implements RefundManager {
             }
             return ResultMap.build();
         } catch (Exception e) {
-            logger.error("Refund Request error,params :" + JsonUtil.beanToJson(model) + "error：" + e);
+            logger.error("Refund Request error,params :" + JSONUtil.Bean2JSON(model) + "error：" + e);
             return ResultMap.build(ResultStatus.SYSTEM_ERROR);
         }
     }
@@ -350,7 +354,7 @@ public class RefundManagerImpl implements RefundManager {
      */
     @Override
     public Result fairAccountRefund(FairAccRefundModel model) {
-        logger.info("FairAccountRefund Request start!payDetailId" + JsonUtil.beanToJson(model));
+        logger.info("FairAccountRefund Request start!payDetailId" + JSONUtil.Bean2JSON(model));
         int appId = model.getAppId();
         String orderId = model.getOrderId();
         String payId = model.getPayId();
@@ -401,7 +405,7 @@ public class RefundManagerImpl implements RefundManager {
             int insertResult = refundService.insertRefundInfo(refundInfo);
             if (insertResult != 1) {
                 logger.error("FairAccountRefund Request,Add The Order Abnormal,params :" + payDetailId);
-                return ResultMap.build(ResultStatus.REFUND_SERVICE_ERROR);
+                return ResultMap.build(ResultStatus.REFUND_DB_ERROR);
             }
             //7.调用退款网关
             ResultMap refundResult = refundOrder(payResDetail, payResDetail.getTrueMoney(), payResDetail.getTrueMoney(),

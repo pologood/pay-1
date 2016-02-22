@@ -1,7 +1,7 @@
 package com.sogou.pay.thirdpay.api;
 
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.PMap;
 
 /**
  * 批量银行代付

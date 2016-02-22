@@ -1,7 +1,8 @@
 package com.sogou.pay.web.controller.api;
 
 import com.sogou.pay.common.http.utils.MyThread;
-import com.sogou.pay.common.result.Result;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.*;
 import com.sogou.pay.manager.model.PayOrderQueryModel;
 import com.sogou.pay.manager.payment.*;
@@ -202,7 +203,7 @@ public class KpiQueryController extends BaseController {
         if (params instanceof Map) {
             return MapUtil.dropNulls((Map) params);
         } else {
-            return BeanUtil.beanToMapNotNull(params);
+            return BeanUtil.Bean2MapNotNull(params);
         }
     }
 

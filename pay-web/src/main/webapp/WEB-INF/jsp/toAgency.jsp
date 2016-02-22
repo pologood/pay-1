@@ -20,9 +20,9 @@
 <body>
 <div style="width:810px; margin: 200px auto;">
     <div class="userform">
-        <form id="congratulation_form" name="congratulation" method="post" action="index.jsp">
+        <form id="congratulation_form" name="congratulation" method="post" action="${pageContext.request.contextPath}/index">
             <div  class="conp">
-                <p align="center"><img src="../static/img/loading.gif" width="60" height="60" /></p>
+                <p align="center"><img src="${pageContext.request.contextPath}/static/img/loading.gif" width="60" height="60" /></p>
                 <p><strong>尊敬的客户：</strong></p>
                 <p><strong class="redtext">页面跳转中，请稍候……</strong></p>
                 <p>感谢您对搜狗支付的信任和支持！</p>

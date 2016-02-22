@@ -1,7 +1,7 @@
 package com.sogou.pay.service.payment.impl;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.service.dao.PayOrderDao;
 import com.sogou.pay.service.entity.PayOrderInfo;
 import com.sogou.pay.service.entity.PayOrderRelation;

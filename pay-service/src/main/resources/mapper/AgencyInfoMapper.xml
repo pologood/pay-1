@@ -14,6 +14,7 @@
         <result property="queryUrl" column="query_url"/>
         <result property="refundUrl" column="refund_url"/>
         <result property="queryRefundUrl" column="query_refund_url"/>
+        <result property="downloadUrl" column="download_url"/>
         <result property="sendPhoneUrl" column="send_phone_url"/>
         <result column="createTime" property="create_time"/>
         <result column="modifyTime" property="modify_time"/>

@@ -7,7 +7,6 @@
  */
 package com.sogou.pay.notify.job;
 
-import com.sogou.pay.common.utils.JsonUtil;
 import com.sogou.pay.notify.entity.NotifyErrorLog;
 import com.sogou.pay.notify.enums.NotifyStatusEnum;
 import com.sogou.pay.notify.enums.NotifyTypeEnum;

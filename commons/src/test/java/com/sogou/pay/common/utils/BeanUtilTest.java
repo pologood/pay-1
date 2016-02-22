@@ -14,7 +14,7 @@ public class BeanUtilTest extends BaseTest {
     @Test
     public void testBeanToMap() {
         TestBean bean = getBean();
-        Map map = BeanUtil.beanToMap(bean);
+        Map map = BeanUtil.Bean2Map(bean);
         System.out.println(map.toString());
         assertTrue(map.containsKey("nickname"));
         assertTrue(map.get("nickname") == null);
@@ -23,7 +23,7 @@ public class BeanUtilTest extends BaseTest {
     @Test
     public void testBeanToMapNotNull() {
         TestBean bean = getBean();
-        Map map = BeanUtil.beanToMapNotNull(bean);
+        Map map = BeanUtil.Bean2MapNotNull(bean);
         System.out.println(map.toString());
         System.out.println(map.get("list").getClass());
         assertFalse(map.containsKey("nickname"));

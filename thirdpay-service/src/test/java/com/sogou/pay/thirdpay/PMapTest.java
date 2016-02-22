@@ -1,10 +1,10 @@
 package com.sogou.pay.thirdpay;
 
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.common.utils.XMLParseUtil;
-import com.sogou.pay.thirdpay.biz.utils.Utils;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.types.PMap;
+import com.sogou.pay.common.utils.StringUtil;
+import com.sogou.pay.common.utils.XMLUtil;
 
 import org.junit.Test;
 
@@ -20,16 +20,16 @@ public class PMapTest extends BaseTest {
         PMap pmap = new PMap();
         String return_code = pmap.getString("return_code");
         return_code = "SUCC";
-        if (Utils.isEmpty(return_code) || !"SUCC".equals(return_code)) {
+        if (StringUtil.isEmpty(return_code) || !"SUCC".equals(return_code)) {
             String resContent = null;
         }
 
         String resContent = null;
         try {
-            pmap = XMLParseUtil.doXMLParse(resContent);
+            pmap = XMLUtil.XML2PMap(resContent);
         } catch (Exception e) {
         }
-        if (Utils.isEmpty(pmap.getString("return_code"), pmap.getString("result_code"),
+        if (StringUtil.isEmpty(pmap.getString("return_code"), pmap.getString("result_code"),
                           pmap.getString("sign"))) {
             System.out.print("result" + pmap);
         }
@@ -39,9 +39,9 @@ public class PMapTest extends BaseTest {
         String sSs = result.getStatus().getMessage();
         System.out.print("result" + pmap);
 
-        result.addItem("error_code", ResultStatus.THIRD_REFUND_ALI_SIGN_ERROR);
-        result.addItem("error_msg", ResultStatus.THIRD_REFUND_ALI_SIGN_ERROR.getMessage());
-        result.withError(ResultStatus.THIRD_REFUND_ALI_SIGN_ERROR);
+        result.addItem("error_code", ResultStatus.THIRD_REFUND_SIGN_ERROR);
+        result.addItem("error_msg", ResultStatus.THIRD_REFUND_SIGN_ERROR.getMessage());
+        result.withError(ResultStatus.THIRD_REFUND_SIGN_ERROR);
         boolean ssssss = result.isSuccess(result);
         String sssss = result.getData().get("error_code").toString();
         System.out.print("result" + pmap);

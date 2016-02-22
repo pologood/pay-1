@@ -18,10 +18,10 @@
 </head>
 <body>
 
-<form name="form1" action="${payUrl}" method="get">
-    <c:forEach var="item" items="${aliwapData}">
+<form name="form1" action="${payUrl}" method="post">
+<%--    <c:forEach var="item" items="${aliwapData}">
         <input type="hidden" name="${item.key}" value="${item.value}"/>
-    </c:forEach>
+    </c:forEach>--%>
 </form>
 <script type="text/javascript">
     document.form1.submit();

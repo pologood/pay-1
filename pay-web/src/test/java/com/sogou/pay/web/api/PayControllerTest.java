@@ -1,19 +1,15 @@
 package com.sogou.pay.web.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.sogou.pay.common.result.ResultMap;
 import com.sogou.pay.common.utils.BeanUtil;
-import com.sogou.pay.common.utils.MD5Util;
 import com.sogou.pay.web.BaseTest;
 import com.sogou.pay.web.controller.api.PayController;
 import com.sogou.pay.web.form.PayParams;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import java.util.Map;
-import java.util.ResourceBundle;
 
 /**
  * @Author huangguoqing
@@ -43,7 +39,7 @@ public class PayControllerTest extends BaseTest {
         params.setPageUrl("http://127.0.0.1:8080/notify/ali/pay/testBgUrl");
         params.setBgUrl("http://127.0.0.1:8080/notify/ali/pay/testBgUrl");
         params.setBankCardType("");
-        Map map = BeanUtil.beanToMap(params);
+        Map map = BeanUtil.Bean2Map(params);
 
         map.put("sign", JSONObject.parse(controller.signData(map, null)));
         testGet(url, map);
@@ -68,7 +64,7 @@ public class PayControllerTest extends BaseTest {
         params.setSignType("0");
         params.setPageUrl("http://127.0.0.1:8080/notify/ali/pay/testBgUrl");
         params.setBgUrl("http://127.0.0.1:8080/notify/ali/pay/testBgUrl");
-        Map map = BeanUtil.beanToMap(params);
+        Map map = BeanUtil.Bean2Map(params);
         map.put("sign", JSONObject.parse(controller.signData(map, null)));
         testGet(url, map);
     }

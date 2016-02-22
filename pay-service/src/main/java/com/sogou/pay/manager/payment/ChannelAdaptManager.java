@@ -1,6 +1,6 @@
 package com.sogou.pay.manager.payment;
 
-import com.sogou.pay.common.result.ResultBean;
+import com.sogou.pay.common.types.ResultBean;
 import com.sogou.pay.manager.model.ChannelAdaptModel;
 
 /**

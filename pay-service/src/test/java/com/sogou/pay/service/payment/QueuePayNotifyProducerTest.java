@@ -1,14 +1,13 @@
 package com.sogou.pay.service.payment;
 
 import com.sogou.pay.common.Model.AppRefundNotifyModel;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.service.BaseTest;
 import com.sogou.pay.service.connect.QueueNotifyProducer;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * Created by qibaichao on 2015/4/9.

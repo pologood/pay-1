@@ -1,8 +1,8 @@
 package com.sogou.pay.thirdpay.biz;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.PMap;
 
 /**
  * @author 用户平台事业部---高朋辉

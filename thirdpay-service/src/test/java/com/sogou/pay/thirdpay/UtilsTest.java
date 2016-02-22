@@ -1,7 +1,7 @@
 package com.sogou.pay.thirdpay;
 
-import com.sogou.pay.thirdpay.biz.utils.Utils;
 
+import com.sogou.pay.thirdpay.service.Tenpay.TenpayUtils;
 import org.junit.Test;
 
 /**
@@ -12,7 +12,7 @@ import org.junit.Test;
 public class UtilsTest extends BaseTest {
     @Test
     public void testUtilsTest() {
-        String refundDate = Utils.getNonceStr();
+        String refundDate = TenpayUtils.getNonceStr();
         System.out.print("result"+refundDate);
     }
     @Test

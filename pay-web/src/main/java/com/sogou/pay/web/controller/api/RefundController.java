@@ -2,10 +2,10 @@ package com.sogou.pay.web.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sogou.pay.common.Model.RefundResult;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.JsonUtil;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.manager.model.RefundModel;
 import com.sogou.pay.manager.payment.RefundManager;
 import com.sogou.pay.manager.notify.RefundNotifyManager;
@@ -53,20 +53,20 @@ public class RefundController {
     public Object refund(RefundParams params, HttpServletRequest request) {
         // 0.记录请求日志
         String ip = ServletUtil.getRealIp(request);
-        logger.info("Refund Request Start!Ip：" + ip + "params:" + JsonUtil.beanToJson(params));
+        logger.info("Refund Request Start!Ip：" + ip + "params:" + JSONUtil.Bean2JSON(params));
         ResultMap result = ResultMap.build();
         // 1.检查参数的完整性和合法性
         List validateResult = ControllerUtil.validateParams(params);
         if (validateResult.size() != 0) {
             result.withError(ResultStatus.REFUND_PARAM_ERROR);
-            logger.error("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(result));
+            logger.error("Refund Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(result));
             return JSONObject.toJSONString(result);
         }
         // 2.检查商户签名
         Result secResult = secureManager.verifyAppSign(params);
         if (!Result.isSuccess(secResult)) {
             result.withError(ResultStatus.REFUND_SIGN_ERROR);
-            logger.error("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(result));
+            logger.error("Refund Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(result));
             return JSONObject.toJSONString(result);
         }
         // 3.组装参数,处理退款订单
@@ -77,7 +77,7 @@ public class RefundController {
             refundModel.setRefundAmount(new BigDecimal(params.getRefundAmount()));  //订单退款金额
         refundModel.setBgurl(params.getBgUrl());                                //回调url
         ResultMap refResult = refundManager.refund(refundModel);
-        logger.info("Refund Request,RefundManager.refund Returns Result:" + JsonUtil.beanToJson(refResult));
+        logger.info("Refund Request,RefundManager.refund Returns Result:" + JSONUtil.Bean2JSON(refResult));
         if (!Result.isSuccess(refResult)) {
             result.withError(refResult.getStatus());
             if (null != refResult.getData().get("error_code")) {
@@ -86,7 +86,7 @@ public class RefundController {
             if (null != refResult.getData().get("error_info")) {
                 result.addItem("errorMsg",refResult.getData().get("error_info").toString());
             }
-            logger.error("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(result));
+            logger.error("Refund Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(result));
             return JSONObject.toJSONString(result);
         }
         // 4.只针对微信、快钱退款无异步回调处理处理，如果有Return Value，则在此步骤回调商户
@@ -97,7 +97,7 @@ public class RefundController {
             refResult.withReturn(secureResult.getReturnValue());
             refundNotifyManager.notifyApp((ResultMap) refResult);
         }
-        logger.info("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(result));
+        logger.info("Refund Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(result));
         return JSONObject.toJSONString(result);
     }
 
@@ -108,14 +108,14 @@ public class RefundController {
     public Object refund_deprecated(RefundParams params, HttpServletRequest request) {
         // 0.记录请求日志
         String ip = ServletUtil.getRealIp(request);
-        logger.info("Refund Request Start!Ip：" + ip + "params:" + JsonUtil.beanToJson(params));
+        logger.info("Refund Request Start!Ip：" + ip + "params:" + JSONUtil.Bean2JSON(params));
         RefundResult refundResult = new RefundResult();
         // 1.检查参数的完整性和合法性
         List validateResult = ControllerUtil.validateParams(params);
         if (validateResult.size() != 0) {
             refundResult.setStatus(ResultStatus.REFUND_PARAM_ERROR.toString());
             refundResult.setMessage(ResultStatus.REFUND_PARAM_ERROR.getMessage());
-            logger.error("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(refundResult));
+            logger.error("Refund Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(refundResult));
             return JSONObject.toJSONString(refundResult);
         }
         // 2.检查商户签名
@@ -123,7 +123,7 @@ public class RefundController {
         if (!Result.isSuccess(secResult)) {
             refundResult.setStatus(ResultStatus.REFUND_SIGN_ERROR.toString());
             refundResult.setMessage(ResultStatus.REFUND_SIGN_ERROR.getMessage());
-            logger.error("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(refundResult));
+            logger.error("Refund Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(refundResult));
             return JSONObject.toJSONString(refundResult);
         }
         // 3.组装参数,处理退款订单
@@ -133,7 +133,7 @@ public class RefundController {
         if(params.getRefundAmount()!=null)
             refundModel.setRefundAmount(new BigDecimal(params.getRefundAmount()));  //订单退款金额        refundModel.setBgurl(params.getBgUrl());                                //回调url
         ResultMap refResult = refundManager.refund(refundModel);
-        logger.info("Refund Request,RefundManager.refund Returns Result:" + JsonUtil.beanToJson(refResult));
+        logger.info("Refund Request,RefundManager.refund Returns Result:" + JSONUtil.Bean2JSON(refResult));
         if (!Result.isSuccess(refResult)) {
             refundResult.setStatus(refResult.getStatus().toString());
             refundResult.setMessage(refResult.getMessage());
@@ -143,7 +143,7 @@ public class RefundController {
             if (null != refResult.getData().get("error_info")) {
                 refundResult.setErrorMsg(refResult.getData().get("error_info").toString());
             }
-            logger.error("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(refundResult));
+            logger.error("Refund Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(refundResult));
             return JSONObject.toJSONString(refundResult);
         }
         // 4.只针对微信、快钱退款无异步回调处理处理，如果有Return Value，则在此步骤回调商户
@@ -156,7 +156,7 @@ public class RefundController {
         }
         refundResult.setStatus(ResultStatus.SUCCESS.toString());
         refundResult.setMessage(ResultStatus.SUCCESS.getMessage());
-        logger.info("Refund Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(refundResult));
+        logger.info("Refund Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(refundResult));
         return JSONObject.toJSONString(refundResult);
     }
 

@@ -5,7 +5,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSON;
+import com.sogou.pay.common.utils.BeanUtil;
+import com.sogou.pay.thirdpay.api.PayPortal;
 import org.apache.commons.lang.StringUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
@@ -17,13 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sogou.pay.common.cache.RedisUtils;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultBean;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.JsonUtil;
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.common.utils.PMapUtil;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultBean;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.utils.JSONUtil;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.payment.AppManager;
 import com.sogou.pay.manager.payment.ChannelAdaptManager;
 import com.sogou.pay.manager.payment.PayManager;
@@ -31,7 +31,7 @@ import com.sogou.pay.manager.secure.SecureManager;
 import com.sogou.pay.service.entity.PayOrderInfo;
 import com.sogou.pay.service.utils.Constant;
 import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
-import com.sogou.pay.thirdpay.api.PayApi;
+//import com.sogou.pay.thirdpay.api.PayApi;
 import com.sogou.pay.web.controller.BaseController;
 import com.sogou.pay.web.form.PayParams;
 import com.sogou.pay.web.utils.ControllerUtil;
@@ -62,8 +62,11 @@ public class PaySDKController extends BaseController{
     @Autowired
     private SecureManager secureManager;
     
+//    @Autowired
+//    private PayApi payApi;
+
     @Autowired
-    private PayApi payApi;
+    private PayPortal payPortal;
     
     @Autowired
     private RedisUtils redisUtils;
@@ -91,9 +94,9 @@ public class PaySDKController extends BaseController{
     @ResponseBody
     public String doPay(PayParams params, HttpServletRequest request,HttpServletResponse response){
         ResultMap result = ResultMap.build();
-        logger.info("【支付请求】进入dopay,请求参数为：" + JsonUtil.beanToJson(params));
+        logger.info("【支付请求】进入dopay,请求参数为：" + JSONUtil.Bean2JSON(params));
         //将参数转化为map
-        PMap<String,String> paramMap = PMapUtil.fromBean(params);
+        PMap<String,String> paramMap = BeanUtil.Bean2PMap(params);
         //获得用户IP
         String ip = ServletUtil.getRealIp(request);
         paramMap.put("userIp", ip);
@@ -112,7 +115,7 @@ public class PaySDKController extends BaseController{
         if (validateResult.size() != 0) {
             //验证参数失败
             logger.error("【支付请求】" + validateResult.toString().substring(1,validateResult.toString().length()-1));
-            result.withError(ResultStatus.PARAM_ERROR);
+            result.withError(ResultStatus.PAY_PARAM_ERROR);
             return JSONObject.toJSONString(result);
         }
         //转义商品名称与描述
@@ -142,7 +145,7 @@ public class PaySDKController extends BaseController{
         if(StringUtils.isBlank(params.getBankId())){
             //支付渠道为空
             logger.error("【支付请求】支付渠道为空");
-            result.withError(ResultStatus.PAY_BANKID_IS_NULL);
+            result.withError(ResultStatus.PAY_PARAM_ERROR);
             return JSONObject.toJSONString(result);
         }
         /**5.支付业务处理**/
@@ -162,9 +165,9 @@ public class PaySDKController extends BaseController{
     @ResponseBody
     public String doPay_deprecated(PayParams params, HttpServletRequest request,HttpServletResponse response){
         ResultBean resultBean = ResultBean.build();
-        logger.info("【支付请求】进入dopay,请求参数为：" + JsonUtil.beanToJson(params));
+        logger.info("【支付请求】进入dopay,请求参数为：" + JSONUtil.Bean2JSON(params));
         //将参数转化为map
-        PMap<String,String> paramMap = PMapUtil.fromBean(params);
+        PMap<String,String> paramMap = BeanUtil.Bean2PMap(params);
         //获得用户IP
         String ip = ServletUtil.getRealIp(request);
         paramMap.put("userIp", ip);
@@ -182,7 +185,7 @@ public class PaySDKController extends BaseController{
         if (validateResult.size() != 0) {
             //验证参数失败
             logger.error("【支付请求】" + validateResult.toString().substring(1,validateResult.toString().length()-1));
-            return String.valueOf(ResultStatus.PARAM_ERROR.getCode());
+            return String.valueOf(ResultStatus.PAY_PARAM_ERROR.getCode());
         }
         //转义商品名称与描述
         paramMap = escapeSequence(paramMap);
@@ -211,7 +214,7 @@ public class PaySDKController extends BaseController{
         if(StringUtils.isBlank(params.getBankId())){
             //支付渠道为空
             logger.error("【支付请求】支付渠道为空");
-            return String.valueOf(ResultStatus.PAY_BANKID_IS_NULL.getCode());
+            return String.valueOf(ResultStatus.PAY_PARAM_ERROR.getCode());
         }
         /**5.支付业务处理**/
         //将支付单ID放入map
@@ -256,7 +259,8 @@ public class PaySDKController extends BaseController{
         PMap payGateMap = (PMap)getPayGateResult.getData().get("payGateMap");
         //调用支付网关
         logger.info("【支付请求】调用支付网关开始，参数为："+payGateMap);
-        ResultMap<String> payGateResult = payApi.preparePay(payGateMap);
+        //ResultMap<String> payGateResult = payApi.preparePay(payGateMap);
+         ResultMap<String> payGateResult = payPortal.preparePay(payGateMap);
         logger.info("【支付请求】调用支付网关结束,返回值为：payGateResult:"+ payGateResult.getData().toString());
         if(!Result.isSuccess(payGateResult)){
             result.withError(ResultStatus.THIRD_PAY_ERROR);

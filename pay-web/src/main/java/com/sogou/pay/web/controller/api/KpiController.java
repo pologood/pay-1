@@ -25,15 +25,14 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sogou.pay.common.cache.RedisUtils;
 import com.sogou.pay.common.http.utils.HttpUtil;
 import com.sogou.pay.common.http.utils.MyThread;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultBean;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultBean;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.BeanUtil;
-import com.sogou.pay.common.utils.JsonUtil;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.common.utils.MapUtil;
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.common.utils.PMapUtil;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.model.ChannelAdaptModel;
 import com.sogou.pay.manager.model.CommonAdaptModel;
 import com.sogou.pay.manager.payment.AppManager;
@@ -55,7 +54,7 @@ import com.sogou.pay.service.payment.PayBankRouterService;
 import com.sogou.pay.service.utils.DataSignUtil;
 import com.sogou.pay.service.utils.email.EmailSender;
 import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
-import com.sogou.pay.thirdpay.api.PayApi;
+//import com.sogou.pay.thirdpay.api.PayApi;
 import com.sogou.pay.web.controller.BaseController;
 import com.sogou.pay.web.form.PayParams;
 import com.sogou.pay.web.utils.ServletUtil;
@@ -83,8 +82,8 @@ public class KpiController extends BaseController{
     @Autowired
     private SecureManager secureManager;
 
-    @Autowired
-    private PayApi payApi;
+//    @Autowired
+//    private PayApi payApi;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -144,9 +143,9 @@ public class KpiController extends BaseController{
                 //获得用户IP
                 PayParams params = getPayParams();
                 params.setAccessPlatform("1");
-                logger.info("【支付请求】进入showCashier,ip="+ip+",请求参数为：" + JsonUtil.beanToJson(params));
+                logger.info("【支付请求】进入showCashier,ip="+ip+",请求参数为：" + JSONUtil.Bean2JSON(params));
                 //将参数转化为map
-                PMap paramMap = PMapUtil.fromBean(params);
+                PMap paramMap = BeanUtil.Bean2PMap(params);
                 paramMap.put("userIp", ip);
                 paramMap.put("channelCode",params.getBankId());
                 //转义商品名称与描述
@@ -180,7 +179,7 @@ public class KpiController extends BaseController{
                 //B2B支付列表
                 List<CommonAdaptModel> b2bList = adaptModel.getB2bList();
                 if(commonPayList.isEmpty() && payOrgList.isEmpty() && scanCodeList.isEmpty() && b2bList.isEmpty()){
-                    sendEmail(subject, ResultStatus.PAY_CHANNEL_IS_NULL.getMessage());
+                    sendEmail(subject, ResultStatus.PAY_PARAM_ERROR.getMessage());
                     return;
                 }
                 //获得收款方信息
@@ -222,9 +221,9 @@ public class KpiController extends BaseController{
                 params.setBankId("ALIPAY");
                 params.setAccessPlatform("1");
                 params.setSign(signData(params));
-                logger.info("【支付请求】进入pcAlipay,ip="+ip+",请求参数为：" + JsonUtil.beanToJson(params));
+                logger.info("【支付请求】进入pcAlipay,ip="+ip+",请求参数为：" + JSONUtil.Bean2JSON(params));
                 //将参数转化为map
-                PMap paramMap = PMapUtil.fromBean(params);
+                PMap paramMap = BeanUtil.Bean2PMap(params);
                 paramMap.put("userIp", ip);
                 paramMap.put("channelCode",params.getBankId());
                 //转义商品名称与描述
@@ -281,9 +280,9 @@ public class KpiController extends BaseController{
                 params.setBankId("CMB");
                 params.setAccessPlatform("1");
                 params.setSign(signData(params));
-                logger.info("【支付请求】进入pcBank,ip="+ip+",请求参数为：" + JsonUtil.beanToJson(params));
+                logger.info("【支付请求】进入pcBank,ip="+ip+",请求参数为：" + JSONUtil.Bean2JSON(params));
                 //将参数转化为map
-                PMap paramMap = PMapUtil.fromBean(params);
+                PMap paramMap = BeanUtil.Bean2PMap(params);
                 //获得用户IP
                 paramMap.put("userIp", ip);
                 paramMap.put("channelCode",params.getBankId());
@@ -341,16 +340,16 @@ public class KpiController extends BaseController{
                 params.setBankId("ALIPAY");
                 params.setAccessPlatform("2");
                 params.setSign(signData(params));
-                logger.info("【支付请求】进入wapPay,请求参数为：ip="+ip+"," + JsonUtil.beanToJson(params));
+                logger.info("【支付请求】进入wapPay,请求参数为：ip="+ip+"," + JSONUtil.Bean2JSON(params));
                 //将参数转化为map
-                PMap<String,String> paramMap = PMapUtil.fromBean(params);
+                PMap<String,String> paramMap = BeanUtil.Bean2PMap(params);
                 paramMap.put("userIp", ip);
                 paramMap.put("channelCode",params.getBankId());
         
                 if(StringUtils.isBlank(params.getBankId())){
                     //支付渠道为空
                     logger.error("【支付请求】支付渠道为空");
-                    sendEmail(subject, ResultStatus.PAY_BANKID_IS_NULL.getMessage());
+                    sendEmail(subject, ResultStatus.PAY_PARAM_ERROR.getMessage());
                     return;
                 }
                 //转义商品名称与描述
@@ -578,7 +577,7 @@ public class KpiController extends BaseController{
         if (params instanceof Map) {
             return MapUtil.dropNulls((Map) params);
         } else {
-            return BeanUtil.beanToMapNotNull(params);
+            return BeanUtil.Bean2MapNotNull(params);
         }
     }
 
@@ -749,7 +748,7 @@ public class KpiController extends BaseController{
         BigDecimal orderAmount = new BigDecimal(params.getString("orderAmount"));
         if (orderAmount.compareTo(orderAmount.ZERO) < 0) {
             //金额出错
-            result.withError(ResultStatus.PARAM_ERROR);
+            result.withError(ResultStatus.PAY_PARAM_ERROR);
             return result;
         }
         //校验支付渠道

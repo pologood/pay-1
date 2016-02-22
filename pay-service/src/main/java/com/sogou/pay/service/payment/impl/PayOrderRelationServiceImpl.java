@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.service.dao.PayOrderRelationDao;
 import com.sogou.pay.service.entity.PayOrderRelation;
 import com.sogou.pay.service.payment.PayOrderRelationService;

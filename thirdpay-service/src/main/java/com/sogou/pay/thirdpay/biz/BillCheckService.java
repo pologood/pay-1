@@ -1,8 +1,6 @@
 package com.sogou.pay.thirdpay.biz;
 
-import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.thirdpay.biz.enums.CheckType;
+import com.sogou.pay.common.types.ResultMap;
 
 /**
  * Created by qibaichao on 2015/6/29.

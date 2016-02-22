@@ -1,5 +1,7 @@
 package com.sogou.pay.manager.payment;
 
+import java.util.Date;
+
 /**
  * @Author qibaichao
  * @ClassName PayCheckJobManager
@@ -12,7 +14,7 @@ public interface PayCheckManager {
      * @param checkDate
      * @param agencyCode
      * @Author qibaichao
-     * @MethodName downloadCheckData
+     * @MethodName downloadOrderData
      * @Date 2015年2月16日
      * @Description:下载第三方对账数据并入库 <p>
      * 1. 根据对账日期、机构编码、商户号查询对账日志
@@ -20,19 +22,19 @@ public interface PayCheckManager {
      * 3. 根据各渠道分别下载支付、退款、对账数据，批量入库
      * 4. 更新对账日志状态为SUCCESS
      */
-    public void downloadCheckData(String checkDate, String agencyCode);
+    public void downloadOrderData(Date checkDate, String agencyCode);
 
     /**
      * @param checkDate
      * @param agencyCode
      * @Author qibaichao
-     * @MethodName checkData
+     * @MethodName checkOrderData
      * @Date 2015年2月16日
      * @Description: 对账并更新相关的对账状态.
      */
-    public void checkData(String checkDate, String agencyCode);
+    public void checkOrderData(Date checkDate, String agencyCode);
 
-    public void updatePayCheckResult(String checkDate, String agencyCode) throws Exception;
+    public void updatePayCheckResult(Date checkDate, String agencyCode) throws Exception;
 
     public void updatePayCheckDiff() throws Exception;
 }

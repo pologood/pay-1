@@ -57,7 +57,7 @@ public class RequestModelXml extends RequestModel {
      */
     @Override
     public HttpEntity getRequestEntity() {
-        String xmlStr = XMLUtil.mapToXmlString(this.getRootNodeName(), this.params);
+        String xmlStr = XMLUtil.Map2XML(this.getRootNodeName(), this.params);
         try {
             return new StringEntity(xmlStr, HttpConstant.ContentType.XML_TEXT,
                     DEFAULT_ENCODE);

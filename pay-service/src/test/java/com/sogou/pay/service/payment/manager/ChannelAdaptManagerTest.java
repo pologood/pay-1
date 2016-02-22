@@ -3,7 +3,7 @@ package com.sogou.pay.service.payment.manager;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.sogou.pay.common.result.ResultBean;
+import com.sogou.pay.common.types.ResultBean;
 import com.sogou.pay.manager.model.ChannelAdaptModel;
 import com.sogou.pay.manager.payment.ChannelAdaptManager;
 import com.sogou.pay.service.BaseTest;

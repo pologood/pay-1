@@ -1,8 +1,6 @@
 package com.sogou.pay.manager.job;
 
-import com.alibaba.fastjson.JSON;
 import com.sogou.pay.common.http.utils.HttpUtil;
-import com.sogou.pay.common.result.ResultBean;
 import com.sogou.pay.common.utils.httpclient.MerchantHttpClient;
 import com.sogou.pay.common.utils.httpclient.MerchantResponse;
 import com.sogou.pay.manager.payment.PayTransferQueryManager;
@@ -10,7 +8,6 @@ import com.sogou.pay.service.config.PayConfig;
 import com.sogou.pay.service.dao.PayTransferBatchDao;
 import com.sogou.pay.service.entity.PayTransfer;
 import com.sogou.pay.service.entity.PayTransferBatch;
-import com.sogou.pay.service.enums.PayTransferBatchStatus;
 import com.sogou.pay.service.payment.PayTransferBatchService;
 import com.sogou.pay.service.payment.PayTransferService;
 import com.sogou.pay.service.utils.AppXmlPacket;
@@ -21,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;

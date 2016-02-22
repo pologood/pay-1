@@ -7,10 +7,10 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>订单退款模拟</title>
-    <script type="text/javascript" src="../static/js/jq.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/jq.js"></script>
     <script type="text/javascript">
         function doRefund() {
-            document.dbform.action = "/refund";
+            document.dbform.action = "${pageContext.request.contextPath}/refund";
             dbform.submit();
         }
         function getSignData() {

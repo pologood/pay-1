@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.result.ResultBean;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.ResultBean;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.manager.model.ChannelAdaptModel;
 import com.sogou.pay.manager.model.CommonAdaptModel;
 import com.sogou.pay.manager.payment.ChannelAdaptManager;

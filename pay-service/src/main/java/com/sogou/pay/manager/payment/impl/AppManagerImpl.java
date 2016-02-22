@@ -3,9 +3,9 @@ package com.sogou.pay.manager.payment.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.manager.payment.AppManager;
 import com.sogou.pay.service.entity.App;
 import com.sogou.pay.service.payment.AppService;

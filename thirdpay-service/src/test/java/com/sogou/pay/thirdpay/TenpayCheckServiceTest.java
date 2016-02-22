@@ -1,10 +1,9 @@
 package com.sogou.pay.thirdpay;
 
 import com.alibaba.fastjson.JSON;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.thirdpay.biz.TenpayCheckService;
+import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
-import com.sogou.pay.thirdpay.biz.modle.TenpayCheckResponse;
+//import com.sogou.pay.thirdpay.biz.model.TenpayCheckResponse;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
 import com.sogou.pay.thirdpay.biz.utils.TenPayHttpClient;
 import com.sogou.pay.thirdpay.biz.utils.TenPayUtil;
@@ -17,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TenpayCheckServiceTest extends BaseTest {
 
 
-    @Autowired
-    private TenpayCheckService tenpayCheckService;
+    //@Autowired
+    //private TenpayCheckService tenpayCheckService;
 
     @Test
     public void doQuery() {
@@ -28,8 +27,8 @@ public class TenpayCheckServiceTest extends BaseTest {
             CheckType checkType = CheckType.PAID;
             String merchantNo = "1900000109";
             String key = "8934e7d15453e97507ef794cf7b0519d";
-            ResultMap resultMap = tenpayCheckService.doQuery(merchantNo, checkType, transTime, key);
-            System.out.println(JSON.toJSON(resultMap));
+            //ResultMap resultMap = tenpayCheckService.doQuery(merchantNo, checkType, transTime, key);
+            //System.out.println(JSON.toJSON(resultMap));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -86,7 +85,7 @@ public class TenpayCheckServiceTest extends BaseTest {
 
         String message = "";
 
-        TenpayCheckResponse tenpayClearResponse = new TenpayCheckResponse();
+        //TenpayCheckResponse tenpayClearResponse = new TenpayCheckResponse();
 
         if (httpClient.call()) {
 

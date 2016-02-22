@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sogou.pay.thirdpay.api.PayPortal;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.perf4j.aop.Profiled;
@@ -33,15 +34,14 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.sogou.pay.common.cache.RedisUtils;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultBean;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultBean;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.BeanUtil;
-import com.sogou.pay.common.utils.JsonUtil;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.common.utils.MapUtil;
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.common.utils.PMapUtil;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.model.ChannelAdaptModel;
 import com.sogou.pay.manager.model.CommonAdaptModel;
 import com.sogou.pay.manager.payment.AppManager;
@@ -53,7 +53,7 @@ import com.sogou.pay.service.entity.PayOrderInfo;
 import com.sogou.pay.service.utils.Constant;
 import com.sogou.pay.service.utils.DataSignUtil;
 import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
-import com.sogou.pay.thirdpay.api.PayApi;
+//import com.sogou.pay.thirdpay.api.PayApi;
 import com.sogou.pay.web.controller.BaseController;
 import com.sogou.pay.web.form.PayParams;
 import com.sogou.pay.web.utils.ControllerUtil;
@@ -87,8 +87,11 @@ public class PayController extends BaseController{
     @Autowired
     private SecureManager secureManager;
     
+//    @Autowired
+//    private PayApi payApi;
+
     @Autowired
-    private PayApi payApi;
+    private PayPortal payPortal;
     
     @Autowired
     private RedisUtils redisUtils;
@@ -115,9 +118,9 @@ public class PayController extends BaseController{
     @RequestMapping({"/pay/doPay", "/gw/pay/web"})
     public ModelAndView doPay(PayParams params, HttpServletRequest request){
         ModelAndView view = new ModelAndView("toAgency");
-        logger.info("【支付请求】进入dopay,请求参数为：" + JsonUtil.beanToJson(params));
+        logger.info("【支付请求】进入dopay,请求参数为：" + JSONUtil.Bean2JSON(params));
         //将参数转化为map
-        PMap paramMap = PMapUtil.fromBean(params);
+        PMap paramMap = BeanUtil.Bean2PMap(params);
         //获得用户IP
         String ip = ServletUtil.getRealIp(request);
         paramMap.put("userIp", ip);
@@ -127,7 +130,7 @@ public class PayController extends BaseController{
         if (validateResult.size() != 0) {
             //验证参数失败，调到错误页面
             logger.error("【支付请求】" + validateResult.toString().substring(1,validateResult.toString().length()-1));
-            return setErrorPage(ResultStatus.PARAM_ERROR.getMessage(), ResultStatus.PARAM_ERROR.getCode());
+            return setErrorPage(ResultStatus.PAY_PARAM_ERROR.getMessage(), ResultStatus.PAY_PARAM_ERROR.getCode());
         }
         //转义商品名称与描述
         paramMap = escapeSequence(paramMap);
@@ -180,7 +183,7 @@ public class PayController extends BaseController{
             //B2B支付列表
             List<CommonAdaptModel> b2bList = adaptModel.getB2bList();
             if(commonPayList.isEmpty() && payOrgList.isEmpty() && scanCodeList.isEmpty() && b2bList.isEmpty())
-                return setErrorPage(ResultStatus.PAY_CHANNEL_IS_NULL.getMessage(), ResultStatus.PAY_CHANNEL_IS_NULL.getCode());
+                return setErrorPage(ResultStatus.PAY_PARAM_ERROR.getMessage(), ResultStatus.PAY_PARAM_ERROR.getCode());
             //获得收款方信息
             Result<App> appResult = appManager.selectAppInfo(Integer.parseInt(params.getAppId()));
             if(!Result.isSuccess(appResult)){
@@ -378,7 +381,8 @@ public class PayController extends BaseController{
         PMap payGateParams = (PMap)result2.getData().get("payGateMap");
         //调用支付网关
         logger.info("【支付请求】调用支付网关开始，参数为："+payGateParams);
-        ResultMap<String> payGateResult = payApi.preparePay(payGateParams);
+        //ResultMap<String> payGateResult = payApi.preparePay(payGateParams);
+         ResultMap<String> payGateResult = payPortal.preparePay(payGateParams);
         logger.info("【支付请求】调用支付网关结束,返回值为："+payGateResult.getData().get("returnUrl"));
         if(!Result.isSuccess(payGateResult)){
             return payGateResult;
@@ -426,9 +430,9 @@ public class PayController extends BaseController{
     @ResponseBody
     public String doPayForWechat(PayParams params, HttpServletRequest request){
         ResultMap result = ResultMap.build();
-        logger.info("【支付请求】进入doPayForWechat,请求参数为：" + JsonUtil.beanToJson(params));
+        logger.info("【支付请求】进入doPayForWechat,请求参数为：" + JSONUtil.Bean2JSON(params));
         //将参数转化为map
-        PMap paramMap = PMapUtil.fromBean(params);
+        PMap paramMap = BeanUtil.Bean2PMap(params);
         //获得用户IP
         String ip = ServletUtil.getRealIp(request);
         paramMap.put("userIp", ip);
@@ -447,7 +451,7 @@ public class PayController extends BaseController{
         if (validateResult.size() != 0) {
             //验证参数失败，调到错误页面
             logger.error("【支付请求】" + validateResult.toString().substring(1,validateResult.toString().length()-1));
-            result.withError(ResultStatus.PARAM_ERROR);
+            result.withError(ResultStatus.PAY_PARAM_ERROR);
             return JSONObject.toJSONString(result);
         }
         //转义商品名称与描述
@@ -566,7 +570,7 @@ public class PayController extends BaseController{
         if (params instanceof Map) {
             return MapUtil.dropNulls((Map) params);
         } else {
-            return BeanUtil.beanToMapNotNull(params);
+            return BeanUtil.Bean2MapNotNull(params);
         }
     }
 }

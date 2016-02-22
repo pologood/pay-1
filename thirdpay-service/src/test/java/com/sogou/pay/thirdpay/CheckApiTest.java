@@ -1,11 +1,11 @@
 package com.sogou.pay.thirdpay;
 
 import com.alibaba.fastjson.JSON;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.thirdpay.biz.AlipayCheckService;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
+import com.sogou.pay.thirdpay.service.Alipay.AlipayService;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -24,7 +24,7 @@ import java.io.StringWriter;
 public class CheckApiTest  extends BaseTest{
 
     @Autowired
-    private AlipayCheckService alipayCheckService;
+    private AlipayService alipayService;
 
 
     @Test
@@ -38,8 +38,8 @@ public class CheckApiTest  extends BaseTest{
             String pageNo="1";
             String pageSize="500";
             String key="321";
-            ResultMap resultMap= alipayCheckService.doQuery( merchantNo, checkType,   startTime,  endTime,  pageNo,  pageSize,  key);
-            System.out.println(JSON.toJSON(resultMap) );
+            //ResultMap resultMap= alipayService.doQuery( merchantNo, checkType,   startTime,  endTime,  pageNo,  pageSize,  key);
+            //System.out.println(JSON.toJSON(resultMap) );
         }catch (Exception e){
 
 

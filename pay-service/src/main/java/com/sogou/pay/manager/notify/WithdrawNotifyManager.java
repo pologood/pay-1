@@ -1,11 +1,11 @@
 package com.sogou.pay.manager.notify;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.service.entity.PayCheckWaiting;
 import com.sogou.pay.service.payment.PayCheckWaitingService;
-import com.sogou.pay.common.result.ResultMap;
+import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

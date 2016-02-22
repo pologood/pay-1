@@ -1,7 +1,7 @@
 package com.sogou.pay.service.payment.manager;
 
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.utils.JsonUtil;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.manager.notify.RefundNotifyManager;
 import com.sogou.pay.service.BaseTest;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class RefundNotifyManagerTest extends BaseTest {
         String thirdRefundId = "2015041600001000370048486386";
         try {
             Result result =  refundNotifyManager.repairRefundOrder(refundId, thirdRefundId);
-            System.out.println(JsonUtil.beanToJson(result));
+            System.out.println(JSONUtil.Bean2JSON(result));
         }catch (Exception ex){
             ex.printStackTrace();
         }

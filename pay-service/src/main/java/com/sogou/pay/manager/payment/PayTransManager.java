@@ -2,12 +2,9 @@ package com.sogou.pay.manager.payment;
 
 import java.util.List;
 
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultBean;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.manager.model.PayOrderQueryModel;
-import com.sogou.pay.service.utils.AppXmlPacket;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.PMap;
 
 /**
  * @Author huangguoqing

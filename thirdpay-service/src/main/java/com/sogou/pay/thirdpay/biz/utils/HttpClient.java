@@ -1,8 +1,8 @@
 package com.sogou.pay.thirdpay.biz.utils;
 
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.types.PMap;
 
 import org.apache.commons.httpclient.NameValuePair;
 
@@ -39,11 +39,11 @@ public class HttpClient {
             response = httpProtocolHandler.execute(request, "", "");
             strResult = response.getStringResult();
         } catch (Exception e) {
-            result.withError(ResultStatus.THIRD_QUERY_ALI_HTTP_ERROR);
+            result.withError(ResultStatus.THIRD_QUERY_HTTP_ERROR);
             return result;
         }
         if (response == null) {
-            result.withError(ResultStatus.THIRD_QUERY_ALI_HTTP_ERROR);
+            result.withError(ResultStatus.THIRD_QUERY_HTTP_ERROR);
             return result;
         }
 

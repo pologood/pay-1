@@ -1,11 +1,9 @@
 package com.sogou.pay.thirdpay;
 
-import com.alibaba.fastjson.JSONObject;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.thirdpay.api.BankPayApi;
-import com.sogou.pay.thirdpay.biz.modle.Record;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
+import com.sogou.pay.thirdpay.biz.model.Record;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.junit.Test;

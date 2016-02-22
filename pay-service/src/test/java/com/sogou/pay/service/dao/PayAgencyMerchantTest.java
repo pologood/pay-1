@@ -2,10 +2,8 @@ package com.sogou.pay.service.dao;
 
 import com.sogou.pay.service.BaseTest;
 import com.sogou.pay.service.entity.PayAgencyMerchant;
-import com.sogou.pay.service.entity.PayBankRouter;
-import com.sogou.pay.service.enums.AgencyType;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.payment.PayAgencyMerchantService;
-import com.sogou.pay.service.payment.PayBankRouterService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

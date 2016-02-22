@@ -2,20 +2,24 @@ package com.sogou.pay.thirdpay.api.impl;
 
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.types.PMap;
+import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.thirdpay.api.CheckApi;
-import com.sogou.pay.thirdpay.biz.AlipayCheckService;
 import com.sogou.pay.thirdpay.biz.BillCheckService;
-import com.sogou.pay.thirdpay.biz.TenpayCheckService;
-import com.sogou.pay.thirdpay.biz.WechatCheckService;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
-import com.sogou.pay.thirdpay.biz.utils.Utils;
+import com.sogou.pay.thirdpay.service.Alipay.AlipayService;
+import com.sogou.pay.thirdpay.service.Tenpay.TenpayService;
+import com.sogou.pay.thirdpay.service.ThirdpayService;
+import com.sogou.pay.thirdpay.service.Wechat.WechatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
 
 /**
  * Created by qibaichao on 2015/3/4.
@@ -26,98 +30,41 @@ public class CheckApiImpl implements CheckApi {
     private static final Logger logger = LoggerFactory.getLogger(CheckApiImpl.class);
 
     @Autowired
-    private AlipayCheckService alipayCheckService;
+    private AlipayService alipayService;
 
     @Autowired
-    private TenpayCheckService tenpayCheckService;
-
-    @Autowired
-    private WechatCheckService wechatCheckService;
+    private TenpayService tenpayService;
 
     @Autowired
     private BillCheckService billCheckService;
 
+    @Autowired
+    private WechatService wechatService;
 
-    @Override
-    public ResultMap doQueryAlipay(PMap params) {
+    private HashMap<String, ThirdpayService> serviceHashMap;
 
-        ResultMap result = ResultMap.build();
-        try {
-            String pageNo = params.getString("pageNo");
-            String startTime = params.getString("startTime");
-            String endTime = params.getString("endTime");
-            CheckType checkType = (CheckType) params.get("checkType");
-            String merchantNo = params.getString("merchantNo");
-            String key = params.getString("key");
-            String pageSize = params.getString("pageSize");
-            //参数校验
-            if (Utils.isEmpty(pageNo, startTime, endTime, merchantNo, key, pageSize)) {
-                logger.error("缺少必选参数或存在非法参数，参数：" + params);
-                result.withError(ResultStatus.PARAM_ERROR);
-                return result;
-            }
-            result = alipayCheckService.doQuery(merchantNo, checkType, startTime, endTime, pageNo, pageSize, key);
-        } catch (ServiceException se) {
-            logger.warn("支付宝对账查询异常: ", se);
-            result.withError(se.getStatus());
-        } catch (Exception e) {
-            logger.error("支付宝对账查询异常: ", e);
-            result.withError(ResultStatus.SYSTEM_ERROR);
-        }
-        return result;
+
+    @Autowired
+    public void init() {
+        serviceHashMap = new HashMap<>();
+        serviceHashMap.put(AgencyType.ALIPAY.name(), alipayService);
+        serviceHashMap.put(AgencyType.TENPAY.name(), tenpayService);
+        serviceHashMap.put(AgencyType.WECHAT.name(), wechatService);
     }
 
     @Override
-    public ResultMap doQueryTenpay(PMap params) {
-
-        ResultMap result = ResultMap.build();
+    public ResultMap doQuery(PMap params) {
         try {
-            String merchantNo = params.getString("merchantNo");
-            CheckType checkType = (CheckType) params.get("checkType");
-            String checkDate = params.getString("checkDate");
-            String key = params.getString("key");
-            //参数校验
-            if (Utils.isEmpty(checkDate, merchantNo, merchantNo, key)) {
-                logger.error("缺少必选参数或存在非法参数，参数：" + params);
-                result.withError(ResultStatus.PARAM_ERROR);
-                return result;
-            }
-            result = tenpayCheckService.doQuery(merchantNo, checkType, checkDate, key);
+            String agencyCode = params.getString("agencyCode");
+            ThirdpayService thirdpayService = serviceHashMap.get(agencyCode);
+            return thirdpayService.downloadOrder(params);
         } catch (ServiceException se) {
-            logger.warn("财付通对账查询异常: ", se);
-            result.withError(se.getStatus());
+            logger.warn("[doQuery] 下载对账单异常", se);
+            return ResultMap.build(se.getStatus());
         } catch (Exception e) {
-            logger.error("财付通对账查询异常: ", e);
-            result.withError(ResultStatus.SYSTEM_ERROR);
+            logger.error("[doQuery] 下载对账单异常", e);
+            return ResultMap.build(ResultStatus.THIRD_QUERY_ERROR);
         }
-        return result;
-    }
-
-    @Override
-    public ResultMap doQueryWechat(PMap params) {
-
-        ResultMap result = ResultMap.build();
-        try {
-            String appId = params.getString("appId");
-            String merchantNo = params.getString("merchantNo");
-            CheckType checkType = (CheckType) params.get("checkType");
-            String checkDate = params.getString("checkDate");
-            String key = params.getString("key");
-            //参数校验
-            if (Utils.isEmpty(checkDate, merchantNo, merchantNo, key)) {
-                logger.error("缺少必选参数或存在非法参数，参数：" + params);
-                result.withError(ResultStatus.PARAM_ERROR);
-                return result;
-            }
-            result = wechatCheckService.doQuery(appId, merchantNo, checkType, checkDate, key);
-        } catch (ServiceException se) {
-            logger.warn("微信对账查询异常: ", se);
-            result.withError(se.getStatus());
-        } catch (Exception e) {
-            logger.error("微信对账查询异常: ", e);
-            result.withError(ResultStatus.SYSTEM_ERROR);
-        }
-        return result;
     }
 
     /**
@@ -135,9 +82,9 @@ public class CheckApiImpl implements CheckApi {
         String merchantNo = params.getString("merchantNo");
         String key = params.getString("key");
         //参数校验
-        if (Utils.isEmpty(pageNo, startTime, endTime, merchantNo, key)) {
+        if (StringUtil.isEmpty(pageNo, startTime, endTime, merchantNo, key)) {
             logger.error("缺少必选参数或存在非法参数，参数：" + params);
-            result.withError(ResultStatus.PARAM_ERROR);
+            result.withError(ResultStatus.THIRD_QUERY_PARAM_ERROR);
             return result;
         }
         // 成功支付的订单
@@ -160,9 +107,9 @@ public class CheckApiImpl implements CheckApi {
         String merchantNo = params.getString("merchantNo");
         String key = params.getString("key");
         //参数校验
-        if (Utils.isEmpty(pageNo, startTime, endTime, merchantNo, key)) {
+        if (StringUtil.isEmpty(pageNo, startTime, endTime, merchantNo, key)) {
             logger.error("缺少必选参数或存在非法参数，参数：" + params);
-            result.withError(ResultStatus.PARAM_ERROR);
+            result.withError(ResultStatus.THIRD_QUERY_PARAM_ERROR);
             return result;
         }
         // 退款订单

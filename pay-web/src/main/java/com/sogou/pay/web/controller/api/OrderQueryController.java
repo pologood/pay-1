@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.sogou.pay.common.Model.QueryOrderResult;
 import com.sogou.pay.common.Model.QueryRefundResult;
-import com.sogou.pay.common.utils.JsonUtil;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.manager.model.QueryRefundModel;
 import com.sogou.pay.manager.payment.QueryRefundManager;
 import com.sogou.pay.web.form.QueryRefundParams;
@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.manager.model.PayOrderQueryModel;
 import com.sogou.pay.manager.payment.OrderQueryManager;
 import com.sogou.pay.manager.secure.SecureManager;
@@ -64,7 +64,7 @@ public class OrderQueryController {
         List validateResult = ControllerUtil.validateParams(params);
         if (validateResult.size() != 0) {
             result.withError(ResultStatus.QUERY_ORDER_PARAM_ERROR);
-            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(result));
+            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(result));
             return JSONObject.toJSONString(result);
         }
 
@@ -72,7 +72,7 @@ public class OrderQueryController {
         Result secResult = secureManager.verifyAppSign(params);
         if (!Result.isSuccess(secResult)) {
             result.withError(ResultStatus.QUERY_ORDER_SIGN_ERROR);
-            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(result));
+            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(result));
             return JSONObject.toJSONString(result);
         }
         // 3.处理支付订单查询
@@ -82,7 +82,7 @@ public class OrderQueryController {
         ResultMap queryResult = orderQueryManager.queryPayOrder(payOrderModel);
         logger.info("orderQueryManager.queryPayOrder Returns the result:" + queryResult.toString());
         if (!Result.isSuccess(queryResult)) {
-            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(queryResult));
+            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(queryResult));
             return JSONObject.toJSONString(queryResult);
         }
         result.addItem("payStatus",queryResult.getReturnValue());
@@ -107,15 +107,15 @@ public class OrderQueryController {
         // 1.检查参数的完整性和合法性
         List validateResult = ControllerUtil.validateParams(params);
         if (validateResult.size() != 0) {
-            result.withError(ResultStatus.THIRD_Q_RF_PARAM_ERROR);
-            logger.info("Query Order Refund Request End!Result:" + JsonUtil.beanToJson(result));
+            result.withError(ResultStatus.THIRD_QUERY_REFUND_PARAM_ERROR);
+            logger.info("Query Order Refund Request End!Result:" + JSONUtil.Bean2JSON(result));
             return JSONObject.toJSONString(result);
         }
         // 2.检查商户签名
         Result secResult = secureManager.verifyAppSign(params);
         if (!Result.isSuccess(secResult)) {
             result.withError(ResultStatus.SIGNATURE_ERROR);
-            logger.error("Query Order Refund Request End!Result:" + JsonUtil.beanToJson(result));
+            logger.error("Query Order Refund Request End!Result:" + JSONUtil.Bean2JSON(result));
             return JSONObject.toJSONString(result);
         }
         // 3.处理退款订单查询
@@ -128,7 +128,7 @@ public class OrderQueryController {
         logger.info("Query Order Refund Request,RefundManager.refund Returns the result:" + JSONObject.toJSONString(queryRefundMap));
         if (!Result.isSuccess(queryRefundMap)) {
             result.withError(queryRefundMap.getStatus());
-            logger.error("Query Order Refund Request End!Result:" + JsonUtil.beanToJson(result));
+            logger.error("Query Order Refund Request End!Result:" + JSONUtil.Bean2JSON(result));
             return JSONObject.toJSONString(result);
         }
         result.addItem("refundStatus", queryRefundMap.getReturnValue());
@@ -152,7 +152,7 @@ public class OrderQueryController {
         if (validateResult.size() != 0) {
             queryOrderResult.setStatus(ResultStatus.QUERY_ORDER_PARAM_ERROR.toString());
             queryOrderResult.setMessage(ResultStatus.QUERY_ORDER_PARAM_ERROR.getMessage());
-            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(queryOrderResult));
+            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(queryOrderResult));
             return JSONObject.toJSONString(queryOrderResult);
         }
 
@@ -161,7 +161,7 @@ public class OrderQueryController {
         if (!Result.isSuccess(secResult)) {
             queryOrderResult.setStatus(ResultStatus.QUERY_ORDER_SIGN_ERROR.toString());
             queryOrderResult.setMessage(ResultStatus.QUERY_ORDER_SIGN_ERROR.getMessage());
-            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(queryOrderResult));
+            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(queryOrderResult));
             return JSONObject.toJSONString(queryOrderResult);
         }
         // 3.处理支付订单查询
@@ -173,7 +173,7 @@ public class OrderQueryController {
         if (!Result.isSuccess(queryResult)) {
             queryOrderResult.setStatus(queryResult.getStatus().toString());
             queryOrderResult.setMessage(queryResult.getMessage());
-            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JsonUtil.beanToJson(queryResult));
+            logger.error("Query Order Request End!Ip：" + ip + "Result:" + JSONUtil.Bean2JSON(queryResult));
             return JSONObject.toJSONString(queryOrderResult);
         }
         queryOrderResult.setStatus(ResultStatus.SUCCESS.toString());
@@ -200,9 +200,9 @@ public class OrderQueryController {
         // 1.检查参数的完整性和合法性
         List validateResult = ControllerUtil.validateParams(params);
         if (validateResult.size() != 0) {
-            queryRefundResult.setStatus(ResultStatus.THIRD_Q_RF_PARAM_ERROR.toString());
-            queryRefundResult.setMessage(ResultStatus.THIRD_Q_RF_PARAM_ERROR.getMessage());
-            logger.info("Query Order Refund Request End!Result:" + JsonUtil.beanToJson(queryRefundResult));
+            queryRefundResult.setStatus(ResultStatus.THIRD_QUERY_REFUND_PARAM_ERROR.toString());
+            queryRefundResult.setMessage(ResultStatus.THIRD_QUERY_REFUND_PARAM_ERROR.getMessage());
+            logger.info("Query Order Refund Request End!Result:" + JSONUtil.Bean2JSON(queryRefundResult));
             return JSONObject.toJSONString(queryRefundResult);
         }
         // 2.检查商户签名
@@ -210,7 +210,7 @@ public class OrderQueryController {
         if (!Result.isSuccess(secResult)) {
             queryRefundResult.setStatus(ResultStatus.REFUND_PARAM_ERROR.toString());
             queryRefundResult.setMessage(ResultStatus.REFUND_PARAM_ERROR.getMessage());
-            logger.error("Query Order Refund Request End!Result:" + JsonUtil.beanToJson(queryRefundResult));
+            logger.error("Query Order Refund Request End!Result:" + JSONUtil.Bean2JSON(queryRefundResult));
             return JSONObject.toJSONString(queryRefundResult);
         }
         // 3.处理退款订单查询
@@ -224,7 +224,7 @@ public class OrderQueryController {
         if (!Result.isSuccess(queryRefundMap)) {
             queryRefundResult.setStatus(queryRefundMap.getStatus().toString());
             queryRefundResult.setMessage(queryRefundMap.getMessage());
-            logger.error("Query Order Refund Request End!Result:" + JsonUtil.beanToJson(queryRefundResult));
+            logger.error("Query Order Refund Request End!Result:" + JSONUtil.Bean2JSON(queryRefundResult));
             return JSONObject.toJSONString(queryRefundResult);
         }
         queryRefundResult.setStatus(ResultStatus.SUCCESS.toString());

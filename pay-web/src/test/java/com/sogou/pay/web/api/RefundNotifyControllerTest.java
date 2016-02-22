@@ -1,10 +1,8 @@
 package com.sogou.pay.web.api;
 
 import com.sogou.pay.common.utils.BeanUtil;
-import com.sogou.pay.common.utils.MD5Util;
 import com.sogou.pay.web.BaseTest;
 import com.sogou.pay.web.controller.api.PayController;
-import com.sogou.pay.web.form.PayParams;
 import com.sogou.pay.web.form.notify.AliRefundNotifyParams;
 import com.sogou.pay.web.form.notify.TenRefundNotifyParams;
 import org.junit.Test;
@@ -34,7 +32,7 @@ public class RefundNotifyControllerTest extends BaseTest {
         params.setNotify_type("batch_refund_notify");
         params.setSign_type("MD5");
         params.setSuccess_num("1");
-        Map map = BeanUtil.beanToMap(params);
+        Map map = BeanUtil.Bean2Map(params);
         testGet(url, map);
     }
 
@@ -51,7 +49,7 @@ public class RefundNotifyControllerTest extends BaseTest {
         params.setRefund_id("11112342748012015040961705s70");
         params.setSign("2BF7365A6A0B7B2A782E14C881574FAB");
         params.setTransaction_id("1234274801201504280703349053");
-        Map map = BeanUtil.beanToMap(params);
+        Map map = BeanUtil.Bean2Map(params);
         testGet(url, map);
     }
     

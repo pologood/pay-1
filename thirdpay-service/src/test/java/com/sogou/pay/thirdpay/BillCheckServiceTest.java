@@ -1,10 +1,9 @@
 package com.sogou.pay.thirdpay;
 
 import com.alibaba.fastjson.JSON;
-import com.sogou.pay.common.result.ResultMap;
+import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.thirdpay.biz.BillCheckService;
-import com.sogou.pay.thirdpay.biz.enums.CheckType;
-import com.sogou.pay.thirdpay.biz.modle.OutCheckRecord;
+import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

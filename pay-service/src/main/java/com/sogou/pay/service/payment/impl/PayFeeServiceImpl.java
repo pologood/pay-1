@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.service.dao.PayFeeDao;
 import com.sogou.pay.service.entity.PayFee;
 import com.sogou.pay.service.payment.PayFeeService;

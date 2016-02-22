@@ -3,7 +3,7 @@ package com.sogou.pay.service.payment;
 import java.math.BigDecimal;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.PMap;
 
 /**
  * Created by wujingpan on 2015/3/5.

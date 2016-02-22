@@ -1,8 +1,6 @@
 package com.sogou.pay.thirdpay.biz.utils;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.security.KeyFactory;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -19,11 +17,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.Base64;
 import com.sogou.pay.common.utils.MD5Util;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.thirdpay.biz.utils.billpay.BillMD5Util;
 
 /**
@@ -39,11 +37,88 @@ public class SecretKeyUtil {
     private static final String ALGORITHM = "RSA";
     private static final String SIGN_ALGORITHMS = "SHA1WithRSA";
     private static final String ALIPAY_PUB_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCnxj/9qwVfgoUh/y2W89L6BkRAFljhNhgPdyPuBV64bfQNN1PjbCzkIM6qRdKBoLPXmKKMiFYnkd6rAoprih3/PrQEB/VsW8OoM8fxn67UDYuyBTqA23MML9q1+ilIZwBC2AQ2UBVOrFXfFl75p6/B5KsiNG9zpgmLCUYuLkxpLQIDAQAB";
+
+
+    /**
+     * 对字符串进行MD5签名
+     *
+     * @param text 明文
+     * @return 密文
+     */
+    private static String md5(String text) throws Exception {
+
+        return DigestUtils.md5Hex(getContentBytes(text, "utf-8"));
+
+    }
+
+    /**
+     * @param content
+     * @param charset
+     * @return
+     * @throws Exception
+     * @throws
+     * @throws
+     */
+    private static byte[] getContentBytes(String content, String charset) throws Exception {
+        if (charset == null || "".equals(charset)) {
+            return content.getBytes();
+        }
+        try {
+            return content.getBytes(charset);
+        } catch (Exception e) {
+            throw new Exception("MD5签名过程中出现错误,指定的编码集不对,您目前指定的编码集是:" + charset);
+        }
+    }
+
+
+    /**
+     * 构建请求报文
+     */
+    private static String buildSignSource(Map<String, String> contextMap, boolean sort) {
+        List keys = new ArrayList<String>(contextMap.keySet());
+        if(sort)
+            Collections.sort(keys);
+        StringBuilder signSource = new StringBuilder();
+        for (int i = 0; i < keys.size(); i++) {
+            String key = keys.get(i).toString();
+            String value = contextMap.get(key);
+            signSource.append(key);
+            signSource.append("=");
+            signSource.append(value);
+            signSource.append("&");
+        }
+        if(signSource.length()>0){
+            signSource.deleteCharAt(signSource.length()-1);
+        }
+        return signSource.toString();
+    }
+
+
+
+    public static String loadKeyFromFile(String keyFilePath){
+        StringBuilder privateCertKey = new StringBuilder();
+        try {
+            FileReader read = new FileReader(keyFilePath);
+            BufferedReader br = new BufferedReader(read);
+            String row;
+            while ((row = br.readLine()) != null) {
+                privateCertKey.append(row);
+            }
+        } catch (Exception e) {
+            return privateCertKey.toString();
+        }
+        return privateCertKey.toString();
+    }
+
+
     /**
      * 支付宝客户端支付--RSA加密
      */
-    public static String aliClientRsaSign(String content, String privateKey, String charset) {
+    public static String aliClientRsaSign(PMap<String, String> contextMap, String privateKey, String charset) {
         try {
+            // 组装签名报文
+            String signSource = buildSignSource(contextMap, true);
+
             PKCS8EncodedKeySpec priPKCS8 = new PKCS8EncodedKeySpec(
                     Base64.decode(privateKey));
             KeyFactory keyf = KeyFactory.getInstance(ALGORITHM);
@@ -53,7 +128,7 @@ public class SecretKeyUtil {
                     .getInstance(SIGN_ALGORITHMS);
 
             signature.initSign(priKey);
-            signature.update(content.getBytes(charset));
+            signature.update(signSource.getBytes(charset));
 
             byte[] signed = signature.sign();
 
@@ -93,62 +168,13 @@ public class SecretKeyUtil {
         }
         return false;
     }
-    /**
-     * 财付通、微信支付MD5签名 contextMap 签名参数 md5securityKey MD5密钥 charset 参数编码
-     */
-    public static ResultMap tenMd5sign(PMap<String, String> contextMap,
-                                       String md5securityKey, String charset) {
-        ResultMap result = ResultMap.build();
-        // 去掉map中的空值
-        PMap<String, String> signMap = new PMap<String, String>();
-        String value = "";
-        for (String Key : contextMap.keySet()) {
-            value = contextMap.get(Key);
-            if (value == null || value.equals("")
-                    || Key.equalsIgnoreCase("sign")
-                    || Key.equalsIgnoreCase("key")) {
-                continue;
-            }
-            signMap.put(Key, value);
-        }
-        // 组装签名报文
-        String sb = buildSignSource(signMap);
-        sb = sb + "&key=" + md5securityKey;
-        String signString;
-        try {
-            signString = MD5Util.MD5Encode(sb, charset).toUpperCase();
-        } catch (Exception e) {
-            result.withError(ResultStatus.PAY_SING_ERROR);
-            return result;
-        }
-        result.addItem("signValue", signString);
-        return result;
-    }
 
-    /**
-     * 财付通对账MD5签名 contextMap 签名参数 md5securityKey MD5密钥 charset 参数编码
-     */
-    public static String tenMd5sign(String parameters, String md5securityKey,
-                                    String charset) {
-        StringBuffer sb = new StringBuffer();
-
-        sb.append(parameters);
-
-        sb.append("&");
-
-        sb.append("key=" + md5securityKey);
-
-        String sign = MD5Util.MD5Encode(sb.toString(), charset).toLowerCase();
-
-        return sign;
-    }
 
     /**
      * 支付宝支付MD5签名 contextMap 签名参数 md5securityKey MD5密钥 charset 参数编码
      */
-    public static ResultMap aliMd5sign(PMap<String, String> contextMap,
+    public static String aliMd5sign(PMap<String, String> contextMap,
                                        String md5securityKey, String charset) {
-        ResultMap result = ResultMap.build();
         // 去掉map中的空值
         PMap<String, String> signMap = new PMap<String, String>();
         String value = "";
@@ -162,70 +188,15 @@ public class SecretKeyUtil {
             signMap.put(Key, value);
         }
         // 组装签名报文
-        String sb = buildSignSource(signMap);
+        String sb = buildSignSource(signMap, true);
         sb = sb + md5securityKey;
         String signString;
         try {
             signString = md5(sb);
         } catch (Exception e) {
-            result.withError(ResultStatus.PAY_SING_ERROR);
-            return result;
+            return null;
         }
-        result.addItem("signValue", signString);
-        return result;
-    }
-
-    /**
-     * 构建请求报文
-     */
-    private static String buildSignSource(Map<String, String> contextMap,String...agencyFlag) {
-        List keys = new ArrayList<String>(contextMap.keySet());
-        if(null == agencyFlag || agencyFlag.length == 0)
-            Collections.sort(keys);
-        String prestr = "";
-        for (int i = 0; i < keys.size(); i++) {
-            String key = keys.get(i).toString();
-            String value = contextMap.get(key);
-
-            if (i == keys.size() - 1) {// 拼接时，不包括最后一个&字符
-                prestr = prestr + key + "=" + value;
-            } else {
-                prestr = prestr + key + "=" + value + "&";
-            }
-        }
-        return prestr;
-    }
-
-    /**
-     * 财付通、微信 MD5验证签名 contextMap 验证参数 md5securityKey MD5密钥 returnSign 返回参数中的签名 charset 签名编码
-     */
-    public static boolean tenCheckMd5sign(PMap<String, String> contextMap,
-                                          String md5securityKey, String returnSign,
-                                          String charset) {
-        ResultMap result = ResultMap.build();
-        // 去掉map中的空值
-        PMap<String, String> signMap = new PMap<String, String>();
-        String value = "";
-        for (String Key : contextMap.keySet()) {
-            value = contextMap.get(Key);
-            if (value == null || value.equals("")
-                    || Key.equalsIgnoreCase("sign") || Key.equalsIgnoreCase("Sign")
-                    || Key.equalsIgnoreCase("key")) {
-                continue;
-            }
-            signMap.put(Key, value);
-        }
-        // 组装签名报文
-        String sb = buildSignSource(signMap);
-        sb = sb + "&key=" + md5securityKey;
-        String signString;
-        try {
-            signString = MD5Util.MD5Encode(sb, charset).toUpperCase();
-            LOGGER.info("compute sign={}, return sign={}", signString, returnSign);
-        } catch (Exception e) {
-            return false;
-        }
-        return returnSign.equals(signString);
+        return signString;
     }
 
     /**
@@ -248,7 +219,7 @@ public class SecretKeyUtil {
             signMap.put(Key, value);
         }
         // 组装签名报文
-        String sb = buildSignSource(signMap);
+        String sb = buildSignSource(signMap, true);
         sb = sb + md5securityKey;
         String signString;
         try {
@@ -277,11 +248,11 @@ public class SecretKeyUtil {
             signMap.put(Key, value);
         }
         // 组装签名报文
-        String content = buildSignSource(signMap);
-        
+        String content = buildSignSource(signMap, true);
+
         return aliClientRsaCheck(content, sign, ALIPAY_PUB_KEY);
     }
-    
+
     /**
      * 支付宝WapMD5验证签名 contextMap 验证参数 md5securityKey MD5密钥 returnSign 返回参数中的签名 charset 签名编码
      */
@@ -304,9 +275,76 @@ public class SecretKeyUtil {
         return returnSign.equals(signString);
     }
 
+
+
+    /**
+     * 财付通、微信支付MD5签名 contextMap 签名参数 md5securityKey MD5密钥 charset 参数编码
+     */
+    public static String tenMd5sign(PMap<String, String> contextMap,
+                                       String md5securityKey, String charset) {
+        // 去掉map中的空值
+        PMap<String, String> signMap = new PMap<String, String>();
+        String value = "";
+        for (String Key : contextMap.keySet()) {
+            value = contextMap.get(Key);
+            if (value == null || value.equals("")) {
+                continue;
+            }
+            signMap.put(Key, value);
+        }
+        // 组装签名报文
+        String sb = buildSignSource(signMap, true);
+        return tenMd5sign(sb, md5securityKey, charset);
+    }
+
+    public static String tenMd5sign(String context,
+                                    String md5securityKey, String charset) {
+        context = context + "&key=" + md5securityKey;
+        String signString = null;
+        try {
+            signString = MD5Util.MD5Encode(context, charset).toUpperCase();
+        } catch (Exception e) {
+            return null;
+        }
+        return signString;
+    }
+
+    /**
+     * 财付通、微信 MD5验证签名 contextMap 验证参数 md5securityKey MD5密钥 returnSign 返回参数中的签名 charset 签名编码
+     */
+    public static boolean tenCheckMd5sign(PMap<String, String> contextMap,
+                                          String md5securityKey, String returnSign,
+                                          String charset) {
+        ResultMap result = ResultMap.build();
+        // 去掉map中的空值
+        PMap<String, String> signMap = new PMap<String, String>();
+        String value = "";
+        for (String Key : contextMap.keySet()) {
+            value = contextMap.get(Key);
+            if (value == null || value.equals("")
+                    || Key.equalsIgnoreCase("sign")
+                    || Key.equalsIgnoreCase("key")) {
+                continue;
+            }
+            signMap.put(Key, value);
+        }
+        // 组装签名报文
+        String sb = buildSignSource(signMap, true);
+        sb = sb + "&key=" + md5securityKey;
+        String signString;
+        try {
+            signString = MD5Util.MD5Encode(sb, charset).toUpperCase();
+            LOGGER.info("compute sign={}, return sign={}", signString, returnSign);
+        } catch (Exception e) {
+            return false;
+        }
+        return returnSign.equals(signString);
+    }
+
+
     public static boolean billCheckRSAsign(PMap<String, String> signMap,
                                             String pubKeyPath, String sign){
-        String sb = buildSignSource(signMap,"99BILL");
+        String sb = buildSignSource(signMap,false);
         Pkipair pair = new Pkipair();
         boolean isTrue;
         try {
@@ -318,43 +356,13 @@ public class SecretKeyUtil {
         }
     }
     
-    /**
-     * 对字符串进行MD5签名
-     *
-     * @param text 明文
-     * @return 密文
-     */
-    private static String md5(String text) throws Exception {
-
-        return DigestUtils.md5Hex(getContentBytes(text, "utf-8"));
-
-    }
-
-    /**
-     * @param content
-     * @param charset
-     * @return
-     * @throws Exception
-     * @throws
-     * @throws
-     */
-    private static byte[] getContentBytes(String content, String charset) throws Exception {
-        if (charset == null || "".equals(charset)) {
-            return content.getBytes();
-        }
-        try {
-            return content.getBytes(charset);
-        } catch (Exception e) {
-            throw new Exception("MD5签名过程中出现错误,指定的编码集不对,您目前指定的编码集是:" + charset);
-        }
-    }
 
     /**
      * 快钱获取签名
      */
     public static String billSignMsg(PMap signMsgMap, String path) {
 
-        String signMsg = buildSignSource(signMsgMap);
+        String signMsg = buildSignSource(signMsgMap,false);
         String base64 = "";
         try {
             // 密钥仓库
@@ -399,12 +407,12 @@ public class SecretKeyUtil {
             signMap.put(Key, value);
         }
         // 组装签名报文
-        String sb = buildSignSource(signMap);
+        String sb = buildSignSource(signMap, false);
         String signMsgVal = "";
         try {
             signMsgVal = BillMD5Util.md5Hex(sb.getBytes(charset)).toUpperCase();
         } catch (Exception e) {
-            result.withError(ResultStatus.PAY_SING_ERROR);
+            result.withError(ResultStatus.PAY_SIGN_ERROR);
             return result;
         }
         result.addItem("signValue", signMsgVal);

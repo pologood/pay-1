@@ -2,6 +2,7 @@ package com.sogou.pay.common.utils;
 
 import com.sogou.pay.common.BaseTest;
 
+import com.sogou.pay.common.types.PMap;
 import org.junit.Test;
 
 import java.util.Date;

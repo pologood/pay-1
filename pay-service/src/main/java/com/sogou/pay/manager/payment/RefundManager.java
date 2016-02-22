@@ -1,7 +1,7 @@
 package com.sogou.pay.manager.payment;
 
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.manager.model.RefundModel;
 import com.sogou.pay.manager.model.thirdpay.FairAccRefundModel;
 

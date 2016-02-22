@@ -2,27 +2,26 @@ package com.sogou.pay.thirdpay.biz.impl;
 
 import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.common.http.utils.HttpUtil;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.StringUtil;
-import com.sogou.pay.common.utils.XMLParseUtil;
+import com.sogou.pay.common.utils.XMLUtil;
 import com.sogou.pay.thirdpay.biz.BillPayService;
 import com.sogou.pay.thirdpay.biz.enums.OrderRefundState;
 import com.sogou.pay.thirdpay.biz.enums.OrderState;
 import com.sogou.pay.thirdpay.biz.utils.*;
 import com.sogou.pay.thirdpay.biz.utils.billpay.*;
 import com.sogou.pay.thirdpay.biz.utils.billpay.BillPayUtil;
+import com.sogou.pay.thirdpay.service.Tenpay.TenpayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @author 用户平台事业部---高朋辉
@@ -51,7 +50,7 @@ public class BillPayServiceImpl implements BillPayService {
         requestPMap.put("signType", BillPayUtil.signType);//签名类型
         requestPMap.put("merchantAcctId", params.getString("merchantNo") + "01");//人民币网关账号，该账号为11位人民币网关商户编号+01
         requestPMap.put("orderId", params.getString("serialNumber"));//商户网站唯一订单号
-        String orderAmount = Utils.fenParseFromYuan(params.getString("orderAmount"));
+        String orderAmount = TenpayUtils.fenParseFromYuan(params.getString("orderAmount"));
         requestPMap.put("orderAmount", orderAmount);
         requestPMap.put("orderTime", new SimpleDateFormat("yyyyMMddHHmmss").format(params.getDate("payTime")));
         //2.根据文档说明，组装RSA加密参数
@@ -125,28 +124,28 @@ public class BillPayServiceImpl implements BillPayService {
             queryResponse = locator.getgatewayOrderQuery().gatewayOrderQuery(queryRequest);
         } catch (RemoteException e) {
             log.error("快钱订单查询请求异常，参数:" + params + "异常e：" + e);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
         } catch (javax.xml.rpc.ServiceException e) {
             log.error("快钱订单查询请求异常，参数:" + params + "异常e：" + e);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
         }
         String errCode = queryResponse.getErrCode();
         if (!errCode.equals("")) {
             log.error("快钱订单查询请求返回参数错误，errCode!=null 参数:" + params);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
 
         }
         GatewayOrderDetail[] orderDetail = queryResponse.getOrders();
         if (orderDetail.length != 1) {
             log.error("快钱订单查询请求返回参数错误，orderDetail.length != 1 参数:" + params);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
 
         }
         GatewayOrderDetail onlyoneOrder = orderDetail[0];
         String payResult = onlyoneOrder.getPayResult();
         if (StringUtil.isBlankOrNull(payResult)) {
             log.error("快钱订单查询请求返回参数异常，payResult!=0，参数:" + params + "返回串" + payResult);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
         }
         if (payResult.equals("10")) {
             result.addItem("order_state", OrderState.SUCCESS.name());
@@ -196,20 +195,20 @@ public class BillPayServiceImpl implements BillPayService {
         String responseString = httpResponse.getData().get("responseData").toString();
         PMap billRefundMap;
         try {
-            billRefundMap = XMLParseUtil.doXMLParse(responseString);
+            billRefundMap = XMLUtil.XML2PMap(responseString);
         } catch (Exception e) {
             log.error("快钱订单退款返回参数XML解析异常，参数:" + requestPMap + "返回串" + responseString);
-            throw new ServiceException(e, ResultStatus.THIRD_REFUND_99BILL_BACK_PARAM_ERROR);
+            throw new ServiceException(e, ResultStatus.THIRD_REFUND_RESPONSE_PARAM_ERROR);
         }
         if (billRefundMap == null) {
             log.error("快钱订单退款返回参数xml节点alipay不存在，参数:" + requestPMap + "返回串" + responseString);
-            return ResultMap.build(ResultStatus.THIRD_REFUND_99BILL_BACK_PARAM_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_REFUND_RESPONSE_PARAM_ERROR);
         }
         String resultStr = billRefundMap.getString("RESULT");
-        if (Utils.isEmpty(resultStr) || "N".equals(resultStr)) {
+        if (StringUtil.isEmpty(resultStr) || "N".equals(resultStr)) {
             result.addItem("error_code", OrderRefundState.FAIL);
             result.addItem("error_msg", billRefundMap.getString("CODE"));
-            result.withError(ResultStatus.THIRD_REFUND_99BILL_BACK_PARAM_ERROR);
+            result.withError(ResultStatus.THIRD_REFUND_RESPONSE_PARAM_ERROR);
         }
 
         return result;
@@ -237,7 +236,7 @@ public class BillPayServiceImpl implements BillPayService {
             signMsg = BillMD5Util.md5Hex(signMsgVal.getBytes("utf-8")).toUpperCase();
         } catch (UnsupportedEncodingException e) {
             log.error("快钱订单查询请求MD5加密异常，参数:" + params + "异常e：" + e);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
         }
         GatewayRefundQueryRequest queryRequestBean = new GatewayRefundQueryRequest();
         queryRequestBean.setVersion(BillPayUtil.version);
@@ -254,28 +253,28 @@ public class BillPayServiceImpl implements BillPayService {
             queryResponse = locator.getgatewayRefundQuery().query(queryRequestBean);
         } catch (RemoteException e) {
             log.error("快钱订单查询请求异常，参数:" + params + "异常e：" + e);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
         } catch (javax.xml.rpc.ServiceException e) {
             log.error("快钱订单查询请求异常，参数:" + params + "异常e：" + e);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
         }
         String errCode = queryResponse.getErrCode();
         if (!errCode.equals("")) {
             log.error("快钱订单查询请求返回参数错误，errCode!=null 参数:" + params + "返回参数errCode：" + errCode);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
 
         }
         GatewayRefundQueryResultDto[] orderDetail = queryResponse.getResults();
         if (orderDetail.length != 1) {
             log.error("快钱订单查询请求返回参数错误，orderDetail.length != 1 参数:" + params);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
 
         }
         GatewayRefundQueryResultDto onlyoneOrder = orderDetail[0];
         String status = onlyoneOrder.getStatus();
         if (StringUtil.isBlankOrNull(status)) {
             log.error("快钱订单查询请求返回参数异常，payResult!=0，参数:" + params + "返回串" + status);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
         }
         //数字串:0 代表进行中、1 代表成功、2 代表失败
         if (status.equals("1")) {

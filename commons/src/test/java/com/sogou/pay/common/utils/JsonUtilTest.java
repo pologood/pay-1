@@ -11,15 +11,15 @@ public class JsonUtilTest extends BaseTest {
 
     @Test
     public void testJsonToBean() {
-        // JsonUtil.jsonToBean()
+        // JsonUtil.JSON2Bean()
         String json = "{\"arr\":[\"Hello\",\"World\",\"!\"],\"id\":10,\"list\":[\"list1\",\"list2\"],\"map\":{\"key1\":\"value1\",\"key2\":\"value2\"},\"name\":\"Test\"}";
-        TestBean bean = JsonUtil.jsonToBean(json, TestBean.class);
+        TestBean bean = JSONUtil.JSON2Bean(json, TestBean.class);
         System.out.println(bean.getMap());
     }
 
     @Test
     public void testBeanToJson() {
-        System.out.println(JsonUtil.beanToJson(null));
-        System.out.println(JsonUtil.beanToJson(getBean()));
+        System.out.println(JSONUtil.Bean2JSON(null));
+        System.out.println(JSONUtil.Bean2JSON(getBean()));
     }
 }

@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.sogou.pay.manager.model.PayCheckUpdateModle;
-import com.sogou.pay.service.entity.PayCheck;
-import com.sogou.pay.service.enums.AgencyType;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.enums.OrderType;
 import com.sogou.pay.service.enums.TerminalType;
 import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;

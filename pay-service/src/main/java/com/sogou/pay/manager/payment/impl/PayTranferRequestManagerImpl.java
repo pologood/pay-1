@@ -1,9 +1,9 @@
 package com.sogou.pay.manager.payment.impl;
 
 import com.sogou.pay.common.http.utils.HttpUtil;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultBean;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultBean;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.manager.payment.PayTranferRequestManager;
 import com.sogou.pay.service.config.PayConfig;
 import com.sogou.pay.service.entity.PayTransfer;

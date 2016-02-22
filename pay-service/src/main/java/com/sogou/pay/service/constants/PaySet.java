@@ -7,7 +7,7 @@
  */
 package com.sogou.pay.service.constants;
 
-import com.sogou.pay.service.enums.AgencyType;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 
 import java.util.ArrayList;
 import java.util.List;

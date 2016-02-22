@@ -1,24 +1,23 @@
 package com.sogou.pay.thirdpay.api.impl;
 
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.*;
 import com.sogou.pay.common.utils.XMLUtil;
 import com.sogou.pay.thirdpay.api.BankPayApi;
-import com.sogou.pay.thirdpay.biz.modle.QueryReturnRecord;
-import com.sogou.pay.thirdpay.biz.modle.Record;
-import com.sogou.pay.thirdpay.biz.modle.RefundQueryRecord;
+import com.sogou.pay.thirdpay.biz.model.QueryReturnRecord;
+import com.sogou.pay.thirdpay.biz.model.Record;
+import com.sogou.pay.thirdpay.biz.model.RefundQueryRecord;
 import com.sogou.pay.thirdpay.biz.utils.*;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
-import org.jdom.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,12 +38,12 @@ public class BankPayApiImpl implements BankPayApi {
      * 1.批量银行代付提交接口
      */
     public ResultMap<String> paySubmit(PMap params) {
-        log.info("Bank Pay Submit Start!Parameters:" + JsonUtil.beanToJson(params));
+        log.info("Bank Pay Submit Start!Parameters:" + JSONUtil.Bean2JSON(params));
         ResultMap result = ResultMap.build();
         //1.验证参数合法性
         boolean isEmptyParams = verifyParams(params);
         if (!isEmptyParams) {
-            log.error("Bank Pay Submit:Lack Parameter Or Parameter Illegal,Parameters:" + JsonUtil.beanToJson(params));
+            log.error("Bank Pay Submit:Lack Parameter Or Parameter Illegal,Parameters:" + JSONUtil.Bean2JSON(params));
             return result.build(ResultStatus.BANK_PAY_PARAM_ERROR);
         }
         //根据商户号获取商户证书导入密码
@@ -61,7 +60,7 @@ public class BankPayApiImpl implements BankPayApi {
         params.put("opPasswd",opPasswd);
         ResultMap reqParamsMap = assemblyReqParams(params);
         if (reqParamsMap.getStatus() != ResultStatus.SUCCESS) {
-            log.error("Bank Pay Submit:Assembly Request Parameter Illegal,Params：" + JsonUtil.beanToJson(reqParamsMap));
+            log.error("Bank Pay Submit:Assembly Request Parameter Illegal,Params：" + JSONUtil.Bean2JSON(reqParamsMap));
             return ResultMap.build(ResultStatus.BANK_PAY_GET_PARAM_ERROR);
         }
         PMap reqParams = (PMap) reqParamsMap.getReturnValue();
@@ -72,13 +71,13 @@ public class BankPayApiImpl implements BankPayApi {
                 params.getString("privateCertFilePath"),
                 params.getString("merchantNo"), certPasswd);
         if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
-            log.error("Bank Pay Submit:Http Request Illegal,Params：" + JsonUtil.beanToJson(reqParamsMap));
+            log.error("Bank Pay Submit:Http Request Illegal,Params：" + JSONUtil.Bean2JSON(reqParamsMap));
             return ResultMap.build(ResultStatus.BANK_PAY_HTTP_ERROR);
         }
         //4.检查返回参数
         ResultMap returnResult = checkResParamsInfo(httpResponse);
         if (returnResult.getStatus() != ResultStatus.SUCCESS) {
-            log.error("Bank Pay Submit:Http Requset Return Params Illegal,Request Params：" + JsonUtil.beanToJson(params) + "Return Params：" + JsonUtil.beanToJson(httpResponse));
+            log.error("Bank Pay Submit:Http Requset Return Params Illegal,Request Params：" + JSONUtil.Bean2JSON(params) + "Return Params：" + JSONUtil.Bean2JSON(httpResponse));
             return ResultMap.build(ResultStatus.BANK_PAY_BACK_PARAM_ERROR);
         }
 
@@ -89,12 +88,12 @@ public class BankPayApiImpl implements BankPayApi {
      * 2.批量银行代付查询接口
      */
     public ResultMap<String> payQuery(PMap params) {
-        log.info("Bank Pay Query Start!Parameters:" + JsonUtil.beanToJson(params));
+        log.info("Bank Pay Query Start!Parameters:" + JSONUtil.Bean2JSON(params));
         ResultMap result = ResultMap.build();
         //1.验证参数合法性
         boolean isEmptyParams = verifyParams(params);
         if (!isEmptyParams) {
-            log.error("Bank Pay Query:Lack Parameter Or Parameter Illegal,Parameters:" + JsonUtil.beanToJson(params));
+            log.error("Bank Pay Query:Lack Parameter Or Parameter Illegal,Parameters:" + JSONUtil.Bean2JSON(params));
             return result.build(ResultStatus.BANK_PAY_QUERY_PARAM_ERROR);
         }
         //根据商户号获取商户证书导入密码
@@ -111,7 +110,7 @@ public class BankPayApiImpl implements BankPayApi {
         //2.按照文档要求组装请求参数
         ResultMap reqParamsMap = assemblyQueryReqParams(params);
         if (reqParamsMap.getStatus() != ResultStatus.SUCCESS) {
-            log.error("Bank Pay Query:Assembly Request Parameter Illegal,Params：" + JsonUtil.beanToJson(params));
+            log.error("Bank Pay Query:Assembly Request Parameter Illegal,Params：" + JSONUtil.Bean2JSON(params));
             return ResultMap.build(ResultStatus.BANK_PAY_QUERY_GET_PARAM_ERROR);
         }
         String reqParamsXml = (String) reqParamsMap.getReturnValue();
@@ -122,7 +121,7 @@ public class BankPayApiImpl implements BankPayApi {
                 params.getString("privateCertFilePath"),
                 params.getString("merchantNo"), certPasswd);
         if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
-            log.error("Bank Pay Query:Http Request Illegal,Params：" + JsonUtil.beanToJson(reqParamsMap));
+            log.error("Bank Pay Query:Http Request Illegal,Params：" + JSONUtil.Bean2JSON(reqParamsMap));
             return ResultMap.build(ResultStatus.BANK_PAY_QUERY_HTTP_ERROR);
         }
         String responseString = httpResponse.getData().get("responseData").toString();
@@ -146,17 +145,17 @@ public class BankPayApiImpl implements BankPayApi {
      * 3.退票查询接口
      */
     public ResultMap<String> refundQuery(PMap params) {
-        log.info("Bank Refund Query Start!Parameters:" + JsonUtil.beanToJson(params));
+        log.info("Bank Refund Query Start!Parameters:" + JSONUtil.Bean2JSON(params));
         ResultMap result = ResultMap.build();
         //1.验证参数合法性
-        if (Utils.isEmpty(params.getString("merchantNo"), params.getString("startTime"), params.getString("endTime"))) {
-            log.error("Bank Refund Query:Lack Parameter Or Parameter Illegal,Parameters:" + JsonUtil.beanToJson(params));
+        if (StringUtil.isEmpty(params.getString("merchantNo"), params.getString("startTime"), params.getString("endTime"))) {
+            log.error("Bank Refund Query:Lack Parameter Or Parameter Illegal,Parameters:" + JSONUtil.Bean2JSON(params));
             return result.build(ResultStatus.BANK_REFUND_QUERY_GET_PARAM_ERROR);
         }
         //2.按照文档要求组装请求参数
         ResultMap reqParamsMap = assemblyRefundQueryReqParams(params);
         if (reqParamsMap.getStatus() != ResultStatus.SUCCESS) {
-            log.error("Bank Refund Query:Assembly Request Parameter Illegal,Params：" + JsonUtil.beanToJson(params));
+            log.error("Bank Refund Query:Assembly Request Parameter Illegal,Params：" + JSONUtil.Bean2JSON(params));
             return ResultMap.build(ResultStatus.BANK_REFUND_QUERY_GET_PARAM_ERROR);
         }
         String reqParamsXml = (String) reqParamsMap.getReturnValue();
@@ -174,7 +173,7 @@ public class BankPayApiImpl implements BankPayApi {
                 params.getString("privateCertFilePath"),
                 params.getString("merchantNo"), certPasswd);
         if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
-            log.error("Bank Refund Query:Http Request Illegal,Params：" + JsonUtil.beanToJson(reqParamsMap));
+            log.error("Bank Refund Query:Http Request Illegal,Params：" + JSONUtil.Bean2JSON(reqParamsMap));
             return ResultMap.build(ResultStatus.BANK_REFUND_QUERY_HTTP_ERROR);
         }
         String responseString = httpResponse.getData().get("responseData").toString();
@@ -244,7 +243,7 @@ public class BankPayApiImpl implements BankPayApi {
             recordXml += ss;
         }
         //3.将1操作的的参数xml化,并合并2操作的参数
-        String reqParamStr = XMLUtil.mapToXmlString("root", reqParam);
+        String reqParamStr = XMLUtil.Map2XML("root", reqParam);
         reqParamStr = reqParamStr.substring(0, reqParamStr.length() - 7);
         reqParamStr += "<record_set>" + recordXml + "</record_set></root>";
         //4.按照文档要求组装参数B
@@ -255,7 +254,7 @@ public class BankPayApiImpl implements BankPayApi {
         try {
             abstractStr = MD5Util.MD5Encode(MD5Util.MD5Encode(content, "GBK") + md5securityKey, "GBK");
         } catch (Exception e) {
-            result.withError(ResultStatus.PAY_SING_ERROR);
+            result.withError(ResultStatus.PAY_SIGN_ERROR);
             return result;
         }
         PMap returnPMap = new PMap();
@@ -275,11 +274,8 @@ public class BankPayApiImpl implements BankPayApi {
         PMap responseMap;
         //1.调用财付通提供的解析xml方法
         try {
-            responseMap = XMLParseUtil.doXMLParse(responseString);
-        } catch (JDOMException e) {
-            e.printStackTrace();
-            return ResultMap.build(ResultStatus.BANK_PAY_BACK_PARAM_ERROR);
-        } catch (IOException e) {
+            responseMap = XMLUtil.XML2PMap(responseString);
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultMap.build(ResultStatus.BANK_PAY_BACK_PARAM_ERROR);
         }
@@ -288,7 +284,7 @@ public class BankPayApiImpl implements BankPayApi {
             return ResultMap.build(ResultStatus.BANK_PAY_BACK_PARAM_ERROR);
         }
         String retcode = responseMap.getString("retcode");
-        if (Utils.isEmpty(retcode) || !"0".equals(retcode) || !"00".equals(retcode)) {
+        if (StringUtil.isEmpty(retcode) || !"0".equals(retcode) || !"00".equals(retcode)) {
             result.addItem("retcode", retcode);
             log.error("批量银行代付查询返回数据状态码错误，状态retmsg!=00/0:" + responseMap.getString("retmsg"));
             result.withError(ResultStatus.BANK_PAY_BACK_PARAM_ERROR);
@@ -324,7 +320,7 @@ public class BankPayApiImpl implements BankPayApi {
         reqParam.put("sp_id", params.getString("merchantNo"));
         reqParam.put("package_id", params.getString("package_id"));
         reqParam.put("client_ip", "127.0.0.1");
-        String reqParamStr = XMLUtil.mapToXmlString("root", reqParam);
+        String reqParamStr = XMLUtil.Map2XML("root", reqParam);
         result.withReturn(reqParamStr);
         return result;
 
@@ -464,15 +460,15 @@ public class BankPayApiImpl implements BankPayApi {
         reqParam.put("end_time", params.getString("endTime"));//退票的结束时间，格式为yyyyMMddHHmmss
         //2.获取md5签名
         String md5securityKey = params.getString("md5securityKey");
-        ResultMap
+        String
                 sign = SecretKeyUtil.tenMd5sign(reqParam, md5securityKey, "GBK");
-        if (sign.getStatus() != ResultStatus.SUCCESS) {
+        if (sign == null) {
             log.error("md5签名异常，参数:" + reqParam);
             return ResultMap.build(ResultStatus.BANK_PAY_SIGN_ERROR);
         }
-        reqParam.put(sign, sign.getData().get("signValue"));
+        reqParam.put(sign, sign);
         //3.xml格式化
-        String reqParamStr = XMLUtil.mapToXmlString("root", reqParam);
+        String reqParamStr = XMLUtil.Map2XML("root", reqParam);
         result.withReturn(reqParamStr);
         return result;
 

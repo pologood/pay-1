@@ -1,7 +1,5 @@
 package com.sogou.pay.service.payment.manager;
 
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
 import com.sogou.pay.manager.model.notify.PayNotifyModel;
 import com.sogou.pay.manager.notify.PayNotifyManager;
 import com.sogou.pay.service.BaseTest;

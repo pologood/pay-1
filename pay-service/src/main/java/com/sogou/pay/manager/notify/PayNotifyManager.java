@@ -2,8 +2,8 @@ package com.sogou.pay.manager.notify;
 
 import java.util.Map;
 
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.model.notify.PayNotifyModel;
 import com.sogou.pay.service.entity.PayOrderInfo;
 

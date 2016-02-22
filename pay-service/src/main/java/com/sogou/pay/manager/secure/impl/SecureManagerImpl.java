@@ -1,7 +1,5 @@
 package com.sogou.pay.manager.secure.impl;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,19 +11,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.common.utils.CommonConstant;
-import com.sogou.pay.common.utils.JsonUtil;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.common.utils.MapUtil;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.manager.secure.SecureManager;
 import com.sogou.pay.service.entity.App;
 import com.sogou.pay.service.entity.PayAgencyMerchant;
-import com.sogou.pay.service.enums.AgencyType;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.payment.AppService;
 import com.sogou.pay.service.payment.PayAgencyMerchantService;
 import com.sogou.pay.service.utils.DataSignUtil;
@@ -57,7 +55,7 @@ public class SecureManagerImpl implements SecureManager {
             String signType = (String) paramMap.get("signType");
             String sign = (String) paramMap.remove("sign");
             if (StringUtil.isBlank(sign)) {
-                return result.withError(ResultStatus.PAY_SING_IS_NULL);
+                return result.withError(ResultStatus.PAY_PARAM_ERROR);
             }
 
             App app = appService.selectApp(appId);
@@ -70,8 +68,8 @@ public class SecureManagerImpl implements SecureManager {
 
             return verifyResult ? result : result.withError(ResultStatus.SIGNATURE_ERROR);
         } catch (Exception e) {
-            logger.error("Verify App Sign Error: " + JsonUtil.beanToJson(params), e);
-            return ResultMap.build(ResultStatus.PAY_SING_ERROR);
+            logger.error("Verify App Sign Error: " + JSONUtil.Bean2JSON(params), e);
+            return ResultMap.build(ResultStatus.PAY_SIGN_ERROR);
         }
     }
 
@@ -82,16 +80,16 @@ public class SecureManagerImpl implements SecureManager {
             int appId = Integer.parseInt((String) paramMap.get("appId")); // 不需要返回appId
             App app = appService.selectApp(appId);
             if (app == null) {
-                logger.error("App Sign Error: App " + appId + " Not Existed, " + JsonUtil.beanToJson(paramMap));
-                return ResultMap.build(ResultStatus.REFUND_SERVICE_ERROR);
+                logger.error("App Sign Error: App " + appId + " Not Existed, " + JSONUtil.Bean2JSON(paramMap));
+                return ResultMap.build(ResultStatus.PAY_SIGN_ERROR);
             }
             String key = app.getSignKey();
             String sign = DataSignUtil.sign(packParams(paramMap, key), "0");
             paramMap.put("sign", sign);
             return ResultMap.build().withReturn(paramMap);
         } catch (Exception e) {
-            logger.error("App Sign Error: " + JsonUtil.beanToJson(params), e);
-            return ResultMap.build(ResultStatus.REFUND_SERVICE_ERROR);
+            logger.error("App Sign Error: " + JSONUtil.Bean2JSON(params), e);
+            return ResultMap.build(ResultStatus.PAY_SIGN_ERROR);
         }
     }
 
@@ -240,7 +238,7 @@ public class SecureManagerImpl implements SecureManager {
         if (params instanceof Map) {
             return MapUtil.dropNulls((Map) params);
         } else {
-            return BeanUtil.beanToMapNotNull(params);
+            return BeanUtil.Bean2MapNotNull(params);
         }
     }
 }

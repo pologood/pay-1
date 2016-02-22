@@ -1,9 +1,9 @@
 package com.sogou.pay.thirdpay.biz.utils;
 
 
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.types.PMap;
 
 import org.apache.commons.httpclient.NameValuePair;
 
@@ -323,6 +323,7 @@ public class TenPayHttpClient {
      */
     protected void httpGetMethod(String url) throws IOException {
 
+        System.out.println(url);
         HttpURLConnection httpConnection = HttpClientUtil
             .getHttpURLConnection(url);
         this.setHttpRequest(httpConnection);
@@ -470,11 +471,11 @@ public class TenPayHttpClient {
         } catch (UnrecoverableKeyException | KeyManagementException
             | CertificateException | KeyStoreException
             | NoSuchAlgorithmException | IOException e) {
-            result.withError(ResultStatus.THIRD_REFUND_TEN_HTTP_ERROR);
+            result.withError(ResultStatus.THIRD_REFUND_HTTP_ERROR);
             return result;
         }
         if (rescontent == null) {
-            result.withError(ResultStatus.THIRD_REFUND_TEN_HTTP_ERROR);
+            result.withError(ResultStatus.THIRD_REFUND_HTTP_ERROR);
             return result;
         }
         result.addItem("responseData", rescontent);
@@ -540,11 +541,11 @@ public class TenPayHttpClient {
         } catch (UnrecoverableKeyException | KeyManagementException
                 | CertificateException | KeyStoreException
                 | NoSuchAlgorithmException | IOException e) {
-            result.withError(ResultStatus.THIRD_REFUND_TEN_HTTP_ERROR);
+            result.withError(ResultStatus.THIRD_REFUND_HTTP_ERROR);
             return result;
         }
         if (rescontent == null) {
-            result.withError(ResultStatus.THIRD_REFUND_TEN_HTTP_ERROR);
+            result.withError(ResultStatus.THIRD_REFUND_HTTP_ERROR);
             return result;
         }
         result.addItem("responseData", rescontent);

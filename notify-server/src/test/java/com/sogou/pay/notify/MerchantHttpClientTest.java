@@ -1,7 +1,6 @@
 package com.sogou.pay.notify;
 
-import com.sogou.pay.common.http.utils.HttpUtil;
-import com.sogou.pay.common.utils.JsonUtil;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.common.utils.httpclient.MerchantHttpClient;
 import com.sogou.pay.common.utils.httpclient.MerchantResponse;
 import org.junit.Test;
@@ -29,7 +28,7 @@ public class MerchantHttpClientTest {
         paramMap.put("successTime", "20151030153655");
         paramMap.put("appId", "5000");
         MerchantResponse merchantResponse = MerchantHttpClient.getInstance().doPost(path, paramMap);
-        System.out.println(JsonUtil.beanToJson(merchantResponse));
+        System.out.println(JSONUtil.Bean2JSON(merchantResponse));
 
     }
 
@@ -39,7 +38,7 @@ public class MerchantHttpClientTest {
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put("aa", "aa");
         MerchantResponse merchantResponse = MerchantHttpClient.getInstance().doGet(path, paramMap);
-        System.out.println(JsonUtil.beanToJson(merchantResponse));
+        System.out.println(JSONUtil.Bean2JSON(merchantResponse));
 
     }
 

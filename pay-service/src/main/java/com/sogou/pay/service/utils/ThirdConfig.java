@@ -1,6 +1,6 @@
 package com.sogou.pay.service.utils;
 
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.PMap;
 
 public class ThirdConfig {
     private static final PMap<String, String> thirdMap = new PMap<String, String>();
@@ -23,15 +23,37 @@ public class ThirdConfig {
         thirdMap.put("1_3_WECHAT", "PC_WECHAT_SWEEPYARD");
         //WAP支付宝账户
         thirdMap.put("2_2_ALIPAY", "MOBILE_ALIPAY_WAP");
+        //WAP财付通账户
+        thirdMap.put("2_2_TENPAY", "MOBILE_TENPAY_WAP");
         //SDK支付宝账户
         thirdMap.put("3_2_ALIPAY", "MOBILE_ALIPAY_CLIENT");
+        //SDK财付通账户
+        thirdMap.put("3_2_TENPAY", "MOBILE_TENPAY_CLIENT");
         //SDK微信账户
         thirdMap.put("3_2_WECHAT", "MOBILE_WECHAT_CLIENT");
+
+
+        //PC网关支付
+        thirdMap.put("1_1", "PC_GATEWAY");
+        //PC账户支付
+        thirdMap.put("1_2", "PC_ACCOUNT");
+        //PC扫码支付
+        thirdMap.put("1_3", "PC_QRCODE");
+        //WAP账户支付
+        thirdMap.put("2_2", "MOBILE_WAP");
+        //SDK账户支付
+        thirdMap.put("3_2", "MOBILE_CLIENT");
     }
 
     public static String getInstanceName(String platForm, String payFeeType, String agencyCode) {
         
         String Key = platForm + "_" + payFeeType + "_" + agencyCode;
+        return thirdMap.get(Key);
+    }
+
+    public static String getInstanceName(String platForm, String payFeeType) {
+
+        String Key = platForm + "_" + payFeeType;
         return thirdMap.get(Key);
     }
 }

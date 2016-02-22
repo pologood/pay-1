@@ -5,7 +5,6 @@ import java.util.Date;
 
 /**
  * @Author qibaichao
- * @ClassName DateUtils
  * @Date 2014年9月18日
  * @Description:
  */

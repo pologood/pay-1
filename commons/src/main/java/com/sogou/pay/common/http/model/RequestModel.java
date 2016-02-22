@@ -181,7 +181,7 @@ public class RequestModel {
      * @param object
      */
     public void addParams(Object object) {
-        Map<String, Object> param = BeanUtil.beanToMap(object);
+        Map<String, Object> param = BeanUtil.Bean2Map(object);
         if (param == null || param.isEmpty()) {
             return;
         }

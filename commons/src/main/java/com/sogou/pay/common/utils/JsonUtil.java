@@ -1,32 +1,36 @@
 package com.sogou.pay.common.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.sogou.pay.common.types.PMap;
+
+import java.util.Map;
 
 /**
  * Created by hujunfei Date: 14-12-30 Time: 下午1:37
  */
-public class JsonUtil {
-
-    /**
-     * @param value
-     * @param classType
-     * @param <T>
-     * @return
-     */
-    public static <T> T jsonToBean(String value, Class<T> classType) {
-        return JSON.parseObject(value, classType);
-    }
+public class JSONUtil {
 
     public static PMap jsonToPMap(String value, PMap map) {
         return JSON.parseObject(value, PMap.class);
     }
 
-    /**
-     * @param obj
-     * @return
-     */
-    public static String beanToJson(Object obj) {
-        return JSON.toJSONString(obj);
+    public static Map JSON2Map(String json){
+        return JSON.parseObject(json, Map.class);
     }
+
+    public static String Map2JSON(Map map){
+        return JSON.toJSONString(map);
+    }
+
+    public static <T> T JSON2Bean(String json, Class<T> clazz){
+        return JSON.parseObject(json, clazz);
+    }
+
+
+    public static String Bean2JSON(Object bean){
+        return JSON.toJSONString(bean);
+    }
+
+
 
 }

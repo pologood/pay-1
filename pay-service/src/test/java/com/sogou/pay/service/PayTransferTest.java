@@ -2,15 +2,12 @@ package com.sogou.pay.service;
 
 import com.alibaba.fastjson.JSON;
 import com.sogou.pay.common.http.utils.HttpUtil;
-import com.sogou.pay.common.result.Result;
+import com.sogou.pay.common.types.Result;
 import com.sogou.pay.manager.job.PayTranferNotifyJob;
 import com.sogou.pay.manager.job.PayTranferTicketRefundQueryJob;
-import com.sogou.pay.manager.job.PayTransferQueryJob;
 import com.sogou.pay.manager.model.Record;
 import com.sogou.pay.manager.payment.PayTranferRequestManager;
 import com.sogou.pay.manager.payment.PayTransferQueryManager;
-import com.sogou.pay.service.CMBC.XmlPacket;
-import com.sogou.pay.service.entity.PayTransferBatch;
 import com.sogou.pay.service.payment.PayTransferBatchService;
 import com.sogou.pay.service.utils.orderNoGenerator.PayTransferBatchNo;
 import com.sogou.pay.service.utils.orderNoGenerator.PayTransferNo;
@@ -104,7 +101,7 @@ public class PayTransferTest extends BaseTest {
     @Test
     public void doQuery() {
         String appId="1999";
-        String batchNo = "20151012172007358004";
+        String batchNo = "20160126161500157001";
         payTransferQueryManager.doProcess(appId,batchNo);
     }
 
@@ -148,7 +145,7 @@ public class PayTransferTest extends BaseTest {
 
             }
             sb.append("&recordList=" + JSON.toJSON(list));
-            HttpUtil.sendPost("http://localhost:8080/payTrans/doPay", sb.toString());
+            HttpUtil.sendPost("http://test.web.pay.sogou/payTrans/doPay", sb.toString());
             System.out.println(sb.toString());
         } catch (Exception e) {
             e.printStackTrace();

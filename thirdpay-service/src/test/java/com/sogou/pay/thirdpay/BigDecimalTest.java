@@ -1,8 +1,8 @@
 package com.sogou.pay.thirdpay;
 
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.thirdpay.biz.utils.Utils;
+import com.sogou.pay.common.types.PMap;
 
+import com.sogou.pay.thirdpay.service.Tenpay.TenpayUtils;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -28,10 +28,10 @@ public class BigDecimalTest extends BaseTest {
     public void test2() {
         PMap params = new PMap();
         params.put("orderAmount","0.2252222");
-        BigDecimal oAmount = Utils.parseFromYuan(params.getString("orderAmount"));
+        BigDecimal oAmount = TenpayUtils.parseFromYuan(params.getString("orderAmount"));
         int sss =oAmount.compareTo(new BigDecimal(0));
         BigDecimal oAmounts = new BigDecimal(params.getString("orderAmount"));
-        String orderAmount = Utils.fenParseFromYuan(params.getString("orderAmount"));
+        String orderAmount = TenpayUtils.fenParseFromYuan(params.getString("orderAmount"));
         System.out.print("result"+oAmount);
     }
 

@@ -1,6 +1,8 @@
 package com.sogou.pay.common.http.utils;
 
 
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.MapUtil;
 import com.sogou.pay.common.utils.StringUtil;
 import org.apache.commons.lang3.ArrayUtils;
@@ -9,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.*;
 import java.util.Map;
 
@@ -69,7 +68,6 @@ public final class HttpUtil {
             return "";
         }
         try {
-
             StringBuilder sb = new StringBuilder();
             Object[] keys = params.keySet().toArray();
             for (int i = 0; i < keys.length; i++) {
@@ -81,15 +79,32 @@ public final class HttpUtil {
                 sb.append(URLEncoder.encode(key, HttpConstant.DEFAULT_CHARSET));
                 sb.append("=");
                 sb.append(URLEncoder.encode(value.toString(), HttpConstant.DEFAULT_CHARSET));
-                if (i != keys.length - 1) {
-                    sb.append("&");
-                }
+                sb.append("&");
+            }
+            if(sb.length()>0){
+                sb.deleteCharAt(sb.length()-1);
             }
             return sb.toString();
         } catch (Exception e) {
             throw new IllegalArgumentException("URL params error");
         }
     }
+
+
+    public static ResultMap extractUrlParams(String params){
+        ResultMap result = ResultMap.build();
+        try {
+            String []pairs = params.split("&");
+            for(String pair: pairs){
+                String []param = pair.split("=");
+                result.addItem(param[0], param[1]);
+            }
+        }catch (Exception ex){
+            result.withError(ResultStatus.SYSTEM_ERROR);
+        }
+        return result;
+    }
+
 
     public static String getRequestInfo(HttpServletRequest request) {
         String method = request.getMethod();

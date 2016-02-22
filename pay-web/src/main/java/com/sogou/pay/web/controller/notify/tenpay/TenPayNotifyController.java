@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.sogou.pay.common.utils.BeanUtil;
 import org.dom4j.DocumentException;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
@@ -18,11 +19,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.common.http.utils.HttpUtil;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.common.utils.PMapUtil;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.model.notify.PayNotifyModel;
 import com.sogou.pay.manager.model.thirdpay.FairAccRefundModel;
 import com.sogou.pay.manager.notify.PayNotifyManager;
@@ -30,7 +30,7 @@ import com.sogou.pay.manager.payment.RefundManager;
 import com.sogou.pay.manager.secure.SecureManager;
 import com.sogou.pay.service.entity.PayOrderInfo;
 import com.sogou.pay.service.entity.PayOrderRelation;
-import com.sogou.pay.service.enums.AgencyType;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.payment.PayOrderRelationService;
 import com.sogou.pay.service.payment.PayOrderService;
 import com.sogou.pay.web.form.notify.TenPayWebNotifyParams;
@@ -138,8 +138,8 @@ public class TenPayNotifyController {
             url = payOrderInfo.getAppPageUrl();
         } else {
             LOGGER.error("There is no orderinfo from reqId={}", pMap.getString("out_trade_no"));
-            view.addObject("errorCode", ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR.getCode());
-            view.addObject("errorMessage", ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR.getMessage());
+            view.addObject("errorCode", ResultStatus.PAY_ORDER_NOT_EXIST.getCode());
+            view.addObject("errorMessage", ResultStatus.PAY_ORDER_NOT_EXIST.getMessage());
             return view;
         }
         //获得通知参数
@@ -161,7 +161,7 @@ public class TenPayNotifyController {
             return null;
         }
 
-        PMap paramMap = PMapUtil.fromBean(tenPayWebNotifyParams); //因为aliPayWebNotifyParams作为controller封装对象都是String型的，不便于操作，此处转换为PMap便于处理
+        PMap paramMap = BeanUtil.Bean2PMap(tenPayWebNotifyParams); //因为aliPayWebNotifyParams作为controller封装对象都是String型的，不便于操作，此处转换为PMap便于处理
 
         String totalFee = paramMap.getString("total_fee");
 

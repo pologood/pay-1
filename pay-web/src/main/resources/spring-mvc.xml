@@ -82,7 +82,7 @@
     <!-- 拦截器配置 -->
     <!--<mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/**"/>
+            <mvc:mapping url="/**"/>
             <bean class="com.sogou.pay.web.security.SignInterceptor"></bean>
         </mvc:interceptor>
     </mvc:interceptors>-->

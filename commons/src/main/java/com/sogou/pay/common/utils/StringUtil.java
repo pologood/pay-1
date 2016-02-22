@@ -59,6 +59,14 @@ public class StringUtil {
         return StringUtils.isEmpty(str);
     }
 
+
+    public static boolean isEmpty(String... strs) {
+        for (String str : strs)
+            if (str == null || str.length() == 0)
+                return true;
+        return false;
+    }
+
     /**
      * <p>Checks if a CharSequence is whitespace, empty ("") or null.</p>
      * <p/>
@@ -119,12 +127,11 @@ public class StringUtil {
      * 多个字符串用分隔符拼接成字符串
      */
     public static String joinStrings(String split, String... strs) {
-        List<String> strList = Arrays.asList(strs);
-        String tmp = "";
-        for (String ss : strList) {
-            tmp += ss + split;
+        StringBuilder tmp = new StringBuilder();
+        for (String ss : strs) {
+            tmp.append(ss).append(split);
         }
-        String str = tmp.substring(0, tmp.length() - split.length());
+        String str = tmp.deleteCharAt(tmp.length()-1).toString();
         return str;
     }
 
@@ -132,7 +139,7 @@ public class StringUtil {
      * 多个字符串用分隔符拼接成字符串
      */
     public static <T> String joinCollection(Collection<T> collection, String split) {
-        StringBuffer tmp = new StringBuffer();
+        StringBuilder tmp = new StringBuilder();
         for (T obj : collection) {
             tmp.append(obj).append(split);
         }

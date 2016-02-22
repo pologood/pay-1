@@ -1,13 +1,12 @@
 package com.sogou.pay.web.controller.api;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sogou.pay.common.utils.BeanUtil;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,22 +17,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sogou.pay.common.cache.RedisUtils;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultBean;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.JsonUtil;
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.common.utils.PMapUtil;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultBean;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.utils.JSONUtil;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.manager.payment.AppManager;
 import com.sogou.pay.manager.payment.ChannelAdaptManager;
 import com.sogou.pay.manager.payment.PayTranferRequestManager;
 import com.sogou.pay.manager.payment.PayTransManager;
 import com.sogou.pay.manager.secure.SecureManager;
-import com.sogou.pay.service.utils.AppXmlPacket;
 import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
-import com.sogou.pay.thirdpay.api.PayApi;
+//import com.sogou.pay.thirdpay.api.PayApi;
 import com.sogou.pay.web.controller.BaseController;
 import com.sogou.pay.web.form.PayTransParams;
 import com.sogou.pay.web.form.PayTransferQueryParams;
@@ -67,8 +64,8 @@ public class PayTransferController extends BaseController {
     @Autowired
     private SecureManager secureManager;
 
-    @Autowired
-    private PayApi payApi;
+//    @Autowired
+//    private PayApi payApi;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -97,9 +94,9 @@ public class PayTransferController extends BaseController {
     @RequestMapping({"/payTrans/doPay", "/api/transfer"})
     @ResponseBody
     public String doPay(PayTransParams params, HttpServletRequest request, HttpServletResponse response) {
-        logger.info("【支付请求】进入dopay,请求参数为：" + JsonUtil.beanToJson(params));
+        logger.info("【支付请求】进入dopay,请求参数为：" + JSONUtil.Bean2JSON(params));
         //将参数转化为map
-        PMap<String, String> paramMap = PMapUtil.fromBean(params);
+        PMap<String, String> paramMap = BeanUtil.Bean2PMap(params);
         //获得用户IP
         String ip = ServletUtil.getRealIp(request);
         paramMap.put("userIp", ip);
@@ -146,7 +143,7 @@ public class PayTransferController extends BaseController {
         /**2.验证参数**/
         if (batchNo == null || "".equals(batchNo)) {
             logger.error("【代付提交参数错误】");
-            return result.withError(ResultStatus.PARAM_ERROR).toString();
+            return result.withError(ResultStatus.PAY_PARAM_ERROR).toString();
         }
         result = payTranferRequestManager.doProcess(appId, batchNo);
         logger.info("【代付提交结束！】");
@@ -167,7 +164,7 @@ public class PayTransferController extends BaseController {
     @RequestMapping({"/payTrans/queryByBatchNo", "/api/transfer/query"})
     @ResponseBody
     public String queryByBatchNo(PayTransferQueryParams payTransferQueryParams) {
-        logger.info("【代付查询】queryByBatchNo,请求参数为：" + JsonUtil.beanToJson(payTransferQueryParams));
+        logger.info("【代付查询】queryByBatchNo,请求参数为：" + JSONUtil.Bean2JSON(payTransferQueryParams));
         //AppXmlPacket appXmlPacket = new AppXmlPacket();
         ResultMap result;
         /**2.验证参数**/
@@ -176,7 +173,7 @@ public class PayTransferController extends BaseController {
                 || StringUtil.isBlank(payTransferQueryParams.getSign())
                 || StringUtil.isBlank(payTransferQueryParams.getSignType())) {
             logger.error("【代付查询参数错误】");
-            result = ResultMap.build(ResultStatus.PARAM_ERROR);
+            result = ResultMap.build(ResultStatus.PAY_PARAM_ERROR);
             return JSONObject.toJSONString(result);
         }
         /**1.验证签名**/
@@ -195,7 +192,7 @@ public class PayTransferController extends BaseController {
     @RequestMapping({"/payTrans/queryRefund", "/api/transfer/refund/query"})
     @ResponseBody
     public String queryRefund(PayTransferRefundQueryParams payTransferRefundQueryParams) {
-        logger.info("【代付退票查询】queryRefund,请求参数为：" + JsonUtil.beanToJson(payTransferRefundQueryParams));
+        logger.info("【代付退票查询】queryRefund,请求参数为：" + JSONUtil.Bean2JSON(payTransferRefundQueryParams));
         //AppXmlPacket appXmlPacket = new AppXmlPacket();
         ResultMap result;
         /**2.验证参数**/
@@ -205,7 +202,7 @@ public class PayTransferController extends BaseController {
                 || StringUtil.isBlank(payTransferRefundQueryParams.getSign())
                 || StringUtil.isBlank(payTransferRefundQueryParams.getSignType())) {
             logger.error("【代付退票查询参数错误】");
-            result = ResultMap.build(ResultStatus.PARAM_ERROR);
+            result = ResultMap.build(ResultStatus.PAY_PARAM_ERROR);
             return JSONObject.toJSONString(result);
         }
         /**1.验证签名**/
@@ -241,7 +238,7 @@ public class PayTransferController extends BaseController {
         if (validateResult.size() > 0) {
             //验证参数失败，调到错误页面
             logger.error("【支付请求】" + validateResult.toString().substring(1, validateResult.toString().length() - 1));
-            returnResult.withError(ResultStatus.PARAM_ERROR);
+            returnResult.withError(ResultStatus.PAY_PARAM_ERROR);
             return returnResult;
         }
         //代付单校验
@@ -265,14 +262,14 @@ public class PayTransferController extends BaseController {
                 if (!StringUtil.isEmpty(record.getBankFlg())) {
                     if ((!"Y".equals(record.getBankFlg())) && (!"N".equals(record.getBankFlg()))) {
                         logger.error("【支付请求】系统内表示字段只能是Y或N。代付单号为：" + payId);
-                        returnResult.withError(ResultStatus.PARAM_ERROR);
+                        returnResult.withError(ResultStatus.PAY_PARAM_ERROR);
                         return returnResult;
                     }
                     //当BNKFLG=N时，他行开户行以及他行开户地必填
                     if (("N".equals(record.getBankFlg())) &&
                             (StringUtil.isEmpty(record.getEacBank()) || StringUtil.isEmpty(record.getEacCity()))) {
                         logger.error("【支付请求】当BNKFLG=N时，他行开户行以及他行开户地必填。代付单号为：" + payId);
-                        returnResult.withError(ResultStatus.PARAM_ERROR);
+                        returnResult.withError(ResultStatus.PAY_PARAM_ERROR);
                         return returnResult;
                     }
                 }
@@ -280,7 +277,7 @@ public class PayTransferController extends BaseController {
                 if (validateRecord.size() > 0) {
                     //验证参数失败
                     logger.error("【支付请求】" + validateRecord.toString().substring(1, validateRecord.toString().length() - 1));
-                    returnResult.withError(ResultStatus.PARAM_ERROR);
+                    returnResult.withError(ResultStatus.PAY_PARAM_ERROR);
                     return returnResult;
                 }
                 //判断是否有重复的代付单号

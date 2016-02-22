@@ -1,14 +1,11 @@
 package com.sogou.pay.service.dao;
 
-import com.sogou.pay.common.utils.JsonUtil;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.manager.model.PayCheckUpdateModle;
 import com.sogou.pay.service.BaseTest;
 import com.sogou.pay.service.entity.PayCheck;
-import com.sogou.pay.service.entity.PayCheckWaiting;
-import com.sogou.pay.service.enums.AgencyType;
-import com.sogou.pay.service.enums.CheckStatus;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.enums.OrderType;
-import com.sogou.pay.service.enums.TerminalType;
 import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +113,7 @@ public class PayCheckDaoTest extends BaseTest {
             String instructId = "ZF20150317160007997002";
             int bizCode = 1;
             PayCheck payCheck =payCheckDao.getByInstructIdAndBizCode(instructId, bizCode);
-            System.out.println(JsonUtil.beanToJson(payCheck));
+            System.out.println(JSONUtil.Bean2JSON(payCheck));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sogou.pay.service.enums.PayOrderStatus;
-import com.sogou.pay.thirdpay.biz.enums.OrderRefundState;
+import com.sogou.pay.thirdpay.api.PayPortal;
 import com.sogou.pay.thirdpay.biz.enums.OrderState;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.model.PayOrderQueryModel;
 import com.sogou.pay.manager.payment.OrderQueryManager;
 import com.sogou.pay.service.entity.App;
@@ -29,16 +29,18 @@ import com.sogou.pay.service.payment.PayOrderRelationService;
 import com.sogou.pay.service.payment.PayOrderService;
 import com.sogou.pay.service.payment.PayReqDetailService;
 import com.sogou.pay.service.utils.Constant;
-import com.sogou.pay.thirdpay.api.QueryApi;
+//import com.sogou.pay.thirdpay.api.QueryApi;
 
 @Component
 public class OrderQueryManagerImpl implements OrderQueryManager {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderQueryManagerImpl.class);
     
+    //@Autowired
+    //private QueryApi qeuryApi;
+
     @Autowired
-    private QueryApi qeuryApi;
-    
+    private PayPortal payPortal;
     @Autowired
     private AppService appService;
     
@@ -62,7 +64,7 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
         App app = appService.selectApp(model.getAppId());
         if(null == app){
             logger.error("appId is not found.appId = " + model.getAppId());
-            result.withError(ResultStatus.QUERY_ORDER_APP_NOT_EXIST);
+            result.withError(ResultStatus.PAY_APP_NOT_EXIST);
             return result;
         }
         //根据订单查询支付回调信息
@@ -73,13 +75,13 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
             PayOrderInfo payOrderInfo = payOrderService.selectPayOrderInfoByOrderId(model.getOrderId(), app.getAppId());
             if(null == payOrderInfo){
                 logger.error("【OrderQuery】payOrderInfo is not found.orderId = " + model.getOrderId()+",appId = " + app.getAppId());
-                result.withError(ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR);
+                result.withError(ResultStatus.PAY_ORDER_NOT_EXIST);
                 return result;
             }
             // 2.检查支付单里的支付状态是否成功，成功则返回
             if (payOrderInfo.getPayOrderStatus() == PayOrderStatus.SUCCESS.getValue()) {
                 result.withReturn(OrderState.SUCCESS);
-                return result;
+               // return result;
             }
             //2.根据payId查询关联表
             PayOrderRelation paramRelation = new PayOrderRelation();
@@ -94,7 +96,7 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
             payReqDetailList = payReqDetailService.selectPayReqByReqIdList(relationList);
             if(null == payReqDetailList){
                 logger.error("payReqDetail is not found.orderId = " + model.getOrderId()+",appId = " + app.getAppId());
-                result.withError(ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR);
+                result.withError(ResultStatus.PAY_ORDER_NOT_EXIST);
                 return result;
             }
             for(PayReqDetail payReqDetail : payReqDetailList){
@@ -118,7 +120,8 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
                 map.put("queryUrl", Constant.QUERY_URL_MAP.get(merchantQuery.getAgencyCode()));
                 map.put("serialNumber", payReqDetail.getPayDetailId());
                 logger.info("queryAPI params : " + map.toString());
-                ResultMap apiResult = qeuryApi.queryOrder(map);
+                //ResultMap apiResult = qeuryApi.queryOrder(map);
+                ResultMap apiResult = payPortal.queryOrder(map);
                 if(!Result.isSuccess(apiResult)){
                     logger.error("错误码："+apiResult.getStatus().getCode()+"，错误信息" + apiResult.getStatus().getMessage());
                     result.withError(apiResult.getStatus());

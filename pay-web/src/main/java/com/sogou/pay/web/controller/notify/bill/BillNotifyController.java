@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.sogou.pay.common.utils.BeanUtil;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,12 +17,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.JsonUtil;
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.common.utils.PMapUtil;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.utils.JSONUtil;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.model.notify.PayNotifyModel;
 import com.sogou.pay.manager.model.thirdpay.FairAccRefundModel;
 import com.sogou.pay.manager.notify.PayNotifyManager;
@@ -30,7 +30,7 @@ import com.sogou.pay.manager.secure.SecureManager;
 import com.sogou.pay.service.entity.PayOrderInfo;
 import com.sogou.pay.service.entity.PayOrderRelation;
 import com.sogou.pay.service.entity.PayReqDetail;
-import com.sogou.pay.service.enums.AgencyType;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.payment.PayOrderRelationService;
 import com.sogou.pay.service.payment.PayOrderService;
 import com.sogou.pay.service.payment.PayReqDetailService;
@@ -100,7 +100,7 @@ public class BillNotifyController extends BaseController {
         ResultMap processResult = payNotifyManager.doProcess(payNotifyModel);
         if (Result.isSuccess(processResult) && 1 == (int) processResult.getReturnValue()) {
             //调用平账退款接口
-            LOGGER.info("【平账退款】调用平账退款接口参数：" + JsonUtil.beanToJson(processResult.getData().get("fairAccRefundModel")));
+            LOGGER.info("【平账退款】调用平账退款接口参数：" + JSONUtil.Bean2JSON(processResult.getData().get("fairAccRefundModel")));
             refundManager.fairAccountRefund((FairAccRefundModel) processResult.getData().get("fairAccRefundModel"));
             LOGGER.info("【平账退款】平账退款成功！");
         }
@@ -153,8 +153,8 @@ public class BillNotifyController extends BaseController {
             url = payOrderInfo.getAppPageUrl();
         } else {
             LOGGER.error("There is no orderinfo from reqId={}", pMap.getString("out_trade_no"));
-            view.addObject("errorCode", ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR.getCode());
-            view.addObject("errorMessage", ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR.getMessage());
+            view.addObject("errorCode", ResultStatus.PAY_ORDER_NOT_EXIST.getCode());
+            view.addObject("errorMessage", ResultStatus.PAY_ORDER_NOT_EXIST.getMessage());
             return view;
         }
         //获得通知参数
@@ -177,7 +177,7 @@ public class BillNotifyController extends BaseController {
             return null;
         }
 
-        PMap paramMap = PMapUtil.fromBean(billPayWebNotifyParams); //因为billPayWebNotifyParams作为controller封装对象都是String型的，不便于操作，此处转换为PMap便于处理
+        PMap paramMap = BeanUtil.Bean2PMap(billPayWebNotifyParams); //因为billPayWebNotifyParams作为controller封装对象都是String型的，不便于操作，此处转换为PMap便于处理
 
         String totalFee = paramMap.getString("orderAmount");
 

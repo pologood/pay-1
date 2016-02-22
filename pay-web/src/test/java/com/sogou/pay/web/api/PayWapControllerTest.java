@@ -38,7 +38,7 @@ public class PayWapControllerTest extends BaseTest {
         params.setPageUrl("http://127.0.0.1:8080/notify/ali/pay/testBgUrl");
         params.setBgUrl("http://127.0.0.1:8080/notify/ali/pay/testBgUrl");
         params.setBankCardType("");
-        Map map = BeanUtil.beanToMap(params);
+        Map map = BeanUtil.Bean2Map(params);
 
         map.put("sign", JSONObject.parse(controller.signData(map, null)));
         testGet(url, map);

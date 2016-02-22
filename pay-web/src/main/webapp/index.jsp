@@ -13,11 +13,11 @@
 		var channel = document.getElementById("bankId").value;
 		var accessPlatform = document.getElementById("accessPlatform").value;
 		if(accessPlatform == "1"){
-			document.dbform.action="pay/doPay.j";
+			document.dbform.action="gw/pay/web";
 		} else if (accessPlatform == "2"){
-			document.dbform.action="paywap/doPay.j";
+			document.dbform.action="gw/pay/wap";
 		} else if (accessPlatform == "3"){
-			document.dbform.action="paysdk/doPay.j";
+			document.dbform.action="api/pay/sdk";
 		}
 		dbform.submit();
 	}
@@ -51,7 +51,7 @@
 </head>
 <body>
 商户订单数据
-	<form action="http://center.pay.sogou.com/pay/doPay.j" method="post" name="dbform">
+	<form action="gw/pay/web" method="post" name="dbform">
 	<input type="text" id="version" name="version" value="v1.0"/>版本号<br>
 	<input type="text" id="pageUrl" name="pageUrl" value="http://center.pay.sogou.com/notify/ali/pay/testBgUrl">支付结果前台通知页面(不为空，必须是合法URL,字节数不超过256)<br>
     <input type="text" id="bgUrl" name="bgUrl" value="http://center.pay.sogou.com/notify/ali/pay/testBgUrl">支付结果后台通知地址(不为空，必须是合法URL,字节数不超过256)<br>

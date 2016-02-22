@@ -1,10 +1,8 @@
 package com.sogou.pay.manager.notify;
 
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.utils.PMap;
-
-import java.util.Map;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.PMap;
 
 /**
  * User: hujunfei

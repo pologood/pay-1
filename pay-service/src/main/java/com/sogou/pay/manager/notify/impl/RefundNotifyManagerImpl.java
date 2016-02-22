@@ -1,9 +1,10 @@
 package com.sogou.pay.manager.notify.impl;
 
 import com.sogou.pay.common.Model.AppRefundNotifyModel;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.*;
 import com.sogou.pay.manager.notify.RefundNotifyManager;
 import com.sogou.pay.service.connect.QueueNotifyProducer;
@@ -11,7 +12,7 @@ import com.sogou.pay.service.entity.PayCheckWaiting;
 import com.sogou.pay.service.entity.PayOrderInfo;
 import com.sogou.pay.service.entity.PayResDetail;
 import com.sogou.pay.service.entity.RefundInfo;
-import com.sogou.pay.service.enums.AgencyType;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.enums.CheckStatus;
 import com.sogou.pay.service.payment.*;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
@@ -50,7 +51,7 @@ public class RefundNotifyManagerImpl implements RefundNotifyManager {
     // TODO: 不同支付机构回调参数是否转换为统一的Model？回调之后的逻辑是否一样？
     @Override
     public ResultMap handleAliNotify(PMap<String, Object> params) {
-        logger.info("Refund HandleAliNotify Start!Params" + JsonUtil.beanToJson(params));
+        logger.info("Refund HandleAliNotify Start!Params" + JSONUtil.Bean2JSON(params));
         try {
             // 1.提取信息，一笔退款批次号对应一笔支付流水
             String refundId = params.getString("batch_no");                //退款单号
@@ -58,13 +59,13 @@ public class RefundNotifyManagerImpl implements RefundNotifyManager {
             String[] details = detailResult.split("#");
             if (details.length != 1) {
                 // 只能有一笔交易，即一笔退款批次对应一笔支付订单
-                logger.error("Refund Notify Error: " + JsonUtil.beanToJson(params));
+                logger.error("Refund Notify Error: " + JSONUtil.Bean2JSON(params));
                 return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_PARAM_ERROR);
             }
             String detail = details[0];
             String[] dealItems = detail.split("\\^");
             if (dealItems.length < 3) {
-                logger.error("Refund Notify Error: " + JsonUtil.beanToJson(params));
+                logger.error("Refund Notify Error: " + JSONUtil.Bean2JSON(params));
                 return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_PARAM_ERROR);
             }
             BigDecimal dealRefund = new BigDecimal(dealItems[1]); //退款金额
@@ -73,7 +74,7 @@ public class RefundNotifyManagerImpl implements RefundNotifyManager {
             RefundInfo refundInfo = refundService.selectByRefundId(refundId);
             if (refundInfo == null) {
                 // 退款单不存在
-                logger.error("Refund Notify Error: No Such RefundId, " + JsonUtil.beanToJson(params));
+                logger.error("Refund Notify Error: No Such RefundId, " + JSONUtil.Bean2JSON(params));
                 return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_PARAM_ERROR);
             }
             if (refundInfo.getRefundStatus() == RefundService.REFUND_SUCCESS) {
@@ -88,21 +89,21 @@ public class RefundNotifyManagerImpl implements RefundNotifyManager {
                 return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_PARAM_ERROR);
             } else if (dealRefund.compareTo(refundInfo.getRefundMoney()) != 0) {
                 // 金额不一致
-                logger.error("Refund Notify Error: Amount Not Fit, " + JsonUtil.beanToJson(params));
+                logger.error("Refund Notify Error: Amount Not Fit, " + JSONUtil.Bean2JSON(params));
                 return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_PARAM_ERROR);
             }
 
             // 4.退款成功，更新支付单退款金额->退款单退款成功状态，防止更新支付单退款金额失败导致退款超限
             return handleNotifySuccess(refundInfo, null);
         } catch (Exception e) {
-            logger.error("Refund Notify Error: " + JsonUtil.beanToJson(params), e);
+            logger.error("Refund Notify Error: " + JSONUtil.Bean2JSON(params), e);
             return ResultMap.build(ResultStatus.SYSTEM_ERROR);
         }
     }
 
     @Override
     public Result handleTenNotify(PMap<String, Object> params) {
-        logger.info("Refund HandleAliNotify Start!Params" + JsonUtil.beanToJson(params));
+        logger.info("Refund HandleAliNotify Start!Params" + JSONUtil.Bean2JSON(params));
         try {
             // 签名校验放在SecureManager中处理
             // 1.提取信息，一笔退款批次号对应一笔支付流水
@@ -116,7 +117,7 @@ public class RefundNotifyManagerImpl implements RefundNotifyManager {
             RefundInfo refundInfo = refundService.selectByRefundId(refundId);
             if (refundInfo == null) {
                 // 退款单不存在
-                logger.error("Refund Notify Error: No Such RefundId, " + JsonUtil.beanToJson(params));
+                logger.error("Refund Notify Error: No Such RefundId, " + JSONUtil.Bean2JSON(params));
                 return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_PARAM_ERROR);
             }
             if (refundInfo.getRefundStatus() == RefundService.REFUND_SUCCESS) {
@@ -134,23 +135,23 @@ public class RefundNotifyManagerImpl implements RefundNotifyManager {
                 // 成功状态
                 if (refundAmount.compareTo(refundInfo.getRefundMoney()) != 0) {
                     // 金额不一致
-                    logger.error("Refund Notify Error: Amount Not Fit, " + JsonUtil.beanToJson(params));
+                    logger.error("Refund Notify Error: Amount Not Fit, " + JSONUtil.Bean2JSON(params));
                     return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_PARAM_ERROR);
                 }
             } else if (agencyRefundStatus == 8 || agencyRefundStatus == 9 || agencyRefundStatus == 11) {
                 // 处理中
-                logger.warn("Refund Notify Warn: In Processing, " + JsonUtil.beanToJson(params));
-                return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_SERVICE_ERROR);
+                logger.warn("Refund Notify Warn: In Processing, " + JSONUtil.Bean2JSON(params));
+                return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_ERROR);
             } else {
                 // 处理中
-                logger.warn("Refund Notify Error: Other Status, " + JsonUtil.beanToJson(params));
-                return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_SERVICE_ERROR);
+                logger.warn("Refund Notify Error: Other Status, " + JSONUtil.Bean2JSON(params));
+                return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_ERROR);
             }
 
             // 3.2.退款更新，成功则更新支付单退款金额->退款单退款成功状态，防止更新支付单退款金额失败导致退款超限
             return handleNotifySuccess(refundInfo, thirdRefundId);
         } catch (Exception e) {
-            logger.error("Refund Notify Error: " + JsonUtil.beanToJson(params), e);
+            logger.error("Refund Notify Error: " + JSONUtil.Bean2JSON(params), e);
             return ResultMap.build(ResultStatus.SYSTEM_ERROR);
         }
     }
@@ -164,7 +165,7 @@ public class RefundNotifyManagerImpl implements RefundNotifyManager {
             if (notifyData instanceof Map) {
                 map = (Map) notifyData;
             } else {
-                map = (Map) BeanUtil.beanToMap(notifyData);
+                map = (Map) BeanUtil.Bean2Map(notifyData);
             }
             AppRefundNotifyModel appRefundNotifyModel = new AppRefundNotifyModel();
             appRefundNotifyModel.setNotifyUrl(appBgUrl);
@@ -181,7 +182,7 @@ public class RefundNotifyManagerImpl implements RefundNotifyManager {
             return ResultMap.build();
         } catch (Exception e) {
             logger.error("Refund Notify Handle Error: " + result.toString(), e);
-            return ResultMap.build(ResultStatus.REFUND_SERVICE_ERROR);
+            return ResultMap.build(ResultStatus.REFUND_SYSTEM_ERROR);
         }
     }
 
@@ -203,7 +204,7 @@ public class RefundNotifyManagerImpl implements RefundNotifyManager {
             return handleNotifySuccess(refundInfo, thirdRefundId);
         } catch (Exception e) {
             logger.error("RepairRefundOrder Error: " + "refundId" + refundId, e);
-            return ResultMap.build(ResultStatus.REFUND_SERVICE_ERROR);
+            return ResultMap.build(ResultStatus.REFUND_SYSTEM_ERROR);
         }
     }
 
@@ -231,8 +232,8 @@ public class RefundNotifyManagerImpl implements RefundNotifyManager {
                 int payUpdateResult = payOrderService.updateAddRefundMoney(refundInfo.getPayId(), refundInfo.getRefundMoney(), payRefundFlag);
                 if (payUpdateResult != 1) {
                     // 支付单退款状态修改错误
-                    logger.error("Refund Notify Error: Pay Order Update Fail, " + JsonUtil.beanToJson(refundInfo));
-                    return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_SERVICE_ERROR);
+                    logger.error("Refund Notify Error: Pay Order Update Fail, " + JSONUtil.Bean2JSON(refundInfo));
+                    return ResultMap.build(ResultStatus.THIRD_REFUND_NOTIFY_ERROR);
                 }
             }
             //5.更新退款单状态和退款成功返回时间
@@ -293,7 +294,7 @@ public class RefundNotifyManagerImpl implements RefundNotifyManager {
 
             return ResultMap.build();
         } catch (Exception e) {
-            logger.error("Refund Notify Error: " + JsonUtil.beanToJson(refundInfo), e);
+            logger.error("Refund Notify Error: " + JSONUtil.Bean2JSON(refundInfo), e);
             return ResultMap.build(ResultStatus.SYSTEM_ERROR);
         }
     }

@@ -15,20 +15,19 @@ import org.springframework.transaction.TransactionStatus;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultBean;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultBean;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
-import com.sogou.pay.common.utils.JsonUtil;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.utils.JSONUtil;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.model.Record;
 import com.sogou.pay.manager.payment.PayTransManager;
 import com.sogou.pay.service.entity.PayTransfer;
 import com.sogou.pay.service.entity.PayTransferBatch;
 import com.sogou.pay.service.payment.PayTransferBatchService;
 import com.sogou.pay.service.payment.PayTransferService;
-import com.sogou.pay.service.utils.AppXmlPacket;
 import com.sogou.pay.service.utils.Constant;
 import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
 
@@ -283,11 +282,11 @@ public class PayTransManagerImpl implements PayTransManager {
         batch.setYurref(sequencerGenerator.getPayTransferYurref());
         //代发单明细
         BigDecimal plan_amt = new BigDecimal(0);
-        List<JSONObject> jsonList = JsonUtil.jsonToBean(params.getString("recordList"), ArrayList.class);
+        List<JSONObject> jsonList = JSONUtil.JSON2Bean(params.getString("recordList"), ArrayList.class);
         List<Record> recordList = new ArrayList<Record>();
         Record record = null;
         for (JSONObject o : jsonList) {
-            record = JsonUtil.jsonToBean(o.toString(), Record.class);
+            record = JSONUtil.JSON2Bean(o.toString(), Record.class);
             plan_amt = plan_amt.add(new BigDecimal(record.getPayAmt()));
             recordList.add(record);
         }

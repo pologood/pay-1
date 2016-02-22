@@ -2,19 +2,17 @@ package com.sogou.timer;
 
 import com.sogou.pay.PayPlatformBizServiceLocator;
 import com.sogou.pay.common.annotation.Load;
-import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.manager.payment.PayCheckManager;
-import com.sogou.pay.service.entity.PayAgencyMerchant;
-import com.sogou.pay.service.enums.AgencyType;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.payment.PayAgencyMerchantService;
 import com.sogou.pay.service.payment.PayCheckResultService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,11 +48,11 @@ public class PayCheckJob {
      */
     public void doAlipayJob() {
         // 取前一天日期
-        String checkDate = getYesterday();
+        Date checkDate = getYesterday();
         logger.info("alipay check job start for checkDate:" + checkDate);
         String agencyCode = AgencyType.ALIPAY.name();
-        payCheckManager.downloadCheckData(checkDate, agencyCode);
-        payCheckManager.checkData(checkDate, agencyCode);
+        payCheckManager.downloadOrderData(checkDate, agencyCode);
+        payCheckManager.checkOrderData(checkDate, agencyCode);
         logger.info("alipay check job end for checkDate:" + checkDate);
     }
 
@@ -64,11 +62,11 @@ public class PayCheckJob {
      */
     public void doBill99Job() {
         // 取前一天日期
-        String checkDate = getYesterday();
+        Date checkDate = getYesterday();
         logger.info("bill99 check job start for checkDate:" + checkDate);
         String agencyCode = AgencyType.BILL99.name();
-        payCheckManager.downloadCheckData(checkDate, agencyCode);
-        payCheckManager.checkData(checkDate, agencyCode);
+        payCheckManager.downloadOrderData(checkDate, agencyCode);
+        payCheckManager.checkOrderData(checkDate, agencyCode);
         logger.info("bill99 check job end for checkDate:" + checkDate);
     }
 
@@ -79,11 +77,11 @@ public class PayCheckJob {
      */
     public void doTenpayJob() {
         // 取前一天日期
-        String checkDate = getYesterday();
+        Date checkDate = getYesterday();
         logger.info("tenpay check job start for checkDate:" + checkDate);
         String agencyCode = AgencyType.TENPAY.name();
-        payCheckManager.downloadCheckData(checkDate, agencyCode);
-        payCheckManager.checkData(checkDate, agencyCode);
+        payCheckManager.downloadOrderData(checkDate, agencyCode);
+        payCheckManager.checkOrderData(checkDate, agencyCode);
         logger.info("tenpay check job end for checkDate:" + checkDate);
     }
 
@@ -94,11 +92,11 @@ public class PayCheckJob {
      */
     public void doWechatJob() {
         // 取前一天日期
-        String checkDate = getYesterday();
+        Date checkDate = getYesterday();
         logger.info("wechat check job start for checkDate:" + checkDate);
         String agencyCode = AgencyType.WECHAT.name();
-        payCheckManager.downloadCheckData(checkDate, agencyCode);
-        payCheckManager.checkData(checkDate, agencyCode);
+        payCheckManager.downloadOrderData(checkDate, agencyCode);
+        payCheckManager.checkOrderData(checkDate, agencyCode);
         logger.info("wechat check job end for checkDate:" + checkDate);
     }
 
@@ -110,25 +108,24 @@ public class PayCheckJob {
         Calendar ca = Calendar.getInstance();
         for (int i = 0; i < 3; i++) {
             ca.add(Calendar.DAY_OF_MONTH, -1);
-            String checkDate = DateUtils.formatDate(ca.getTime(), DATE_FORMAT);
+            Date checkDate = ca.getTime();
+            String checkDateStr = DateUtils.formatDate(checkDate, DATE_FORMAT);
             for (String agencyCode : agencyCodeList) {
-                int count = payCheckResultService.queryCountByDateAndAgency(checkDate, agencyCode);
+                int count = payCheckResultService.queryCountByDateAndAgency(checkDateStr, agencyCode);
                 //对账结果数据为0，重新比对
                 if (count == 0) {
-                    payCheckManager.downloadCheckData(checkDate, agencyCode);
-                    payCheckManager.checkData(checkDate, agencyCode);
+                    payCheckManager.downloadOrderData(checkDate, agencyCode);
+                    payCheckManager.checkOrderData(checkDate, agencyCode);
                 }
             }
         }
         logger.info("recheckData job end...");
     }
 
-    private String getYesterday() {
-
+    private Date getYesterday() {
         Calendar ca = Calendar.getInstance();
         ca.add(Calendar.DATE, -1);
-        String yesterday = DateUtil.format(ca.getTime(), DATE_FORMAT);
-        return yesterday;
+        return ca.getTime();
     }
 
 }

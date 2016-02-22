@@ -8,7 +8,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%--<link href="<%=request.getContextPath() %>/res/css/userMag.css" type="text/css" rel="stylesheet"/>--%>
-    <script type="text/javascript" src="../../../static/js/jq.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/jq.js"></script>
 </head>
 <body>
 <input type="hidden" value="${errorCode }" id="errorCode"/>

@@ -1,6 +1,6 @@
 package com.sogou.pay.web.utils;
 
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.PMap;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -14,7 +14,6 @@ import javax.validation.Validator;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;

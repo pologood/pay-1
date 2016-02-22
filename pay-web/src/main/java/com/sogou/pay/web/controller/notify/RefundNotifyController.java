@@ -1,10 +1,10 @@
 package com.sogou.pay.web.controller.notify;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.utils.JsonUtil;
-import com.sogou.pay.common.utils.PMapUtil;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.utils.BeanUtil;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.manager.notify.RefundNotifyManager;
 import com.sogou.pay.manager.secure.SecureManager;
 import com.sogou.pay.web.form.notify.AliRefundNotifyParams;
@@ -46,7 +46,7 @@ public class RefundNotifyController {
     @RequestMapping("/alipay/{mid}")
     @ResponseBody
     public String handleAliNotify(@PathVariable("mid") String mid, AliRefundNotifyParams params, HttpServletRequest request) {
-        logger.info("AliPay Refund Notify Start!Params：" + JsonUtil.beanToJson(params));
+        logger.info("AliPay Refund Notify Start!Params：" + JSONUtil.Bean2JSON(params));
         // 1.验证参数
         int merchantid;
         try {
@@ -57,27 +57,27 @@ public class RefundNotifyController {
         }
         List validateResult = ControllerUtil.validateParams(params);
         if (validateResult.size() != 0) {
-            logger.error("AliPay Refund Notify, Validate Warn: " + JsonUtil.beanToJson(params));
+            logger.error("AliPay Refund Notify, Validate Warn: " + JSONUtil.Bean2JSON(params));
             return "success";
         }
         // 2.验证签名
         Result secResult = secureManager.verifyThirdSign(params, merchantid);
         if (!Result.isSuccess(secResult)) {
-            logger.error("AliPay Refund Notify, Verify Error: " + JsonUtil.beanToJson(params));
+            logger.error("AliPay Refund Notify, Verify Error: " + JSONUtil.Bean2JSON(params));
             return "success";
         }
         // 3.处理第三方回调信息逻辑
         ResultMap handleNotifyResult =
-                (ResultMap) refundNotifyManager.handleAliNotify(PMapUtil.fromBean(params));
+                (ResultMap) refundNotifyManager.handleAliNotify(BeanUtil.Bean2PMap(params));
         //第三方回调信息逻辑失败之后返回success，并且打印失败日志
         if (!Result.isSuccess(handleNotifyResult)) {
-            logger.warn("AliPay Refund Notify," + handleNotifyResult.getMessage() + ":" + JsonUtil.beanToJson(params));
+            logger.warn("AliPay Refund Notify," + handleNotifyResult.getMessage() + ":" + JSONUtil.Bean2JSON(params));
             return "success";
         }
         Object retValue = handleNotifyResult.getReturnValue();
         if (retValue == null) {
             // 无回调数据，业务处理错误，设置Error级别
-            logger.error("AliPay Refund Notify, Handle Error: " + JsonUtil.beanToJson(params));
+            logger.error("AliPay Refund Notify, Handle Error: " + JSONUtil.Bean2JSON(params));
             return "success";
         }
         //平账退款不通知
@@ -101,7 +101,7 @@ public class RefundNotifyController {
     @RequestMapping("/tenpay/{mid}")
     @ResponseBody
     public String handleTenNotify(@PathVariable("mid") String mid, TenRefundNotifyParams params, HttpServletRequest request) throws ServiceException, IOException, DocumentException {
-        logger.info("TenPay Refund Notify Start!Params：" + JsonUtil.beanToJson(params));
+        logger.info("TenPay Refund Notify Start!Params：" + JSONUtil.Bean2JSON(params));
         // 1.验证参数
         int merchantid;
         try {
@@ -112,27 +112,27 @@ public class RefundNotifyController {
         }
         List validateResult = ControllerUtil.validateParams(params);
         if (validateResult.size() != 0) {
-            logger.error("TenPay Refund Notify, Validate Error: " + JsonUtil.beanToJson(params));
+            logger.error("TenPay Refund Notify, Validate Error: " + JSONUtil.Bean2JSON(params));
             return "success";
         }
         // 2.验证签名
         Result secResult = secureManager.verifyThirdSign(params, merchantid);
         if (!Result.isSuccess(secResult)) {
-            logger.error("TenPay Refund Notify, Verify Error: " + JsonUtil.beanToJson(params));
+            logger.error("TenPay Refund Notify, Verify Error: " + JSONUtil.Bean2JSON(params));
             return "success";
         }
         // 3.处理第三方回调信息逻辑
         ResultMap handleNotifyResult =
-                (ResultMap) refundNotifyManager.handleTenNotify(PMapUtil.fromBean(params));
+                (ResultMap) refundNotifyManager.handleTenNotify(BeanUtil.Bean2PMap(params));
         //第三方回调信息逻辑失败之后返回success，并且打印失败日志
         if (!Result.isSuccess(handleNotifyResult)) {
-            logger.warn("TenPay Refund Notify," + handleNotifyResult.getMessage() + ":" + JsonUtil.beanToJson(params));
+            logger.warn("TenPay Refund Notify," + handleNotifyResult.getMessage() + ":" + JSONUtil.Bean2JSON(params));
             return "success";
         }
         Object retValue = handleNotifyResult.getReturnValue();
         if (retValue == null) {
             // 无回调数据，业务处理错误，设置Error级别
-            logger.error("TenPay Refund Notify, Handle Error: " + JsonUtil.beanToJson(params));
+            logger.error("TenPay Refund Notify, Handle Error: " + JSONUtil.Bean2JSON(params));
             return "success";
         }
         if (retValue.equals(9)) {

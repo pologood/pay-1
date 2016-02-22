@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.sogou.pay.common.utils.BeanUtil;
+import com.sogou.pay.thirdpay.api.PayPortal;
 import org.dom4j.DocumentException;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
@@ -19,12 +21,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sogou.pay.common.cache.RedisUtils;
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.JsonUtil;
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.common.utils.PMapUtil;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.utils.JSONUtil;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.model.notify.PayNotifyModel;
 import com.sogou.pay.manager.model.thirdpay.FairAccRefundModel;
 import com.sogou.pay.manager.notify.PayNotifyManager;
@@ -32,11 +33,10 @@ import com.sogou.pay.manager.payment.RefundManager;
 import com.sogou.pay.manager.secure.SecureManager;
 import com.sogou.pay.service.entity.PayOrderInfo;
 import com.sogou.pay.service.entity.PayOrderRelation;
-import com.sogou.pay.service.entity.PayReqDetail;
-import com.sogou.pay.service.enums.AgencyType;
+import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.payment.PayOrderRelationService;
 import com.sogou.pay.service.payment.PayOrderService;
-import com.sogou.pay.thirdpay.api.QueryApi;
+//import com.sogou.pay.thirdpay.api.QueryApi;
 import com.sogou.pay.web.controller.BaseController;
 import com.sogou.pay.web.form.notify.WeChatPayWebNotifyParams;
 import com.sogou.pay.web.utils.ControllerUtil;
@@ -66,8 +66,10 @@ public class WechatPayNotifyController extends BaseController {
     private PayOrderService payOrderService;
     @Autowired
     private PayOrderRelationService payOrderRelationService;
+    //@Autowired
+    //private QueryApi queryApi;
     @Autowired
-    private QueryApi queryApi;
+    private PayPortal payPortal;
     @Autowired
     private RedisUtils redisUtils;
 
@@ -114,7 +116,7 @@ public class WechatPayNotifyController extends BaseController {
             return null;
         }
 
-        PMap paramMap = PMapUtil.fromBean(weChatPayWebNotifyParams); //因为aliPayWebNotifyParams作为controller封装对象都是String型的，不便于操作，此处转换为PMap便于处理
+        PMap paramMap = BeanUtil.Bean2PMap(weChatPayWebNotifyParams); //因为aliPayWebNotifyParams作为controller封装对象都是String型的，不便于操作，此处转换为PMap便于处理
 
         String totalFee = paramMap.getString("total_fee");
         BigDecimal true_money = new BigDecimal(totalFee).divide(new BigDecimal("100"), 2, BigDecimal.ROUND_UP);
@@ -154,8 +156,8 @@ public class WechatPayNotifyController extends BaseController {
             url = payOrderInfo.getAppPageUrl();
         } else {
             LOGGER.error("There is no orderinfo from reqId={}", payReqId);
-            view.addObject("errorCode", ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR.getCode());
-            view.addObject("errorMessage", ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR.getMessage());
+            view.addObject("errorCode", ResultStatus.PAY_ORDER_NOT_EXIST.getCode());
+            view.addObject("errorMessage", ResultStatus.PAY_ORDER_NOT_EXIST.getMessage());
             return view;
         }
         //获得通知参数
@@ -179,8 +181,8 @@ public class WechatPayNotifyController extends BaseController {
         Map paraMap = ControllerUtil.getParamPMap(request);
         if(null == paraMap.get("payReqId")){
             LOGGER.error("【获取微信支付状态】payReqId为空！");
-            result.withError(ResultStatus.PARAM_ERROR);
-            return JsonUtil.beanToJson(result);
+            result.withError(ResultStatus.PAY_PARAM_ERROR);
+            return JSONUtil.Bean2JSON(result);
         }
         String payReqId = paraMap.get("payReqId").toString();
         String key = WECHAT_QUERY_ORDER + UNDERLINE + payReqId;
@@ -190,7 +192,7 @@ public class WechatPayNotifyController extends BaseController {
             if(!ResultMap.isSuccess(resultDb)){
                 LOGGER.error("【获取微信支付状态】获得商户信息失败！paraMap="+paraMap);
                 result.withError(ResultStatus.SYSTEM_ERROR);
-                return JsonUtil.beanToJson(result);
+                return JSONUtil.Bean2JSON(result);
             }
             queryParam = resultDb.getReturnValue();
             try {
@@ -200,13 +202,14 @@ public class WechatPayNotifyController extends BaseController {
             }
         }
         //请求微信接口
-        ResultMap wechatResult = queryApi.queryOrder(new PMap(queryParam));
+        //ResultMap wechatResult = queryApi.queryOrder(new PMap(queryParam));
+        ResultMap wechatResult = payPortal.queryOrder(new PMap(queryParam));
         if(!ResultMap.isSuccess(wechatResult)){
             result.withError(ResultStatus.SYSTEM_ERROR);
-            return JsonUtil.beanToJson(result);
+            return JSONUtil.Bean2JSON(result);
         }
         result.addItem("payStatus", wechatResult.getData().get("order_state"));
-        return JsonUtil.beanToJson(result);
+        return JSONUtil.Bean2JSON(result);
     }
 
 }

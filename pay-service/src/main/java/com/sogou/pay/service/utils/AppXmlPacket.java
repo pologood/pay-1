@@ -1,7 +1,7 @@
 package com.sogou.pay.service.utils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.ResultStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

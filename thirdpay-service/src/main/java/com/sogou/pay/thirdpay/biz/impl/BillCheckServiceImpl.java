@@ -1,12 +1,12 @@
 package com.sogou.pay.thirdpay.biz.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.thirdpay.biz.BillCheckService;
-import com.sogou.pay.thirdpay.biz.modle.OutCheckRecord;
-import com.sogou.pay.thirdpay.biz.utils.Utils;
+import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
 import com.sogou.pay.thirdpay.biz.utils.billpay.*;
+import com.sogou.pay.thirdpay.service.Tenpay.TenpayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -70,7 +70,7 @@ public class BillCheckServiceImpl implements BillCheckService {
             if (!errCode.equals("")) {
 
                 logger.error("快钱订单分页查询请求返回参数错误，errCode!=null queryRequest参数:" + JSON.toJSONString(queryRequest));
-                result.withError(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+                result.withError(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
                 return result;
             }
 
@@ -87,10 +87,10 @@ public class BillCheckServiceImpl implements BillCheckService {
             result.getData().put("records", records);
         } catch (RemoteException e) {
             logger.error("快钱订单分页查询请求异常，queryRequest参数:" + JSON.toJSONString(queryRequest) + "异常e：" + e);
-            result.withError(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            result.withError(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
         } catch (javax.xml.rpc.ServiceException e) {
             logger.error("快钱订单分页查询请求异常，queryRequest参数:" + JSON.toJSONString(queryRequest) + "异常e：" + e);
-            result.withError(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            result.withError(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
         } catch (Exception e) {
             logger.error("快钱解析 orderDetail 异常 ", e);
             result.withError(ResultStatus.SYSTEM_ERROR);
@@ -136,7 +136,7 @@ public class BillCheckServiceImpl implements BillCheckService {
             String errCode = refundQueryResponse.getErrCode();
             if (!errCode.equals("")) {
                 logger.error("快钱订单分退款页查询请求返回参数错误，errCode!=null queryRequest参数:" + JSON.toJSONString(refundQueryRequest));
-                result.withError(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+                result.withError(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
                 return result;
             }
 
@@ -153,10 +153,10 @@ public class BillCheckServiceImpl implements BillCheckService {
 
         } catch (RemoteException e) {
             logger.error("快钱订单退款分页查询请求异常，queryRequest参数:" + JSON.toJSONString(refundQueryRequest) + "异常e：" + e);
-            result.withError(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            result.withError(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
         } catch (javax.xml.rpc.ServiceException e) {
             logger.error("快钱订单退款分页查询请求异常，queryRequest参数:" + JSON.toJSONString(refundQueryRequest) + "异常e：" + e);
-            result.withError(ResultStatus.THIRD_QUERY_99BILL_PAY_INFO_ERROR);
+            result.withError(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
         } catch (Exception e) {
             logger.error("快钱退款分页查询解析 refundDetails 异常 ", e);
             result.withError(ResultStatus.SYSTEM_ERROR);
@@ -179,9 +179,9 @@ public class BillCheckServiceImpl implements BillCheckService {
             //我方单号
             outCheckRecord.setPayNo(orderDetail.getOrderId());
             //交易金额
-            outCheckRecord.setMoney(Utils.parseFromFen(String.valueOf(orderDetail.getOrderAmount())));
+            outCheckRecord.setMoney(TenpayUtils.parseFromFen(String.valueOf(orderDetail.getOrderAmount())));
             //手续费
-            outCheckRecord.setCommssionFee(Utils.parseFromFen(String.valueOf(orderDetail.getFee())));
+            outCheckRecord.setCommssionFee(TenpayUtils.parseFromFen(String.valueOf(orderDetail.getFee())));
             records.add(outCheckRecord);
         }
         return records;
@@ -201,9 +201,9 @@ public class BillCheckServiceImpl implements BillCheckService {
             //我方单号
             outCheckRecord.setPayNo(refundDetail.getOrderId());
             //交易金额
-            outCheckRecord.setMoney(Utils.parseFromFen(String.valueOf(refundDetail.getOrderAmout())));
+            outCheckRecord.setMoney(TenpayUtils.parseFromFen(String.valueOf(refundDetail.getOrderAmout())));
             //手续费
-            outCheckRecord.setCommssionFee(Utils.parseFromFen(String.valueOf(refundDetail.getOwnerFee())));
+            outCheckRecord.setCommssionFee(TenpayUtils.parseFromFen(String.valueOf(refundDetail.getOwnerFee())));
             records.add(outCheckRecord);
         }
         return records;

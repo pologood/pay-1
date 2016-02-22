@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.sogou.pay.manager.model.PayCheckUpdateModle;
 import com.sogou.pay.service.entity.PayCheck;
-import com.sogou.pay.thirdpay.biz.modle.OutCheckRecord;
+import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
 
 /**
  * @Author qibaichao

@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.payment.PayManager;
 import com.sogou.pay.service.entity.AgencyInfo;
 import com.sogou.pay.service.entity.App;
@@ -330,7 +330,7 @@ public class PayManagerImpl implements PayManager {
         BigDecimal orderAmount = new BigDecimal(params.getString("orderAmount"));
         if (orderAmount.compareTo(orderAmount.ZERO) < 0) {
             //金额出错
-            result.withError(ResultStatus.PARAM_ERROR);
+            result.withError(ResultStatus.PAY_PARAM_ERROR);
             return result;
         }
         //校验支付渠道
@@ -434,7 +434,7 @@ public class PayManagerImpl implements PayManager {
             info =  payOrderService.selectPayOrderInfoByOrderId(orderId,appId);
             if(null != info && Constant.PAY_SUCCESS == info.getPayOrderStatus()){
                 //该支付单已经支付成功
-                result.withError(ResultStatus.PAY_ORDER_PAY_SUCCESS);
+                result.withError(ResultStatus.PAY_ORDER_ALREADY_DONE);
             } else {
                 result.withReturn(info);
             }
@@ -495,7 +495,8 @@ public class PayManagerImpl implements PayManager {
                 //企业网银支付
                 payGateMap.put("bankCode", bankCode);
             }
-            payGateMap.put("payChannle", ThirdConfig.getInstanceName(accessPlatfrom, payFeeType, agencyCode));
+            payGateMap.put("agencyCode", agencyCode);
+            payGateMap.put("payChannle", ThirdConfig.getInstanceName(accessPlatfrom, payFeeType));
             PayAgencyMerchant payAgencyMerchant = (PayAgencyMerchant) params.get("agencyMerchant");
             //在第三方支付机构商户号
             payGateMap.put("merchantNo", payAgencyMerchant.getMerchantNo());
@@ -562,7 +563,7 @@ public class PayManagerImpl implements PayManager {
             if(StringUtils.isEmpty(orderAmountStr)){
                 //订单金额出错
                 logger.error("订单金额不能为空！");
-                result.withError(ResultStatus.PARAM_ERROR);
+                result.withError(ResultStatus.PAY_PARAM_ERROR);
                 return result;
             }
             BigDecimal orderAmount = new BigDecimal(orderAmountStr);
@@ -574,7 +575,7 @@ public class PayManagerImpl implements PayManager {
             }
             if(Constant.PAY_SUCCESS == orderInfo.getPayOrderStatus()){
                 //已经支付成功
-                result.withError(ResultStatus.PAY_ORDER_PAY_SUCCESS);
+                result.withError(ResultStatus.PAY_ORDER_ALREADY_DONE);
             }
             if(orderInfo.getOrderMoney().compareTo(orderAmount) != 0){
                 //金额不符

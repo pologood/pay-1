@@ -1,9 +1,7 @@
 package com.sogou.pay.manager.secure;
 
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.utils.PMap;
-
-import java.util.Map;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.PMap;
 
 /**
  * Created by hujunfei Date: 15-1-5 Time: 上午11:42

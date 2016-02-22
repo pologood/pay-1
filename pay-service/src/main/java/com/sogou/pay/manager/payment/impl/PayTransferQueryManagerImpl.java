@@ -1,9 +1,9 @@
 package com.sogou.pay.manager.payment.impl;
 
 import com.sogou.pay.common.http.utils.HttpUtil;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultBean;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultBean;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.manager.payment.PayTransferQueryManager;
 import com.sogou.pay.service.config.PayConfig;
@@ -151,9 +151,9 @@ public class PayTransferQueryManagerImpl implements PayTransferQueryManager {
         queryMap.put("BGNDAT", DateUtil.formatCompactDate(payTransferBatch.getCreateTime()));
         //结束日期
         queryMap.put("ENDDAT", DateUtil.formatCompactDate(new Date()));
-//        queryMap.put("BGNDAT", "20150308");
-//        //结束日期
-//        queryMap.put("ENDDAT", "20150308");
+        queryMap.put("BGNDAT", "20150520");
+        //结束日期
+        queryMap.put("ENDDAT", "20150520");
         //业务参考号
         queryMap.put("YURREF", payTransferBatch.getYurref());
         xmlPkt.putProperty("SDKATSQYX", queryMap);

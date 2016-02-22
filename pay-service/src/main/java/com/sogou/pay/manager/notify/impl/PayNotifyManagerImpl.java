@@ -1,10 +1,10 @@
 package com.sogou.pay.manager.notify.impl;
 
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
-import com.sogou.pay.common.utils.PMap;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.model.notify.PayNotifyModel;
 import com.sogou.pay.manager.model.thirdpay.FairAccRefundModel;
 import com.sogou.pay.manager.notify.PayNotifyManager;
@@ -101,7 +101,7 @@ public class PayNotifyManagerImpl implements PayNotifyManager {
             PayReqDetail payReqDetail = payReqDetailService.selectPayReqDetailById(payReqId);
             if (null == payReqDetail) {
                 LOGGER.error("no  payReqDetail for payNotifyModel：", payNotifyModel.toString());
-                result.withError(ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR);
+                result.withError(ResultStatus.PAY_ORDER_NOT_EXIST);
                 return result;
             }
             //获取支付单号
@@ -109,7 +109,7 @@ public class PayNotifyManagerImpl implements PayNotifyManager {
             PayOrderInfo payOrderInfo = payOrderService.selectPayOrderById(payId);
             if (null == payOrderInfo) {
                 LOGGER.error("no payOrderInfo  for payNotifyModel:", payNotifyModel.toString());
-                result.withError(ResultStatus.RES_PAY_INFO_NOT_EXIST_ERROR);
+                result.withError(ResultStatus.PAY_ORDER_NOT_EXIST);
                 return result;
             }
             //校验

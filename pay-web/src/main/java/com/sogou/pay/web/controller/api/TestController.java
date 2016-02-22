@@ -1,7 +1,7 @@
 package com.sogou.pay.web.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.sogou.pay.common.result.Result;
+import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.common.utils.MapUtil;
 import com.sogou.pay.manager.payment.AppManager;
@@ -96,7 +96,7 @@ public class TestController {
         if (params instanceof Map) {
             return MapUtil.dropNulls((Map) params);
         } else {
-            return BeanUtil.beanToMapNotNull(params);
+            return BeanUtil.Bean2MapNotNull(params);
         }
     }
 
