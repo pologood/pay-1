@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.wallet.service.dao.UserDao">
+
+    <resultMap id="WalletUser" type="com.sogou.pay.wallet.service.entity.WalletUser" autoMapping="true">
+        <result column="uid" property="uid"/>
+        <result column="openid" property="openid"/>
+        <result column="uname" property="uname"/>
+        <result column="pay_passwd" property="payPasswd"/>
+        <result column="signup_time" property="signupTime"/>
+        <result column="login_time" property="loginTime"/>
+    </resultMap>
+
+    <cache eviction="LRU" type="com.sogou.pay.common.cache.MybatisRedisCache"/>
+
+    <insert id="insertUser">
+        insert into wallet_user(
+        openid,
+        uname,
+        pay_passwd,
+        signup_time,
+        login_time
+        )
+        values
+        (
+        #{openid},
+        #{uname},
+        #{pay_passwd},
+        now(),
+        now()
+        )
+    </insert>
+
+    <update id="updateUserLoginTime">
+        UPDATE wallet_user SET login_time=#{login_time} WHERE openid=#{openid}
+    </update>
+
+    <select id="queryUserByOpenID" resultMap="WalletUser">
+        SELECT * FROM wallet_user WHERE openid=#{openid}
+    </select>
+
+    <select id="queryUserByUname" resultMap="WalletUser">
+        SELECT * FROM wallet_user WHERE uname LIKE '%#{uname}%'
+    </select>
+
+    <update id="setPayPasswd">
+        UPDATE wallet_user SET pay_passwd=#{pay_passwd} WHERE uid=#{uid}
+    </update>
+
+    <select id="verifyPayPasswd" resultType="int">
+        SELECT uid FROM wallet_user WHERE uid=#{uid} AND pay_passwd=#{pay_passwd}
+    </select>
+
+</mapper>

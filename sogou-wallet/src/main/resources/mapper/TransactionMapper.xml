@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.wallet.service.dao.TransactionDao">
+
+    <resultMap id="WalletTranscTopup" type="com.sogou.pay.wallet.service.entity.WalletTranscTopup" autoMapping="true">
+        <result column="tid" property="tid"/>
+        <result column="uid" property="uid"/>
+        <result column="money" property="money"/>
+        <result column="create_time" property="createTime"/>
+        <result column="order_id" property="orderId"/>
+        <result column="channel_code" property="channelCode"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <resultMap id="WalletTranscWithdraw" type="com.sogou.pay.wallet.service.entity.WalletTranscWithdraw" autoMapping="true">
+        <result column="tid" property="tid"/>
+        <result column="uid" property="uid"/>
+        <result column="money" property="money"/>
+        <result column="create_time" property="createTime"/>
+        <result column="order_id" property="orderId"/>
+        <result column="channel_code" property="channelCode"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <resultMap id="WalletTranscTransfer" type="com.sogou.pay.wallet.service.entity.WalletTranscTransfer" autoMapping="true">
+        <result column="tid" property="tid"/>
+        <result column="uid" property="uid"/>
+        <result column="money" property="money"/>
+        <result column="create_time" property="createTime"/>
+        <result column="payee_id" property="payeeId"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <resultMap id="WalletTranscLucky" type="com.sogou.pay.wallet.service.entity.WalletTranscLucky" autoMapping="true">
+        <result column="tid" property="tid"/>
+        <result column="uid" property="uid"/>
+        <result column="money" property="money"/>
+        <result column="create_time" property="createTime"/>
+        <result column="lucky_id" property="luckyId"/>
+        <result column="operation" property="operation"/>
+    </resultMap>
+
+    <cache eviction="LRU" type="com.sogou.pay.common.cache.MybatisRedisCache"/>
+
+    <insert id="insertTopup">
+        insert into wallet_tsc_topup(
+        uid,
+        money,
+        create_time,
+        order_id,
+        channel_code,
+        status
+        )
+        values
+        (
+        #{uid},
+        #{money},
+        now(),
+        #{orderId},
+        #{channel_code},
+        0
+        )
+    </insert>
+
+    <update id="updateTopupStatus">
+        UPDATE wallet_tsc_topup SET status=#{status} WHERE orderId=#{orderId} AND status != #{status}
+    </update>
+
+    <select id="queryTopupByUid" resultMap="WalletTranscTopup">
+        SELECT * FROM wallet_tsc_topup WHERE uid=#{uid} AND create_time &gt; #{startTime} AND create_time &lt; #{endTime}
+    </select>
+
+    <select id="queryTopupByOrderId" resultMap="WalletTranscTopup">
+        SELECT * FROM wallet_tsc_topup WHERE orderId=#{orderId}
+    </select>
+
+    <insert id="insertWithdraw">
+        insert into wallet_tsc_withdraw(
+        uid,
+        money,
+        create_time,
+        order_id,
+        channel_code,
+        status
+        )
+        values
+        (
+        #{uid},
+        #{money},
+        now(),
+        #{orderId},
+        #{channel_code},
+        0
+        )
+    </insert>
+
+    <update id="updateWithdrawStatus">
+        UPDATE wallet_tsc_withdraw SET status=#{status} WHERE orderId=#{orderId} AND status != #{status}
+    </update>
+
+    <select id="queryWithdrawByUid" resultMap="WalletTranscWithdraw">
+        SELECT * FROM wallet_tsc_withdraw WHERE uid=#{uid} AND create_time &gt; #{startTime} AND create_time &lt; #{endTime}
+    </select>
+
+    <select id="queryWithdrawByOrderId" resultMap="WalletTranscWithdraw">
+        SELECT * FROM wallet_tsc_withdraw WHERE orderId=#{orderId}
+    </select>
+
+    <insert id="insertTransfer">
+        insert into wallet_tsc_transfer(
+        uid,
+        money,
+        create_time,
+        payee_id,
+        status
+        )
+        values
+        (
+        #{uid},
+        #{money},
+        now(),
+        #{payeeId},
+        0
+        )
+    </insert>
+
+    <update id="updateTransferStatus">
+        UPDATE wallet_tsc_transfer SET status=#{status} WHERE tid=#{tid} AND status != #{status}
+    </update>
+
+    <select id="queryTransferByUid" resultMap="WalletTranscTransfer">
+        SELECT * FROM wallet_tsc_transfer WHERE uid=#{uid} AND create_time &gt; #{startTime} AND create_time &lt; #{endTime}
+    </select>
+
+    <insert id="insertLucky">
+        insert into wallet_tsc_lucky(
+        uid,
+        money,
+        create_time,
+        lucky_id,
+        operation
+        )
+        values
+        (
+        #{uid},
+        #{money},
+        now(),
+        #{luckyId},
+        #{operation}
+        )
+    </insert>
+
+    <select id="queryLuckyByUid" resultMap="WalletTranscLucky">
+        SELECT * FROM wallet_tsc_lucky WHERE uid=#{uid} AND create_time &gt; #{startTime} AND create_time &lt; #{endTime}
+    </select>
+
+    <insert id="insertTopupResponse">
+        insert into wallet_tsc_rsp_topup(
+        appid,
+        order_id,
+        pay_id,
+        money,
+        status,
+        create_time
+        )
+        values
+        (
+        #{appid},
+        #{orderId},
+        #{payId},
+        #{money},
+        #{status},
+        now()
+        )
+    </insert>
+
+    <insert id="insertWithdrawResponse">
+        insert into wallet_tsc_rsp_withdraw(
+        appid,
+        order_id,
+        pay_id,
+        money,
+        status,
+        create_time
+        )
+        values
+        (
+        #{appid},
+        #{orderId},
+        #{payId},
+        #{money},
+        #{status},
+        now()
+        )
+    </insert>
+
+</mapper>

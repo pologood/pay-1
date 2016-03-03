@@ -8,8 +8,8 @@ import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.common.utils.XMLUtil;
 import com.sogou.pay.thirdpay.biz.BillPayService;
-import com.sogou.pay.thirdpay.biz.enums.OrderRefundState;
-import com.sogou.pay.thirdpay.biz.enums.OrderState;
+import com.sogou.pay.common.enums.OrderRefundStatus;
+import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.thirdpay.biz.utils.*;
 import com.sogou.pay.thirdpay.biz.utils.billpay.*;
 import com.sogou.pay.thirdpay.biz.utils.billpay.BillPayUtil;
@@ -148,9 +148,9 @@ public class BillPayServiceImpl implements BillPayService {
             return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
         }
         if (payResult.equals("10")) {
-            result.addItem("order_state", OrderState.SUCCESS.name());
+            result.addItem("order_state", OrderStatus.SUCCESS.name());
         } else {
-            result.addItem("order_state", OrderState.FAILURE.name());
+            result.addItem("order_state", OrderStatus.FAILURE.name());
         }
         return result;
     }
@@ -206,7 +206,7 @@ public class BillPayServiceImpl implements BillPayService {
         }
         String resultStr = billRefundMap.getString("RESULT");
         if (StringUtil.isEmpty(resultStr) || "N".equals(resultStr)) {
-            result.addItem("error_code", OrderRefundState.FAIL);
+            result.addItem("error_code", OrderRefundStatus.FAIL);
             result.addItem("error_msg", billRefundMap.getString("CODE"));
             result.withError(ResultStatus.THIRD_REFUND_RESPONSE_PARAM_ERROR);
         }
@@ -278,13 +278,13 @@ public class BillPayServiceImpl implements BillPayService {
         }
         //数字串:0 代表进行中、1 代表成功、2 代表失败
         if (status.equals("1")) {
-            result.addItem("refund_status", OrderRefundState.SUCCESS.name());
+            result.addItem("refund_status", OrderRefundStatus.SUCCESS.name());
         } else if (status.equals("0")) {
-            result.addItem("refund_status", OrderRefundState.PROCESSING.name());
+            result.addItem("refund_status", OrderRefundStatus.PROCESSING.name());
         } else if (status.equals("2")) {
-            result.addItem("refund_status", OrderRefundState.FAIL.name());
+            result.addItem("refund_status", OrderRefundStatus.FAIL.name());
         } else {
-            result.addItem("refund_status", OrderRefundState.UNKNOWN.name());
+            result.addItem("refund_status", OrderRefundStatus.UNKNOWN.name());
         }
         return result;
     }

@@ -1,6 +1,6 @@
 package com.sogou.pay.service;
 
-import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
+import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,7 +11,7 @@ public class SequencerGeneratorTest extends BaseTest {
 
 
     @Autowired
-    private SequencerGenerator sequencerGenerator;
+    private SequenceFactory sequencerGenerator;
 
     @Test
     public void getPayTransferBatchNo() {

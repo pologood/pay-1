@@ -10,7 +10,7 @@ import com.sogou.pay.manager.payment.PayTranferRequestManager;
 import com.sogou.pay.manager.payment.PayTransferQueryManager;
 import com.sogou.pay.service.payment.PayTransferBatchService;
 import com.sogou.pay.service.utils.orderNoGenerator.PayTransferBatchNo;
-import com.sogou.pay.service.utils.orderNoGenerator.PayTransferNo;
+import com.sogou.pay.common.utils.SequenceGenerator;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,7 @@ public class PayTransferTest extends BaseTest {
     private PayTransferBatchNo payTransferBatchNo;
 
     @Autowired
-    private PayTransferNo payTransferNo;
+    private SequenceGenerator payTransferNo;
 
     public static void main(String args[]) {
 //        System.out.println("20150624115414935001".length());

@@ -30,7 +30,7 @@ import com.sogou.pay.manager.payment.PayManager;
 import com.sogou.pay.manager.secure.SecureManager;
 import com.sogou.pay.service.entity.PayOrderInfo;
 import com.sogou.pay.service.utils.Constant;
-import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
+import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 //import com.sogou.pay.thirdpay.api.PayApi;
 import com.sogou.pay.web.controller.BaseController;
 import com.sogou.pay.web.form.PayParams;
@@ -72,7 +72,7 @@ public class PaySDKController extends BaseController{
     private RedisUtils redisUtils;
 
     @Autowired
-    private SequencerGenerator sequencerGenerator;
+    private SequenceFactory sequencerGenerator;
 
     /**
      * @Author	huangguoqing 

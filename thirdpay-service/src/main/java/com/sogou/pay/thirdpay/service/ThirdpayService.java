@@ -9,48 +9,53 @@ import com.sogou.pay.common.types.PMap;
  */
 public interface ThirdpayService {
     /**
-     * (支付宝)账户支付
+     * (支付宝等)账户支付
      */
     public ResultMap preparePayInfoAccount(PMap params) throws ServiceException;
 
     /**
-     * (支付宝)网关支付
+     * (支付宝等)网关支付
      */
     public ResultMap preparePayInfoGatway(PMap params) throws ServiceException;
 
     /**
-     * (支付宝)扫码支付
+     * (支付宝等)扫码支付
      */
     public ResultMap preparePayInfoQRCode(PMap params) throws ServiceException;
 
     /**
-     * (支付宝)客户端支付
+     * (支付宝等)客户端支付
      */
     public ResultMap preparePayInfoSDK(PMap params) throws ServiceException;
 
     /**
-     * (支付宝)WAP支付
+     * (支付宝等)WAP支付
      */
     public ResultMap preparePayInfoWap(PMap params) throws ServiceException;
 
     /**
-     * (支付宝)查询订单信息
+     * (支付宝等)查询订单信息
      */
     public ResultMap queryOrder(PMap params) throws ServiceException;
 
     /**
-     * (支付宝)订单退款
+     * (支付宝等)订单退款
      */
     public ResultMap refundOrder(PMap params) throws ServiceException;
 
     /**
-     * (支付宝)查询订单退款信息
+     * (支付宝等)查询订单退款信息
      */
     public ResultMap queryRefundOrder(PMap params) throws ServiceException;
 
     /**
-     * (支付宝)下载对账单
+     * (支付宝等)下载对账单
      */
     public ResultMap downloadOrder(PMap params) throws ServiceException;
+
+    /**
+     * (支付宝等)批量付款
+     */
+    public ResultMap prepareTransferInfo(PMap params) throws ServiceException;
 
 }

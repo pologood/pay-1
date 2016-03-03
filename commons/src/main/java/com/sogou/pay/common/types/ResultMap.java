@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class ResultMap<T> extends Result<T> {
 
-    private Map<String, Object> data = new LinkedHashMap<>();
+    private Map<String, Object> data = new PMap<>();
 
     protected ResultMap(ResultStatus status, String message) {
         super(status, message);

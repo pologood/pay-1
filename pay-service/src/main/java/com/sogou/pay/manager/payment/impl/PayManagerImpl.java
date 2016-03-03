@@ -41,7 +41,7 @@ import com.sogou.pay.service.payment.PayOrderService;
 import com.sogou.pay.service.payment.PayReqDetailService;
 import com.sogou.pay.service.utils.Constant;
 import com.sogou.pay.service.utils.ThirdConfig;
-import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
+import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 
 /**
  * @Author	huangguoqing 
@@ -65,7 +65,7 @@ public class PayManagerImpl implements PayManager {
     private PayOrderService payOrderService;
 
     @Autowired
-    private SequencerGenerator sequencerGenerator;
+    private SequenceFactory sequencerGenerator;
 
     @Autowired
     private PayReqDetailService payReqDetailService;

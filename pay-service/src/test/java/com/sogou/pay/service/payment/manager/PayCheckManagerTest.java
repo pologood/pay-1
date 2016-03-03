@@ -15,7 +15,7 @@ import com.sogou.pay.service.enums.OperationLogStatus;
 import com.sogou.pay.service.enums.OrderType;
 import com.sogou.pay.service.enums.TerminalType;
 import com.sogou.pay.service.payment.PayAgencyMerchantService;
-import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
+import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class PayCheckManagerTest extends BaseTest {
     private PayCheckDayLogDao payCheckDayLogDao;
 
     @Autowired
-    private SequencerGenerator sequencerGenerator;
+    private SequenceFactory sequencerGenerator;
 
     @Autowired
     private PayAgencyMerchantService payAgencyMerchantService;

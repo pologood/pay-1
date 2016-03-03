@@ -8,8 +8,8 @@ import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.*;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
-import com.sogou.pay.thirdpay.biz.enums.OrderRefundState;
-import com.sogou.pay.thirdpay.biz.enums.OrderState;
+import com.sogou.pay.common.enums.OrderRefundStatus;
+import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
 //import com.sogou.pay.thirdpay.biz.model.TenpayCheckResponse;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
@@ -49,28 +49,28 @@ public class TenpayService implements ThirdpayService {
     private static HashMap<String, String[]> REFUND_OPUSER = new HashMap<String, String[]>();//退款用到
 
     static {
-        TRADE_STATUS.put("0", OrderState.SUCCESS.name());//等待卖家收款
-        TRADE_STATUS.put("1", OrderState.USERPAYING.name());//买家支付中, 暂勿发货
-        TRADE_STATUS.put("DEFAULT", OrderState.FAILURE.name());//默认
+        TRADE_STATUS.put("0", OrderStatus.SUCCESS.name());//等待卖家收款
+        TRADE_STATUS.put("1", OrderStatus.USERPAYING.name());//买家支付中, 暂勿发货
+        TRADE_STATUS.put("DEFAULT", OrderStatus.FAILURE.name());//默认
         //refund_status为4、10, 代表退款成功（最终态）, 资金已返回买家银行卡或者财付通账号。
-        REFUND_STATUS.put("4", OrderRefundState.SUCCESS.name());
-        REFUND_STATUS.put("10", OrderRefundState.SUCCESS.name());
+        REFUND_STATUS.put("4", OrderRefundStatus.SUCCESS.name());
+        REFUND_STATUS.put("10", OrderRefundStatus.SUCCESS.name());
         //refund_status为8、9、11, 代表退款处理中（中间态）, 9代表财付通已经提交退款请求给银行
         // （资金已从商户号中扣减, 退款记录会出现在对账单中）；
-        REFUND_STATUS.put("8", OrderRefundState.PROCESSING.name());
-        REFUND_STATUS.put("9", OrderRefundState.PROCESSING.name());
-        REFUND_STATUS.put("11", OrderRefundState.PROCESSING.name());
+        REFUND_STATUS.put("8", OrderRefundStatus.PROCESSING.name());
+        REFUND_STATUS.put("9", OrderRefundStatus.PROCESSING.name());
+        REFUND_STATUS.put("11", OrderRefundStatus.PROCESSING.name());
         //refund_status为1、2, 代表状态未确定（中间态）, 需要商户使用原退款单号重新发起退款
-        REFUND_STATUS.put("1", OrderRefundState.PROCESSING.name());
-        REFUND_STATUS.put("2", OrderRefundState.PROCESSING.name());
+        REFUND_STATUS.put("1", OrderRefundStatus.PROCESSING.name());
+        REFUND_STATUS.put("2", OrderRefundStatus.PROCESSING.name());
         //refund_status为3、5、6, 代表失败（最终态）, 需要商户更换退款单号重新发起退款
-        REFUND_STATUS.put("3", OrderRefundState.FAIL.name());
-        REFUND_STATUS.put("5", OrderRefundState.FAIL.name());
-        REFUND_STATUS.put("6", OrderRefundState.FAIL.name());
+        REFUND_STATUS.put("3", OrderRefundStatus.FAIL.name());
+        REFUND_STATUS.put("5", OrderRefundStatus.FAIL.name());
+        REFUND_STATUS.put("6", OrderRefundStatus.FAIL.name());
         //refund_status为7, 代表退款到银行发现用户的卡作废或者冻结了, 导致原路退款银行卡失败, 
         // 资金回流到商户的现金帐号, 需要商户人工干预, 通过线下或者财付通转账的方式进行退款。
-        REFUND_STATUS.put("7", OrderRefundState.OFFLINE.name());
-        REFUND_STATUS.put("DEFAULT", OrderRefundState.UNKNOWN.name());//默认
+        REFUND_STATUS.put("7", OrderRefundStatus.OFFLINE.name());
+        REFUND_STATUS.put("DEFAULT", OrderRefundStatus.UNKNOWN.name());//默认
         REFUND_OPUSER.put("1234274801", new String[]{"1234274801123", "1234567809ted", "535221"});//搜狗网络商户账号、操作员账号、密码、证书导入密码
         REFUND_OPUSER.put("1234639901", new String[]{"1234639901123", "1234567809ted", "145404"});//搜狗科技商户账号、操作员账号、密码、证书导入密码
     }
@@ -383,7 +383,7 @@ public class TenpayService implements ThirdpayService {
         String refund_status = tenpayMap.getString("refund_status");
         String error_code = refund_status;
         String error_msg = getRefundStatus(refund_status);
-        if (error_msg.equals(OrderRefundState.FAIL)) {
+        if (error_msg.equals(OrderRefundStatus.FAIL)) {
             result.addItem("error_code", error_code);
             result.addItem("error_msg", error_msg);
             result.withError(ResultStatus.THIRD_REFUND_RESPONSE_PARAM_ERROR);
@@ -598,5 +598,8 @@ public class TenpayService implements ThirdpayService {
         }
         return result;
     }
+
+    @Override
+    public ResultMap prepareTransferInfo(PMap params) throws ServiceException { return null;}
 
 }

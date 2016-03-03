@@ -1,5 +1,6 @@
 package com.sogou.pay.service.utils.orderNoGenerator;
 
+import com.sogou.pay.common.utils.SequenceGenerator;
 import org.springframework.stereotype.Service;
 
 /**
@@ -7,7 +8,7 @@ import org.springframework.stereotype.Service;
  * 代付单号
  */
 @Service
-public class PayTransferNo extends AbstractSequence {
+public class PayTransferNo extends SequenceGenerator {
     private static final String DATA_FORMAT = "yyyyMMddHHmmss";
 
     protected String getRandom(){
@@ -19,10 +20,5 @@ public class PayTransferNo extends AbstractSequence {
     @Override
     public String getDateFormat() {
         return DATA_FORMAT;
-    }
-
-    @Override
-    public int getSecondPartLength() {
-        return 3;
     }
 }

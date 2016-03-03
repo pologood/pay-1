@@ -11,8 +11,9 @@ import com.sogou.pay.common.utils.MapUtil;
 import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.common.utils.XMLUtil;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
-import com.sogou.pay.thirdpay.biz.enums.OrderState;
+import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
+import com.sogou.pay.thirdpay.biz.model.TransferRecord;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
 import com.sogou.pay.common.http.client.*;
 
@@ -47,6 +48,7 @@ public class AlipayService implements ThirdpayService {
     public static final String ALIPAY_SERVICE_REFUND = "refund_fastpay_by_platform_nopwd"; //支付宝订单退款接口名
     public static final String ALIPAY_SERVICE_QUERY_REFUND = "refund_fastpay_query"; //支付宝查询退款接口名
     public final static String ALIPAY_SERVICE_PAGE_QUERY = "account.page.query";//财务明细分页查询接口
+    public final static String ALIPAY_SERVICE_BATCH_TRANS = "batch_trans_notify";//批量付款到支付宝账户
 
 
     public static final String INPUT_CHARSET = "utf-8";                           // 字符编码格式 utf-8
@@ -71,23 +73,23 @@ public class AlipayService implements ThirdpayService {
     private static HashMap<CheckType, String> CHECK_TYPE = new HashMap<CheckType, String>();
 
     static {
-        TRADE_STATUS.put("TRADE_PENDING", OrderState.SUCCESS.name());//等待卖家收款
-        TRADE_STATUS.put("TRADE_FINISHED", OrderState.SUCCESS.name());//交易成功结束
-        TRADE_STATUS.put("TRADE_SUCCESS", OrderState.SUCCESS.name());//支付成功
-        TRADE_STATUS.put("BUYER_PRE_AUTH", OrderState.SUCCESS.name());//买家已付款（语音支付）
-        TRADE_STATUS.put("WAIT_SELLER_SEND_GOODS", OrderState.SUCCESS.name());//买家已付款, 等待卖家发货
-        TRADE_STATUS.put("WAIT_BUYER_CONFIRM_GOODS", OrderState.SUCCESS.name());//卖家已发货, 等待买家确认
-        TRADE_STATUS.put("WAIT_SYS_PAY_SELLER", OrderState.SUCCESS.name());//买家确认收货, 等待支付宝打款给卖家
-        TRADE_STATUS.put("COD_WAIT_SYS_PAY_SELLER", OrderState.SUCCESS.name());//签收成功等待系统打款给卖家（货到付款）
-        TRADE_STATUS.put("WAIT_BUYER_PAY", OrderState.NOTPAY.name());//等待买家付款
-        TRADE_STATUS.put("COD_WAIT_SELLER_SEND_GOODS", OrderState.NOTPAY.name());//等待卖家发货（货到付款）
-        TRADE_STATUS.put("COD_WAIT_BUYER_PAY", OrderState.NOTPAY.name());//等待买家签收付款（货到付款）
-        TRADE_STATUS.put("TRADE_CLOSED", OrderState.CLOSED.name());//交易中途关闭（已结束, 未成功完成）
-        TRADE_STATUS.put("TRADE_CANCEL", OrderState.CLOSED.name());//立即支付交易取消
-        TRADE_STATUS.put("WAIT_SYS_CONFIRM_PAY", OrderState.USERPAYING.name());//支付宝确认买家银行汇款中, 暂勿发货
-        TRADE_STATUS.put("TRADE_REFUSE", OrderState.FAILURE.name());//立即支付交易拒绝
-        TRADE_STATUS.put("TRADE_REFUSE_DEALING", OrderState.FAILURE.name());//立即支付交易拒绝中
-        TRADE_STATUS.put("DEFAULT", OrderState.FAILURE.name());//默认
+        TRADE_STATUS.put("TRADE_PENDING", OrderStatus.SUCCESS.name());//等待卖家收款
+        TRADE_STATUS.put("TRADE_FINISHED", OrderStatus.SUCCESS.name());//交易成功结束
+        TRADE_STATUS.put("TRADE_SUCCESS", OrderStatus.SUCCESS.name());//支付成功
+        TRADE_STATUS.put("BUYER_PRE_AUTH", OrderStatus.SUCCESS.name());//买家已付款（语音支付）
+        TRADE_STATUS.put("WAIT_SELLER_SEND_GOODS", OrderStatus.SUCCESS.name());//买家已付款, 等待卖家发货
+        TRADE_STATUS.put("WAIT_BUYER_CONFIRM_GOODS", OrderStatus.SUCCESS.name());//卖家已发货, 等待买家确认
+        TRADE_STATUS.put("WAIT_SYS_PAY_SELLER", OrderStatus.SUCCESS.name());//买家确认收货, 等待支付宝打款给卖家
+        TRADE_STATUS.put("COD_WAIT_SYS_PAY_SELLER", OrderStatus.SUCCESS.name());//签收成功等待系统打款给卖家（货到付款）
+        TRADE_STATUS.put("WAIT_BUYER_PAY", OrderStatus.NOTPAY.name());//等待买家付款
+        TRADE_STATUS.put("COD_WAIT_SELLER_SEND_GOODS", OrderStatus.NOTPAY.name());//等待卖家发货（货到付款）
+        TRADE_STATUS.put("COD_WAIT_BUYER_PAY", OrderStatus.NOTPAY.name());//等待买家签收付款（货到付款）
+        TRADE_STATUS.put("TRADE_CLOSED", OrderStatus.CLOSED.name());//交易中途关闭（已结束, 未成功完成）
+        TRADE_STATUS.put("TRADE_CANCEL", OrderStatus.CLOSED.name());//立即支付交易取消
+        TRADE_STATUS.put("WAIT_SYS_CONFIRM_PAY", OrderStatus.USERPAYING.name());//支付宝确认买家银行汇款中, 暂勿发货
+        TRADE_STATUS.put("TRADE_REFUSE", OrderStatus.FAILURE.name());//立即支付交易拒绝
+        TRADE_STATUS.put("TRADE_REFUSE_DEALING", OrderStatus.FAILURE.name());//立即支付交易拒绝中
+        TRADE_STATUS.put("DEFAULT", OrderStatus.FAILURE.name());//默认
 
         CHECK_TYPE.put(CheckType.ALL, StringUtil.joinStrings(",", AlipayTradeCode.TRADE_CODE_PAY.getValue(),
                 AlipayTradeCode.TRADE_CODE_TRANSFER.getValue(),
@@ -663,6 +665,53 @@ System.out.println(message);
         result.addItem("refRecords", records.get("转账"));
         result.addItem("feeRecords", records.get("收费"));
         result.addItem("cashRecords", records.get("提现"));
+        return result;
+    }
+
+
+    public ResultMap prepareTransferInfo(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        PMap requestPMap = new PMap();
+        requestPMap.put("service", AlipayService.ALIPAY_SERVICE_BATCH_TRANS);//接口名称
+        requestPMap.put("partner", params.getString("merchantNo"));//商户号
+        requestPMap.put("_input_charset", AlipayService.INPUT_CHARSET);//编码字符集
+        requestPMap.put("notify_url", params.getString("serverNotifyUrl"));     //服务器异步通知页面路径
+        requestPMap.put("account_name", params.getString("accountName"));       //付款账号名
+        StringBuilder sb = new StringBuilder();
+        List<TransferRecord> records = (List<TransferRecord>)params.get("records");
+        for (int i=0, size=records.size();i<size;i++){
+            TransferRecord record = records.get(i);
+            //流水号1^收款方账号1^收款账号姓名1^付款金额1^备注说明1
+            sb.append(StringUtil.joinStrings("^", record.getSerialNumber(),
+                    record.getAccountNo(), record.getAccountName(),
+                    record.getTransferAmount(), record.getMemo())).append("|");
+        }
+        String detailData = sb.deleteCharAt(sb.length()-1).toString();
+        requestPMap.put("detail_data", detailData);       //付款详细数据
+        requestPMap.put("batch_no", params.getString("serialNumber"));      //批量付款批次号
+        requestPMap.put("batch_num", "1");      //付款总笔数
+        BigDecimal oAmount = new BigDecimal(params.getString("orderAmount"));
+        String orderAmount = oAmount.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+        requestPMap.put("batch_fee", orderAmount);      //付款总金额
+        requestPMap.put("email", params.getString("sellerEmail"));      //付款账号
+        requestPMap.put("pay_date", DateUtil.format(new Date(), DateUtil.DATE_FORMAT_DAY_SHORT));      //支付日期
+        if (!MapUtil.checkAllExist(requestPMap)) {
+            log.error("[prepareTransferInfo] 支付宝批量付款参数错误, 参数:" + requestPMap);
+            return ResultMap.build(ResultStatus.THIRD_REFUND_PARAM_ERROR);
+        }
+        String md5securityKey = params.getString("md5securityKey");
+        String
+                sign =
+                SecretKeyUtil.aliMd5sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
+        if (sign == null) {
+            log.error("[prepareTransferInfo] 支付宝批量付款签名失败, 参数:" + requestPMap);
+            return ResultMap.build(ResultStatus.THIRD_REFUND_SIGN_ERROR);
+        }
+        requestPMap.put("sign", sign);
+        requestPMap.put("sign_type", AlipayService.SIGN_TYPE);
+        //3.获取支付URL
+        String returnUrl = HttpUtil.packHttpsGetUrl(params.getString("payUrl"), requestPMap);
+        result.addItem("returnUrl", returnUrl);
         return result;
     }
 

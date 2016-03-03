@@ -6,7 +6,7 @@ import com.sogou.pay.service.BaseTest;
 import com.sogou.pay.service.entity.PayCheck;
 import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.enums.OrderType;
-import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
+import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,7 +31,7 @@ public class PayCheckDaoTest extends BaseTest {
     private PayCheckWaitingDao payCheckWaitingDao;
 
     @Autowired
-    private SequencerGenerator sequencerGenerator;
+    private SequenceFactory sequencerGenerator;
 
     @Test
     public void batchInsertCheck() {

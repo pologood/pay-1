@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.sogou.pay.service.enums.PayOrderStatus;
 import com.sogou.pay.thirdpay.api.PayPortal;
-import com.sogou.pay.thirdpay.biz.enums.OrderState;
+import com.sogou.pay.common.enums.OrderStatus;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,7 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
             }
             // 2.检查支付单里的支付状态是否成功，成功则返回
             if (payOrderInfo.getPayOrderStatus() == PayOrderStatus.SUCCESS.getValue()) {
-                result.withReturn(OrderState.SUCCESS);
+                result.withReturn(OrderStatus.SUCCESS);
                // return result;
             }
             //2.根据payId查询关联表

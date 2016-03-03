@@ -4,6 +4,7 @@ import com.sogou.pay.common.utils.ConvertUtil;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -50,8 +51,8 @@ public class PMap<K, V> extends HashMap<K, V> {
         return ConvertUtil.toBool(this.get(key));
     }
 
-    public float getFloat(K key) {
-        return ConvertUtil.toFloat(this.get(key));
+    public double getDouble(K key) {
+        return ConvertUtil.toDouble(this.get(key));
     }
 
     public Date getDate(K key) {

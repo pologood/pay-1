@@ -17,6 +17,9 @@ public class JSONUtil {
     public static Map JSON2Map(String json){
         return JSON.parseObject(json, Map.class);
     }
+    public static PMap JSON2PMap(String json){
+        return JSON.parseObject(json, PMap.class);
+    }
 
     public static String Map2JSON(Map map){
         return JSON.toJSONString(map);
@@ -30,7 +33,4 @@ public class JSONUtil {
     public static String Bean2JSON(Object bean){
         return JSON.toJSONString(bean);
     }
-
-
-
 }

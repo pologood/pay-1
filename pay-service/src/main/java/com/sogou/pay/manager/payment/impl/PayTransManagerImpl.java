@@ -29,7 +29,7 @@ import com.sogou.pay.service.entity.PayTransferBatch;
 import com.sogou.pay.service.payment.PayTransferBatchService;
 import com.sogou.pay.service.payment.PayTransferService;
 import com.sogou.pay.service.utils.Constant;
-import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
+import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 
 @Service
 public class PayTransManagerImpl implements PayTransManager {
@@ -49,7 +49,7 @@ public class PayTransManagerImpl implements PayTransManager {
     private PayTransferBatchService payTransferBatchService;
 
     @Autowired
-    private SequencerGenerator sequencerGenerator;
+    private SequenceFactory sequencerGenerator;
 
     @Override
     public Result selectPayTransInfoByOutRef(List<String> recordList,

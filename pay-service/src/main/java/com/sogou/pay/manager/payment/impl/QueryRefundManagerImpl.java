@@ -12,7 +12,7 @@ import com.sogou.pay.thirdpay.api.PayPortal;
 import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.payment.*;
 //import com.sogou.pay.thirdpay.api.QueryRefundApi;
-import com.sogou.pay.thirdpay.biz.enums.OrderRefundState;
+import com.sogou.pay.common.enums.OrderRefundStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ public class QueryRefundManagerImpl implements QueryRefundManager {
             }
             // 2.检查支付单里的退款状态是否退款成功，退款成功则返回
             if (payOrderInfo.getRefundFlag() == 3) {
-                result.withReturn(OrderRefundState.SUCCESS);
+                result.withReturn(OrderRefundStatus.SUCCESS);
                 return result;
             }
             // 3.检查是否有退款单
@@ -78,7 +78,7 @@ public class QueryRefundManagerImpl implements QueryRefundManager {
                 refundStatusList.add(refundInfo.getRefundStatus());
             }
             if (refundStatusList.contains(3)) {
-                result.withReturn(OrderRefundState.SUCCESS);
+                result.withReturn(OrderRefundStatus.SUCCESS);
                 return result;
             }
             RefundInfo refundInfo = refundInfoList.get(0);

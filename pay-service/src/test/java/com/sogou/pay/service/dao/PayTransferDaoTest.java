@@ -1,11 +1,10 @@
 package com.sogou.pay.service.dao;
 
 import com.alibaba.fastjson.JSON;
-import com.sogou.pay.manager.model.Record;
 import com.sogou.pay.service.BaseTest;
 import com.sogou.pay.service.entity.PayTransfer;
 import com.sogou.pay.service.enums.PayTransferStatus;
-import com.sogou.pay.service.utils.orderNoGenerator.PayTransferNo;
+import com.sogou.pay.common.utils.SequenceGenerator;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class PayTransferDaoTest extends BaseTest {
     private PayTransferDao payTransferDao;
 
     @Autowired
-    private PayTransferNo payTransferNo;
+    private SequenceGenerator payTransferNo;
 
     @Test
     public void insert() {

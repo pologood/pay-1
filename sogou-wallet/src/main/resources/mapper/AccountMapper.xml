@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sogou.pay.wallet.service.dao.AccountDao">
+
+    <cache eviction="LRU" type="com.sogou.pay.common.cache.MybatisRedisCache"/>
+
+    <insert id="insertAccount">
+        insert into wallet_account(
+        uid,
+        account_type,
+        total_balance,
+        frozen_balance,
+        create_time,
+        update_time
+        )
+        values
+        (
+        #{uid},
+        #{account_type},
+        0.0,
+        0.0,
+        now(),
+        now()
+        )
+    </insert>
+
+    <update id="setAccount">
+        UPDATE wallet_account set total_balance=#{balance}, update_time=now() WHERE uid=#{uid} AND account_type=#{account_type}
+    </update>
+
+    <update id="increaseAccount">
+        UPDATE wallet_account set total_balance=total_balance+#{balance}, update_time=now() WHERE uid=#{uid} AND account_type=#{account_type}
+    </update>
+
+    <select id="queryAccount" resultType="BigDecimal">
+        SELECT total_balance FROM wallet_account WHERE uid=#{uid} AND account_type=#{account_type}
+    </select>
+
+    <update id="transferAccount">
+        UPDATE wallet_account set total_balance = (
+        CASE
+           WHEN
+                uid=#{uid}
+           THEN
+                total_balance - #{money}
+           WHEN
+                uid=#{payeeid}
+           THEN
+                total_balance + #{money}
+        END
+        ), update_time=now()
+        WHERE uid IN (#{uid}, #{payeeid}) AND account_type=#{account_type}
+    </update>
+
+</mapper>

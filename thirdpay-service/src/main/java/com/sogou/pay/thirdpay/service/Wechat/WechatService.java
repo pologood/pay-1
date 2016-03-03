@@ -11,8 +11,8 @@ import com.sogou.pay.common.utils.MapUtil;
 import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.common.utils.XMLUtil;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
-import com.sogou.pay.thirdpay.biz.enums.OrderRefundState;
-import com.sogou.pay.thirdpay.biz.enums.OrderState;
+import com.sogou.pay.common.enums.OrderRefundStatus;
+import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
 import com.sogou.pay.thirdpay.service.Tenpay.TenpayUtils;
@@ -48,21 +48,21 @@ public class WechatService implements ThirdpayService {
     private static HashMap<String, String> REFUND_STATUS = new HashMap<String, String>();
 
     static {
-        TRADE_STATUS.put("SUCCESS", OrderState.SUCCESS.name());//支付完成
-        TRADE_STATUS.put("NOTPAY", OrderState.NOTPAY.name());//未支付
-        TRADE_STATUS.put("CLOSED", OrderState.CLOSED.name());//已关闭
-        TRADE_STATUS.put("REVOKED", OrderState.CLOSED.name());//已关闭
-        TRADE_STATUS.put("USERPAYING", OrderState.USERPAYING.name());//支付中
-        TRADE_STATUS.put("PAYERROR", OrderState.FAILURE.name());//支付失败
-        TRADE_STATUS.put("REFUND", OrderState.REFUND.name());//转入退款
-        TRADE_STATUS.put("DEFAULT", OrderState.FAILURE.name());//默认
+        TRADE_STATUS.put("SUCCESS", OrderStatus.SUCCESS.name());//支付完成
+        TRADE_STATUS.put("NOTPAY", OrderStatus.NOTPAY.name());//未支付
+        TRADE_STATUS.put("CLOSED", OrderStatus.CLOSED.name());//已关闭
+        TRADE_STATUS.put("REVOKED", OrderStatus.CLOSED.name());//已关闭
+        TRADE_STATUS.put("USERPAYING", OrderStatus.USERPAYING.name());//支付中
+        TRADE_STATUS.put("PAYERROR", OrderStatus.FAILURE.name());//支付失败
+        TRADE_STATUS.put("REFUND", OrderStatus.REFUND.name());//转入退款
+        TRADE_STATUS.put("DEFAULT", OrderStatus.FAILURE.name());//默认
 
-        REFUND_STATUS.put("SUCCESS", OrderRefundState.SUCCESS.name());
-        REFUND_STATUS.put("FAIL", OrderRefundState.FAIL.name());
-        REFUND_STATUS.put("PROCESSING", OrderRefundState.PROCESSING.name());
-        REFUND_STATUS.put("NOTSURE", OrderRefundState.UNKNOWN.name());
-        REFUND_STATUS.put("CHANGE", OrderRefundState.OFFLINE.name());
-        REFUND_STATUS.put("DEFAULT", OrderRefundState.UNKNOWN.name());//默认
+        REFUND_STATUS.put("SUCCESS", OrderRefundStatus.SUCCESS.name());
+        REFUND_STATUS.put("FAIL", OrderRefundStatus.FAIL.name());
+        REFUND_STATUS.put("PROCESSING", OrderRefundStatus.PROCESSING.name());
+        REFUND_STATUS.put("NOTSURE", OrderRefundStatus.UNKNOWN.name());
+        REFUND_STATUS.put("CHANGE", OrderRefundStatus.OFFLINE.name());
+        REFUND_STATUS.put("DEFAULT", OrderRefundStatus.UNKNOWN.name());//默认
     }
 
 
@@ -593,5 +593,8 @@ public class WechatService implements ThirdpayService {
         }
         return result;
     }
+
+    @Override
+    public ResultMap prepareTransferInfo(PMap params) throws ServiceException { return null;}
 
 }

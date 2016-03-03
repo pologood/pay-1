@@ -14,7 +14,7 @@ import com.sogou.pay.service.entity.*;
 import com.sogou.pay.service.enums.*;
 import com.sogou.pay.service.payment.*;
 import com.sogou.pay.service.utils.Constant;
-import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
+import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 //import com.sogou.pay.thirdpay.api.RefundApi;
 import com.sogou.pay.thirdpay.api.PayPortal;
 import com.sogou.pay.thirdpay.biz.enums.AgencyType;
@@ -59,7 +59,7 @@ public class RefundManagerImpl implements RefundManager {
     @Autowired
     private AgencyInfoService agencyInfoService;
     @Autowired
-    private SequencerGenerator sequencerGenerator;
+    private SequenceFactory sequencerGenerator;
     @Autowired
     private PayCheckWaitingService payCheckWaitingService;
 
