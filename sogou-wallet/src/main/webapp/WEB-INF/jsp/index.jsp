@@ -33,6 +33,7 @@
                 input.setAttribute("value", value);
                 form.appendChild(input);
             });
+            form.hidden=true;
             document.body.appendChild(form);
             form.submit();
         }
@@ -51,6 +52,7 @@
             }).done(function (ret, status, jqXHR) {
                 var rsp = jqXHR.responseJSON;
                 var params = rsp['data'];
+                console.log(params);
                 doPay(params);
             }).fail(function (jqXHR, textStatus) {
             });

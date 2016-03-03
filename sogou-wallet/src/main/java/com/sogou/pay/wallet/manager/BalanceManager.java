@@ -105,7 +105,6 @@ public class BalanceManager {
         String bgUrl = ResourceBundle.getBundle("config").getString("wallet.bgurl");
 
         ResultMap result = ResultMap.build();
-        result.addItem("payurl", payUrl);
         result.addItem("version", "v1.0");
         result.addItem("pageUrl", pageUrl);
         result.addItem("bgUrl", bgUrl);
@@ -117,10 +116,11 @@ public class BalanceManager {
         result.addItem("bankId", channel_code);
         result.addItem("appId", appId);
         result.addItem("accessPlatform", "2");
+        result.addItem("signType", "0");
 
         String sign = Util.signMD5(result.getData(), key);
         result.addItem("sign", sign);
-        result.addItem("signType", "0");
+        result.addItem("payurl", payUrl);
 
         return result;
     }
@@ -143,10 +143,10 @@ public class BalanceManager {
         requestPMap.put("productName", "搜狗钱包提现");
         requestPMap.put("bankId", channel_code);
         requestPMap.put("appId", appId);
+        requestPMap.put("signType", "0");
 
         String sign = Util.signMD5(requestPMap, key);
         requestPMap.put("sign", sign);
-        requestPMap.put("signType", "0");
 
         Result httpResponse = HttpService.getInstance().doPost(withdrawUrl, requestPMap, "UTF-8", null);
         if (httpResponse.getStatus() != ResultStatus.SUCCESS) {

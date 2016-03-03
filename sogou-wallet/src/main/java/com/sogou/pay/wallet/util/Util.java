@@ -2,7 +2,6 @@ package com.sogou.pay.wallet.util;
 
 import com.sogou.pay.common.utils.MD5Util;
 import com.sogou.pay.common.utils.OrderNo;
-import com.sogou.pay.common.utils.SequenceGenerator;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -34,6 +33,7 @@ public class Util {
         String text = sb.toString();
         return MD5Util.MD5Encode(text, null);
     }
+
 
     /**
      * 订单号 ：OD+时间17位+3位序列 23位

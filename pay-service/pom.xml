@@ -213,15 +213,6 @@
 
     <profiles>
         <profile>
-            <id>dev</id>
-            <properties>
-                <config_file>
-                    src/main/resources/config_DEV.properties
-                </config_file>
-            </properties>
-
-        </profile>
-        <profile>
             <id>test</id>
             <properties>
                 <config_file>

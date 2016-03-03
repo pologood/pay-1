@@ -62,14 +62,14 @@
         </dependency>
 
         <!--<dependency>-->
-            <!--<groupId>commons-pool</groupId>-->
-            <!--<artifactId>commons-pool</artifactId>-->
-            <!--<version>1.6</version>-->
+        <!--<groupId>commons-pool</groupId>-->
+        <!--<artifactId>commons-pool</artifactId>-->
+        <!--<version>1.6</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
-            <!--<groupId>org.apache.activemq</groupId>-->
-            <!--<artifactId>activemq-all</artifactId>-->
-            <!--<version>5.11.1</version>-->
+        <!--<groupId>org.apache.activemq</groupId>-->
+        <!--<artifactId>activemq-all</artifactId>-->
+        <!--<version>5.11.1</version>-->
         <!--</dependency>-->
 
         <!-- activeMq start -->
@@ -165,29 +165,28 @@
 
     <profiles>
         <profile>
-            <id>dev</id>
-            <properties>
-                <env>dev</env>
-            </properties>
-
-        </profile>
-        <profile>
             <id>test</id>
             <properties>
                 <env>test</env>
-            </properties>
-        </profile>
-        <profile>
-            <id>release</id>
-            <properties>
-                <env>release</env>
+                <config_file>
+                    src/main/resources/config_TEST.properties
+                </config_file>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
-
+        <profile>
+            <id>prod</id>
+            <properties>
+                <env>prod</env>
+                <config_file>
+                    src/main/resources/config_PROD.properties
+                </config_file>
+            </properties>
+        </profile>
     </profiles>
+
 
     <build>
         <filters>
