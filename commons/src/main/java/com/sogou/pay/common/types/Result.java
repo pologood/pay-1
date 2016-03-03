@@ -82,7 +82,7 @@ public abstract class Result<T> {
     public String toString() {
         /*Map newMap = Maps.newHashMap(data);
         newMap.put("error_code", status.getOutputName());
-        return JsonUtil.Bean2JSON(newMap);*/
+        return JSONUtil.Bean2JSON(newMap);*/
 
         return JSONUtil.Bean2JSON(this);
     }

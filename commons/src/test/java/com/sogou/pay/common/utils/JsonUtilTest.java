@@ -11,7 +11,7 @@ public class JsonUtilTest extends BaseTest {
 
     @Test
     public void testJsonToBean() {
-        // JsonUtil.JSON2Bean()
+        // JSONUtil.JSON2Bean()
         String json = "{\"arr\":[\"Hello\",\"World\",\"!\"],\"id\":10,\"list\":[\"list1\",\"list2\"],\"map\":{\"key1\":\"value1\",\"key2\":\"value2\"},\"name\":\"Test\"}";
         TestBean bean = JSONUtil.JSON2Bean(json, TestBean.class);
         System.out.println(bean.getMap());

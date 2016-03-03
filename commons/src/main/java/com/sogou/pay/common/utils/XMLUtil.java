@@ -2,22 +2,12 @@ package com.sogou.pay.common.utils;
 
 import com.sogou.pay.common.types.PMap;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.extended.*;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.StreamException;
-import com.thoughtworks.xstream.io.xml.XppDriver;
-import com.thoughtworks.xstream.io.xml.XppReader;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.*;
