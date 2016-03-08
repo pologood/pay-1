@@ -126,13 +126,14 @@ public class AlipayService implements ThirdpayService {
         //2.获取md5签名
         String
                 sign =
-                SecretKeyUtil.aliMd5sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
+                SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[preparePayInfoAccount] 支付宝订单支付签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
         }
         requestPMap.put("sign", sign);
         requestPMap.put("sign_type", AlipayService.SIGN_TYPE);                     //签名方式
+
         //3.获取支付URL
         String returnUrl = HttpUtil.packHttpsGetUrl(params.getString("payUrl"), requestPMap);
         result.addItem("returnUrl", returnUrl);
@@ -167,7 +168,7 @@ public class AlipayService implements ThirdpayService {
         String md5securityKey = params.getString("md5securityKey");
         //2.获取md5签名
         String
-                sign = SecretKeyUtil.aliMd5sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
+                sign = SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[preparePayInfoGatway] 支付宝订单支付签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
@@ -208,7 +209,7 @@ public class AlipayService implements ThirdpayService {
         //2.获取md5签名
         String
                 sign =
-                SecretKeyUtil.aliMd5sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
+                SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[preparePayInfoQRCode] 支付宝订单支付签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
@@ -259,7 +260,7 @@ public class AlipayService implements ThirdpayService {
         // 4.签名
         String
                 sign =
-                SecretKeyUtil.aliClientRsaSign(requestPMap, privateCertKey, AlipayService.INPUT_CHARSET);
+                SecretKeyUtil.aliRSASign(requestPMap, privateCertKey, AlipayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[preparePayInfoSDK] 支付宝订单支付签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
@@ -306,7 +307,7 @@ public class AlipayService implements ThirdpayService {
         //2.获取md5签名
         String
                 sign =
-                SecretKeyUtil.aliMd5sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
+                SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[preparePayInfoWap] 支付宝订单支付签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
@@ -336,7 +337,7 @@ public class AlipayService implements ThirdpayService {
         //2.获取md5签名
         String
                 sign =
-                SecretKeyUtil.aliMd5sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
+                SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[queryOrder] 支付宝订单查询签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_QUERY_SIGN_ERROR);
@@ -410,7 +411,7 @@ public class AlipayService implements ThirdpayService {
         String md5securityKey = params.getString("md5securityKey");
         String
                 sign =
-                SecretKeyUtil.aliMd5sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
+                SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[refundOrder] 支付宝退款签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_REFUND_SIGN_ERROR);
@@ -463,7 +464,7 @@ public class AlipayService implements ThirdpayService {
         // 3.签名
         String
                 sign =
-                SecretKeyUtil.aliMd5sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
+                SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[queryRefundOrder] 支付宝退款查询签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_QUERY_REFUND_SIGN_ERROR);
@@ -550,7 +551,7 @@ public class AlipayService implements ThirdpayService {
         requestPMap.put("trans_code", AlipayService.CHECK_TYPE.get(checkType));
 
         //获取md5签名
-        String sign = SecretKeyUtil.aliMd5sign(requestPMap, params.getString("key"), AlipayService.INPUT_CHARSET);
+        String sign = SecretKeyUtil.aliMD5Sign(requestPMap, params.getString("key"), AlipayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[downloadOrder] 支付宝下载对账单签名失败, 参数:" + requestPMap);
             result.withError(ResultStatus.THIRD_QUERY_SIGN_ERROR);
@@ -583,7 +584,7 @@ public class AlipayService implements ThirdpayService {
         SAXReader reader = new SAXReader();
         reader.setEncoding(AlipayService.INPUT_CHARSET);
         Document doc = null;
-System.out.println(message);
+        System.out.println(message);
         try {
             doc = reader.read(new StringReader(message));
         } catch (Exception e) {
@@ -678,15 +679,15 @@ System.out.println(message);
         requestPMap.put("notify_url", params.getString("serverNotifyUrl"));     //服务器异步通知页面路径
         requestPMap.put("account_name", params.getString("accountName"));       //付款账号名
         StringBuilder sb = new StringBuilder();
-        List<TransferRecord> records = (List<TransferRecord>)params.get("records");
-        for (int i=0, size=records.size();i<size;i++){
+        List<TransferRecord> records = (List<TransferRecord>) params.get("records");
+        for (int i = 0, size = records.size(); i < size; i++) {
             TransferRecord record = records.get(i);
             //流水号1^收款方账号1^收款账号姓名1^付款金额1^备注说明1
             sb.append(StringUtil.joinStrings("^", record.getSerialNumber(),
                     record.getAccountNo(), record.getAccountName(),
                     record.getTransferAmount(), record.getMemo())).append("|");
         }
-        String detailData = sb.deleteCharAt(sb.length()-1).toString();
+        String detailData = sb.deleteCharAt(sb.length() - 1).toString();
         requestPMap.put("detail_data", detailData);       //付款详细数据
         requestPMap.put("batch_no", params.getString("serialNumber"));      //批量付款批次号
         requestPMap.put("batch_num", "1");      //付款总笔数
@@ -702,7 +703,7 @@ System.out.println(message);
         String md5securityKey = params.getString("md5securityKey");
         String
                 sign =
-                SecretKeyUtil.aliMd5sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
+                SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey, AlipayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[prepareTransferInfo] 支付宝批量付款签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_REFUND_SIGN_ERROR);
@@ -715,4 +716,199 @@ System.out.println(message);
         return result;
     }
 
+    public ResultMap getReqIDFromNotifyWebSync(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        String is_succes = params.getString("is_succes");//接口是否调用成功
+        String out_trade_no = params.getString("out_trade_no");
+        if (!"T".equals(is_succes) || out_trade_no == null) {
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
+            return result;
+        }
+//        String seller_id = params.getString("seller_id");
+        result.addItem("reqId", out_trade_no);//商户网站唯一订单号
+//        result.addItem("merchantNo", seller_id);//商户号
+        return result;
+    }
+
+    public ResultMap getReqIDFromNotifyWebAsync(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        String out_trade_no = params.getString("out_trade_no");
+        if (out_trade_no == null) {
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
+            return result;
+        }
+//        String seller_id = params.getString("seller_id");
+        result.addItem("reqId", out_trade_no);//商户网站唯一订单号
+//        result.addItem("merchantNo", seller_id);//商户号
+        return result;
+    }
+
+    public ResultMap getReqIDFromNotifyWapSync(PMap params) throws ServiceException {
+        return getReqIDFromNotifyWebSync(params);
+    }
+
+    public ResultMap getReqIDFromNotifyWapAsync(PMap params) throws ServiceException {
+        return getReqIDFromNotifyWebAsync(params);
+    }
+
+    public ResultMap getReqIDFromNotifySDKAsync(PMap params) throws ServiceException {
+        return getReqIDFromNotifyWebAsync(params);
+    }
+
+    public ResultMap getReqIDFromNotifyRefund(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        String batch_no = params.getString("batch_no");
+        if (batch_no == null) {
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
+            return result;
+        }
+        result.addItem("reqId", batch_no);//商户网站唯一订单号
+        return result;
+    }
+
+    public ResultMap getReqIDFromNotifyTransfer(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        String batch_no = params.getString("batch_no");
+        if (batch_no == null) {
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
+            return result;
+        }
+//        String pay_user_id = params.getString("pay_user_id");
+        result.addItem("reqId", batch_no);//商户网站唯一订单号
+//        result.addItem("merchantNo", pay_user_id);//商户号
+        return result;
+    }
+
+    public ResultMap handleNotifyWebSync(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        PMap notifyParams = params.getPMap("data");
+        //校验签名
+        String md5securityKey = params.getString("md5securityKey");
+        String out_sign = notifyParams.getString("sign");
+        if (!SecretKeyUtil.aliMD5CheckSign(notifyParams, md5securityKey, out_sign, AlipayService.INPUT_CHARSET)) {
+            log.error("[handleNotifyWebSync] 支付宝支付同步回调校验签名失败, 参数:" + params);
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
+            return result;
+        }
+        //提取关键参数
+        String out_trade_no = notifyParams.getString("out_trade_no");
+        String trade_status = getTradeStatus(notifyParams.getString("trade_status"));
+
+        result.addItem("reqId", out_trade_no);//商户网站唯一订单号
+        result.addItem("tradeStatus", trade_status);//交易状态
+
+        return result;
+    }
+
+    public ResultMap handleNotifyWebAsync(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        PMap notifyParams = params.getPMap("data");
+        //校验签名
+        String md5securityKey = params.getString("md5securityKey");
+        String out_sign = notifyParams.getString("sign");
+        if (!SecretKeyUtil.aliMD5CheckSign(notifyParams, md5securityKey, out_sign, AlipayService.INPUT_CHARSET)) {
+            log.error("[handleNotifyWebAsync] 支付宝支付异步回调校验签名失败, 参数:" + params);
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
+            return result;
+        }
+        //提取关键参数
+        String out_trade_no = notifyParams.getString("out_trade_no");
+        String trade_no = notifyParams.getString("trade_no");
+        String trade_status = getTradeStatus(notifyParams.getString("trade_status"));
+        String out_channel_type = notifyParams.getString("out_channel_type");
+        String gmt_payment = notifyParams.getString("gmt_payment");
+        String total_fee = notifyParams.getString("total_fee");
+
+        result.addItem("reqId", out_trade_no);//商户网站唯一订单号
+        result.addItem("agencyOrderId", trade_no);//第三方订单号
+        result.addItem("tradeStatus", trade_status);//交易状态
+        result.addItem("channelType", out_channel_type);//第三方渠道方式
+        result.addItem("agencyPayTime", gmt_payment);//第三方支付时间
+        result.addItem("trueMoney", total_fee);//支付金额
+
+        return result;
+    }
+
+    public ResultMap handleNotifyWapSync(PMap params) throws ServiceException {
+        return handleNotifyWebSync(params);
+    }
+
+    public ResultMap handleNotifyWapAsync(PMap params) throws ServiceException {
+        return handleNotifyWebAsync(params);
+    }
+
+    public ResultMap handleNotifySDKAsync(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        PMap notifyParams = params.getPMap("data");
+        //校验签名
+        String publicCertFilePath = params.getString("publicCertFilePath");
+        // 3.获取商户私钥
+        String privateCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
+        if (privateCertKey.equals("")) {
+            log.error("[handleNotifySDKAsync] 支付宝支付异步回调获取支付宝公钥失败, 参数:" + params);
+            return ResultMap.build(ResultStatus.THIRD_PAY_GET_KEY_ERROR);
+        }
+        String out_sign = notifyParams.getString("sign");
+        if (!SecretKeyUtil.aliRSACheckSign(notifyParams, out_sign, privateCertKey)) {
+            log.error("[handleNotifySDKAsync] 支付宝支付异步回调校验签名失败, 参数:" + params);
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
+            return result;
+        }
+        //提取关键参数
+        String out_trade_no = notifyParams.getString("out_trade_no");
+        String trade_no = notifyParams.getString("trade_no");
+        String trade_status = getTradeStatus(notifyParams.getString("trade_status"));
+        String gmt_payment = notifyParams.getString("gmt_payment");
+        String total_fee = notifyParams.getString("total_fee");
+
+        result.addItem("reqId", out_trade_no);//商户网站唯一订单号
+        result.addItem("agencyOrderId", trade_no);//第三方订单号
+        result.addItem("tradeStatus", trade_status);//交易状态
+        result.addItem("agencyPayTime", gmt_payment);//第三方支付时间
+        result.addItem("trueMoney", total_fee);//支付金额
+
+        return result;
+    }
+
+    public ResultMap handleNotifyRefund(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        PMap notifyParams = params.getPMap("data");
+        //校验签名
+        String md5securityKey = params.getString("md5securityKey");
+        String out_sign = notifyParams.getString("sign");
+        if (!SecretKeyUtil.aliMD5CheckSign(notifyParams, md5securityKey, out_sign, AlipayService.INPUT_CHARSET)) {
+            log.error("[handleNotifyRefund] 支付宝退款异步回调校验签名失败, 参数:" + params);
+            result.withError(ResultStatus.THIRD_NOTIFY_REFUND_SIGN_ERROR);
+            return result;
+        }
+
+        //提取关键参数
+        String batch_no = notifyParams.getString("batch_no");
+        String result_details = notifyParams.getString("result_details");
+        String []refund_details = result_details.split("#");
+        if(refund_details.length != 1){
+            log.error("[handleNotifyRefund] 支付宝退款异步回调参数错误, result_details包含多个对款记录, 参数:" + notifyParams);
+            result.withError(ResultStatus.THIRD_NOTIFY_REFUND_PARAM_ERROR);
+            return result;
+        }
+        String refund_detail = refund_details[0].split("\\$")[0];
+        String []refund_detail_items = refund_detail.split("\\^");
+        if(refund_detail_items.length != 3){
+            log.error("[handleNotifyRefund] 支付宝退款异步回调参数错误, 参数:" + notifyParams);
+            result.withError(ResultStatus.THIRD_NOTIFY_REFUND_PARAM_ERROR);
+            return result;
+        }
+        String refund_money = refund_detail_items[1];
+        String refund_status = refund_detail_items[2];
+
+        result.addItem("reqId", batch_no);//退款单号
+        result.addItem("refundMoney", refund_money);//退款金额
+        result.addItem("refundStatus", refund_status);//退款状态
+
+        return result;
+    }
+
+    public ResultMap handleNotifyTransfer(PMap params) throws ServiceException {
+        throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    }
 }

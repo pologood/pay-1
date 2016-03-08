@@ -29,7 +29,7 @@ public class OrderQueryControllerTest extends BaseTest {
         params.setSignType("0");
         params.setAppId("1999");
         Map map = BeanUtil.Bean2Map(params);
-        map.put("sign", JSONObject.parse(controller.signData(map, null)));
+        map.put("sign", JSONObject.parse(controller.signData(map)));
         testGet(url, map);
     }
 
@@ -42,7 +42,7 @@ public class OrderQueryControllerTest extends BaseTest {
         params.setSignType("0");
         params.setAppId("1999");
         Map map = BeanUtil.Bean2Map(params);
-        map.put("sign", JSONObject.parse(controller.signData(map, null)));
+        map.put("sign", JSONObject.parse(controller.signData(map)));
         testGet(url, map);
     }
 

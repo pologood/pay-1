@@ -55,125 +55,16 @@ public class WechatPayNotifyController extends BaseController {
     private static final String UNDERLINE = "_";
     
     private static final String WECHAT_QUERY_ORDER = "WECHAT_ORDER_QUERY";
-    
-    @Autowired
-    private SecureManager secureManager;
+
     @Autowired
     private PayNotifyManager payNotifyManager;
-    @Autowired
-    private RefundManager refundManager;
-    @Autowired
-    private PayOrderService payOrderService;
-    @Autowired
-    private PayOrderRelationService payOrderRelationService;
-    //@Autowired
-    //private QueryApi queryApi;
+
     @Autowired
     private PayPortal payPortal;
     @Autowired
     private RedisUtils redisUtils;
 
-    @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/wechat/pay/webAsync",
-            timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = "/webAsync")
-    @ResponseBody
-    public String weChatWebNotify(HttpServletRequest request) throws ServiceException, IOException, DocumentException {
-        /******1. 签名校验*******/
-        PMap<String, String> pMap = ControllerUtil.getXmlParamPMap(request);
-        LOGGER.info("【webAsync:pMap】" + pMap);
-        String agency = AgencyType.WECHAT.name();
-        String partner = pMap.getString("mch_id");
-        ResultMap sign = (ResultMap) secureManager.verifyNotifySign(pMap, agency, partner);
-        if (sign.getStatus() != ResultStatus.SUCCESS) {
-            LOGGER.error("md5签名异常，参数:" + pMap);
-            return "success";
-        }
 
-        /*******2. 业务参数提取、校验、转换，主要是格式校验*******/
-        WeChatPayWebNotifyParams weChatPayWebNotifyParams = new WeChatPayWebNotifyParams();
-        weChatPayWebNotifyParams.setOut_trade_no(pMap.get("out_trade_no"));
-        weChatPayWebNotifyParams.setTransaction_id(pMap.get("transaction_id"));
-        weChatPayWebNotifyParams.setBank_billno(pMap.get("bank_billno"));
-        weChatPayWebNotifyParams.setResult_code(pMap.get("result_code"));
-        weChatPayWebNotifyParams.setTime_end(pMap.get("time_end"));
-        weChatPayWebNotifyParams.setTotal_fee(pMap.get("total_fee"));
-        PayNotifyModel payNotifyModel = paramsConvert(weChatPayWebNotifyParams);
-        if (payNotifyModel == null) {
-            return "success";
-        }
-
-        ResultMap processResult = payNotifyManager.doProcess(payNotifyModel);
-        if(Result.isSuccess(processResult) && 1 == (int)processResult.getReturnValue()){
-            //调用平账退款接口
-            refundManager.fairAccountRefund((FairAccRefundModel)processResult.getData().get("fairAccRefundModel"));
-        }
-        return "success";  // 返回结果只是表示收到回调
-    }
-
-    private PayNotifyModel paramsConvert(WeChatPayWebNotifyParams weChatPayWebNotifyParams) {
-        String orderStatus = weChatPayWebNotifyParams.getResult_code();
-        if (!"SUCCESS".equals(orderStatus)) {
-            return null;
-        }
-
-        PMap paramMap = BeanUtil.Bean2PMap(weChatPayWebNotifyParams); //因为aliPayWebNotifyParams作为controller封装对象都是String型的，不便于操作，此处转换为PMap便于处理
-
-        String totalFee = paramMap.getString("total_fee");
-        BigDecimal true_money = new BigDecimal(totalFee).divide(new BigDecimal("100"), 2, BigDecimal.ROUND_UP);
-
-        PayNotifyModel payNotifyModel = new PayNotifyModel();
-        payNotifyModel.setPayDetailId(paramMap.getString("out_trade_no"));
-        payNotifyModel.setAgencyOrderId(paramMap.getString("transaction_id"));
-        //payNotifyModel.setPayStatus(pay_status);
-        payNotifyModel.setAgencyPayTime(paramMap.getDate("time_end"));
-        payNotifyModel.setTrueMoney(true_money);
-
-        return payNotifyModel;
-    }
-
-    @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/wechat/pay/webSync",
-            timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = "/webSync")
-    public ModelAndView wechatWebSyncNotify(HttpServletRequest request) throws ServiceException, IOException {
-        ModelAndView view = new ModelAndView("notifySync");
-        String payReqId = request.getParameter("payReqId");
-        String url = null;
-        //1.根据reqId查询payId
-        PayOrderRelation paramRelation = new PayOrderRelation();
-        paramRelation.setPayDetailId(payReqId);
-        List<PayOrderRelation> relationList = payOrderRelationService.selectPayOrderRelation(paramRelation);
-        if(null == relationList || relationList.size() == 0){
-            LOGGER.error("There is no PayOrderRelation from reqId={}", payReqId);
-            view.addObject("errorCode", ResultStatus.PAY_ORDER_RELATION_NOT_EXIST.getCode());
-            view.addObject("errorMessage", ResultStatus.PAY_ORDER_RELATION_NOT_EXIST.getMessage());
-            return view;
-        }
-        //2.根据payIdList查询payOrder信息
-        List<PayOrderInfo> payOrderInfos = payOrderService.selectPayOrderByPayIdList(relationList);
-        PayOrderInfo payOrderInfo = null;
-        if (payOrderInfos != null) {
-            payOrderInfo = payOrderInfos.get(0);
-            url = payOrderInfo.getAppPageUrl();
-        } else {
-            LOGGER.error("There is no orderinfo from reqId={}", payReqId);
-            view.addObject("errorCode", ResultStatus.PAY_ORDER_NOT_EXIST.getCode());
-            view.addObject("errorMessage", ResultStatus.PAY_ORDER_NOT_EXIST.getMessage());
-            return view;
-        }
-        //获得通知参数
-        ResultMap resultNotify = payNotifyManager.getNotifyMap(payOrderInfo);
-        if(!Result.isSuccess(resultNotify)){
-            view.addObject("errorCode", resultNotify.getStatus().getCode());
-            view.addObject("errorMessage", resultNotify.getStatus().getMessage());
-            return view;
-        }
-        view.addObject("errorCode", 0);
-        view.addObject("appUrl", url);
-        view.addObject("returnMap", resultNotify.getReturnValue());
-        return view;
-    }
-
-    
     @RequestMapping(value = "/getWechatStatus")
     @ResponseBody
     public String getWechatStatus(HttpServletRequest request){
@@ -202,7 +93,6 @@ public class WechatPayNotifyController extends BaseController {
             }
         }
         //请求微信接口
-        //ResultMap wechatResult = queryApi.queryOrder(new PMap(queryParam));
         ResultMap wechatResult = payPortal.queryOrder(new PMap(queryParam));
         if(!ResultMap.isSuccess(wechatResult)){
             result.withError(ResultStatus.SYSTEM_ERROR);

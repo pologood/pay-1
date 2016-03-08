@@ -131,10 +131,16 @@ public class DateUtil {
         try {
             if (time.length() == 8) {
                 return parse(time, DATE_FORMAT_DAY_SHORT);
+            } else if (time.length() == 10) {
+                if (time.indexOf("/") >= 0) {
+                    return parse(time, DATE_FORMAT_DAY_SLASH);
+                } else {
+                    return parse(time, DATE_FORMAT_DAY);
+                }
             } else if (time.length() == 14) {
                 return parse(time, DATE_FORMAT_SECOND_SHORT);
             } else if (time.length() == 19) {
-                return parse(time, DATE_FORMAT_SECOND_SHORT);
+                return parse(time, DATE_FORMAT_SECOND);
             } else {
                 throw new IllegalArgumentException("Parse Date Error: " + time);
             }

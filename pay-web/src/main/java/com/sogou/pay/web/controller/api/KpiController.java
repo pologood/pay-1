@@ -517,7 +517,7 @@ public class KpiController extends BaseController{
         String resultXmlStr = HttpUtil.sendPost(PayConfig.payTranferHost, "");
         if(StringUtils.isEmpty(resultXmlStr)){
             //失败,跳到错误页面
-            return setErrorPage("前置机异常",-2);
+            return setErrorPage(ResultStatus.PAY_TRANFER_REQUEST_CONNECT_ERROR, "web");
         }
         return view;
     }

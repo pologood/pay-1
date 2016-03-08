@@ -52,15 +52,6 @@ public class ControllerUtil {
         return validateResult;*/
     }
 
-    /**
-     * 检查Ru的安全性，TODO: 将安全相关都放在一起
-     *
-     * @param ru
-     * @return
-     */
-    public static boolean checkRu(String ru) {
-        return true;
-    }
 
     public static PMap<String, String> getParamPMap(HttpServletRequest request) {
         PMap<String, String> params = new PMap<>();

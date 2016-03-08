@@ -1,16 +1,16 @@
 package com.sogou.pay.web.controller.notify;
 
-import com.sogou.pay.common.exception.ServiceException;
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.manager.notify.RefundNotifyManager;
 import com.sogou.pay.manager.secure.SecureManager;
-import com.sogou.pay.web.form.notify.AliRefundNotifyParams;
-import com.sogou.pay.web.form.notify.TenRefundNotifyParams;
-import com.sogou.pay.web.utils.ControllerUtil;
-import org.dom4j.DocumentException;
+import com.sogou.pay.service.entity.PayAgencyMerchant;
+import com.sogou.pay.service.payment.PayAgencyMerchantService;
+import com.sogou.pay.thirdpay.api.PayPortal;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 /**
  * User: hujunfei Date: 2015-03-02 18:39 支付宝异步回调处理
@@ -31,53 +30,68 @@ import java.util.List;
 @RequestMapping("/notify/refund")
 public class RefundNotifyController {
 
-    private static final Logger logger = LoggerFactory.getLogger(RefundNotifyController.class);
+    private static final Logger log = LoggerFactory.getLogger(RefundNotifyController.class);
+
+    @Autowired
+    private PayPortal payPortal;
 
     @Autowired
     private SecureManager secureManager;
     @Autowired
     private RefundNotifyManager refundNotifyManager;
 
+    @Autowired
+    private PayAgencyMerchantService payAgencyMerchantService;
     /**
-     * 支付宝退款异步回调处理入口
+     * 支付宝、财付通等退款异步回调入口
      */
-    @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/refund/alipay",
+    @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/refund",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/alipay/{mid}")
+    @RequestMapping("/{agencyCode}/{merchantId}")
     @ResponseBody
-    public String handleAliNotify(@PathVariable("mid") String mid, AliRefundNotifyParams params, HttpServletRequest request) {
-        logger.info("AliPay Refund Notify Start!Params：" + JSONUtil.Bean2JSON(params));
-        // 1.验证参数
-        int merchantid;
-        try {
-            merchantid = Integer.parseInt(mid);
-        } catch (Exception e) {
-            logger.error("AliPay Refund Notify, Url Warn: " + mid, e);
-            return "success";
-        }
-        List validateResult = ControllerUtil.validateParams(params);
-        if (validateResult.size() != 0) {
-            logger.error("AliPay Refund Notify, Validate Warn: " + JSONUtil.Bean2JSON(params));
-            return "success";
-        }
+    public String handleNotifyRefund(@PathVariable("agencyCode") String agencyCode,
+                                  @PathVariable("merchantId") String merchantId,
+                                  @RequestParam Map params) {
+        log.info("[handleNotifyRefund] 处理第三方退款异步通知, " + JSONUtil.Bean2JSON(params));
+
+        String notifyType = "REFUND";
+
+        PMap requestPMap = new PMap();
+        requestPMap.put("agencyCode", agencyCode.toUpperCase());
+        requestPMap.put("notifyType", notifyType.toUpperCase());
+        requestPMap.put("data", new PMap(params));
+
+
         // 2.验证签名
-        Result secResult = secureManager.verifyThirdSign(params, merchantid);
-        if (!Result.isSuccess(secResult)) {
-            logger.error("AliPay Refund Notify, Verify Error: " + JSONUtil.Bean2JSON(params));
+        PayAgencyMerchant payAgencyMerchant = payAgencyMerchantService.selectPayAgencyMerchantById(Integer.parseInt(merchantId));
+        if (payAgencyMerchant == null) {
+            log.error("[handleNotifyAsync] 查询商户信息失败, merchantId=" + merchantId);
             return "success";
         }
-        // 3.处理第三方回调信息逻辑
-        ResultMap handleNotifyResult =
-                (ResultMap) refundNotifyManager.handleAliNotify(BeanUtil.Bean2PMap(params));
-        //第三方回调信息逻辑失败之后返回success，并且打印失败日志
-        if (!Result.isSuccess(handleNotifyResult)) {
-            logger.warn("AliPay Refund Notify," + handleNotifyResult.getMessage() + ":" + JSONUtil.Bean2JSON(params));
+        //获取签名key
+        String md5securityKey = payAgencyMerchant.getEncryptKey();
+        String publicCertFilePath = payAgencyMerchant.getPubKeypath();
+        requestPMap.put("md5securityKey", md5securityKey);
+        requestPMap.put("publicCertFilePath", publicCertFilePath);
+
+        //验证签名，提取参数
+        ResultMap result = payPortal.handleNotify(requestPMap);
+        if (result.getStatus() != ResultStatus.SUCCESS) {
+            log.error("[handleNotifyAsync] 验证签名、提取参数失败, 参数:" + requestPMap);
             return "success";
         }
-        Object retValue = handleNotifyResult.getReturnValue();
+
+        // 3.执行退款回调逻辑
+        requestPMap = result.getData();
+        result =
+                (ResultMap) refundNotifyManager.handleRefundNotify(requestPMap);
+        if (!Result.isSuccess(result)) {
+            log.warn("[handleNotifyAsync] 退款回调逻辑执行失败, " + result.getMessage() + ", 参数:" + JSONUtil.Bean2JSON(requestPMap));
+            return "success";
+        }
+        Object retValue = result.getReturnValue();
         if (retValue == null) {
-            // 无回调数据，业务处理错误，设置Error级别
-            logger.error("AliPay Refund Notify, Handle Error: " + JSONUtil.Bean2JSON(params));
+            log.error("[handleNotifyAsync] 无回调数据, 参数:" + JSONUtil.Bean2JSON(params));
             return "success";
         }
         //平账退款不通知
@@ -85,66 +99,11 @@ public class RefundNotifyController {
             return "success";
         }
         // 4.处理应用回调请求
-        logger.info("AliPay Refund Notify,The Application Of The Callback Request Start!");
+        log.info("[handleNotifyAsync] 向业务线发起退款回调开始, agencyCode=" + agencyCode + ", merchantId=" + merchantId);
         Result secureResult = secureManager.appSign(retValue);
-        handleNotifyResult.withReturn(secureResult.getReturnValue());
-        refundNotifyManager.notifyApp(handleNotifyResult);
-        logger.info("AliPay Refund Notify End!");
+        result.withReturn(secureResult.getReturnValue());
+        refundNotifyManager.notifyApp(result);
+        log.info("[handleNotifyAsync] 向业务线发起退款回调结束");
       return "success";
     }
-
-    /**
-     * 财付通退款异步回调处理入口
-     */
-    @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/refund/tenpay",
-            timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/tenpay/{mid}")
-    @ResponseBody
-    public String handleTenNotify(@PathVariable("mid") String mid, TenRefundNotifyParams params, HttpServletRequest request) throws ServiceException, IOException, DocumentException {
-        logger.info("TenPay Refund Notify Start!Params：" + JSONUtil.Bean2JSON(params));
-        // 1.验证参数
-        int merchantid;
-        try {
-            merchantid = Integer.parseInt(mid);
-        } catch (Exception e) {
-            logger.error("TenPay Refund Notify, Url Error: " + mid, e);
-            return "success";
-        }
-        List validateResult = ControllerUtil.validateParams(params);
-        if (validateResult.size() != 0) {
-            logger.error("TenPay Refund Notify, Validate Error: " + JSONUtil.Bean2JSON(params));
-            return "success";
-        }
-        // 2.验证签名
-        Result secResult = secureManager.verifyThirdSign(params, merchantid);
-        if (!Result.isSuccess(secResult)) {
-            logger.error("TenPay Refund Notify, Verify Error: " + JSONUtil.Bean2JSON(params));
-            return "success";
-        }
-        // 3.处理第三方回调信息逻辑
-        ResultMap handleNotifyResult =
-                (ResultMap) refundNotifyManager.handleTenNotify(BeanUtil.Bean2PMap(params));
-        //第三方回调信息逻辑失败之后返回success，并且打印失败日志
-        if (!Result.isSuccess(handleNotifyResult)) {
-            logger.warn("TenPay Refund Notify," + handleNotifyResult.getMessage() + ":" + JSONUtil.Bean2JSON(params));
-            return "success";
-        }
-        Object retValue = handleNotifyResult.getReturnValue();
-        if (retValue == null) {
-            // 无回调数据，业务处理错误，设置Error级别
-            logger.error("TenPay Refund Notify, Handle Error: " + JSONUtil.Bean2JSON(params));
-            return "success";
-        }
-        if (retValue.equals(9)) {
-            return "success";
-        }
-        // 4.处理应用回调请求
-        logger.info("TenPay Refund Notify,The Application Of The Callback Request Start!");
-        Result secureResult = secureManager.appSign(retValue);
-        handleNotifyResult.withReturn(secureResult.getReturnValue());
-        refundNotifyManager.notifyApp(handleNotifyResult);
-        logger.info("TenPay Refund Notify End!");
-        return "success";
-    }
-
 }

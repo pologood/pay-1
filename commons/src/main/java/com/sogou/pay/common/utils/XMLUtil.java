@@ -8,8 +8,7 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -157,6 +156,33 @@ public class XMLUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static String getString(InputStream is){
+        StringBuilder sb = new StringBuilder();
+        try{
+            String line=null;
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            while((line=br.readLine())!=null)
+                sb.append(line);
+            br.close();
+            isr.close();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return sb.toString();
+    }
+
+    public static Map XML2Map(InputStream is) {
+        String xml = getString(is);
+        return XML2Map(xml);
+    }
+
+    public static Map XML2PMap(InputStream is) {
+        String xml = getString(is);
+        return XML2PMap(xml);
     }
 
     public static Map XML2Map(String xml) {

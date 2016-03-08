@@ -51,7 +51,7 @@ public class PayPortal {
         serviceHashMap.put(AgencyType.WECHAT.name(), wechatService);
     }
 
-    public ResultMap<String> preparePay(PMap params) {
+    public ResultMap preparePay(PMap params) {
 
         ResultMap result = ResultMap.build();
 
@@ -112,12 +112,12 @@ public class PayPortal {
         return result;
     }
 
-    public ResultMap<String> refundOrder(PMap params) {
+    public ResultMap refundOrder(PMap params) {
         ResultMap result = ResultMap.build();
 
         //1.验证共同参数是否为空
         if (StringUtil.isEmpty(params.getString("agencyCode"),
-                params.getString("md5securityKey"),params.getString("refundAmount"),
+                params.getString("md5securityKey"), params.getString("refundAmount"),
                 params.getString("totalAmount"))) {
             result.withError(ResultStatus.THIRD_REFUND_PARAM_ERROR);
             return result;
@@ -156,7 +156,7 @@ public class PayPortal {
     }
 
 
-    public ResultMap<String> queryOrder(PMap params) {
+    public ResultMap queryOrder(PMap params) {
         ResultMap result = ResultMap.build();
 
         if (StringUtil.isEmpty(params.getString("agencyCode"), params.getString("md5securityKey"))) {
@@ -185,7 +185,7 @@ public class PayPortal {
 
     }
 
-    public ResultMap<String> queryRefund(PMap params) {
+    public ResultMap queryRefund(PMap params) {
         ResultMap result = ResultMap.build();
 
         //1.验证共同参数是否为空
@@ -214,5 +214,85 @@ public class PayPortal {
         return result;
     }
 
+    public ResultMap getReqIDFromNotify(PMap params) {
+        ResultMap result = ResultMap.build();
+        String agencyCode = params.getString("agencyCode");
+        ThirdpayService thirdpayService = serviceHashMap.get(agencyCode);
+        String notifyType = params.getString("notifyType");
+        try {
+            switch (notifyType) {
+                case "WEB_SYNC":
+                    result = thirdpayService.getReqIDFromNotifyWebSync(params.getPMap("data"));
+                    break;
+                case "WEB_ASYNC":
+                    result = thirdpayService.getReqIDFromNotifyWebAsync(params.getPMap("data"));
+                    break;
+                case "WAP_SYNC":
+                    result = thirdpayService.getReqIDFromNotifyWapSync(params.getPMap("data"));
+                    break;
+                case "WAP_ASYNC":
+                    result = thirdpayService.getReqIDFromNotifyWapAsync(params.getPMap("data"));
+                    break;
+                case "SDK_ASYNC":
+                    result = thirdpayService.getReqIDFromNotifySDKAsync(params.getPMap("data"));
+                    break;
+                case "REFUND":
+                    result = thirdpayService.getReqIDFromNotifyRefund(params.getPMap("data"));
+                    break;
+                case "TRANSFER":
+                    result = thirdpayService.getReqIDFromNotifyTransfer(params.getPMap("data"));
+                    break;
+            }
+        } catch (ServiceException se) {
+            log.error("[getReqIDFromNotify] 调用第三方异常", se + "参数:" + JSONUtil.Bean2JSON(params));
+            return result.build(se.getStatus());
+        } catch (Exception e) {
+            log.error("[getReqIDFromNotify] 调用第三方异常", e + "参数:" + JSONUtil.Bean2JSON(params));
+            return result.build(ResultStatus.THIRD_QUERY_REFUND_ERROR);
+        }
+        log.info("[getReqIDFromNotify] 调用第三方结束, 参数:" + JSONUtil.Bean2JSON(params) + "返回:" + JSONUtil.Bean2JSON(result));
+        return result;
+
+    }
+
+    public ResultMap handleNotify(PMap params) {
+        ResultMap result = ResultMap.build();
+        String agencyCode = params.getString("agencyCode");
+        ThirdpayService thirdpayService = serviceHashMap.get(agencyCode);
+        String notifyType = params.getString("notifyType");
+        try {
+            switch (notifyType) {
+                case "WEB_SYNC":
+                    result = thirdpayService.handleNotifyWebSync(params);
+                    break;
+                case "WEB_ASYNC":
+                    result = thirdpayService.handleNotifyWebAsync(params);
+                    break;
+                case "WAP_SYNC":
+                    result = thirdpayService.handleNotifyWapSync(params);
+                    break;
+                case "WAP_ASYNC":
+                    result = thirdpayService.handleNotifyWapAsync(params);
+                    break;
+                case "SDK_ASYNC":
+                    result = thirdpayService.handleNotifySDKAsync(params);
+                    break;
+                case "REFUND":
+                    result = thirdpayService.handleNotifyRefund(params);
+                    break;
+                case "TRANSFER":
+                    result = thirdpayService.handleNotifyTransfer(params);
+                    break;
+            }
+        } catch (ServiceException se) {
+            log.error("[handleNotify] 调用第三方异常", se + "参数:" + JSONUtil.Bean2JSON(params));
+            return result.build(se.getStatus());
+        } catch (Exception e) {
+            log.error("[handleNotify] 调用第三方异常", e + "参数:" + JSONUtil.Bean2JSON(params));
+            return result.build(ResultStatus.THIRD_QUERY_REFUND_ERROR);
+        }
+        log.info("[handleNotify] 调用第三方结束, 参数:" + JSONUtil.Bean2JSON(params) + "返回:" + JSONUtil.Bean2JSON(result));
+        return result;
+    }
 
 }

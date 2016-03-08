@@ -461,7 +461,7 @@ public class BankPayApiImpl implements BankPayApi {
         //2.获取md5签名
         String md5securityKey = params.getString("md5securityKey");
         String
-                sign = SecretKeyUtil.tenMd5sign(reqParam, md5securityKey, "GBK");
+                sign = SecretKeyUtil.tenMD5Sign(reqParam, md5securityKey, "GBK");
         if (sign == null) {
             log.error("md5签名异常，参数:" + reqParam);
             return ResultMap.build(ResultStatus.BANK_PAY_SIGN_ERROR);

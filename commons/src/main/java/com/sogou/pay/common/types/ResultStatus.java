@@ -14,6 +14,7 @@ public enum ResultStatus {
     SYSTEM_ERROR(1000, "系统错误"),
     SYSTEM_DB_ERROR(1001, "数据库系统错误"),
     SIGNATURE_ERROR(1002, "签名错误"),
+    INTERFACE_NOT_IMPLEMENTED(1003, "接口未实现"),
 
     //-------------------支付请求错误码--------2000至2999----------
     PAY_PARAM_ERROR(2000, "缺少必选参数或存在非法参数"),
@@ -40,8 +41,11 @@ public enum ResultStatus {
     THIRD_PAY_CHANNEL_NOT_EXIST(2021, "该支付渠道不存在"),
 
     //-------------------支付回调错误码--------3000至3999-----------
-    THIRD_NOTIFY_SIGN_ERROR(3000, "回调签名错误"),
-    THIRD_NOTIFY_PARAM_ERROR(3001, "回调参数异常"),
+    THIRD_NOTIFY_SYNC_SIGN_ERROR(3000, "回调签名错误"),
+    THIRD_NOTIFY_SYNC_PARAM_ERROR(3001, "回调参数异常"),
+    THIRD_NOTIFY_REFUND_PARAM_ERROR(4009, "第三方退款回调参数异常"),
+    THIRD_NOTIFY_REFUND_SIGN_ERROR(4010, "第三方退款回调签名错误"),
+    THIRD_NOTIFY_REFUND_ERROR(4011, "第三方退款回调错误"),
     REPAIR_ORDER_ERROR(3002, "补单调用失败"),
     INSERT_RES_DETAIL_ERROR(3003, "插入回调流水错误"),
     RES_DETAIL_ALREADY_EXIST(3004, "回调流水已经存在"),
@@ -57,10 +61,6 @@ public enum ResultStatus {
     REFUND_ORDER_NOT_PAY(4006, "此订单未支付"),
     REFUND_REFUND_PROCESSING(4007, "已有退款单在执行中"),
     REFUND_REFUND_ALREADY_DONE(4008, "此订单已经退款成功"),
-
-    THIRD_REFUND_NOTIFY_PARAM_ERROR(4009, "第三方退款回调参数异常"),
-    THIRD_REFUND_NOTIFY_SIGN_ERROR(4010, "第三方退款回调签名错误"),
-    THIRD_REFUND_NOTIFY_ERROR(4011, "第三方退款回调错误"),
 
     THIRD_REFUND_ERROR(4012, "第三方退款失败"),
     THIRD_REFUND_PARAM_ERROR(4013, "第三方退款请求缺少必选参数或存在非法参数"),

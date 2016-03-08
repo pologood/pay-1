@@ -130,7 +130,7 @@ public class PayController extends BaseController{
         if (validateResult.size() != 0) {
             //验证参数失败，调到错误页面
             logger.error("【支付请求】" + validateResult.toString().substring(1,validateResult.toString().length()-1));
-            return setErrorPage(ResultStatus.PAY_PARAM_ERROR.getMessage(), ResultStatus.PAY_PARAM_ERROR.getCode());
+            return setErrorPage(ResultStatus.PAY_PARAM_ERROR, "web");
         }
         //转义商品名称与描述
         paramMap = escapeSequence(paramMap);
@@ -139,7 +139,7 @@ public class PayController extends BaseController{
         Result signResult = secureManager.verifyAppSign(params);
         if(!Result.isSuccess(signResult)){
           //获取业务平台签名失败,跳到错误页面
-          return setErrorPage(signResult.getStatus().getMessage(), signResult.getStatus().getCode());
+          return setErrorPage(signResult.getStatus(),"web");
         }
         logger.info("【支付请求】通过验证签名！");
         /**3.生成支付单信息**/
@@ -147,8 +147,7 @@ public class PayController extends BaseController{
         ResultMap orderResult = payManager.selectPayOrderInfoByOrderId(params.getOrderId(),params.getAppId());
         if(!Result.isSuccess(orderResult)){
             //系统错误或者该支付单已经支付完成,跳到错误页面
-            return setErrorPage(orderResult.getStatus().getMessage(), 
-                                orderResult.getStatus().getCode());
+            return setErrorPage(orderResult.getStatus(), "web");
         }
         String payId = null;
         if(null != orderResult.getReturnValue()){
@@ -157,8 +156,7 @@ public class PayController extends BaseController{
             ResultMap payOrderResult = payManager.insertPayOrder(paramMap);
             if(!Result.isSuccess(payOrderResult)){
                 //插入支付单失败,跳到错误页面
-                return setErrorPage(payOrderResult.getStatus().getMessage(), 
-                        payOrderResult.getStatus().getCode());
+                return setErrorPage(payOrderResult.getStatus(), "web");
             }
             payId = payOrderResult.getReturnValue().toString();
         }
@@ -170,7 +168,7 @@ public class PayController extends BaseController{
                     Integer.parseInt(params.getAppId()), Integer.parseInt(params.getAccessPlatform()));
             if(!Result.isSuccess(resultBean)){
                 //获得支付渠道失败
-                return setErrorPage(resultBean.getStatus().getMessage(),resultBean.getStatus().getCode());
+                return setErrorPage(resultBean.getStatus(), "web");
             }
             //获得网银支付渠道、第三方支付渠道、扫码支付渠道
             ChannelAdaptModel adaptModel = resultBean.getValue();
@@ -183,11 +181,11 @@ public class PayController extends BaseController{
             //B2B支付列表
             List<CommonAdaptModel> b2bList = adaptModel.getB2bList();
             if(commonPayList.isEmpty() && payOrgList.isEmpty() && scanCodeList.isEmpty() && b2bList.isEmpty())
-                return setErrorPage(ResultStatus.PAY_PARAM_ERROR.getMessage(), ResultStatus.PAY_PARAM_ERROR.getCode());
+                return setErrorPage(ResultStatus.PAY_PARAM_ERROR, "web");
             //获得收款方信息
             Result<App> appResult = appManager.selectAppInfo(Integer.parseInt(params.getAppId()));
             if(!Result.isSuccess(appResult)){
-                return setErrorPage(appResult.getStatus().getMessage(), appResult.getStatus().getCode());
+                return setErrorPage(appResult.getStatus(), "web");
             }
             //支付流水号
             String payDetailId = "";
@@ -199,7 +197,7 @@ public class PayController extends BaseController{
                 paramMap.put("channelCode",Constant.WECHAT);
                 ResultMap payResult = this.commonPay(paramMap);
                 if(!Result.isSuccess(payResult)){
-                    return setErrorPage(payResult.getStatus().getMessage(), payResult.getStatus().getCode());
+                    return setErrorPage(payResult.getStatus(), "web");
                 }
                 payDetailId = payResult.getData().get("payDetailId").toString();
                 //向第三方支付机构发送支付请求
@@ -209,7 +207,7 @@ public class PayController extends BaseController{
                     //将weCahtCode缓存到Redis中
                     redisUtils.setWithinSeconds(payId+UNDERLINE+Constant.WECHAT, qrCode,SECONDS);
                 } catch (Exception e) {
-                    return setErrorPage(ResultStatus.SYSTEM_ERROR.getMessage(), ResultStatus.SYSTEM_ERROR.getCode());
+                    return setErrorPage(ResultStatus.SYSTEM_ERROR, "web");
                 }
             }
             //组装需要传递的参数
@@ -240,7 +238,7 @@ public class PayController extends BaseController{
         ResultMap payResult = this.commonPay(paramMap);
         if(!Result.isSuccess(payResult)){
             //支付业务失败,跳到错误页面
-            return setErrorPage(payResult.getStatus().getMessage(), payResult.getStatus().getCode());
+            return setErrorPage(payResult.getStatus(), "web");
         }
         //向第三方支付机构发送支付请求
         view.addObject("payUrl",payResult.getReturnValue());
@@ -270,13 +268,13 @@ public class PayController extends BaseController{
         ResultMap orderResult = payManager.checkPayOrderInfo(paramMap);
         if(!ResultMap.isSuccess(orderResult)){
             //校验失败
-            return setErrorPage(orderResult.getStatus().getMessage(), orderResult.getStatus().getCode());
+            return setErrorPage(orderResult.getStatus(), "web");
         }
         //业务处理
         ResultMap payResult = this.commonPay(paramMap);
         if(!Result.isSuccess(payResult)){
             //支付业务失败,跳到错误页面
-            return setErrorPage(payResult.getStatus().getMessage(), payResult.getStatus().getCode());
+            return setErrorPage(payResult.getStatus(), "web");
         }
         //向第三方支付机构发送支付请求
         view.addObject("payUrl",payResult.getReturnValue());
@@ -525,7 +523,7 @@ public class PayController extends BaseController{
 
     @RequestMapping("/pay/getSignData")
     @ResponseBody
-    public String signData(@RequestParam Map<String, String> paramMap, HttpServletRequest request){
+    public String signData(@RequestParam Map<String, String> paramMap){
         //Map paramMap = convertToMap(params);
         Result<App> appresult = appManager.selectAppInfo(Integer.parseInt(paramMap.get("appId")));
         App app = appresult.getReturnValue();

@@ -491,7 +491,7 @@ public class PayApiTest extends BaseTest {
         String md5securityKey = "2idEk034kdui3WESr8Ef8wW9edfQw3s2"; //秘钥
         String sign =
                 SecretKeyUtil
-                        .tenMd5sign(payMap, md5securityKey, WechatPayUtil.INPUT_CHARSET);
+                        .tenMD5Sign(payMap, md5securityKey, WechatPayUtil.INPUT_CHARSET);
         if (sign == null) {
             System.out.print("isConnect" + sign);
         }
@@ -519,7 +519,7 @@ public class PayApiTest extends BaseTest {
         //4.签名校验
         boolean
                 signMd5 =
-                SecretKeyUtil.tenCheckMd5sign(payPMap, md5securityKey, payPMap.getString("sign"),
+                SecretKeyUtil.tenMD5CheckSign(payPMap, md5securityKey, payPMap.getString("sign"),
                         WechatPayUtil.INPUT_CHARSET);
         if (!signMd5) {
         }

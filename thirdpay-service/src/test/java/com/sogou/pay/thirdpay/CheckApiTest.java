@@ -1,7 +1,5 @@
 package com.sogou.pay.thirdpay;
 
-import com.alibaba.fastjson.JSON;
-import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
@@ -132,7 +130,7 @@ public class CheckApiTest  extends BaseTest{
             requestPMap.put("accountLogList",accountLogListContent);
 
             String key = "xxxxx";
-            System.out.println( SecretKeyUtil.aliMd5sign(requestPMap, key, "utf-8"));
+            System.out.println( SecretKeyUtil.aliMD5Sign(requestPMap, key, "utf-8"));
         }catch(Exception e){
             e.printStackTrace();
         }

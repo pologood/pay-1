@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class ResultMap<T> extends Result<T> {
 
-    private Map<String, Object> data = new PMap<>();
+    private PMap<String, Object> data = new PMap<>();
 
     protected ResultMap(ResultStatus status, String message) {
         super(status, message);
@@ -37,7 +37,7 @@ public class ResultMap<T> extends Result<T> {
     }
 
     @Override
-    public Map<String, Object> getData() {
+    public PMap<String, Object> getData() {
         return data;
     }
 }

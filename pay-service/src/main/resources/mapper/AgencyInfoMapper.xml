@@ -16,6 +16,8 @@
         <result property="queryRefundUrl" column="query_refund_url"/>
         <result property="downloadUrl" column="download_url"/>
         <result property="sendPhoneUrl" column="send_phone_url"/>
+        <result property="pageBackUrl" column="page_back_url"/>
+        <result property="notifyBackUrl" column="notify_back_url"/>
         <result column="createTime" property="create_time"/>
         <result column="modifyTime" property="modify_time"/>
     </resultMap>

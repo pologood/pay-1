@@ -30,7 +30,7 @@ public class RefundControllerTest extends BaseTest {
         params.setOrderId("OD20160121155435873");
         //params.setRefundAmount("");
         Map map = BeanUtil.Bean2Map(params);
-        map.put("sign", JSONObject.parse(controller.signData(map, null)));
+        map.put("sign", JSONObject.parse(controller.signData(map)));
         testGet(url, map);
     }
 }

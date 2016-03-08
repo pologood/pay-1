@@ -98,7 +98,7 @@ public class SecureManagerImpl implements SecureManager {
 
             PayAgencyMerchant payAgencyMerchant = payAgencyMerchantService.selectPayAgencyMerchantById(merchantId);
             if (payAgencyMerchant == null) {
-                return result.withError(ResultStatus.THIRD_REFUND_NOTIFY_PARAM_ERROR);
+                return result.withError(ResultStatus.THIRD_NOTIFY_REFUND_PARAM_ERROR);
             }
 
             String key = payAgencyMerchant.getEncryptKey();
@@ -113,7 +113,7 @@ public class SecureManagerImpl implements SecureManager {
                 default:
                     verifyResult = false;
             }
-            return verifyResult ? result : result.withError(ResultStatus.THIRD_REFUND_NOTIFY_SIGN_ERROR);
+            return verifyResult ? result : result.withError(ResultStatus.THIRD_NOTIFY_REFUND_SIGN_ERROR);
         } catch (Exception e) {
             logger.error("Verify Third Sign Error: " + params, e);
             return ResultMap.build(ResultStatus.REFUND_PARAM_ERROR);
@@ -128,7 +128,7 @@ public class SecureManagerImpl implements SecureManager {
             PayAgencyMerchant payAgencyMerchant = payAgencyMerchantService.selectByAgencyAndMerchant(agencyCode, partner);
             if (payAgencyMerchant == null) {
                 logger.error(String.format("No payAgencyMerchant for: %s|agencyCode: %s|partner: %s", agencyCode, partner));
-                return result.withError(ResultStatus.THIRD_NOTIFY_PARAM_ERROR);
+                return result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
             }
 
             String key = payAgencyMerchant.getEncryptKey();
@@ -155,10 +155,10 @@ public class SecureManagerImpl implements SecureManager {
                 default:
                     verifyResult = false;
             }
-            return verifyResult ? result : result.withError(ResultStatus.THIRD_NOTIFY_SIGN_ERROR);
+            return verifyResult ? result : result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
         } catch (Exception e) {
             logger.error("Verify Third Sign Error: " + params, e);
-            return ResultMap.build(ResultStatus.THIRD_NOTIFY_PARAM_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
         }
     }
 
@@ -167,14 +167,14 @@ public class SecureManagerImpl implements SecureManager {
         String sign = (String) newMap.remove("sign");
         String signType = (String) newMap.remove("sign_type");
         
-        return SecretKeyUtil.aliCheckMd5sign(newMap, key, sign, CommonConstant.DEFAULT_CHARSET);
+        return SecretKeyUtil.aliMD5CheckSign(newMap, key, sign, CommonConstant.DEFAULT_CHARSET);
     }
     private boolean verifyThirdAliSdkSign(Map paramMap,String publicCertFilePath){
         
         PMap newMap = new PMap(paramMap);
         String sign = (String) newMap.remove("sign");
         newMap.remove("sign_type");
-        return SecretKeyUtil.aliCheckRSAsign(newMap, sign, publicCertFilePath);
+        return SecretKeyUtil.aliRSACheckSign(newMap, sign, publicCertFilePath);
     }
     private boolean verifyThirdAliWapSign(Map paramMap, String key) {
         PMap newMap = new PMap(paramMap);
@@ -188,14 +188,14 @@ public class SecureManagerImpl implements SecureManager {
         String sign = (String) newMap.remove("sign");
         String signType = (String) newMap.get("sign_type");
 
-        return SecretKeyUtil.tenCheckMd5sign(newMap, key, sign, CommonConstant.DEFAULT_CHARSET);
+        return SecretKeyUtil.tenMD5CheckSign(newMap, key, sign, CommonConstant.DEFAULT_CHARSET);
     }
 
     private boolean verifyThirdBillSign(Map paramMap, String pub_keypath) {
         PMap newMap = new PMap(paramMap);
         String sign = (String) newMap.remove("signMsg");
 
-        return SecretKeyUtil.billCheckRSAsign(newMap, pub_keypath, sign);
+        return SecretKeyUtil.billRSACheckSign(newMap, pub_keypath, sign);
     }
     
     private String packParams(Map paramMap, String secret) {

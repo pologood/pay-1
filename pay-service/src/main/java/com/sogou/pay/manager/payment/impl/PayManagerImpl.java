@@ -518,9 +518,9 @@ public class PayManagerImpl implements PayManager {
                 payGateMap.put("serverNotifyUrl", ResourceBundle.getBundle("config").getString("alipay.sdk.notify.url"));
             } else {
                 //异步回调地址
-                payGateMap.put("serverNotifyUrl", payAgencyMerchant.getNotifyBackUrl());
+                payGateMap.put("serverNotifyUrl", agencyInfo.getNotifyBackUrl());
                 //同步页面回调地址
-                payGateMap.put("pageNotifyUrl", payAgencyMerchant.getPageBackUrl());
+                payGateMap.put("pageNotifyUrl", agencyInfo.getPageBackUrl());
             }
             //商品名称
             payGateMap.put("subject", params.getString("productName"));

@@ -1,14 +1,11 @@
 package com.sogou.pay.thirdpay;
 
-import com.alibaba.fastjson.JSON;
-import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
 //import com.sogou.pay.thirdpay.biz.model.TenpayCheckResponse;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
 import com.sogou.pay.thirdpay.biz.utils.TenPayHttpClient;
 import com.sogou.pay.thirdpay.biz.utils.TenPayUtil;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by qibaichao on 2015/3/6.
@@ -67,7 +64,7 @@ public class TenpayCheckServiceTest extends BaseTest {
         sb.append("mchtype=0");
 
         //2.获取md5签名
-        String sign = SecretKeyUtil.tenMd5sign(sb.toString(), key, TenPayUtil.INPUT_CHARSET);
+        String sign = SecretKeyUtil.tenMD5Sign(sb.toString(), key, TenPayUtil.INPUT_CHARSET);
 
         //3.组装访问url
         String requestUrl = TenPayUtil.DOWNLOAD_GATEWAY + "?" + sb.toString() + "&sign=" + sign;

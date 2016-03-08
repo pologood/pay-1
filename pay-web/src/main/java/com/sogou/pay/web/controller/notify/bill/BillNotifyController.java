@@ -110,7 +110,7 @@ public class BillNotifyController extends BaseController {
     @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/bill/pay/webSync",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
     @RequestMapping(value = "/webSync")
-    public ModelAndView aliWebSyncNotify(HttpServletRequest request) throws ServiceException, IOException {
+    public ModelAndView billWebSyncNotify(HttpServletRequest request) throws ServiceException, IOException {
         ModelAndView view = new ModelAndView("notifySync");
         /******1. 签名校验*******/
         PMap<String, String> pMap = ControllerUtil.getParamPMap(request);

@@ -32,11 +32,8 @@ import com.sogou.pay.thirdpay.biz.utils.billpay.BillMD5Util;
 public class SecretKeyUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretKeyUtil.class);
-
-
     private static final String ALGORITHM = "RSA";
     private static final String SIGN_ALGORITHMS = "SHA1WithRSA";
-    private static final String ALIPAY_PUB_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCnxj/9qwVfgoUh/y2W89L6BkRAFljhNhgPdyPuBV64bfQNN1PjbCzkIM6qRdKBoLPXmKKMiFYnkd6rAoprih3/PrQEB/VsW8OoM8fxn67UDYuyBTqA23MML9q1+ilIZwBC2AQ2UBVOrFXfFl75p6/B5KsiNG9zpgmLCUYuLkxpLQIDAQAB";
 
 
     /**
@@ -114,7 +111,7 @@ public class SecretKeyUtil {
     /**
      * 支付宝客户端支付--RSA加密
      */
-    public static String aliClientRsaSign(PMap<String, String> contextMap, String privateKey, String charset) {
+    public static String aliRSASign(PMap<String, String> contextMap, String privateKey, String charset) {
         try {
             // 组装签名报文
             String signSource = buildSignSource(contextMap, true);
@@ -148,7 +145,7 @@ public class SecretKeyUtil {
      * @param publicKey 支付宝公钥
      * @return 布尔值
      */
-    public static boolean aliClientRsaCheck(String content, String sign, String publicKey) {
+    public static boolean aliRSACheckSign(String content, String sign, String publicKey) {
         try {
             KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
             byte[] encodedKey = Base64.decode(publicKey);
@@ -173,15 +170,16 @@ public class SecretKeyUtil {
     /**
      * 支付宝支付MD5签名 contextMap 签名参数 md5securityKey MD5密钥 charset 参数编码
      */
-    public static String aliMd5sign(PMap<String, String> contextMap,
-                                       String md5securityKey, String charset) {
+    public static String aliMD5Sign(PMap<String, String> contextMap,
+                                    String md5securityKey, String charset) {
         // 去掉map中的空值
         PMap<String, String> signMap = new PMap<String, String>();
         String value = "";
         for (String Key : contextMap.keySet()) {
             value = contextMap.get(Key);
             if (value == null || value.equals("")
-                    || Key.equalsIgnoreCase("sign") || Key.equalsIgnoreCase("sign_type")
+                    || Key.equalsIgnoreCase("sign")
+                    || Key.equalsIgnoreCase("sign_type")
                     || Key.equalsIgnoreCase("key")) {
                 continue;
             }
@@ -202,7 +200,7 @@ public class SecretKeyUtil {
     /**
      * 支付宝MD5验证签名 contextMap 验证参数 md5securityKey MD5密钥 returnSign 返回参数中的签名 charset 签名编码
      */
-    public static boolean aliCheckMd5sign(PMap<String, String> contextMap,
+    public static boolean aliMD5CheckSign(PMap<String, String> contextMap,
                                           String md5securityKey, String returnSign,
                                           String charset) {
         ResultMap result = ResultMap.build();
@@ -213,6 +211,7 @@ public class SecretKeyUtil {
             value = contextMap.get(Key);
             if (value == null || value.equals("")
                     || Key.equalsIgnoreCase("sign")
+                    || Key.equalsIgnoreCase("sign_type")
                     || Key.equalsIgnoreCase("key")) {
                 continue;
             }
@@ -231,10 +230,10 @@ public class SecretKeyUtil {
     }
 
     /**
-     * 支付宝RSA验证签名 contextMap  returnSign 返回参数中的签名  publicCertFilePath 支付宝公钥路径
+     * 支付宝RSA验证签名 contextMap  returnSign 返回参数中的签名  publicKey 支付宝公钥
      */
-    public static boolean aliCheckRSAsign(PMap<String, String> contextMap, String sign,
-                                          String publicCertFilePath) {
+    public static boolean aliRSACheckSign(PMap<String, String> contextMap, String sign,
+                                          String publicKey) {
         // 去掉map中的空值
         PMap<String, String> signMap = new PMap<String, String>();
         String value = "";
@@ -242,6 +241,7 @@ public class SecretKeyUtil {
             value = contextMap.get(Key);
             if (value == null || value.equals("")
                     || Key.equalsIgnoreCase("sign")
+                    || Key.equalsIgnoreCase("sign_type")
                     || Key.equalsIgnoreCase("key")) {
                 continue;
             }
@@ -250,7 +250,7 @@ public class SecretKeyUtil {
         // 组装签名报文
         String content = buildSignSource(signMap, true);
 
-        return aliClientRsaCheck(content, sign, ALIPAY_PUB_KEY);
+        return aliRSACheckSign(content, sign, publicKey);
     }
 
     /**
@@ -280,8 +280,8 @@ public class SecretKeyUtil {
     /**
      * 财付通、微信支付MD5签名 contextMap 签名参数 md5securityKey MD5密钥 charset 参数编码
      */
-    public static String tenMd5sign(PMap<String, String> contextMap,
-                                       String md5securityKey, String charset) {
+    public static String tenMD5Sign(PMap<String, String> contextMap,
+                                    String md5securityKey, String charset) {
         // 去掉map中的空值
         PMap<String, String> signMap = new PMap<String, String>();
         String value = "";
@@ -294,10 +294,10 @@ public class SecretKeyUtil {
         }
         // 组装签名报文
         String sb = buildSignSource(signMap, true);
-        return tenMd5sign(sb, md5securityKey, charset);
+        return tenMD5Sign(sb, md5securityKey, charset);
     }
 
-    public static String tenMd5sign(String context,
+    public static String tenMD5Sign(String context,
                                     String md5securityKey, String charset) {
         context = context + "&key=" + md5securityKey;
         String signString = null;
@@ -312,7 +312,7 @@ public class SecretKeyUtil {
     /**
      * 财付通、微信 MD5验证签名 contextMap 验证参数 md5securityKey MD5密钥 returnSign 返回参数中的签名 charset 签名编码
      */
-    public static boolean tenCheckMd5sign(PMap<String, String> contextMap,
+    public static boolean tenMD5CheckSign(PMap<String, String> contextMap,
                                           String md5securityKey, String returnSign,
                                           String charset) {
         ResultMap result = ResultMap.build();
@@ -342,8 +342,8 @@ public class SecretKeyUtil {
     }
 
 
-    public static boolean billCheckRSAsign(PMap<String, String> signMap,
-                                            String pubKeyPath, String sign){
+    public static boolean billRSACheckSign(PMap<String, String> signMap,
+                                           String pubKeyPath, String sign){
         String sb = buildSignSource(signMap,false);
         Pkipair pair = new Pkipair();
         boolean isTrue;
@@ -360,7 +360,7 @@ public class SecretKeyUtil {
     /**
      * 快钱获取签名
      */
-    public static String billSignMsg(PMap signMsgMap, String path) {
+    public static String billRSASign(PMap signMsgMap, String path) {
 
         String signMsg = buildSignSource(signMsgMap,false);
         String base64 = "";
@@ -394,7 +394,7 @@ public class SecretKeyUtil {
     /**
      * 快钱支付MD5签名 contextMap 签名参数 charset 参数编码
      */
-    public static ResultMap billMd5sign(PMap<String, String> contextMap, String charset) {
+    public static ResultMap billMD5Sign(PMap<String, String> contextMap, String charset) {
         ResultMap result = ResultMap.build();
         // 去掉map中的空值
         PMap<String, String> signMap = new PMap<String, String>();

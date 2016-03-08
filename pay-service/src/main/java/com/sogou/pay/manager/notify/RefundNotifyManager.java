@@ -16,15 +16,8 @@ public interface RefundNotifyManager {
      * @param params 支付宝回调参数
      * @return 处理结果
      */
-    public Result handleAliNotify(PMap<String, Object> params);
+    public Result handleRefundNotify(PMap<String, Object> params);
 
-    /**
-     * 处理财付通回调结果
-     *
-     * @param params 财付通回调参数
-     * @return 处理结果
-     */
-    public Result handleTenNotify(PMap<String, Object> params);
 
     /**
      * 处理回调应用请求，封装发送至队列

@@ -72,6 +72,13 @@ public class AgencyInfo implements Serializable{
      */
     private String sendPhoneUrl;
 
+    //支付之后页面回调地址
+    private String pageBackUrl;
+
+    //支付之后服务后端回调地址
+    private String notifyBackUrl;
+
+
     /**
      * 创建时间
      */
@@ -177,6 +184,22 @@ public class AgencyInfo implements Serializable{
 
     public void setDownloadUrl(String downloadUrl) {
         this.downloadUrl = downloadUrl;
+    }
+
+    public String getPageBackUrl() {
+        return pageBackUrl;
+    }
+
+    public void setPageBackUrl(String pageBackUrl) {
+        this.pageBackUrl = pageBackUrl;
+    }
+
+    public String getNotifyBackUrl() {
+        return notifyBackUrl;
+    }
+
+    public void setNotifyBackUrl(String notifyBackUrl) {
+        this.notifyBackUrl = notifyBackUrl;
     }
 
     public Date getCreateTime() {

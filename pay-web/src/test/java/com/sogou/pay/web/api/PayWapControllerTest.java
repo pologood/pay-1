@@ -40,7 +40,7 @@ public class PayWapControllerTest extends BaseTest {
         params.setBankCardType("");
         Map map = BeanUtil.Bean2Map(params);
 
-        map.put("sign", JSONObject.parse(controller.signData(map, null)));
+        map.put("sign", JSONObject.parse(controller.signData(map)));
         testGet(url, map);
     }
 

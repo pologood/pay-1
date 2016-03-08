@@ -40,11 +40,6 @@ public class PayAgencyMerchant implements Serializable{
     //本地私钥证书路径
     private String privateKeypath;
 
-    //支付之后页面回调地址
-    private String pageBackUrl;
-
-    //支付之后服务后端回调地址
-    private String notifyBackUrl;
 
     //是否启用 (0:未启用  1:已启用)
     private Integer isUsed;
@@ -117,22 +112,6 @@ public class PayAgencyMerchant implements Serializable{
 
     public void setPrivateKeypath(String privateKeypath) {
         this.privateKeypath = privateKeypath;
-    }
-
-    public String getPageBackUrl() {
-        return pageBackUrl;
-    }
-
-    public void setPageBackUrl(String pageBackUrl) {
-        this.pageBackUrl = pageBackUrl;
-    }
-
-    public String getNotifyBackUrl() {
-        return notifyBackUrl;
-    }
-
-    public void setNotifyBackUrl(String notifyBackUrl) {
-        this.notifyBackUrl = notifyBackUrl;
     }
 
     public Integer getIsUsed() {

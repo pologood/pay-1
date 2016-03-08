@@ -100,7 +100,7 @@ public class TenpayService implements ThirdpayService {
         //5.获取md5签名
         String md5securityKey = params.getString("md5securityKey");
         String
-                sign = SecretKeyUtil.tenMd5sign(requestPMap, md5securityKey, TenpayService.INPUT_CHARSET);
+                sign = SecretKeyUtil.tenMD5Sign(requestPMap, md5securityKey, TenpayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[preparePayInfo] 财付通订单支付签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
@@ -153,7 +153,7 @@ public class TenpayService implements ThirdpayService {
         }
         //2.获取md5签名
         String sign = SecretKeyUtil
-                .tenMd5sign(requestPMap, params.getString("md5securityKey"), TenpayService.INPUT_CHARSET);
+                .tenMD5Sign(requestPMap, params.getString("md5securityKey"), TenpayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[preparePayInfoMobile] 财付通订单支付签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
@@ -233,7 +233,7 @@ public class TenpayService implements ThirdpayService {
         }
         //2.获取md5签名
         String sign = SecretKeyUtil
-                .tenMd5sign(requestPMap, params.getString("md5securityKey"), TenpayService.INPUT_CHARSET);
+                .tenMD5Sign(requestPMap, params.getString("md5securityKey"), TenpayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[queryOrder] 财付通订单查询签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_QUERY_SIGN_ERROR);
@@ -265,7 +265,7 @@ public class TenpayService implements ThirdpayService {
         boolean
                 signMd5 =
                 SecretKeyUtil
-                        .tenCheckMd5sign(tenpayMap, params.getString("md5securityKey"),
+                        .tenMD5CheckSign(tenpayMap, params.getString("md5securityKey"),
                                 tenpayMap.getString("sign"), TenpayService.INPUT_CHARSET);
         if (!signMd5) {
             log.error("[queryOrder] 财付通订单查询返回参数签名错误, 参数:" + params + ", 返回:" + tenpayMap);
@@ -336,7 +336,7 @@ public class TenpayService implements ThirdpayService {
         //2.获得加密密钥, 进行参数加密
         String md5securityKey = params.getString("md5securityKey");         // 加密秘钥
         String sign =
-                SecretKeyUtil.tenMd5sign(requestPMap, md5securityKey, TenpayService.INPUT_CHARSET);
+                SecretKeyUtil.tenMD5Sign(requestPMap, md5securityKey, TenpayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[refundOrder] 财付通退款签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_REFUND_SIGN_ERROR);
@@ -345,8 +345,8 @@ public class TenpayService implements ThirdpayService {
         // 3.获取支付机构请求报文处理配置
         TenpayHttpClient httpClient = new TenpayHttpClient();
         PMap tenpayMap;
-        httpClient.setCertFile("e:" + params.getString("privateCertFilePath"),
-                certPasswd, "e:" + params.getString("publicCertFilePath"));
+        httpClient.setCertFile(params.getString("privateCertFilePath"),
+                certPasswd, params.getString("publicCertFilePath"));
         Result httpResponse = httpClient.doGet(params.getString("refundUrl"), requestPMap);
         if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
             log.error("[refundOrder] 财付通退款HTTP请求失败, 参数:" + requestPMap);
@@ -368,7 +368,7 @@ public class TenpayService implements ThirdpayService {
         boolean
                 signMd5 =
                 SecretKeyUtil
-                        .tenCheckMd5sign(tenpayMap, md5securityKey, tenpayMap.getString("sign"),
+                        .tenMD5CheckSign(tenpayMap, md5securityKey, tenpayMap.getString("sign"),
                                 TenpayService.INPUT_CHARSET);
         if (!signMd5) {
             log.error("[refundOrder] 财付通退款返回参数签名错误, 参数:" + requestPMap + "返回:"
@@ -412,7 +412,7 @@ public class TenpayService implements ThirdpayService {
         }
         //2.获取md5签名
         String sign = SecretKeyUtil
-                .tenMd5sign(requestPMap, params.getString("md5securityKey"), TenpayService.INPUT_CHARSET);
+                .tenMD5Sign(requestPMap, params.getString("md5securityKey"), TenpayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[queryRefundOrder] 财付通退款查询签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_QUERY_REFUND_SIGN_ERROR);
@@ -442,7 +442,7 @@ public class TenpayService implements ThirdpayService {
         boolean
                 signMd5 =
                 SecretKeyUtil
-                        .tenCheckMd5sign(tenpayMap, params.getString("md5securityKey"),
+                        .tenMD5CheckSign(tenpayMap, params.getString("md5securityKey"),
                                 tenpayMap.getString("sign"), TenpayService.INPUT_CHARSET);
         if (!signMd5) {
             log.error("[queryRefundOrder] 财付通退款查询返回参数签名错误, 参数:" + params + ", 返回:" + resContent);
@@ -490,7 +490,7 @@ public class TenpayService implements ThirdpayService {
             return result;
         }
         //2.获取md5签名
-        String sign = SecretKeyUtil.tenMd5sign(sb.toString(), params.getString("key"), TenpayService.INPUT_CHARSET);
+        String sign = SecretKeyUtil.tenMD5Sign(sb.toString(), params.getString("key"), TenpayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[downloadOrder] 财付通下载对账单签名失败, 参数:" + params);
             return ResultMap.build(ResultStatus.THIRD_QUERY_SIGN_ERROR);
@@ -506,8 +506,8 @@ public class TenpayService implements ThirdpayService {
 
         TenpayHttpClient httpClient = new TenpayHttpClient();
         httpClient.setCharset("GBK");
-        httpClient.setCertFile("e:" + params.getString("privateCertFilePath"),
-                certPasswd, "e:" + params.getString("publicCertFilePath"));
+        httpClient.setCertFile(params.getString("privateCertFilePath"),
+                certPasswd, params.getString("publicCertFilePath"));
         Result httpResponse = httpClient.doGet(params.getString("downloadUrl"), paramString);
         if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
             log.error("[downloadOrder] 财付通下载对账单HTTP请求失败, 参数:" + paramString);
@@ -600,6 +600,190 @@ public class TenpayService implements ThirdpayService {
     }
 
     @Override
-    public ResultMap prepareTransferInfo(PMap params) throws ServiceException { return null;}
+    public ResultMap prepareTransferInfo(PMap params) throws ServiceException {
+        throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    }
+
+    public ResultMap getReqIDFromNotifyWebSync(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        String out_trade_no = params.getString("out_trade_no");
+        if (out_trade_no == null) {
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
+            return result;
+        }
+//        String partner = params.getString("partner");
+        result.addItem("reqId", out_trade_no);//商户网站唯一订单号
+//        result.addItem("merchantNo", partner);//商户号
+        return result;
+    }
+
+    public ResultMap getReqIDFromNotifyWebAsync(PMap params) throws ServiceException {
+        return getReqIDFromNotifyWebSync(params);
+    }
+
+    public ResultMap getReqIDFromNotifyWapSync(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        String sp_billno = params.getString("sp_billno");
+        if (sp_billno == null) {
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
+            return result;
+        }
+//        String bargainor_id = params.getString("bargainor_id");
+        result.addItem("reqId", sp_billno);//商户网站唯一订单号
+//        result.addItem("merchantNo", bargainor_id);//商户号
+        return result;
+    }
+
+    public ResultMap getReqIDFromNotifyWapAsync(PMap params) throws ServiceException {
+        return getReqIDFromNotifyWapSync(params);
+    }
+
+    public ResultMap getReqIDFromNotifySDKAsync(PMap params) throws ServiceException {
+        throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    }
+
+    public ResultMap getReqIDFromNotifyRefund(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        String out_refund_no = params.getString("out_refund_no");
+        if (out_refund_no == null) {
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
+            return result;
+        }
+//        String partner = params.getString("partner");
+        result.addItem("reqId", out_refund_no);//商户网站唯一订单号
+//        result.addItem("merchantNo", partner);//商户号
+        return result;
+    }
+
+    public ResultMap getReqIDFromNotifyTransfer(PMap params) throws ServiceException {
+        throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    }
+
+    public ResultMap handleNotifyWebSync(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        PMap notifyParams = params.getPMap("data");
+        //校验签名
+        String md5securityKey = params.getString("md5securityKey");
+        String out_sign = notifyParams.getString("sign");
+        if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, TenpayService.INPUT_CHARSET)) {
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
+            return result;
+        }
+        //提取关键参数
+        String out_trade_no = notifyParams.getString("out_trade_no");
+        String trade_state = getTradeStatus(notifyParams.getString("trade_state"));
+
+        result.addItem("reqId", out_trade_no);//商户网站唯一订单号
+        result.addItem("tradeStatus", trade_state);//交易状态
+
+        return result;
+    }
+
+    public ResultMap handleNotifyWebAsync(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        PMap notifyParams = params.getPMap("data");
+        //校验签名
+        String md5securityKey = params.getString("md5securityKey");
+        String out_sign = notifyParams.getString("sign");
+        if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, TenpayService.INPUT_CHARSET)) {
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
+            return result;
+        }
+        //提取关键参数
+        String out_trade_no = notifyParams.getString("out_trade_no");
+        String transaction_id = notifyParams.getString("transaction_id");
+        String trade_state = getTradeStatus(notifyParams.getString("trade_state"));
+        String time_end = notifyParams.getString("time_end");
+        String total_fee = notifyParams.getString("total_fee");
+        total_fee = String.valueOf(new BigDecimal(total_fee).divide(new BigDecimal("100"), 2, BigDecimal.ROUND_UP));
+
+        result.addItem("reqId", out_trade_no);//商户网站唯一订单号
+        result.addItem("agencyOrderId", transaction_id);//第三方订单号
+        result.addItem("tradeStatus", trade_state);//交易状态
+        result.addItem("agencyPayTime", time_end);//第三方支付时间
+        result.addItem("trueMoney", total_fee);//支付金额
+
+        return result;
+    }
+
+    public ResultMap handleNotifyWapSync(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        PMap notifyParams = params.getPMap("data");
+        //校验签名
+        String md5securityKey = params.getString("md5securityKey");
+        String out_sign = notifyParams.getString("sign");
+        if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, TenpayService.INPUT_CHARSET)) {
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
+            return result;
+        }
+        //提取关键参数
+        String sp_billno = notifyParams.getString("sp_billno");
+        String pay_result = getTradeStatus(notifyParams.getString("pay_result"));
+
+        result.addItem("reqId", sp_billno);//商户网站唯一订单号
+        result.addItem("tradeStatus", pay_result);//交易状态
+
+        return result;
+    }
+
+    public ResultMap handleNotifyWapAsync(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        PMap notifyParams = params.getPMap("data");
+        //校验签名
+        String md5securityKey = params.getString("md5securityKey");
+        String out_sign = notifyParams.getString("sign");
+        if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, TenpayService.INPUT_CHARSET)) {
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
+            return result;
+        }
+        //提取关键参数
+        String sp_billno = notifyParams.getString("sp_billno");
+        String transaction_id = notifyParams.getString("transaction_id");
+        String pay_result = getTradeStatus(notifyParams.getString("pay_result"));
+        String time_end = notifyParams.getString("time_end");
+        String total_fee = notifyParams.getString("total_fee");
+        total_fee = String.valueOf(new BigDecimal(total_fee).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
+
+        result.addItem("reqId", sp_billno);//商户网站唯一订单号
+        result.addItem("agencyOrderId", transaction_id);//第三方订单号
+        result.addItem("tradeStatus", pay_result);//交易状态
+        result.addItem("agencyPayTime", time_end);//第三方支付时间
+        result.addItem("trueMoney", total_fee);//支付金额
+
+        return result;
+    }
+
+    public ResultMap handleNotifySDKAsync(PMap params) throws ServiceException {
+        throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    }
+
+    public ResultMap handleNotifyRefund(PMap params) throws ServiceException {
+        ResultMap result = ResultMap.build();
+        PMap notifyParams = params.getPMap("data");
+        //校验签名
+        String md5securityKey = params.getString("md5securityKey");
+        String out_sign = notifyParams.getString("sign");
+        if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, TenpayService.INPUT_CHARSET)) {
+            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
+            return result;
+        }
+        //提取关键参数
+        String out_refund_no = notifyParams.getString("out_refund_no");
+        String refund_id = notifyParams.getString("refund_id");
+        String refund_fee = notifyParams.getString("refund_fee");
+        refund_fee = String.valueOf(new BigDecimal(refund_fee).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
+        String refund_status = getRefundStatus(notifyParams.getString("refund_status"));
+
+        result.addItem("reqId", out_refund_no);//商户网站唯一退款单号
+        result.addItem("agencyRefundId", refund_id);//第三方退款单号
+        result.addItem("refundStatus", refund_status);//交易状态
+        result.addItem("refundMoney", refund_fee);//支付金额
+
+        return result;
+    }
+
+    public ResultMap handleNotifyTransfer(PMap params) throws ServiceException {
+        throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    }
 
 }

@@ -14,8 +14,6 @@
         <result column="encrypt_key" property="encryptKey"/>
         <result column="pub_keypath" property="pubKeypath"/>
         <result column="private_keypath" property="privateKeypath"/>
-        <result column="page_back_url" property="pageBackUrl"/>
-        <result column="notify_back_url" property="notifyBackUrl"/>
         <result column="is_used" property="isUsed"/>
         <result column="create_time" property="createTime"/>
         <result column="modify_time" property="modifyTime"/>
@@ -31,8 +29,6 @@
         encrypt_key,
         pub_keypath,
         private_keypath,
-        page_back_url,
-        notify_back_url,
         is_used,
         create_time,
         modify_time

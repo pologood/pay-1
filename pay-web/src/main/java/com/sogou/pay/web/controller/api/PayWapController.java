@@ -102,20 +102,19 @@ public class PayWapController extends BaseController{
         if (validateResult.size() != 0) {
             //验证参数失败，调到错误页面
             logger.error("【支付请求】" + validateResult.toString().substring(1,validateResult.toString().length()-1));
-            return setWapErrorPage(ResultStatus.PAY_PARAM_ERROR.getMessage(), ResultStatus.PAY_PARAM_ERROR.getCode());
+            return setErrorPage(ResultStatus.PAY_PARAM_ERROR, "wap");
         }
         if(StringUtils.isBlank(params.getBankId())){
             //支付渠道为空
             logger.error("【支付请求】支付渠道为空");
-            return setWapErrorPage(ResultStatus.PAY_PARAM_ERROR.getMessage(),
-                    ResultStatus.PAY_PARAM_ERROR.getCode());
+            return setErrorPage(ResultStatus.PAY_PARAM_ERROR, "wap");
         }
         /**1.验证签名**/
         Result signResult = secureManager.verifyAppSign(params);
         if(!Result.isSuccess(signResult)){
             logger.error("【支付请求】验证签名错误！");
           //获取业务平台签名失败,跳到错误页面
-          return setWapErrorPage(signResult.getStatus().getMessage(), signResult.getStatus().getCode());
+          return setErrorPage(signResult.getStatus(), "wap");
         }
         logger.info("【支付请求】通过验证签名！");
 
@@ -128,8 +127,7 @@ public class PayWapController extends BaseController{
         if(!Result.isSuccess(orderResult)){
             logger.error("【支付请求】检查订单信息错误！selectPayOrderInfoByOrderId()..");
             //系统错误或者该支付单已经支付完成,跳到错误页面
-            return setWapErrorPage(orderResult.getStatus().getMessage(), 
-                                orderResult.getStatus().getCode());
+            return setErrorPage(orderResult.getStatus(), "wap");
         }
         String payId = null;
         if(null != orderResult.getReturnValue()){
@@ -138,8 +136,7 @@ public class PayWapController extends BaseController{
             ResultMap payOrderResult = payManager.insertPayOrder(paramMap);
             if(!Result.isSuccess(payOrderResult)){
                 //插入支付单失败,跳到错误页面
-                return setWapErrorPage(payOrderResult.getStatus().getMessage(), 
-                        payOrderResult.getStatus().getCode());
+                return setErrorPage(payOrderResult.getStatus(), "wap");
             }
             payId = payOrderResult.getReturnValue().toString();
         }
@@ -150,7 +147,7 @@ public class PayWapController extends BaseController{
         ResultMap payResult = this.commonPay(paramMap);
         if(!Result.isSuccess(payResult)){
             //支付业务失败,跳到错误页面
-            return setWapErrorPage(payResult.getStatus().getMessage(), payResult.getStatus().getCode());
+            return setErrorPage(payResult.getStatus(), "wap");
         }
         view.addObject("payUrl", payResult.getReturnValue());
         logger.info("【支付请求】支付请求结束！");
