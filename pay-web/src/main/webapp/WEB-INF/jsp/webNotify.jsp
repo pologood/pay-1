@@ -1,23 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ page import="java.util.*" %>
 
 <!DOCTYPE>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <%--<link href="<%=request.getContextPath() %>/res/css/userMag.css" type="text/css" rel="stylesheet"/>--%>
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/jq.js"></script>
 </head>
 <body>
-<input type="hidden" value="${errorCode }" id="errorCode"/>
-<input type="hidden" value="${errorMessage }" id="errorMessage"/>
-<input type="hidden" value="${appUrl }" id="appUrl"/>
-<input type="hidden" value="${payFeeType }" id="payFeeType"/>
-<form action="${appUrl }" name="form" id="form" method="post">
+<input type="hidden" value="${errorCode}" id="errorCode"/>
+<input type="hidden" value="${errorMessage}" id="errorMessage"/>
+<input type="hidden" value="${appUrl}" id="appUrl"/>
+<input type="hidden" value="${payFeeType}" id="payFeeType"/>
+<form action="${appUrl}" name="form" id="form" method="post">
     <c:forEach var="map" varStatus="status" items="${returnMap}">
-        <input type="hidden" name='${map.key }' value='${map.value}' class="flag"/>
+        <input type="hidden" name='${map.key}' value='${map.value}' class="flag"/>
     </c:forEach>
 </form>
 <script type="text/javascript">

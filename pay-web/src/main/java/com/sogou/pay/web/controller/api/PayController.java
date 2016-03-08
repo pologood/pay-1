@@ -117,7 +117,7 @@ public class PayController extends BaseController{
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
     @RequestMapping({"/pay/doPay", "/gw/pay/web"})
     public ModelAndView doPay(PayParams params, HttpServletRequest request){
-        ModelAndView view = new ModelAndView("toAgency");
+        ModelAndView view = new ModelAndView("webForward");
         logger.info("【支付请求】进入dopay,请求参数为：" + JSONUtil.Bean2JSON(params));
         //将参数转化为map
         PMap paramMap = BeanUtil.Bean2PMap(params);
@@ -259,7 +259,7 @@ public class PayController extends BaseController{
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
     @RequestMapping("/pay/doCashierPay")
     public ModelAndView doCashierPay( HttpServletRequest request,HttpServletResponse response){
-        ModelAndView view = new ModelAndView("toAgency");
+        ModelAndView view = new ModelAndView("webForward");
         Map<String, String> parameterMap = getRequestParameterMap(request);
         PMap paramMap = new PMap();
         paramMap.putAll(parameterMap);

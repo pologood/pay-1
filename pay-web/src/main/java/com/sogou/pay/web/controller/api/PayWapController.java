@@ -89,7 +89,7 @@ public class PayWapController extends BaseController{
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     @RequestMapping({"/paywap/doPay", "/gw/pay/wap"})
     public ModelAndView doPay(PayParams params, HttpServletRequest request,HttpServletResponse response){
-        ModelAndView view = new ModelAndView("toAlipayWap");
+        ModelAndView view = new ModelAndView("wapForward");
         logger.info("【支付请求】进入dopay,请求参数为：" + JSONUtil.Bean2JSON(params));
         //将参数转化为map
         PMap<String,String> paramMap = BeanUtil.Bean2PMap(params);

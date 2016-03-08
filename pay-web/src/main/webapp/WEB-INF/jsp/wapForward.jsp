@@ -6,13 +6,11 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>移动网页支付</title>
 </head>
 <body>
 
-<form action="${appUrl}" name="form1" id="form1" method="post">
-    <c:forEach var="map" varStatus="status" items="${returnMap}">
-        <input type="hidden" name='${map.key }' value='${map.value}' class="flag"/>
-    </c:forEach>
+<form name="form1" action="${payUrl}" method="post">
 </form>
 <script type="text/javascript">
     document.form1.submit();
