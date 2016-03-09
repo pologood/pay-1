@@ -140,7 +140,7 @@ public class PayPortal {
             if (agencyCode.equals(AgencyType.BILL99.name())) {
                 result = billPayService.refundOrderInfo(params);
             } else {
-                thirdpayService.refundOrder(params);
+                result = thirdpayService.refundOrder(params);
             }
         } catch (ServiceException se) {
             log.error("Refund Order:Get Refund Order Unusually:", se + "Parameters:" + JSONUtil.Bean2JSON(params));
@@ -171,7 +171,7 @@ public class PayPortal {
             if (agencyCode.equals(AgencyType.BILL99.name())) {
                 result = billPayService.queryOrderInfo(params);
             } else {
-                thirdpayService.queryOrder(params);
+                result = thirdpayService.queryOrder(params);
             }
         } catch (ServiceException se) {
             log.error("Query Order:Get Query Parameters Unusually:", se + "Parameters:" + JSONUtil.Bean2JSON(params));
@@ -201,7 +201,7 @@ public class PayPortal {
             if (agencyCode.equals(AgencyType.BILL99.name())) {
                 result = billPayService.queryRefundInfo(params);
             } else {
-                thirdpayService.queryRefundOrder(params);
+                result = thirdpayService.queryRefundOrder(params);
             }
         } catch (ServiceException se) {
             log.error("Query Refund Order: Unusually:", se + "Parameters:" + JSONUtil.Bean2JSON(params));

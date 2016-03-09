@@ -16,9 +16,12 @@
 <![endif]-->
     <!--HM结束-->
 <script>
+	var interval;
+	<c:if test="${!empty commonMap.payDetailId}">
 	window.onload = function(){
-		setInterval(function(){checkPayStatus()}, 3000);
+		interval = setInterval(function(){checkPayStatus()}, 3000);
 	}
+	</c:if>
 	
 	function getQRCode(channelcode){
 		$("#channelType").val("3");
@@ -46,7 +49,8 @@
 			         	   var detailWxImg = document.getElementById('detailWxImg'); 
 			         	   syImg.src = json.data.qrCode;
 			         	   detailWxImg.src = json.data.qrCode;
-			         	   setInterval(function(){checkPayStatus()}, 3000);
+							clearInterval(interval);
+							interval = setInterval(function(){checkPayStatus()}, 3000);
 		            	} else {
 			                $(".QR-content").html("<p>"+json.message+"</p><br><a href='#'>查看订单</a>");
 		            		$(".QR-fail").show();
@@ -103,7 +107,7 @@
 			return;
 		$.ajax({ 
             type: "post", 
-            url: "${pageContext.request.contextPath}/notify/wechat/pay/getWechatStatus.j",
+            url: "${pageContext.request.contextPath}/notify/status/wechat",
             data:{payReqId:payReqId,
             	     appId:$("input[name='appId']").val()
           	     },
@@ -114,7 +118,8 @@
             	if(json.status == "SUCCESS"){
             		var payStatus = json.data.payStatus;
             		if(payStatus == "SUCCESS" || payStatus == "REFUND"){
-            			window.location.href="${pageContext.request.contextPath}/notify/wechat/pay/webSync.j?payReqId="+$("input[name='payDetailId']").val();
+            			window.location.href="${pageContext.request.contextPath}/notify/websync/wechat?out_trade_no="
+								+json.data.payReqId + "&result_code=" + payStatus;
             		}
             	}
             }
@@ -151,7 +156,7 @@
 		<div class="logo-aside wm"><a href="http://pay.sogou" target="_blank">了解我们</a></div>
         <!--HM结束-->
 	</div>
-<div class="payM 	pay-info clearfix ">
+<div class="payM pay-info clearfix ">
 		<div class="pay-icon le"></div>
 		<div class="pay-details le ">
 			
