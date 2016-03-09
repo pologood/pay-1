@@ -8,14 +8,17 @@
     <context:component-scan base-package="com.sogou.pay"/>
 
     <!-- 引入config配置文件 -->
-    <bean id="propertyConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations">
-            <list>
-                <value>classpath:config.properties</value>
-            </list>
-        </property>
-    </bean>
+    <context:property-placeholder location="classpath:config.properties"/>
+
+    <!-- 引入config配置文件 -->
+    <!--<bean id="propertyConfigurer"-->
+          <!--class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">-->
+        <!--<property name="locations">-->
+            <!--<list>-->
+                <!--<value>classpath:config.properties</value>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
 
     <import resource="classpath:spring-mybatis.xml"/>
     <import resource="classpath:spring-httpclient.xml"/>

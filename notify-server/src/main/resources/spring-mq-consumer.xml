@@ -13,9 +13,7 @@
         <property name="connectionFactory">
             <!-- ActiveMQ 连接工厂 -->
             <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-                <property name="brokerURL">
-                    <value>${activemq.consumer.url}</value>
-                </property>
+                <property name="brokerURL" value="${activemq.consumer.url}"/>
                 <!--是否异常分派消息（如果消费时间很长，采用异步分派就提高性能）-->
                 <property name="dispatchAsync" value="true"/>
                 <property name="useAsyncSend" value="true"/>
@@ -34,9 +32,7 @@
           class="org.springframework.jms.listener.DefaultMessageListenerContainer">
         <property name="concurrentConsumers" value="10"/>
         <property name="connectionFactory" ref="activeMQConnectionFactoryConsumer"/>
-        <property name="destinationName">
-            <value>${activemq.pay.queue}</value>
-        </property>
+        <property name="destinationName" value="${activemq.pay.queue}"/>
         <!-- 使用payNotifyConsumer来作为消息监听器 -->
         <property name="messageListener" ref="queuePayNotifyListener"/>
         <!--<property name="messageListener" ref="jmsConsumer"/>-->
