@@ -69,7 +69,7 @@ public class PayNotifyControllerTest extends BaseTest {
         }
         String md5securityKey = (String) result.getItem("md5securityKey");
         PMap requestPMap = new PMap();
-        requestPMap.put("is_succes", "T");
+        requestPMap.put("is_success", "T");
         requestPMap.put("sign_type", "MD5");
         requestPMap.put("out_trade_no", reqId);
         requestPMap.put("trade_status", "TRADE_FINISHED");
@@ -116,7 +116,7 @@ public class PayNotifyControllerTest extends BaseTest {
         }
         String md5securityKey = (String) result.getItem("md5securityKey");
         PMap requestPMap = new PMap();
-        requestPMap.put("is_succes", "T");
+        requestPMap.put("is_success", "T");
         requestPMap.put("sign_type", "MD5");
         requestPMap.put("out_trade_no", reqId);
         requestPMap.put("trade_status", "TRADE_FINISHED");

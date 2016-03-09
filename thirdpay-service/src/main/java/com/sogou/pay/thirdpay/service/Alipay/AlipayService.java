@@ -718,9 +718,10 @@ public class AlipayService implements ThirdpayService {
 
     public ResultMap getReqIDFromNotifyWebSync(PMap params) throws ServiceException {
         ResultMap result = ResultMap.build();
-        String is_succes = params.getString("is_succes");//接口是否调用成功
+        String is_succes = params.getString("is_success");//接口是否调用成功
         String out_trade_no = params.getString("out_trade_no");
         if (!"T".equals(is_succes) || out_trade_no == null) {
+            log.error("[getReqIDFromNotifyWebSync] 支付宝支付同步回调提取out_trade_no失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
             return result;
         }
@@ -734,6 +735,7 @@ public class AlipayService implements ThirdpayService {
         ResultMap result = ResultMap.build();
         String out_trade_no = params.getString("out_trade_no");
         if (out_trade_no == null) {
+            log.error("[getReqIDFromNotifyWebAsync] 支付宝支付异步回调提取out_trade_no失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
             return result;
         }
@@ -759,6 +761,7 @@ public class AlipayService implements ThirdpayService {
         ResultMap result = ResultMap.build();
         String batch_no = params.getString("batch_no");
         if (batch_no == null) {
+            log.error("[getReqIDFromNotifyRefund] 支付宝退款回调提取batch_no失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
             return result;
         }
@@ -770,6 +773,7 @@ public class AlipayService implements ThirdpayService {
         ResultMap result = ResultMap.build();
         String batch_no = params.getString("batch_no");
         if (batch_no == null) {
+            log.error("[getReqIDFromNotifyTransfer] 支付宝转账回调提取batch_no失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
             return result;
         }

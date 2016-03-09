@@ -604,6 +604,7 @@ public class WechatService implements ThirdpayService {
         ResultMap result = ResultMap.build();
         String out_trade_no = params.getString("out_trade_no");
         if (out_trade_no == null) {
+            log.error("[getReqIDFromNotifyWebSync] 微信扫码支付同步回调提取out_trade_no失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
             return result;
         }
@@ -616,6 +617,7 @@ public class WechatService implements ThirdpayService {
         String return_code = params.getString("return_code");
         String out_trade_no = params.getString("out_trade_no");
         if (!return_code.equals("SUCCESS") || out_trade_no == null) {
+            log.error("[getReqIDFromNotifyWebAsync] 微信扫码支付异步回调提取out_trade_no失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
             return result;
         }
@@ -673,6 +675,7 @@ public class WechatService implements ThirdpayService {
         String md5securityKey = params.getString("md5securityKey");
         String out_sign = notifyParams.getString("sign");
         if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, WechatService.INPUT_CHARSET)) {
+            log.error("[handleNotifyWebAsync] 微信扫码支付异步回调校验签名失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
             return result;
         }

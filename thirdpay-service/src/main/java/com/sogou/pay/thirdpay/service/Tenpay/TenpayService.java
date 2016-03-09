@@ -608,6 +608,7 @@ public class TenpayService implements ThirdpayService {
         ResultMap result = ResultMap.build();
         String out_trade_no = params.getString("out_trade_no");
         if (out_trade_no == null) {
+            log.error("[getReqIDFromNotifyWebSync] 财付通支付回调提取out_trade_no失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
             return result;
         }
@@ -625,6 +626,7 @@ public class TenpayService implements ThirdpayService {
         ResultMap result = ResultMap.build();
         String sp_billno = params.getString("sp_billno");
         if (sp_billno == null) {
+            log.error("[getReqIDFromNotifyWapSync] 财付通支付回调提取sp_billno失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
             return result;
         }
@@ -646,6 +648,7 @@ public class TenpayService implements ThirdpayService {
         ResultMap result = ResultMap.build();
         String out_refund_no = params.getString("out_refund_no");
         if (out_refund_no == null) {
+            log.error("[getReqIDFromNotifyWapSync] 财付通退款回调提取out_refund_no失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
             return result;
         }
@@ -666,6 +669,7 @@ public class TenpayService implements ThirdpayService {
         String md5securityKey = params.getString("md5securityKey");
         String out_sign = notifyParams.getString("sign");
         if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, TenpayService.INPUT_CHARSET)) {
+            log.error("[handleNotifyWebSync] 财付通支付同步回调校验签名失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
             return result;
         }
@@ -686,6 +690,7 @@ public class TenpayService implements ThirdpayService {
         String md5securityKey = params.getString("md5securityKey");
         String out_sign = notifyParams.getString("sign");
         if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, TenpayService.INPUT_CHARSET)) {
+            log.error("[handleNotifyWebAsync] 财付通支付异步回调校验签名失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
             return result;
         }
@@ -713,6 +718,7 @@ public class TenpayService implements ThirdpayService {
         String md5securityKey = params.getString("md5securityKey");
         String out_sign = notifyParams.getString("sign");
         if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, TenpayService.INPUT_CHARSET)) {
+            log.error("[handleNotifyWapSync] 财付通支付同步回调校验签名失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
             return result;
         }
@@ -733,6 +739,7 @@ public class TenpayService implements ThirdpayService {
         String md5securityKey = params.getString("md5securityKey");
         String out_sign = notifyParams.getString("sign");
         if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, TenpayService.INPUT_CHARSET)) {
+            log.error("[handleNotifyWapAsync] 财付通支付异步回调校验签名失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
             return result;
         }
@@ -764,6 +771,7 @@ public class TenpayService implements ThirdpayService {
         String md5securityKey = params.getString("md5securityKey");
         String out_sign = notifyParams.getString("sign");
         if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, TenpayService.INPUT_CHARSET)) {
+            log.error("[handleNotifyRefund] 财付通退款回调校验签名失败, 参数:" + params);
             result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
             return result;
         }
