@@ -65,7 +65,7 @@ public class WechatPayNotifyController extends BaseController {
     private RedisUtils redisUtils;
 
 
-    @RequestMapping(value = "/getWechatStatus")
+    @RequestMapping(value = "/getWechatStatus", produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String getWechatStatus(HttpServletRequest request){
         ResultMap result = ResultMap.build();

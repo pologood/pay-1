@@ -52,7 +52,7 @@ public class OrderQueryController {
 
     @Profiled(el = true, logger = "webTimingLogger", tag = "/api/pay/query",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/api/pay/query")
+    @RequestMapping(value = "/api/pay/query", produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String pay(PayOrderQueryParams params, HttpServletRequest request) {
         ResultMap result = ResultMap.build();
@@ -99,8 +99,8 @@ public class OrderQueryController {
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/api/refund/query",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @RequestMapping(value = "/api/refund/query", produces = "text/plain; charset=utf-8")
     @ResponseBody
-    @RequestMapping("/api/refund/query")
     public String queryRefund(QueryRefundParams params) {
         ResultMap result = ResultMap.build();
         logger.info("Query Order Refund Request Start!params:" + params);
@@ -140,7 +140,7 @@ public class OrderQueryController {
 
     @Profiled(el = true, logger = "webTimingLogger", tag = "/orderQuery/pay",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/orderQuery/pay")
+    @RequestMapping(value = "/orderQuery/pay", produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String pay_deprecated(PayOrderQueryParams params, HttpServletRequest request) {
         QueryOrderResult queryOrderResult = new QueryOrderResult();
@@ -192,8 +192,8 @@ public class OrderQueryController {
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/orderQuery/refund",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    @RequestMapping(value = "/orderQuery/refund", produces = "text/plain; charset=utf-8")
     @ResponseBody
-    @RequestMapping("/orderQuery/refund")
     public String queryRefund_deprecated(QueryRefundParams params) {
         QueryRefundResult queryRefundResult = new QueryRefundResult();
         logger.info("Query Order Refund Request Start!params:" + params);

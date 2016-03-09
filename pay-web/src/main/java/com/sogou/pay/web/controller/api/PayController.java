@@ -291,7 +291,7 @@ public class PayController extends BaseController{
      * @Date	2015年3月20日
      * @Description:扫码支付链接或微信扫码字符串
      */
-    @RequestMapping("/pay/getQrCode")
+    @RequestMapping(value = "/pay/getQrCode", produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String getQrCode(HttpServletRequest request,HttpServletResponse response){
         ResultMap result = ResultMap.build();
@@ -424,7 +424,7 @@ public class PayController extends BaseController{
      * @Date	2015年2月28日
      * @Description:商户微信扫码支付返回code
      */
-    @RequestMapping({"/pay/doPayForWechat", "/api/pay/qrcode"})
+    @RequestMapping(value = {"/pay/doPayForWechat", "/api/pay/qrcode"}, produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String doPayForWechat(PayParams params, HttpServletRequest request){
         ResultMap result = ResultMap.build();
@@ -521,7 +521,7 @@ public class PayController extends BaseController{
         return false;
     }
 
-    @RequestMapping("/pay/getSignData")
+    @RequestMapping(value = "/pay/getSignData", produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String signData(@RequestParam Map<String, String> paramMap){
         //Map paramMap = convertToMap(params);

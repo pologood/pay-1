@@ -91,7 +91,7 @@ public class PayTransferController extends BaseController {
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/payTrans/doPay",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping({"/payTrans/doPay", "/api/transfer"})
+    @RequestMapping(value = {"/payTrans/doPay", "/api/transfer"}, produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String doPay(PayTransParams params, HttpServletRequest request, HttpServletResponse response) {
         logger.info("【支付请求】进入dopay,请求参数为：" + JSONUtil.Bean2JSON(params));
@@ -135,7 +135,7 @@ public class PayTransferController extends BaseController {
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/payTrans/doRequest",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/payTrans/doRequest")
+    @RequestMapping(value = "/payTrans/doRequest", produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String doRequest(String appId, String batchNo) {
         logger.info("【代付提交】进入doRequest,请求参数为appId:" + appId + ",batchNo：" + batchNo);
@@ -161,7 +161,7 @@ public class PayTransferController extends BaseController {
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/payTrans/queryByBatchNo",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping({"/payTrans/queryByBatchNo", "/api/transfer/query"})
+    @RequestMapping(value = {"/payTrans/queryByBatchNo", "/api/transfer/query"}, produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String queryByBatchNo(PayTransferQueryParams payTransferQueryParams) {
         logger.info("【代付查询】queryByBatchNo,请求参数为：" + JSONUtil.Bean2JSON(payTransferQueryParams));
@@ -189,7 +189,7 @@ public class PayTransferController extends BaseController {
         return JSONObject.toJSONString(result);
     }
 
-    @RequestMapping({"/payTrans/queryRefund", "/api/transfer/refund/query"})
+    @RequestMapping(value = {"/payTrans/queryRefund", "/api/transfer/refund/query"}, produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String queryRefund(PayTransferRefundQueryParams payTransferRefundQueryParams) {
         logger.info("【代付退票查询】queryRefund,请求参数为：" + JSONUtil.Bean2JSON(payTransferRefundQueryParams));

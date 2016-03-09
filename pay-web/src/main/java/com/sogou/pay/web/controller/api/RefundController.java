@@ -48,9 +48,9 @@ public class RefundController {
 
     @Profiled(el = true, logger = "webTimingLogger", tag = "/api/refund",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/api/refund")
+    @RequestMapping(value = "/api/refund", produces = "text/plain; charset=utf-8")
     @ResponseBody
-    public Object refund(RefundParams params, HttpServletRequest request) {
+    public String refund(RefundParams params, HttpServletRequest request) {
         // 0.记录请求日志
         String ip = ServletUtil.getRealIp(request);
         logger.info("Refund Request Start!Ip：" + ip + "params:" + JSONUtil.Bean2JSON(params));
@@ -103,9 +103,9 @@ public class RefundController {
 
     @Profiled(el = true, logger = "webTimingLogger", tag = "/refund",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping("/refund")
+    @RequestMapping(value = "/refund", produces = "text/plain; charset=utf-8")
     @ResponseBody
-    public Object refund_deprecated(RefundParams params, HttpServletRequest request) {
+    public String refund_deprecated(RefundParams params, HttpServletRequest request) {
         // 0.记录请求日志
         String ip = ServletUtil.getRealIp(request);
         logger.info("Refund Request Start!Ip：" + ip + "params:" + JSONUtil.Bean2JSON(params));

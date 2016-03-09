@@ -59,7 +59,7 @@ public class TestController {
         return view;
     }
 
-    @RequestMapping("getRefundSignData")
+    @RequestMapping(value = "getRefundSignData", produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String signData(RefundParams params, HttpServletRequest request){
         Map paramMap = convertToMap(params);
@@ -70,7 +70,7 @@ public class TestController {
         return JSONObject.toJSONString(sign);
     }
 
-    @RequestMapping("getQueryRefundSignData")
+    @RequestMapping(value = "getQueryRefundSignData", produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String getQueryRefundSignData(QueryRefundParams params, HttpServletRequest request){
         Map paramMap = convertToMap(params);
@@ -81,7 +81,7 @@ public class TestController {
         return JSONObject.toJSONString(sign);
     }
 
-    @RequestMapping("getQueryOrderSignData")
+    @RequestMapping(value = "getQueryOrderSignData", produces = "text/plain; charset=utf-8")
     @ResponseBody
     public String getQueryPaySignData(PayOrderQueryParams params, HttpServletRequest request){
         Map paramMap = convertToMap(params);

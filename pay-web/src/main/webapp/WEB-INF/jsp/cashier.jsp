@@ -39,7 +39,7 @@
 		            dataType: "json", 
 		            success: function (data) {
 		            	//转换成json
-		                var json = eval("(" + data + ")");
+		                var json = eval(data);
 		            	if(json.status == "SUCCESS"){
 			         	  $(".QR-fail").hide();
 			         	   var syImg = document.getElementById('syImg');
@@ -78,7 +78,7 @@
 	            dataType: "json", 
 	            success: function (data) {
 	            	//转换成json
-	                var json = eval("(" + data + ")"); 
+	                var json = eval(data);
 	            	if(json.status == "SUCCESS"){
 	            		$(".QR-fail").hide();
 	            		document.getElementById("if1").setAttribute("src",json.data.qrCode);
@@ -110,7 +110,7 @@
             dataType: "json", 
             success: function (data) {
             	//转换成json
-                var json = eval("(" + data + ")"); 
+                var json = eval(data);
             	if(json.status == "SUCCESS"){
             		var payStatus = json.data.payStatus;
             		if(payStatus == "SUCCESS" || payStatus == "REFUND"){
@@ -134,7 +134,6 @@
 <!--HM class-->
 <body class="hm_style">
 <div class="header">
-	
 </div>
 <form action="${pageContext.request.contextPath}/pay/doCashierPay" method="post" name="payForm" id="payForm">
 <c:forEach items="${commonMap}" var="entry">  
