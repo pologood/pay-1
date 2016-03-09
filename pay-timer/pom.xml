@@ -120,19 +120,36 @@
     </profiles>
 
     <build>
-        <filters>
-            <filter>src/main/filters/filter-${env}.properties</filter>
-        </filters>
+        <!--        <filters>
+            <filter>src/main/resources/config.properties</filter>
+        </filters>-->
 
-        <!-- 控制资源文件的拷贝 -->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <filtering>true</filtering>
+                <!--<filtering>true</filtering>-->
             </resource>
         </resources>
 
         <plugins>
+            <!-- 控制资源文件的拷贝 -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <delete file="src/main/resources/config.properties"/>
+                                <copy file="${config_file}" tofile="src/main/resources/config.properties"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
