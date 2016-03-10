@@ -241,8 +241,7 @@ public class RefundManagerImpl implements RefundManager {
             pMap.put("agencyCode", payResDetail.getAgencyCode());                                     //支付机构编码
             pMap.put("merchantNo", payResDetail.getMerchantNo());                                     //商户号
             pMap.put("refundUrl", agencyInfo.getRefundUrl());                                         //退款请求url
-            String notifyUrl = ResourceBundle.getBundle("config").getString("refund.back.url") +
-                    payResDetail.getAgencyCode().toLowerCase() + "/" + agencyMerchant.getId();
+            String notifyUrl = agencyInfo.getRefundNotifyBackUrl() + "/" + agencyMerchant.getId();
             pMap.put("refundNotifyUrl", notifyUrl);                                                   //异步回调url
             pMap.put("md5securityKey", agencyMerchant.getEncryptKey());                               //MD5加密秘钥
             pMap.put("publicCertFilePath", agencyMerchant.getPubKeypath());                           //公钥证书地址

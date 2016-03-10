@@ -507,21 +507,21 @@ public class PayManagerImpl implements PayManager {
             payGateMap.put("prepayUrl", agencyInfo.getPrepayUrl());
             //PC端必填
             if (null != agencyInfo.getPayUrl()) payGateMap.put("payUrl", agencyInfo.getPayUrl());
-            //如果是alipay wap，从配置文件中获得回调地址
-            if(Constant.ALIPAY.equals(agencyCode) && Constant.ACCESS_PLATFORM_WAP.equals(accessPlatfrom)){
-                //异步回调地址
-                payGateMap.put("serverNotifyUrl", ResourceBundle.getBundle("config").getString("alipay.wap.notify.url"));
-                //同步页面回调地址
-                payGateMap.put("pageNotifyUrl", ResourceBundle.getBundle("config").getString("alipay.wap.page.url"));
-            } else if(Constant.ALIPAY.equals(agencyCode) && Constant.ACCESS_PLATFORM_SDK.equals(accessPlatfrom)){
-              //异步回调地址
-                payGateMap.put("serverNotifyUrl", ResourceBundle.getBundle("config").getString("alipay.sdk.notify.url"));
-            } else {
+//            //如果是alipay wap，从配置文件中获得回调地址
+//            if(Constant.ALIPAY.equals(agencyCode) && Constant.ACCESS_PLATFORM_WAP.equals(accessPlatfrom)){
+//                //异步回调地址
+//                payGateMap.put("serverNotifyUrl", ResourceBundle.getBundle("config").getString("alipay.wap.notify.url"));
+//                //同步页面回调地址
+//                payGateMap.put("pageNotifyUrl", ResourceBundle.getBundle("config").getString("alipay.wap.page.url"));
+//            } else if(Constant.ALIPAY.equals(agencyCode) && Constant.ACCESS_PLATFORM_SDK.equals(accessPlatfrom)){
+//              //异步回调地址
+//                payGateMap.put("serverNotifyUrl", ResourceBundle.getBundle("config").getString("alipay.sdk.notify.url"));
+//            } else {
                 //异步回调地址
                 payGateMap.put("serverNotifyUrl", agencyInfo.getNotifyBackUrl());
                 //同步页面回调地址
                 payGateMap.put("pageNotifyUrl", agencyInfo.getPageBackUrl());
-            }
+//            }
             //商品名称
             payGateMap.put("subject", params.getString("productName"));
             //买家IP

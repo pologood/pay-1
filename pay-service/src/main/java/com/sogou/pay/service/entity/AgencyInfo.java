@@ -9,7 +9,7 @@ import java.util.Date;
  * @author 武景畔
  * @version 0.0.1
  */
-public class AgencyInfo implements Serializable{
+public class AgencyInfo implements Serializable {
 
     private Integer id;
     /**
@@ -78,6 +78,11 @@ public class AgencyInfo implements Serializable{
     //支付之后服务后端回调地址
     private String notifyBackUrl;
 
+    //退款之后服务后端回调地址
+    private String refundNotifyBackUrl;
+
+    //转账之后服务后端回调地址
+    private String transferNotifyBackUrl;
 
     /**
      * 创建时间
@@ -202,6 +207,22 @@ public class AgencyInfo implements Serializable{
         this.notifyBackUrl = notifyBackUrl;
     }
 
+    public String getRefundNotifyBackUrl() {
+        return refundNotifyBackUrl;
+    }
+
+    public void setRefundNotifyBackUrl(String refundNotifyBackUrl) {
+        this.refundNotifyBackUrl = refundNotifyBackUrl;
+    }
+
+    public String getTransferNotifyBackUrl() {
+        return transferNotifyBackUrl;
+    }
+
+    public void setTransferNotifyBackUrl(String transferNotifyBackUrl) {
+        this.transferNotifyBackUrl = transferNotifyBackUrl;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -233,6 +254,7 @@ public class AgencyInfo implements Serializable{
                 + ", aliasFlag=" + aliasFlag + ", agencyType=" + agencyType
                 + ", prepayUrl=" + prepayUrl + ", payUrl=" + payUrl
                 + ", queryUrl=" + queryUrl + ", refundUrl=" + refundUrl
+                + ", refundNotifyBackUrl=" + refundNotifyBackUrl + ", transferNotifyBackUrl=" + transferNotifyBackUrl
                 + ", sendPhoneUrl=" + sendPhoneUrl + ", createTime="
                 + createTime + ", modifyTime=" + modifyTime + "]";
     }

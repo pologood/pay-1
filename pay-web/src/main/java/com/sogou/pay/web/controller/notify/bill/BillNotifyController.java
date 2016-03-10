@@ -49,7 +49,6 @@ import com.sogou.pay.web.utils.ControllerUtil;
  */
 
 @Controller
-@RequestMapping(value = "/notify/bill/pay")
 public class BillNotifyController extends BaseController {
     private static final Logger LOGGER = LoggerFactory.getLogger(BillNotifyController.class);
 
@@ -67,9 +66,9 @@ public class BillNotifyController extends BaseController {
     private PayOrderService payOrderService;
 
 
-    @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/bill/pay/webAsync",
+    @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/webasync/bill99",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = "/webAsync")
+    @RequestMapping(value = "/notify/webasync/bill99")
     @ResponseBody
     public String billWebNotify(BillPayWebNotifyParams billPayWebNotifyParams, HttpServletRequest request) throws ServiceException {
         //1. 签名校验
@@ -107,9 +106,9 @@ public class BillNotifyController extends BaseController {
         return "success";  // 返回结果只是表示收到回调
     }
 
-    @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/bill/pay/webSync",
+    @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/websync/bill99",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = "/webSync")
+    @RequestMapping(value = "/notify/websync/bill99")
     public ModelAndView billWebSyncNotify(HttpServletRequest request) throws ServiceException, IOException {
         ModelAndView view = new ModelAndView("notifySync");
         /******1. 签名校验*******/
