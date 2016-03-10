@@ -327,7 +327,7 @@ public class PayNotifyManagerImpl implements PayNotifyManager {
         map.put("orderId", payOrderInfo.getOrderId());
         map.put("payId", payOrderInfo.getPayId());
         map.put("orderMoney", payOrderInfo.getOrderMoney().toString());
-        map.put("tradeStatus", "TRADE_FINISHED");
+        map.put("tradeStatus", "SUCCESS");
         map.put("successTime", (new SimpleDateFormat("yyyyMMddHHssmm")).format(patyNotifyModel.getAgencyPayTime()));
         ResultMap result = (ResultMap)secureManager.appSign(map);
         Map resultMap = (Map)result.getReturnValue();
