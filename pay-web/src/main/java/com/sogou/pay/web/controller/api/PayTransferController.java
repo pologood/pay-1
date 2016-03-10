@@ -106,13 +106,13 @@ public class PayTransferController extends BaseController {
         if (!Result.isSuccess(signResult)) {
             logger.error("【支付请求】验证签名错误！");
             //获取业务平台签名失败,跳到错误页面
-            return signResult.toString();
+            return JSONObject.toJSONString(signResult);
         }
         logger.info("【支付请求】通过验证签名！");
         /**2.验证参数**/
         ResultMap<List<String>> validateResult = checkParams(params);
         if (!Result.isSuccess(validateResult)) {
-            return validateResult.toString();
+            return JSONObject.toJSONString(validateResult);
         }
         logger.info("【支付请求】通过验证参数！");
         /**3.生成代付单信息**/
@@ -121,7 +121,8 @@ public class PayTransferController extends BaseController {
         if (!Result.isSuccess(doProcessResult))
             logger.error("【支付请求】" + doProcessResult.getStatus().getMessage());
         logger.info("【支付请求】支付请求结束！");
-        return doProcessResult.toString();
+        return JSONObject.toJSONString(doProcessResult);
+
     }
 
     /**
@@ -143,11 +144,12 @@ public class PayTransferController extends BaseController {
         /**2.验证参数**/
         if (batchNo == null || "".equals(batchNo)) {
             logger.error("【代付提交参数错误】");
-            return result.withError(ResultStatus.PAY_PARAM_ERROR).toString();
+            result.withError(ResultStatus.PAY_PARAM_ERROR);
+            return JSONObject.toJSONString(result);
         }
         result = payTranferRequestManager.doProcess(appId, batchNo);
         logger.info("【代付提交结束！】");
-        return result.toString();
+        return JSONObject.toJSONString(result);
     }
 
     /**

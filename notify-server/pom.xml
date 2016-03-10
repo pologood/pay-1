@@ -51,16 +51,6 @@
             <version>3.2.1</version>
         </dependency>
 
-        <!-- jdbc -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-
         <!--<dependency>-->
         <!--<groupId>commons-pool</groupId>-->
         <!--<artifactId>commons-pool</artifactId>-->
