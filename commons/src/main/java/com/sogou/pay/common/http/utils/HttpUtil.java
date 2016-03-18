@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.*;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * User: Liwei
@@ -56,32 +57,54 @@ public final class HttpUtil {
             if (MapUtil.isEmpty(params)) {
                 return newUrl;
             } else {
-                return newUrl + "?" + packUrlParams(params, null);
+                return newUrl + "?" + packUrlParams(params);
             }
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("URL parse error");
         }
     }
 
-    public static String packUrlParams(Map params, String decorate) {
-        if (MapUtil.isEmpty(params)) {
+    public static String packUrlParams(Map params) {
+        if (MapUtil.isEmpty(params))
             return "";
-        }
-        if (decorate == null)
-            decorate = "";
         try {
             StringBuilder sb = new StringBuilder();
-            Object[] keys = params.keySet().toArray();
-            for (int i = 0; i < keys.length; i++) {
-                String key = (String) keys[i];
-                Object value = params.get(key);
+            for (Map.Entry<String, Object> entry : (Set<Map.Entry<String, Object>>) params.entrySet()) {
+                String key = (String) entry.getKey();
+                Object value = entry.getValue();
                 if (StringUtil.isBlank(key) || value == null) {
                     continue;
                 }
                 sb.append(URLEncoder.encode(key, HttpConstant.DEFAULT_CHARSET));
                 sb.append("=");
+                sb.append(URLEncoder.encode(value.toString(), HttpConstant.DEFAULT_CHARSET));
+                sb.append("&");
+            }
+            if (sb.length() > 0) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("packUrlParams error");
+        }
+    }
+
+
+    public static String packParams(Map params, String decorate) {
+        if (MapUtil.isEmpty(params))
+            return "";
+        try {
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<String, Object> entry : (Set<Map.Entry<String, Object>>) params.entrySet()) {
+                String key = (String) entry.getKey();
+                Object value = entry.getValue();
+                if (StringUtil.isEmpty(key) || value == null) {
+                    continue;
+                }
+                sb.append(key);
+                sb.append("=");
                 sb.append(decorate).
-                        append(URLEncoder.encode(value.toString(), HttpConstant.DEFAULT_CHARSET))
+                        append(value.toString())
                         .append(decorate);
                 sb.append("&");
             }
@@ -90,12 +113,11 @@ public final class HttpUtil {
             }
             return sb.toString();
         } catch (Exception e) {
-            throw new IllegalArgumentException("URL params error");
+            throw new IllegalArgumentException("packParams error");
         }
     }
 
-
-    public static ResultMap extractUrlParams(String params) {
+    public static ResultMap extractParams(String params) {
         ResultMap result = ResultMap.build();
         try {
             String[] pairs = params.split("&");

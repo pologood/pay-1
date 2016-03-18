@@ -268,7 +268,7 @@ public class AlipayService implements ThirdpayService {
         // 6.组装商户需要的订单信息参数
         requestPMap.put("sign", sign);
         requestPMap.put("sign_type", "RSA");                     //签名方式
-        String payInfo = HttpUtil.packUrlParams(requestPMap, "\"");
+        String payInfo = HttpUtil.packParams(requestPMap, "\"");
         // 7.获取客户端需要的支付宝公钥
         String publicCertFilePath = params.getString("publicCertFilePath");
         String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
@@ -484,7 +484,7 @@ public class AlipayService implements ThirdpayService {
             log.error("[queryRefundOrder] 支付宝退款查询返回参数异常, 返回为空, 参数:" + params + ", 返回:" + resContent);
             return ResultMap.build(ResultStatus.THIRD_QUERY_REFUND_RESPONSE_PARAM_ERROR);
         }
-        ResultMap refundResult = HttpUtil.extractUrlParams(resContent);
+        ResultMap refundResult = HttpUtil.extractParams(resContent);
         String is_success = (String) refundResult.getItem("is_success");
         if (StringUtil.isEmpty(is_success)) {
             log.error("[queryRefundOrder] 支付宝退款查询返回参数异常, 没有键值is_success, 参数:" + params + ", 返回:" + resContent);

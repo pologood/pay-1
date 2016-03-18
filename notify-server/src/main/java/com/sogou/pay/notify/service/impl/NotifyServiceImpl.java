@@ -97,7 +97,7 @@ public class NotifyServiceImpl extends AbstractNotifyService {
 //        logger.info(String.format("notify url: %s,paramsString: %s", notifyUrl, paramsString));
 //        logger.info("notify result:" + result);
         MerchantResponse merchantResponse = MerchantHttpClient.getInstance().doPost(notifyUrl, notifyParam);
-        logger.info(String.format("notify url: %s,paramsString: %s", notifyUrl, HttpUtil.packUrlParams(notifyParam, null)));
+        logger.info(String.format("notify url: %s,paramsString: %s", notifyUrl, HttpUtil.packUrlParams(notifyParam)));
         logger.info("notify result:" + JSON.toJSONString(merchantResponse));
         if (merchantResponse.isSuccess() == true) {
             if (type == NotifyTypeEnum.PAY_NOTIFY.value()) {
@@ -143,7 +143,7 @@ public class NotifyServiceImpl extends AbstractNotifyService {
 
                 MerchantResponse merchantResponse = MerchantHttpClient.getInstance().doPost(notifyUrl, notifyParam);
 
-                logger.info(String.format("notify url: %s,paramsString: %s", notifyUrl, HttpUtil.packUrlParams(notifyParam, null)));
+                logger.info(String.format("notify url: %s,paramsString: %s", notifyUrl, HttpUtil.packUrlParams(notifyParam)));
                 logger.info("notify result:" + JSON.toJSONString(merchantResponse));
 
                 if (merchantResponse.isSuccess() == true) {
