@@ -270,7 +270,7 @@ public class PaySDKController extends BaseController{
             result.addItem("orderInfo", payGateResult.getData().get("strOrderInfo"));
             result.addItem("aliPublicKey", payGateResult.getData().get("aliPublicKey"));
         } else {
-            result.addItem("returnData", payGateResult.getData().get("returnData"));
+            result.addItem("orderInfo", payGateResult.getData().get("returnData"));
         }
         return result;
     }

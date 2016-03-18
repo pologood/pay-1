@@ -8,7 +8,7 @@ import java.util.HashMap;
  * @author xiepeidong
  * @date 2016/2/29
  */
-public enum OrderStatus {
+public enum OrderStatus implements ValueEnum{
     NOTPAY(1),          // NOTPAY—未支付
     USERPAYING(2),      // USERPAYING--支付中
     SUCCESS(3),         // SUCCESS—支付完成

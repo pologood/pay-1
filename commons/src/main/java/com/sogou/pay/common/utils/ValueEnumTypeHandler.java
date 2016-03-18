@@ -1,6 +1,6 @@
-package com.sogou.pay.wallet.util;
+package com.sogou.pay.common.utils;
 
-import com.sogou.pay.wallet.enums.ValueEnum;
+import com.sogou.pay.common.enums.ValueEnum;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 

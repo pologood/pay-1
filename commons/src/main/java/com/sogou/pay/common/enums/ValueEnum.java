@@ -1,4 +1,4 @@
-package com.sogou.pay.wallet.enums;
+package com.sogou.pay.common.enums;
 
 /**
  * Created by xiepeidong on 2016/3/2.

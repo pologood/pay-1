@@ -6,7 +6,7 @@ package com.sogou.pay.common.enums;
  * @author xiepeidong
  * @date 2016/2/29
  */
-public enum OrderRefundStatus {
+public enum OrderRefundStatus implements ValueEnum{
     UNKNOWN(0),         // UNKNOWN-未知退款状态
     SUCCESS(1),         // SUCCESS—退款成功
     PROCESSING(2),      // PROCESSING—退款中

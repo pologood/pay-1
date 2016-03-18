@@ -35,8 +35,8 @@ public class PaySDKControllerTest extends BaseTest {
         params.setAppId("5000");
         params.setAccessPlatform("3");
         params.setSignType("0");
-        params.setPageUrl("http://127.0.0.1:8080/notify/ali/pay/testBgUrl");
-        params.setBgUrl("http://127.0.0.1:8080/notify/ali/pay/testBgUrl");
+        params.setPageUrl("http://center.pay.sogou.com/notify/testBgUrl");
+        params.setBgUrl("http://center.pay.sogou.com/notify/testBgUrl");
         params.setBankCardType("");
         Map map = BeanUtil.Bean2Map(params);
 

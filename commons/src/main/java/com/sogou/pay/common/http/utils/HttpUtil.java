@@ -56,17 +56,19 @@ public final class HttpUtil {
             if (MapUtil.isEmpty(params)) {
                 return newUrl;
             } else {
-                return newUrl + "?" + packUrlParams(params);
+                return newUrl + "?" + packUrlParams(params, null);
             }
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("URL parse error");
         }
     }
 
-    public static String packUrlParams(Map params) {
+    public static String packUrlParams(Map params, String decorate) {
         if (MapUtil.isEmpty(params)) {
             return "";
         }
+        if (decorate == null)
+            decorate = "";
         try {
             StringBuilder sb = new StringBuilder();
             Object[] keys = params.keySet().toArray();
@@ -78,11 +80,13 @@ public final class HttpUtil {
                 }
                 sb.append(URLEncoder.encode(key, HttpConstant.DEFAULT_CHARSET));
                 sb.append("=");
-                sb.append(URLEncoder.encode(value.toString(), HttpConstant.DEFAULT_CHARSET));
+                sb.append(decorate).
+                        append(URLEncoder.encode(value.toString(), HttpConstant.DEFAULT_CHARSET))
+                        .append(decorate);
                 sb.append("&");
             }
-            if(sb.length()>0){
-                sb.deleteCharAt(sb.length()-1);
+            if (sb.length() > 0) {
+                sb.deleteCharAt(sb.length() - 1);
             }
             return sb.toString();
         } catch (Exception e) {
@@ -91,15 +95,15 @@ public final class HttpUtil {
     }
 
 
-    public static ResultMap extractUrlParams(String params){
+    public static ResultMap extractUrlParams(String params) {
         ResultMap result = ResultMap.build();
         try {
-            String []pairs = params.split("&");
-            for(String pair: pairs){
-                String []param = pair.split("=");
+            String[] pairs = params.split("&");
+            for (String pair : pairs) {
+                String[] param = pair.split("=");
                 result.addItem(param[0], param[1]);
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             result.withError(ResultStatus.SYSTEM_ERROR);
         }
         return result;

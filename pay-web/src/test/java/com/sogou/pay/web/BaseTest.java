@@ -192,7 +192,7 @@ public class BaseTest extends Assert {
         } else if (mediaType.equals(MediaType.APPLICATION_XML) || mediaType.equals(MediaType.TEXT_XML)) {
             body = XMLUtil.Map2XML("xml", params);
         } else {
-            body = HttpUtil.packUrlParams(params);
+            body = HttpUtil.packUrlParams(params, null);
         }
         builder.content(body);
     }

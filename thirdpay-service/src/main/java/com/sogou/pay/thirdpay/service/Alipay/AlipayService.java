@@ -268,7 +268,7 @@ public class AlipayService implements ThirdpayService {
         // 6.组装商户需要的订单信息参数
         requestPMap.put("sign", sign);
         requestPMap.put("sign_type", "RSA");                     //签名方式
-        String payInfo = HttpUtil.packUrlParams(requestPMap);
+        String payInfo = HttpUtil.packUrlParams(requestPMap, "\"");
         // 7.获取客户端需要的支付宝公钥
         String publicCertFilePath = params.getString("publicCertFilePath");
         String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);

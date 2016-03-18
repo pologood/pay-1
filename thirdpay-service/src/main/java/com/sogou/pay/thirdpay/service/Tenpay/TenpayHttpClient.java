@@ -51,7 +51,7 @@ public class TenpayHttpClient {
         this.myCertFile = myCertFile;
         this.certPasswd = certPasswd;
         this.caCertFile = caCertFile;
-        this.sslContext = createSslContext(myCertFile, certPasswd, caCertFile);
+        this.sslContext = createSslContext(this.myCertFile, certPasswd, this.caCertFile);
     }
 
     private SSLContext createSslContext(String myCertFile, String certPasswd, String caCertFile) {
