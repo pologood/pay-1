@@ -9,9 +9,9 @@
 </head>
 <body>
 
-<form action="${appUrl}" name="form1" id="form1" method="post">
+<form action="${appUrl}" name="form1" id="form1" method="get">
     <c:forEach var="map" varStatus="status" items="${returnMap}">
-        <input type="hidden" name='${map.key }' value='${map.value}' class="flag"/>
+        <input type="hidden" name='${map.key}' value='${map.value}' class="flag"/>
     </c:forEach>
 </form>
 <script type="text/javascript">
