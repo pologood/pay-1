@@ -373,6 +373,7 @@ public class PayNotifyManagerImpl implements PayNotifyManager {
         notifyMap.put("signType","0");
         notifyMap.put("orderId", payOrderInfo.getOrderId());
         notifyMap.put("payId", payOrderInfo.getPayId());
+        notifyMap.put("payChannelCode", payOrderInfo.getChannelCode());
         notifyMap.put("successTime", new SimpleDateFormat("yyyyMMddHHmmss").format(payOrderInfo.getPaySuccessTime()));
         Result result = secureManager.appSign(notifyMap);
         if(!Result.isSuccess(result)){
