@@ -93,7 +93,7 @@ public class TenpayHttpClient {
         return null;
     }
 
-    public Result doGet(String url, Map<String, String> paramMap) {
+    public Result doGet(String url, Map<String, Object> paramMap) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doGet(url, paramMap, this.charset, this.sslContext);
         } else {
@@ -109,7 +109,7 @@ public class TenpayHttpClient {
         }
     }
 
-    public Result doPost(String url, Map<String, String> paramMap) {
+    public Result doPost(String url, Map<String, Object> paramMap) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doPost(url, paramMap, this.charset, this.sslContext);
         } else {
