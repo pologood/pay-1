@@ -90,7 +90,7 @@ public class PaySDKController extends BaseController{
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/api/pay/sdk",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = "/api/pay/sdk", produces = "text/plain; charset=utf-8")
+    @RequestMapping(value = "/api/pay/sdk", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String doPay(PayParams params, HttpServletRequest request,HttpServletResponse response){
         ResultMap result = ResultMap.build();
@@ -161,7 +161,7 @@ public class PaySDKController extends BaseController{
 
     @Profiled(el = true, logger = "webTimingLogger", tag = "/paysdk/doPay",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = "/paysdk/doPay", produces = "text/plain; charset=utf-8")
+    @RequestMapping(value = "/paysdk/doPay", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String doPay_deprecated(PayParams params, HttpServletRequest request,HttpServletResponse response){
         ResultBean resultBean = ResultBean.build();

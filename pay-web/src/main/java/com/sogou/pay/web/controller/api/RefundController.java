@@ -48,7 +48,7 @@ public class RefundController {
 
     @Profiled(el = true, logger = "webTimingLogger", tag = "/api/refund",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = "/api/refund", produces = "text/plain; charset=utf-8")
+    @RequestMapping(value = "/api/refund", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String refund(RefundParams params, HttpServletRequest request) {
         // 0.记录请求日志
@@ -103,7 +103,7 @@ public class RefundController {
 
     @Profiled(el = true, logger = "webTimingLogger", tag = "/refund",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = "/refund", produces = "text/plain; charset=utf-8")
+    @RequestMapping(value = "/refund", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String refund_deprecated(RefundParams params, HttpServletRequest request) {
         // 0.记录请求日志

@@ -43,7 +43,7 @@ public class WechatPayNotifyController extends BaseController {
     private RedisUtils redisUtils;
 
 
-    @RequestMapping(value = "/notify/status/wechat", produces = "text/plain; charset=utf-8")
+    @RequestMapping(value = "/notify/status/wechat", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getWechatStatus(@RequestParam Map params){
         ResultMap result = ResultMap.build();

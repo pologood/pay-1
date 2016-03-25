@@ -52,7 +52,7 @@ public class OrderQueryController {
 
     @Profiled(el = true, logger = "webTimingLogger", tag = "/api/pay/query",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = "/api/pay/query", produces = "text/plain; charset=utf-8")
+    @RequestMapping(value = "/api/pay/query", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String pay(PayOrderQueryParams params, HttpServletRequest request) {
         ResultMap result = ResultMap.build();
@@ -99,7 +99,7 @@ public class OrderQueryController {
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/api/refund/query",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = "/api/refund/query", produces = "text/plain; charset=utf-8")
+    @RequestMapping(value = "/api/refund/query", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String queryRefund(QueryRefundParams params) {
         ResultMap result = ResultMap.build();
@@ -140,7 +140,7 @@ public class OrderQueryController {
 
     @Profiled(el = true, logger = "webTimingLogger", tag = "/orderQuery/pay",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = "/orderQuery/pay", produces = "text/plain; charset=utf-8")
+    @RequestMapping(value = "/orderQuery/pay", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String pay_deprecated(PayOrderQueryParams params, HttpServletRequest request) {
         QueryOrderResult queryOrderResult = new QueryOrderResult();
@@ -192,7 +192,7 @@ public class OrderQueryController {
      */
     @Profiled(el = true, logger = "webTimingLogger", tag = "/orderQuery/refund",
             timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = "/orderQuery/refund", produces = "text/plain; charset=utf-8")
+    @RequestMapping(value = "/orderQuery/refund", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String queryRefund_deprecated(QueryRefundParams params) {
         QueryRefundResult queryRefundResult = new QueryRefundResult();
