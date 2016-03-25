@@ -21,11 +21,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.conn.ssl.DefaultHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
+//import org.apache.http.conn.HttpClientConnectionManager;
+//import org.apache.http.conn.ssl.DefaultHostnameVerifier;
+//import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+//import org.apache.http.conn.ssl.SSLSocketFactory;
+//import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -82,7 +82,7 @@ public class HttpCaller {
 
     private static HttpCaller httpCaller = new HttpCaller();
 
-    private IdleConnectionMonitorThread idleEvictThread;
+//    private IdleConnectionMonitorThread idleEvictThread;
 
     /**
      * 工厂方法
@@ -98,24 +98,24 @@ public class HttpCaller {
      */
     private HttpCaller() {
 
-        // 创建一个线程安全的HTTP连接池
-        connectionManager = new PoolingHttpClientConnectionManager();
-        connectionManager.setMaxTotal(DEFAULT_MAX_TOTAL_CONN);
-        connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_CONN_PERHOST);
-
-        // Validate connections after 1 sec of inactivity
-        connectionManager.setValidateAfterInactivity(1000);
-
-
-        idleEvictThread = new IdleConnectionMonitorThread(connectionManager);
-        idleEvictThread.start();
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                httpCaller.shutdown();
-            }
-        });
+//        // 创建一个线程安全的HTTP连接池
+//        connectionManager = new PoolingHttpClientConnectionManager();
+//        connectionManager.setMaxTotal(DEFAULT_MAX_TOTAL_CONN);
+//        connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_CONN_PERHOST);
+//
+//        // Validate connections after 1 sec of inactivity
+//        connectionManager.setValidateAfterInactivity(1000);
+//
+//
+//        idleEvictThread = new IdleConnectionMonitorThread(connectionManager);
+//        idleEvictThread.start();
+//
+//        Runtime.getRuntime().addShutdownHook(new Thread() {
+//            @Override
+//            public void run() {
+//                httpCaller.shutdown();
+//            }
+//        });
     }
 
     public Response call(Request request) {
@@ -257,52 +257,52 @@ public class HttpCaller {
         }
     }
 
-    public void shutdown() {
-        this.idleEvictThread.shutdown();
-        this.connectionManager.shutdown();
-    }
+//    public void shutdown() {
+//        this.idleEvictThread.shutdown();
+//        this.connectionManager.shutdown();
+//    }
 
-    /**
-     * @Author qibaichao
-     * @ClassName IdleConnectionMonitorThread
-     * @Date 2014年9月12日
-     * @Description: 守护线程，定时清理过期和空闲时间超时的连接
-     */
-    private static class IdleConnectionMonitorThread extends Thread {
-
-        private final HttpClientConnectionManager connMgr;
-        private volatile boolean shutdown;
-
-        public IdleConnectionMonitorThread(HttpClientConnectionManager connMgr) {
-            this.connMgr = connMgr;
-            this.setDaemon(true);// 守护线程
-        }
-
-        @Override
-        public void run() {
-            try {
-                while (!shutdown) {
-                    synchronized (this) {
-                        wait(5000);
-                        // 关闭过期连接
-                        connMgr.closeExpiredConnections();
-                        // 可选地，关闭空闲超过30秒的连接
-                        connMgr.closeIdleConnections(DEFAULT_IDLE_TIMEOUT, TimeUnit.MILLISECONDS);
-                    }
-                }
-            } catch (InterruptedException ex) {
-                // 终止
-            }
-        }
-
-        public void shutdown() {
-            if (!shutdown) {
-                shutdown = true;
-                synchronized (this) {
-                    notifyAll();
-                }
-            }
-        }
-
-    }
+//    /**
+//     * @Author qibaichao
+//     * @ClassName IdleConnectionMonitorThread
+//     * @Date 2014年9月12日
+//     * @Description: 守护线程，定时清理过期和空闲时间超时的连接
+//     */
+//    private static class IdleConnectionMonitorThread extends Thread {
+//
+//        private final HttpClientConnectionManager connMgr;
+//        private volatile boolean shutdown;
+//
+//        public IdleConnectionMonitorThread(HttpClientConnectionManager connMgr) {
+//            this.connMgr = connMgr;
+//            this.setDaemon(true);// 守护线程
+//        }
+//
+//        @Override
+//        public void run() {
+//            try {
+//                while (!shutdown) {
+//                    synchronized (this) {
+//                        wait(5000);
+//                        // 关闭过期连接
+//                        connMgr.closeExpiredConnections();
+//                        // 可选地，关闭空闲超过30秒的连接
+//                        connMgr.closeIdleConnections(DEFAULT_IDLE_TIMEOUT, TimeUnit.MILLISECONDS);
+//                    }
+//                }
+//            } catch (InterruptedException ex) {
+//                // 终止
+//            }
+//        }
+//
+//        public void shutdown() {
+//            if (!shutdown) {
+//                shutdown = true;
+//                synchronized (this) {
+//                    notifyAll();
+//                }
+//            }
+//        }
+//
+//    }
 }

@@ -16,7 +16,7 @@
         <module>thirdpay-service</module>
         <module>notify-server</module>
         <module>pay-timer</module>
-        <module>sogou-wallet</module>
+        <!--<module>sogou-wallet</module>-->
     </modules>
 
     <repositories>

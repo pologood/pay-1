@@ -102,10 +102,10 @@ public class Request {
         }
     }
 
-    public void addParam(Map<String, String> paramMap) {
+    public void addParam(Map<String, Object> paramMap) {
 
         for (String key : paramMap.keySet()) {
-            parameters.add(new BasicNameValuePair(key, paramMap.get(key)));
+            parameters.add(new BasicNameValuePair(key, paramMap.get(key).toString()));
         }
     }
 

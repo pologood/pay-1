@@ -26,7 +26,7 @@ public class HttpService {
         return httpService;
     }
 
-    public Result doGet(String url, Map<String, String> paramMap, String charset, SSLContext sslContext) {
+    public Result doGet(String url, Map<String, Object> paramMap, String charset, SSLContext sslContext) {
         return doCall(url, null, paramMap, Request.GET, charset, sslContext);
     }
 
@@ -34,7 +34,7 @@ public class HttpService {
         return doCall(url, requestBody, null, Request.GET, charset, sslContext);
     }
 
-    public Result doPost(String url, Map<String, String> paramMap, String charset, SSLContext sslContext) {
+    public Result doPost(String url, Map<String, Object> paramMap, String charset, SSLContext sslContext) {
         return doCall(url, null, paramMap, Request.POST, charset, sslContext);
     }
 
@@ -42,7 +42,7 @@ public class HttpService {
         return doCall(url, requestBody, null, Request.POST, charset, sslContext);
     }
 
-    private Result doCall(String url, String requestBody, Map<String, String> paramMap, int method, String charset, SSLContext sslContext) {
+    private Result doCall(String url, String requestBody, Map<String, Object> paramMap, int method, String charset, SSLContext sslContext) {
 
         logger.info(String.format("[doCall] 参数: url=%s, requestBody=%s, paramMap=%s, method=%s, charset=%s", url,
                 requestBody, JSON.toJSONString(paramMap), method, charset));
