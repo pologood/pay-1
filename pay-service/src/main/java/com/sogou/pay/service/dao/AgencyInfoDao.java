@@ -22,7 +22,7 @@ public interface AgencyInfoDao {
      * @param agencyType:1：网关支付 2：第三方支付 3：扫码支付 4：全部  可空，默认为4
      * @return AgencyInfo
      */
-    public AgencyInfo getAgencyInfoByConn(@Param("agencyCode")String agencyCode,
+    public AgencyInfo getAgencyInfoByCode(@Param("agencyCode")String agencyCode,
                                           @Param("accessPlatform")String accessPlatform,
                                           @Param("agencyType")String agencyType);
     /**
