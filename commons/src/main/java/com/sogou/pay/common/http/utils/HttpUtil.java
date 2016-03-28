@@ -89,34 +89,6 @@ public final class HttpUtil {
         }
     }
 
-
-    public static String packParams(Map params, String decorate) {
-        if (MapUtil.isEmpty(params))
-            return "";
-        try {
-            StringBuilder sb = new StringBuilder();
-            for (Map.Entry<String, Object> entry : (Set<Map.Entry<String, Object>>) params.entrySet()) {
-                String key = (String) entry.getKey();
-                Object value = entry.getValue();
-                if (StringUtil.isEmpty(key) || value == null) {
-                    continue;
-                }
-                sb.append(key);
-                sb.append("=");
-                sb.append(decorate).
-                        append(value.toString())
-                        .append(decorate);
-                sb.append("&");
-            }
-            if (sb.length() > 0) {
-                sb.deleteCharAt(sb.length() - 1);
-            }
-            return sb.toString();
-        } catch (Exception e) {
-            throw new IllegalArgumentException("packParams error");
-        }
-    }
-
     public static ResultMap extractParams(String params) {
         ResultMap result = ResultMap.build();
         try {

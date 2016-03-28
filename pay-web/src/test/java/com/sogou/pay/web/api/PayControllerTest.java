@@ -49,7 +49,7 @@ public class PayControllerTest extends BaseTest {
         testGet(url, map);
     }
 
-    
+
     @Test
     public void testDoPayForWechat() {
         String url = "/api/pay/qrcode";

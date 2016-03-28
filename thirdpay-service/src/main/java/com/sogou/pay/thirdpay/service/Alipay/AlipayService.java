@@ -222,29 +222,33 @@ public class AlipayService implements ThirdpayService {
         return result;
     }
 
+    private String packit(String s) {
+        return new StringBuilder("\"").append(s).append("\"").toString();
+    }
+
     @Override
     public ResultMap preparePayInfoSDK(PMap params) throws ServiceException {
         ResultMap result = ResultMap.build();
         // 1.组装签名用到的参数
         PMap requestPMap = new PMap();
-        requestPMap.put("service", AlipayService.ALIPAY_SERVICE_MOBILE_DIRECTPAY);             //接口名称
-        requestPMap.put("partner", params.getString("merchantNo"));             //合作者身份ID
-        requestPMap.put("_input_charset", AlipayService.INPUT_CHARSET);            //参数编码
-        requestPMap.put("notify_url", params.getString("serverNotifyUrl"));     //服务器异步通知页面路径
-        requestPMap.put("out_trade_no", params.getString("serialNumber"));      //商户网站唯一订单号
-        requestPMap.put("subject", params.getString("subject"));                //商品名称
-        requestPMap.put("body", params.getString("subject"));                //商品名称
-        requestPMap.put("payment_type", AlipayService.PAYMENT_TYPE);               //支付类型
-        requestPMap.put("seller_id", params.getString("merchantNo"));             //卖家支付宝账户号
+        requestPMap.put("service", packit(AlipayService.ALIPAY_SERVICE_MOBILE_DIRECTPAY));             //接口名称
+        requestPMap.put("partner", packit(params.getString("merchantNo")));             //合作者身份ID
+        requestPMap.put("_input_charset", packit(AlipayService.INPUT_CHARSET));            //参数编码
+        requestPMap.put("notify_url", packit(params.getString("serverNotifyUrl")));     //服务器异步通知页面路径
+        requestPMap.put("out_trade_no", packit(params.getString("serialNumber")));      //商户网站唯一订单号
+        requestPMap.put("subject", packit(params.getString("subject")));                //商品名称
+        requestPMap.put("body", packit(params.getString("subject")));                //商品名称
+        requestPMap.put("payment_type", packit(AlipayService.PAYMENT_TYPE));               //支付类型
+        requestPMap.put("seller_id", packit(params.getString("merchantNo")));             //卖家支付宝账户号
         BigDecimal oAmount = new BigDecimal(params.getString("orderAmount"));
         String orderAmount = oAmount.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
-        requestPMap.put("total_fee", orderAmount);                                    //支付金额
+        requestPMap.put("total_fee", packit(orderAmount));                                    //支付金额
         // 11.设置未付款交易的超时时间
         // 默认30分钟, 一旦超时, 该笔交易就会自动被关闭。
         // 取值范围：1m～15d。
         // m-分钟, h-小时, d-天, 1c-当天（无论交易何时创建, 都在0点关闭）。
         // 该参数数值不接受小数点, 如1.5h, 可转换为90m。
-        requestPMap.put("it_b_pay", AlipayService.IT_B_PAY);
+        requestPMap.put("it_b_pay", packit(AlipayService.IT_B_PAY));
         if (!MapUtil.checkAllExist(requestPMap)) {
             log.error("[preparePayInfoSDK] 支付宝订单支付参数错误, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_PAY_PARAM_ERROR);
@@ -257,18 +261,19 @@ public class AlipayService implements ThirdpayService {
             log.error("[preparePayInfoSDK] 支付宝订单支付获取第三方支付账户密钥失败, 参数:" + params);
             return ResultMap.build(ResultStatus.THIRD_PAY_GET_KEY_ERROR);
         }
+        // 6.组装商户需要的订单信息参数
+        StringBuilder requestString = new StringBuilder(SecretKeyUtil.buildSignSource(requestPMap, true));
         // 4.签名
         String
                 sign =
-                SecretKeyUtil.aliRSASign(requestPMap, privateCertKey, AlipayService.INPUT_CHARSET);
+                SecretKeyUtil.aliRSASign(requestString.toString(), privateCertKey, AlipayService.INPUT_CHARSET);
         if (sign == null) {
             log.error("[preparePayInfoSDK] 支付宝订单支付签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
         }
-        // 6.组装商户需要的订单信息参数
-        requestPMap.put("sign", sign);
-        requestPMap.put("sign_type", "RSA");                     //签名方式
-        String payInfo = HttpUtil.packParams(requestPMap, "\"");
+        requestString.append("&").append("sign").append("=").append(packit(sign));//签名
+        requestString.append("&").append("sign_type").append("=").append(packit("RSA"));//签名方式
+        String payInfo = requestString.toString();
         // 7.获取客户端需要的支付宝公钥
         String publicCertFilePath = params.getString("publicCertFilePath");
         String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
@@ -889,15 +894,15 @@ public class AlipayService implements ThirdpayService {
         //提取关键参数
         String batch_no = notifyParams.getString("batch_no");
         String result_details = notifyParams.getString("result_details");
-        String []refund_details = result_details.split("#");
-        if(refund_details.length != 1){
+        String[] refund_details = result_details.split("#");
+        if (refund_details.length != 1) {
             log.error("[handleNotifyRefund] 支付宝退款异步回调参数错误, result_details包含多个对款记录, 参数:" + notifyParams);
             result.withError(ResultStatus.THIRD_NOTIFY_REFUND_PARAM_ERROR);
             return result;
         }
         String refund_detail = refund_details[0].split("\\$")[0];
-        String []refund_detail_items = refund_detail.split("\\^");
-        if(refund_detail_items.length != 3){
+        String[] refund_detail_items = refund_detail.split("\\^");
+        if (refund_detail_items.length != 3) {
             log.error("[handleNotifyRefund] 支付宝退款异步回调参数错误, 参数:" + notifyParams);
             result.withError(ResultStatus.THIRD_NOTIFY_REFUND_PARAM_ERROR);
             return result;

@@ -71,9 +71,9 @@ public class SecretKeyUtil {
     /**
      * 构建请求报文
      */
-    private static String buildSignSource(Map<String, String> contextMap, boolean sort) {
+    public static String buildSignSource(Map<String, String> contextMap, boolean sort) {
         List keys = new ArrayList<String>(contextMap.keySet());
-        if(sort)
+        if (sort)
             Collections.sort(keys);
         StringBuilder signSource = new StringBuilder();
         for (int i = 0; i < keys.size(); i++) {
@@ -84,15 +84,14 @@ public class SecretKeyUtil {
             signSource.append(value);
             signSource.append("&");
         }
-        if(signSource.length()>0){
-            signSource.deleteCharAt(signSource.length()-1);
+        if (signSource.length() > 0) {
+            signSource.deleteCharAt(signSource.length() - 1);
         }
         return signSource.toString();
     }
 
 
-
-    public static String loadKeyFromFile(String keyFilePath){
+    public static String loadKeyFromFile(String keyFilePath) {
         StringBuilder privateCertKey = new StringBuilder();
         try {
             FileReader read = new FileReader(keyFilePath);
@@ -112,9 +111,17 @@ public class SecretKeyUtil {
      * 支付宝客户端支付--RSA加密
      */
     public static String aliRSASign(PMap<String, String> contextMap, String privateKey, String charset) {
+        // 组装签名报文
+        String signSource = buildSignSource(contextMap, true);
+        return aliRSASign(signSource, privateKey, charset);
+    }
+
+
+    /**
+     * 支付宝客户端支付--RSA加密
+     */
+    public static String aliRSASign(String content, String privateKey, String charset) {
         try {
-            // 组装签名报文
-            String signSource = buildSignSource(contextMap, true);
 
             PKCS8EncodedKeySpec priPKCS8 = new PKCS8EncodedKeySpec(
                     Base64.decode(privateKey));
@@ -125,7 +132,7 @@ public class SecretKeyUtil {
                     .getInstance(SIGN_ALGORITHMS);
 
             signature.initSign(priKey);
-            signature.update(signSource.getBytes(charset));
+            signature.update(content.getBytes(charset));
 
             byte[] signed = signature.sign();
 
@@ -276,7 +283,6 @@ public class SecretKeyUtil {
     }
 
 
-
     /**
      * 财付通、微信支付MD5签名 contextMap 签名参数 md5securityKey MD5密钥 charset 参数编码
      */
@@ -343,26 +349,26 @@ public class SecretKeyUtil {
 
 
     public static boolean billRSACheckSign(PMap<String, String> signMap,
-                                           String pubKeyPath, String sign){
-        String sb = buildSignSource(signMap,false);
+                                           String pubKeyPath, String sign) {
+        String sb = buildSignSource(signMap, false);
         Pkipair pair = new Pkipair();
         boolean isTrue;
         try {
-            isTrue = pair.enCodeByCer(sb, sign,pubKeyPath);
+            isTrue = pair.enCodeByCer(sb, sign, pubKeyPath);
             return isTrue;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
-    
+
 
     /**
      * 快钱获取签名
      */
     public static String billRSASign(PMap signMsgMap, String path) {
 
-        String signMsg = buildSignSource(signMsgMap,false);
+        String signMsg = buildSignSource(signMsgMap, false);
         String base64 = "";
         try {
             // 密钥仓库
