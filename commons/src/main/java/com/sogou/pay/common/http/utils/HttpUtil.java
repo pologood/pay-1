@@ -89,6 +89,14 @@ public final class HttpUtil {
         }
     }
 
+    public static String urlEncode(String content) {
+        try {
+            return URLEncoder.encode(content, HttpConstant.DEFAULT_CHARSET);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("urlEncode error");
+        }
+    }
+
     public static ResultMap extractParams(String params) {
         ResultMap result = ResultMap.build();
         try {

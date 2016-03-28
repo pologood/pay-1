@@ -271,6 +271,7 @@ public class AlipayService implements ThirdpayService {
             log.error("[preparePayInfoSDK] 支付宝订单支付签名失败, 参数:" + requestPMap);
             return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
         }
+        sign = HttpUtil.urlEncode(sign);
         requestString.append("&").append("sign").append("=").append(packit(sign));//签名
         requestString.append("&").append("sign_type").append("=").append(packit("RSA"));//签名方式
         String payInfo = requestString.toString();
