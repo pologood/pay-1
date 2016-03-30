@@ -66,7 +66,7 @@ public class PayTranferRequestManagerImpl implements PayTranferRequestManager {
                 result.withError(ResultStatus.PAY_TRANFER_BATCH_NOT_EXIST);
                 return result;
             }
-            if (payTransferBatch.getTradeState() != PayTransferBatchStatus.AUDIT_PASS.getValue()) {
+            if (payTransferBatch.getTradeState() != PayTransferBatchStatus.FINAL_APPROVED.getValue()) {
                 logger.error("【代发批次单审核状态不是审核通过!】,batchNo = " + batchNo);
                 result.withError(ResultStatus.PAY_TRANFER_BATCH_STATUS_NOT_AUDIT_PASS);
                 return result;

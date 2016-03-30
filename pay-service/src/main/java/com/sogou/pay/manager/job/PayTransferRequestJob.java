@@ -30,7 +30,8 @@ public class PayTransferRequestJob extends BatchScheduledJob {
         List<PayTransferBatch> payTransferBatchList = null;
         try {
             // 查询交易状态为处理中的
-            payTransferBatchList = payTransferBatchService.queryByTradeStatus(PayTransferBatchStatus.AUDIT_PASS.getValue());
+            payTransferBatchList = payTransferBatchService
+                    .queryByTradeStatus(PayTransferBatchStatus.FINAL_APPROVED.getValue());
             int size = payTransferBatchList.size();
             logger.info("【代付请求job】 size:" + size);
             if (size != 0) {
@@ -47,7 +48,8 @@ public class PayTransferRequestJob extends BatchScheduledJob {
         for (Object object : objectList) {
             if (object instanceof PayTransferBatch) {
                 PayTransferBatch payTransferBatch = (PayTransferBatch) object;
-                payTranferRequestManager.doProcess(String.valueOf(payTransferBatch.getAppId()),payTransferBatch.getBatchNo());
+                payTranferRequestManager.doProcess(String.valueOf(payTransferBatch.getAppId()),
+                        payTransferBatch.getBatchNo());
             }
         }
     }

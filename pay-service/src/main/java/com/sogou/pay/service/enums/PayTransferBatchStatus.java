@@ -28,7 +28,9 @@ public enum PayTransferBatchStatus {
     /**
      * 付款失败
      */
-    FAIL(6);
+    FAIL(6),
+    
+    FINAL_APPROVED(14);
     private final int value;
 
     private PayTransferBatchStatus(int value)
