@@ -27,7 +27,7 @@ public class SequenceFactory {
     @Resource
     private PayTransferBatchNo payTransferBatchNo;
     @Resource
-    private SequenceGenerator payTransferNo;
+    private PayTransferNo payTransferNo;
     @Resource
     private OrderNo orderNo;
     /**

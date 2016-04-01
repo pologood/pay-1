@@ -43,7 +43,7 @@ public abstract class SequenceGenerator {
         return new StringBuffer().
                 append(status.lastTime).
                 append(status.workerId).
-                append(String.format("%03d", status.currentNumber)).
+                append(String.format("%02d", status.currentNumber)).
                 toString();
     }
 
@@ -60,12 +60,12 @@ public abstract class SequenceGenerator {
             String ipAddress = InetAddress.getLocalHost().getHostAddress();
             String[] atoms = ipAddress.split("\\.");
             machineId = Long.parseLong(atoms[atoms.length - 1]);
-            procId = new Random().nextInt(1000);
+            procId = new Random().nextInt(10);
             threadId = Thread.currentThread().getId();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return String.format("%03d%03d%03d", machineId, procId, threadId);
+        return String.format("%02d%01d%01d", machineId, procId, threadId);
     }
 
     public abstract String getDateFormat();
