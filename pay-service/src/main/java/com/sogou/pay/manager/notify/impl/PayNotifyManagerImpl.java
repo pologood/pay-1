@@ -368,8 +368,8 @@ public class PayNotifyManagerImpl implements PayNotifyManager {
     public ResultMap<Map> getNotifyMap(
             PayOrderInfo payOrderInfo) {
         Map<String,String> notifyMap = new HashMap<String,String>();
-        notifyMap.put("appId", payOrderInfo.getAppId().toString());
         notifyMap.put("isSuccess", "T");
+        notifyMap.put("appId", payOrderInfo.getAppId().toString());
         notifyMap.put("signType","0");
         notifyMap.put("orderId", payOrderInfo.getOrderId());
         notifyMap.put("payId", payOrderInfo.getPayId());

@@ -210,6 +210,7 @@ public class RefundNotifyManagerImpl implements RefundNotifyManager {
             String notifyUrl = refundInfo.getAppBgUrl();
             if (!StringUtil.isBlank(notifyUrl)) {
                 Map<String, String> data = new HashMap<>();
+                data.put("isSuccess", "T");
                 data.put("orderId", payOrderInfo.getOrderId());
                 data.put("payId", payOrderInfo.getPayId());
                 data.put("payAmount", String.valueOf(payOrderInfo.getOrderMoney().doubleValue()));
