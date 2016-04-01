@@ -57,15 +57,15 @@ public abstract class SequenceGenerator {
         long procId = 0;
         long threadId = 0;
         try {
-            String ipAddress = InetAddress.getLocalHost().getHostAddress();
-            String[] atoms = ipAddress.split("\\.");
-            machineId = Long.parseLong(atoms[atoms.length - 1]);
-            procId = new Random().nextInt(10);
+            //String ipAddress = InetAddress.getLocalHost().getHostAddress();
+            //String[] atoms = ipAddress.split("\\.");
+            //machineId = Long.parseLong(atoms[atoms.length - 1]);
+            procId = new Random().nextInt(100);
             threadId = Thread.currentThread().getId();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return String.format("%02d%01d%01d", machineId, procId, threadId);
+        return String.format("%02d%02d", procId, threadId);
     }
 
     public abstract String getDateFormat();
