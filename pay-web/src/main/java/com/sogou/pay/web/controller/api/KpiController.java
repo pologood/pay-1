@@ -514,7 +514,7 @@ public class KpiController extends BaseController{
     @RequestMapping("frontMachine")
     public ModelAndView frontMachine(PayParams params, HttpServletRequest request){
         ModelAndView view = new ModelAndView("kpiSuccess");
-        String resultXmlStr = HttpUtil.sendPost(PayConfig.payTranferHost, "");
+        String resultXmlStr = HttpUtil.sendPost(PayConfig.payTransferHost, "");
         if(StringUtils.isEmpty(resultXmlStr)){
             //失败,跳到错误页面
             return setErrorPage(ResultStatus.PAY_TRANFER_REQUEST_CONNECT_ERROR, "web");
