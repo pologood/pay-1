@@ -88,7 +88,7 @@ public class PayTranferRequestManagerImpl implements PayTranferRequestManager {
             String requestData = getRequestStr(payTransferBatch, payTransferList);
             logger.info("【代发请求xml!】:" + requestData);
             //数据提交
-            String responseStr = HttpUtil.sendPost(PayConfig.payTranferHost, requestData);
+            String responseStr = HttpUtil.sendPost(PayConfig.payTransferHost, requestData);
             logger.info("【代发请求返回数据】xml：" + responseStr);
             //处理返回结果
             processResult(responseStr, appId, batchNo);
@@ -110,7 +110,7 @@ public class PayTranferRequestManagerImpl implements PayTranferRequestManager {
      */
     private String getRequestStr(PayTransferBatch payTransferBatch, List<PayTransfer> payTransferList) {
         // 构造直接代发代扣的请求报文
-        XmlPacket xmlPkt = new XmlPacket("AgentRequest", PayConfig.payTranferLgnName);
+        XmlPacket xmlPkt = new XmlPacket("AgentRequest", PayConfig.payTransferLgnName);
         Map payTransferOverview = new Properties();
         //业务类别
         payTransferOverview.put("BUSCOD", payTransferBatch.getBusCod());

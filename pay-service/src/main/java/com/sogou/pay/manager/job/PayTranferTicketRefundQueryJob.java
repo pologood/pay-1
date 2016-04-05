@@ -58,7 +58,7 @@ public class PayTranferTicketRefundQueryJob {
             String requestStr = getTransInfoRequestStr(beginDate, endDate);
             logger.info("【查询账户交易信息请求xml】:" + requestStr);
             //数据提交
-            String agentResultStr = HttpUtil.sendPost(PayConfig.payTranferHost, requestStr);
+            String agentResultStr = HttpUtil.sendPost(PayConfig.payTransferHost, requestStr);
             logger.info("【查询账户交易信息响应xml】:" + agentResultStr);
             if (StringUtils.isEmpty(agentResultStr)) {
                 logger.error("【请求前置机异常!】");
@@ -107,7 +107,7 @@ public class PayTranferTicketRefundQueryJob {
         Map notifyData = new HashMap();
         logger.info("代付通知 ,data=" + appXmlPacket.toQueryXmlString());
         notifyData.put("data", appXmlPacket.toQueryXmlString());
-        MerchantResponse merchantResponse = MerchantHttpClient.getInstance().doPost(PayConfig.payTranferNotifyUrl, notifyData);
+        MerchantResponse merchantResponse = MerchantHttpClient.getInstance().doPost(PayConfig.payTransferNotifyUrl, notifyData);
         if (merchantResponse.isSuccess() == true) {
             //通知
             payTransferBatchService.updateNotifyFlagByBatchNo(String.valueOf(payTransferBatch.getAppId()),payTransferBatch.getBatchNo(), NOTIFY_OK);
@@ -121,7 +121,7 @@ public class PayTranferTicketRefundQueryJob {
      */
     private String getTransInfoRequestStr(String beginDate, String endDate) {
         //构造查询账户交易信息xml
-        XmlPacket xmlPkt = new XmlPacket("GetTransInfo", PayConfig.payTranferLgnName);
+        XmlPacket xmlPkt = new XmlPacket("GetTransInfo", PayConfig.payTransferLgnName);
         Map mpAccInfo = new Properties();
         //分行号
         mpAccInfo.put("BBKNBR", "59");

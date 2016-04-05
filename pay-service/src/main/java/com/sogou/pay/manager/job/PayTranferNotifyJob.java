@@ -101,7 +101,7 @@ public class PayTranferNotifyJob {
         Map notifyData = new HashMap();
         logger.info("代付通知 ,data=" + appXmlPacket.toQueryXmlString());
         notifyData.put("data", appXmlPacket.toQueryXmlString());
-        MerchantResponse merchantResponse = MerchantHttpClient.getInstance().doPost(PayConfig.payTranferNotifyUrl, notifyData);
+        MerchantResponse merchantResponse = MerchantHttpClient.getInstance().doPost(PayConfig.payTransferNotifyUrl, notifyData);
         if (merchantResponse.isSuccess() == true) {
             //通知
             payTransferBatchService.updateNotifyFlagByBatchNo(String.valueOf(payTransferBatch.getAppId()), payTransferBatch.getBatchNo(), NOTIFY_OK);
