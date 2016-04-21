@@ -1,7 +1,7 @@
 package com.sogou.pay.service.payment;
 
 import com.sogou.pay.common.cache.RedisUtils;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

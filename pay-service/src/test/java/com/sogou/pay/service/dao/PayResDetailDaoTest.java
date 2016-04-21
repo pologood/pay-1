@@ -1,7 +1,7 @@
 package com.sogou.pay.service.dao;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayResDetail;
 import com.sogou.pay.service.payment.PayResDetailService;
 import org.junit.Test;

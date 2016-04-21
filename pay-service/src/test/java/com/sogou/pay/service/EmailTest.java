@@ -7,12 +7,10 @@
  */
 package com.sogou.pay.service;
 
-import com.sogou.pay.common.utils.DateUtil;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.utils.email.EmailSenderInterface;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Date;
 
 /**
  * @Author qibaichao
@@ -21,7 +19,7 @@ import java.util.Date;
  * @Description:
  */
 
-public class EmailTest extends  BaseTest{
+public class EmailTest extends BaseTest {
 
     @Autowired
     private EmailSenderInterface emailSender;

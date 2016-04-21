@@ -2,7 +2,7 @@ package com.sogou.pay.service.payment.manager;
 
 import com.sogou.pay.manager.model.notify.PayNotifyModel;
 import com.sogou.pay.manager.notify.PayNotifyManager;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

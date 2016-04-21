@@ -1,14 +1,13 @@
 package com.sogou.pay.service.dao;
 
 import com.sogou.pay.common.utils.DateUtil;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.RefundInfo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by hjf on 15-3-2.

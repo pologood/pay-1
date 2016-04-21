@@ -1,6 +1,7 @@
 package com.sogou.pay.service;
 
 import com.alibaba.fastjson.JSON;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.common.http.utils.HttpUtil;
 import com.sogou.pay.common.types.Result;
 import com.sogou.pay.manager.job.PayTranferNotifyJob;

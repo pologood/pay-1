@@ -1,9 +1,11 @@
 package com.sogou.pay.wallet.enums;
 
+import com.sogou.pay.common.enums.ValueEnum;
+
 /**
  * Created by xiepeidong on 2016/2/26.
  */
-public enum TranscStatus implements ValueEnum{
+public enum TranscStatus implements ValueEnum {
     INIT(0),
     SUCCESS(1),
     FAIL(2);

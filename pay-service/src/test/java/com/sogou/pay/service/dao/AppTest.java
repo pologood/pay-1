@@ -1,6 +1,6 @@
 package com.sogou.pay.service.dao;
 
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.App;
 import com.sogou.pay.service.payment.AppService;
 import org.junit.Test;

@@ -1,6 +1,6 @@
 package com.sogou.pay.service.dao;
 
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayCheckResult;
 import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import org.junit.Test;

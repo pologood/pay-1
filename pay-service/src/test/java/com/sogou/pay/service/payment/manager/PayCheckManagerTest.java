@@ -2,7 +2,7 @@ package com.sogou.pay.service.payment.manager;
 
 import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.manager.payment.PayCheckManager;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.dao.PayCheckDao;
 import com.sogou.pay.service.dao.PayCheckDayLogDao;
 import com.sogou.pay.service.dao.PayCheckWaitingDao;

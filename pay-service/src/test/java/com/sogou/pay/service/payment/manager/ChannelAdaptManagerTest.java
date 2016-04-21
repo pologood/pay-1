@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.sogou.pay.common.types.ResultBean;
 import com.sogou.pay.manager.model.ChannelAdaptModel;
 import com.sogou.pay.manager.payment.ChannelAdaptManager;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 
 /**
  * Created by wujingpan on 2015/3/9.

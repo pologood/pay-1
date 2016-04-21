@@ -1,7 +1,7 @@
 package com.sogou.pay.service.dao;
 
 import com.alibaba.fastjson.JSON;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayTransferBatch;
 import com.sogou.pay.service.enums.PayTransferBatchStatus;
 import org.junit.Test;

@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.AgencyInfo;
 import com.sogou.pay.service.payment.AgencyInfoService;
 

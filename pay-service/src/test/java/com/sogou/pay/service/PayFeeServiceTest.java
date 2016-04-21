@@ -2,6 +2,7 @@ package com.sogou.pay.service;
 
 import java.math.BigDecimal;
 
+import com.sogou.pay.BaseTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -3,7 +3,7 @@ package com.sogou.pay.service.payment.manager;
 import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.manager.notify.RefundNotifyManager;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

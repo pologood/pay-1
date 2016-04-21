@@ -1,7 +1,7 @@
 package com.sogou.pay.service.payment;
 
 import com.sogou.pay.common.http.model.RequestModel;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.connect.HttpClientService;
 
 import org.junit.Test;

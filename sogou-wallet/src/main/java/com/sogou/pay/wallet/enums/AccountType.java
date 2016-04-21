@@ -1,9 +1,11 @@
 package com.sogou.pay.wallet.enums;
 
+import com.sogou.pay.common.enums.ValueEnum;
+
 /**
  * Created by xiepeidong on 2016/3/1.
  */
-public enum AccountType implements ValueEnum{
+public enum AccountType implements ValueEnum {
     BALANCE(0),
     LUCKY(1);
 

@@ -2,7 +2,7 @@ package com.sogou.pay.service.payment;
 
 import com.sogou.pay.common.Model.AppRefundNotifyModel;
 import com.sogou.pay.common.types.PMap;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.connect.QueueNotifyProducer;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.sogou.pay.service.payment.manager;
 
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sogou.pay.common.types.PMap;

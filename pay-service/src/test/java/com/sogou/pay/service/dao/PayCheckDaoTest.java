@@ -2,7 +2,7 @@ package com.sogou.pay.service.dao;
 
 import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.manager.model.PayCheckUpdateModle;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayCheck;
 import com.sogou.pay.thirdpay.biz.enums.AgencyType;
 import com.sogou.pay.service.enums.OrderType;

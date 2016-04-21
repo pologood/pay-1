@@ -1,5 +1,6 @@
 package com.sogou.pay.service;
 
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.service.payment.PayChannelAdaptService;
 import org.junit.Test;
