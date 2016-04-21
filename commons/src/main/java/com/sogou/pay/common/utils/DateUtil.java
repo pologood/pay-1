@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DateUtil {
@@ -323,7 +324,7 @@ public class DateUtil {
   }
 
   public static boolean isExpired(Date createTime, long validPeriod) {
-    if (createTime == null) return false;
+    if (Objects.isNull(createTime)) return false;
     return new Date().getTime() - createTime.getTime() > validPeriod;
   }
 
