@@ -109,11 +109,11 @@
             <version>2.4</version>
         </dependency>
 
-        <dependency>
-            <groupId>sogou-passport</groupId>
-            <artifactId>passport-session-sdk</artifactId>
-            <version>1.0</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>sogou-passport</groupId>-->
+            <!--<artifactId>passport-session-sdk</artifactId>-->
+            <!--<version>1.0</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>dom4j</groupId>
