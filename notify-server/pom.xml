@@ -153,29 +153,29 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>test</id>
-            <properties>
-                <env>test</env>
-                <config_file>
-                    src/main/resources/config_TEST.properties
-                </config_file>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <profile>
-            <id>prod</id>
-            <properties>
-                <env>prod</env>
-                <config_file>
-                    src/main/resources/config_PROD.properties
-                </config_file>
-            </properties>
-        </profile>
-    </profiles>
+    <!--<profiles>-->
+        <!--<profile>-->
+            <!--<id>test</id>-->
+            <!--<properties>-->
+                <!--<env>test</env>-->
+                <!--<config_file>-->
+                    <!--src/main/resources/config_TEST.properties-->
+                <!--</config_file>-->
+            <!--</properties>-->
+            <!--<activation>-->
+                <!--<activeByDefault>true</activeByDefault>-->
+            <!--</activation>-->
+        <!--</profile>-->
+        <!--<profile>-->
+            <!--<id>prod</id>-->
+            <!--<properties>-->
+                <!--<env>prod</env>-->
+                <!--<config_file>-->
+                    <!--src/main/resources/config_PROD.properties-->
+                <!--</config_file>-->
+            <!--</properties>-->
+        <!--</profile>-->
+    <!--</profiles>-->
 
 
     <build>
@@ -191,24 +191,24 @@
         </resources>
 
         <plugins>
-            <!-- 控制资源文件的拷贝 -->
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <delete file="src/main/resources/config.properties"/>
-                                <copy file="${config_file}" tofile="src/main/resources/config.properties"/>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--&lt;!&ndash; 控制资源文件的拷贝 &ndash;&gt;-->
+            <!--<plugin>-->
+                <!--<artifactId>maven-antrun-plugin</artifactId>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>process-sources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>run</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<tasks>-->
+                                <!--<delete file="src/main/resources/config.properties"/>-->
+                                <!--<copy file="${config_file}" tofile="src/main/resources/config.properties"/>-->
+                            <!--</tasks>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
