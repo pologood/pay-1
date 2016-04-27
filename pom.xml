@@ -16,7 +16,6 @@
         <module>thirdpay-service</module>
         <module>notify-server</module>
         <module>pay-timer</module>
-        <!--<module>sogou-wallet</module>-->
     </modules>
 
     <repositories>
@@ -155,13 +154,6 @@
             <dependency>
                 <groupId>com.sogou.pay</groupId>
                 <artifactId>thirdpay-service</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>com.sogou.pay</groupId>
-                <artifactId>sogou-wallet</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
