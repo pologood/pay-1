@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by qibaichao on 2015/4/9.
@@ -46,13 +47,15 @@ public class NotifyErrorLogDaoTest extends BaseTest {
     public void update() {
 
         NotifyErrorLog notifyErrorLog=notifyErrorLogDao.queryById(21L);
-        // 通知失败,增加支付通知队列
-        notifyErrorLog.setErrorInfo("error");
-        // 下次通知时间
-        notifyErrorLog.setNextTime(DateUtils.nextTime(new Date(), notifyErrorLog.getNotifyNum()));
-        // 设置通知次数
-        notifyErrorLog.setNotifyNum(notifyErrorLog.getNotifyNum() + 1);
-        notifyErrorLogDao.updateErrorLog(notifyErrorLog);
+        if (Objects.nonNull(notifyErrorLog)) {
+            // 通知失败,增加支付通知队列
+            notifyErrorLog.setErrorInfo("error");
+            // 下次通知时间
+            notifyErrorLog.setNextTime(DateUtils.nextTime(new Date(), notifyErrorLog.getNotifyNum()));
+            // 设置通知次数
+            notifyErrorLog.setNotifyNum(notifyErrorLog.getNotifyNum() + 1);
+            notifyErrorLogDao.updateErrorLog(notifyErrorLog);
+        }
     }
 
 
