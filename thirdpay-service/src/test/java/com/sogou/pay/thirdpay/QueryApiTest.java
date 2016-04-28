@@ -5,7 +5,7 @@ import com.sogou.pay.common.Model.RefundResult;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.types.PMap;
-//import com.sogou.pay.thirdpay.api.QueryApi;
+import com.sogou.pay.thirdpay.api.PayPortal;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,29 +21,30 @@ import java.util.Map;
  */
 public class QueryApiTest extends BaseTest {
 
-/*    @Autowired
-    private QueryApi queryApi;
-    *//**
+    @Autowired
+    private PayPortal queryApi;
+
+    /**
      * 财付通查询订单---测试成功
-     *//*
+     */
     @Test
     public void testTenAccountPay() {
         Map refundMap = new HashMap();
         refundMap.put("refundStatus", "333");
-        refundMap.put("message","成功");
+        refundMap.put("message", "成功");
         refundMap.put("status", "SUCCESS");
         ResultMap SS = ResultMap.build();
-        Object sss= SS.getData().get("assdf");
+        Object sss = SS.getData().get("assdf");
 
-        RefundResult refundModel =new RefundResult();
+        RefundResult refundModel = new RefundResult();
         refundModel.setStatus(ResultStatus.REFUND_PARAM_ERROR.toString());
         refundModel.setMessage(ResultStatus.REFUND_PARAM_ERROR.getMessage());
         System.out.print("refundRefund" + JSONObject.toJSONString(refundModel));
     }
 
-    *//**
+    /**
      * 支付宝查询订单--测试成功
-     *//*
+     */
     @Test
     public void testAliPayQuery() {
         PMap pmap = new PMap();
@@ -58,9 +59,9 @@ public class QueryApiTest extends BaseTest {
         System.out.print("result" + result);
     }
 
-    *//**
+    /**
      * 微信查询订单--测试成功
-     *//*
+     */
     @Test
     public void testWenPayQuery() {
         PMap pmap = new PMap();
@@ -78,9 +79,9 @@ public class QueryApiTest extends BaseTest {
         System.out.print("result" + result);
     }
 
-    *//**
+    /**
      * 快钱查询订单
-     *//*
+     */
     @Test
     public void testBillPayQuery() {
         PMap pmap = new PMap();
@@ -97,5 +98,5 @@ public class QueryApiTest extends BaseTest {
         pmap.put("md5securityKey", "5UHQX2G65W4ECF5G");
         result = queryApi.queryOrder(pmap);
         System.out.print("result" + result);
-    }*/
+    }
 }
