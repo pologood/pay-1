@@ -48,7 +48,7 @@ start(){
 				exit 1
 		else
 	    	cd $APP_PATH
-				nohup java $JAVA_OPTS -cp $CLASS_PATH $MAIN_CLASS $APP_PATH > $STDOUT_FILE 2>&1 &
+				nohup java $JAVA_OPTS -cp $CLASS_PATH $MAIN_CLASS $APP_PATH >$STDOUT_FILE 2>&1 &
 				echo "Timer is started."
 		fi
 }
@@ -61,7 +61,7 @@ stop(){
         kwait=5
         echo "Timer is stopping, please wait..."
         kill -15 $runningPID
-					until [ `ps --pid $runningPID 2> /dev/null | grep -c $runningPID 2> /dev/null` -eq '0' ] || [ $count -gt $kwait ]
+					until [ `ps --pid $runningPID 2> /dev/null | grep -c $runningPID 2>/dev/null` -eq '0' ] || [ $count -gt $kwait ]
 		        do
 		            sleep 1
 		            let count=$count+1;
