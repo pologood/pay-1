@@ -7,8 +7,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>搜狗支付中心</title>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/base.css"/>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/index.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/base.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/index.css"/>
 <style type="text/css">
 	*{margin:0;padding:0;}
 	ul{list-style: none;}
@@ -22,8 +22,8 @@
 	.errorTitle{font-size: 20px;color: #000;font-family: "微软雅黑";line-height: 37px;text-align: center;position: relative;}
 	.errorDetail{font-size: 25px;color: #000;font-family: "微软雅黑";line-height: 80px;}
 	.clearfix {zoom: 1; height: 80px}
-	.paySubmit {display: block;height: 36px;padding-left: 10px;margin: 30px auto 55px;color: #fff;text-decoration: none;cursor: pointer;background: url(${pageContext.request.contextPath}/static/img/005.png) 0 0 no-repeat;_width: auto;}
-	.paySubmit span {display: inline-block;height: 20px;padding: 0 30px 0 20px;font-size: 14px;line-height: 36px;text-align: center;background: url(${pageContext.request.contextPath}/static/img/005.png) 100% 0 no-repeat;_width: auto;}
+	.paySubmit {display: block;height: 36px;padding-left: 10px;margin: 30px auto 55px;color: #fff;text-decoration: none;cursor: pointer;background: url(/static/img/005.png) 0 0 no-repeat;_width: auto;}
+	.paySubmit span {display: inline-block;height: 20px;padding: 0 30px 0 20px;font-size: 14px;line-height: 36px;text-align: center;background: url(/static/img/005.png) 100% 0 no-repeat;_width: auto;}
 	.wrapper {width: 900px;margin: 0 auto;height: 500px}
 </style>
 
@@ -60,7 +60,7 @@ function closeWindows(){
 		<div class="logo-title le">搜狗支付中心</div>
 	</div>
 	<div class="errorBox">
-		<img src="${pageContext.request.contextPath}/static/img/search.jpg">
+		<img src="/static/img/search.jpg">
 		<div class="errorRelate">
 			<h2 class="errorTitle"></h2>
 			<h2 class="errorDetail">${message}</h2>
@@ -87,7 +87,7 @@ function closeWindows(){
 	</div>
 </div>
 
-<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/jq.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/index.js"></script>
+<script type="text/javascript" src="/static/js/jq.js"></script>
+<script type="text/javascript" src="/static/js/index.js"></script>
 </body>
 </html>
