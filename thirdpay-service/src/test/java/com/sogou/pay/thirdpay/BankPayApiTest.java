@@ -26,13 +26,13 @@ public class BankPayApiTest extends BaseTest {
     public void testBankPaySusbmit() {
         PMap pmap = new PMap();
         ResultMap result = ResultMap.build();
-//        pmap.put("bankPaySubUrl", "https://mch.tenpay.com/cgi-bin/mchbatchtransfer.cgi");
-//        pmap.put("merchantNo", "1234639901");
-//        pmap.put("refundUrl", "https://mch.tenpay.com/refundapi/gateway/refund.xml");
-//        pmap.put("refundNotifyUrl", "http://sogou.pay/refundnotify.jsp");
-//        pmap.put("md5securityKey", "dcfe3c50f2fa354351333aa9622b9f95");
-//        pmap.put("publicCertFilePath", "/pay_key/tenpay_keji/cacert.pem");
-//        pmap.put("privateCertFilePath", "/pay_key/tenpay_keji/1234639901_20150319170653.pfx");
+        pmap.put("bankPaySubUrl", "https://mch.tenpay.com/cgi-bin/mchbatchtransfer.cgi");
+        pmap.put("merchantNo", "1234639901");
+        pmap.put("refundUrl", "https://mch.tenpay.com/refundapi/gateway/refund.xml");
+        pmap.put("refundNotifyUrl", "http://sogou.pay/refundnotify.jsp");
+        pmap.put("md5securityKey", "dcfe3c50f2fa354351333aa9622b9f95");
+        pmap.put("publicCertFilePath", "/pay_key/tenpay_keji/cacert.pem");
+        pmap.put("privateCertFilePath", "/pay_key/tenpay_keji/1234639901_20150319170653.pfx");
         pmap.put("op_code", "1013");
         pmap.put("op_name", "batch_draw");
         pmap.put("op_user", "1234639901");
