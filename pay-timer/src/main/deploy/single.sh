@@ -20,7 +20,7 @@ JAVA_OPTS=${JAVA_OPTS:-$DEFAULT_JAVA_OPTS}
 JAVA_OPTS=${JAVA_OPTS}${SPRING_OPTS}
 MAIN_CLASS=${MAIN_CLASS:-"com.sogou.timer.TimerRunner"}
 
-(echo $JAVA_OPTS | grep '-Dspring.profiles.active=') || { echo 'spring.profiles.active not defined'; exit 1; }
+(echo $JAVA_OPTS | grep '\-Dspring.profiles.active=') || { echo 'spring.profiles.active not defined'; exit 1; }
 
 DATE=`date +"%Y-%m-%d"`
 
