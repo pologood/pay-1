@@ -1,8 +1,9 @@
 package com.sogou.pay.thirdpay;
 
 import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.thirdpay.api.PayPortal;
 import com.sogou.pay.common.types.PMap;
-//import com.sogou.pay.thirdpay.api.QueryRefundApi;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,12 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class QueryRefundApiTest extends BaseTest {
 
-/*    @Autowired
-    private QueryRefundApi queryRefundApi;
+    @Autowired
+    private PayPortal queryRefundApi;
 
-    *//**
+    /**
      * 支付宝查询订单退款
-     *//*
+     */
     @Test
     public void testAliPayQuery() {
         PMap pmap = new PMap();
@@ -32,9 +33,9 @@ public class QueryRefundApiTest extends BaseTest {
         System.out.print("result" + result);
     }
 
-    *//**
+    /**
      * 财付通查询订单退款--测试成功
-     *//*
+     */
     @Test
     public void testTenAccountPay() {
         PMap pmap = new PMap();
@@ -48,9 +49,9 @@ public class QueryRefundApiTest extends BaseTest {
         System.out.print("result" + result);
     }
 
-    *//**
+    /**
      * 微信查询订单退款--测试成功
-     *//*
+     */
     @Test
     public void testWenPayQuery() {
         PMap pmap = new PMap();
@@ -66,9 +67,9 @@ public class QueryRefundApiTest extends BaseTest {
         System.out.print("result" + result);
     }
 
-    *//**
+    /**
      * 快钱查询订单退款
-     *//*
+     */
     @Test
     public void testBillPayQuery() {
         PMap pmap = new PMap();
@@ -81,5 +82,5 @@ public class QueryRefundApiTest extends BaseTest {
         pmap.put("refund_time", "20130424000000");
         result = queryRefundApi.queryRefund(pmap);
         System.out.print("result" + result);
-    }*/
+    }
 }

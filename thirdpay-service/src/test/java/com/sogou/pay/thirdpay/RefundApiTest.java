@@ -1,8 +1,8 @@
 package com.sogou.pay.thirdpay;
 
 import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.thirdpay.api.PayPortal;
 import com.sogou.pay.common.types.PMap;
-//import com.sogou.pay.thirdpay.api.RefundApi;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +16,12 @@ import java.util.Date;
  */
 public class RefundApiTest extends BaseTest {
 
-/*    @Autowired
-    private RefundApi refundApi;
+    @Autowired
+    private PayPortal refundApi;
 
-    *//**
+    /**
      * 财付通退款--测试通过
-     *//*
+     */
     @Test
     public void testTenAccountPay1() {
         PMap pmap = new PMap();
@@ -43,9 +43,9 @@ public class RefundApiTest extends BaseTest {
         System.out.print("result" + result);
     }
 
-    *//**
+    /**
      * 财付通退款--测试通过
-     *//*
+     */
     @Test
     public void testTenAccountPay2() {
         PMap pmap = new PMap();
@@ -67,9 +67,9 @@ public class RefundApiTest extends BaseTest {
         System.out.print("result" + result);
     }
 
-    *//**
+    /**
      * 支付宝退款--测试通过
-     *//*
+     */
     @Test
     public void testAliPayRefund() {
         PMap pmap = new PMap();
@@ -91,9 +91,9 @@ public class RefundApiTest extends BaseTest {
         System.out.print("result" + result);
     }
 
-    *//**
+    /**
      * 微信退款
-     *//*
+     */
     @Test
     public void testWenPayRefund() {
         PMap pmap = new PMap();
@@ -116,10 +116,9 @@ public class RefundApiTest extends BaseTest {
         System.out.print("result" + result);
     }
 
-
-    *//**
+    /**
      * 微信退款--科技账号
-     *//*
+     */
     @Test
     public void testKejiWenPayRefund() {
         PMap pmap = new PMap();
@@ -142,10 +141,9 @@ public class RefundApiTest extends BaseTest {
         System.out.print("result" + result);
     }
 
-
-    *//**
+    /**
      * 快钱退款
-     *//*
+     */
     @Test
     public void testBillPayRefund() {
         PMap pmap = new PMap();
@@ -166,5 +164,5 @@ public class RefundApiTest extends BaseTest {
         pmap.put("totalAmount", "10");
         result = refundApi.refundOrder(pmap);
         System.out.print("result" + result);
-    }*/
+    }
 }

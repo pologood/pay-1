@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -49,7 +50,7 @@ public class BankPayApiImpl implements BankPayApi {
         //根据商户号获取商户证书导入密码
         String certPasswd;
         String opPasswd;
-        if (params.getString("merchantNo").equals(TenPayUtil.WL_OP_USER_ID)) {
+        if (Objects.equals(params.getString("merchantNo"), TenPayUtil.WL_OP_USER_ID)) {
             certPasswd = TenPayUtil.WL_CERT_PASSWD;
             opPasswd = TenPayUtil.WL_OP_USER_PASSWD;
         } else {
