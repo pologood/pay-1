@@ -35,7 +35,7 @@ import com.sogou.pay.service.utils.Constant;
 public class OrderQueryManagerImpl implements OrderQueryManager {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderQueryManagerImpl.class);
-    
+
     //@Autowired
     //private QueryApi qeuryApi;
 
@@ -43,13 +43,13 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
     private PayPortal payPortal;
     @Autowired
     private AppService appService;
-    
+
     @Autowired
     private PayAgencyMerchantService payAgencyMerchantService;
-    
+
     @Autowired
     private PayReqDetailService payReqDetailService;
-    
+
     @Autowired
     private PayOrderRelationService payOrderRelationService;
     @Autowired
@@ -129,7 +129,10 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
                 }
                 resultStatusList.add(apiResult.getData().get("order_state").toString());
             }
-            result.withReturn(resultStatusList);
+            if(resultStatusList.size()==1)
+              result.withReturn(resultStatusList.get(0));
+            else
+              result.withReturn(resultStatusList);
         } catch (Exception e) {
             result.withError(ResultStatus.SYSTEM_ERROR);
         }
