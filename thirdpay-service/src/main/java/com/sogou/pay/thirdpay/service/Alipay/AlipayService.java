@@ -376,7 +376,7 @@ public class AlipayService implements ThirdpayService {
                 log.error("[queryOrder] 支付宝订单查询返回参数异常, 状态is_success!=T, 参数:" + requestPMap + ", 返回:" + resContent);
                 return ResultMap.build(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
             }
-            responseMap = XMLUtil.XML2PMap(alipayMap.getString("response"));
+            responseMap = alipayMap.getPMap("response").getPMap("trade");
         } catch (Exception e) {
             log.error("[queryOrder] 支付宝订单查询解析响应报文异常, 参数:" + requestPMap + ", 返回:" + resContent);
             return ResultMap.build(ResultStatus.THIRD_QUERY_XML_PARSE_ERROR);
