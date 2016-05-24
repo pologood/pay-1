@@ -17,7 +17,7 @@ fi
 APP_PATH=${APP_PATH:-`dirname "$BASE_PATH"`}
 CLASS_PATH=${CLASS_PATH:-$APP_PATH/config:$APP_PATH/lib/*}
 JAVA_OPTS=${JAVA_OPTS:-$DEFAULT_JAVA_OPTS}
-MAIN_CLASS=${MAIN_CLASS:-"com.sogou.timer.TimerRunner"}
+MAIN_CLASS=${MAIN_CLASS:-"com.sogou.pay.timer.TimerRunner"}
 
 
 LOGS_DIR=""

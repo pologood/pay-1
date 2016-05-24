@@ -7,14 +7,14 @@
 
 
     <!-- 扫描文件（自动将servicec层注入） -->
-    <context:component-scan base-package="com.sogou.timer.*"/>
+    <context:component-scan base-package="com.sogou.pay.timer.*"/>
 
     <!-- 引入config配置文件 -->
     <context:property-placeholder location="classpath:config-${spring.profiles.active}.properties"/>
 
     <!-- 工作的bean -->
-    <bean id="payCheckJob" class="com.sogou.timer.PayCheckJob"/>
-    <bean id="payTransferJob" class="com.sogou.timer.PayTransferJob"/>
+    <bean id="payCheckJob" class="com.sogou.pay.timer.PayCheckJob"/>
+    <bean id="payTransferJob" class="com.sogou.pay.timer.PayTransferJob"/>
 
     <!-- 对账任务 -->
     <!-- 定义调用对象和调用对象的方法 -->

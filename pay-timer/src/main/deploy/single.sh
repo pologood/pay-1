@@ -18,7 +18,7 @@ APP_PATH=${APP_PATH:-`dirname "$BASE_PATH"`}
 CLASS_PATH=${CLASS_PATH:-$APP_PATH/config:$APP_PATH/lib/*}
 JAVA_OPTS=${JAVA_OPTS:-$DEFAULT_JAVA_OPTS}
 JAVA_OPTS=${JAVA_OPTS}${SPRING_OPTS}
-MAIN_CLASS=${MAIN_CLASS:-"com.sogou.timer.TimerRunner"}
+MAIN_CLASS=${MAIN_CLASS:-"com.sogou.pay.timer.TimerRunner"}
 
 (echo $JAVA_OPTS | grep '\-Dspring.profiles.active=') || { echo 'spring.profiles.active not defined'; exit 1; }
 

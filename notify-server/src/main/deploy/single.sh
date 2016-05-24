@@ -44,22 +44,22 @@ exist(){
 
 start(){
 		if exist; then
-				echo "Timer is already running."
+				echo "Notify is already running."
 				exit 1
 		else
 	    	cd $APP_PATH
 				nohup java $JAVA_OPTS -cp $CLASS_PATH $MAIN_CLASS $APP_PATH >$STDOUT_FILE 2>&1 &
-				echo "Timer is started."
+				echo "Notify is started."
 		fi
 }
 
 stop(){
 		runningPID=`pgrep -f "$MAIN_CLASS $APP_PATH"`
 		if [ "$runningPID" ]; then
-				echo "Timer pid: $runningPID"
+				echo "Notify pid: $runningPID"
         count=0
         kwait=5
-        echo "Timer is stopping, please wait..."
+        echo "Notify is stopping, please wait..."
         kill -15 $runningPID
 					until [ `ps --pid $runningPID 2> /dev/null | grep -c $runningPID 2>/dev/null` -eq '0' ] || [ $count -gt $kwait ]
 		        do
@@ -71,18 +71,18 @@ stop(){
 	            kill -9 $runningPID
 	        fi
         clear
-        echo "Timer is stopped."
+        echo "Notify is stopped."
     else
-    		echo "Timer has not been started."
+    		echo "Notify has not been started."
     fi
 }
 
 check(){
    if exist; then
-   	 echo "Timer is alive."
+   	 echo "Notify is alive."
    	 exit 0
    else
-   	 echo "Timer is dead."
+   	 echo "Notify is dead."
    	 exit -1
    fi
 }
