@@ -107,7 +107,7 @@ public class TenpayService implements ThirdpayService {
         }
         requestPMap.put("sign", sign);
         //6.获取支付URL
-        String returnUrl = HttpUtil.packHttpsGetUrl(params.getString("payUrl"), requestPMap);
+        String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
         result.addItem("returnUrl", returnUrl);
         return result;
 

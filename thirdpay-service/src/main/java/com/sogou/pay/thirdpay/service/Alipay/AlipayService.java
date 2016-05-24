@@ -135,7 +135,7 @@ public class AlipayService implements ThirdpayService {
         requestPMap.put("sign_type", AlipayService.SIGN_TYPE);                     //签名方式
 
         //3.获取支付URL
-        String returnUrl = HttpUtil.packHttpsGetUrl(params.getString("payUrl"), requestPMap);
+        String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
         result.addItem("returnUrl", returnUrl);
         return result;
     }
@@ -176,7 +176,7 @@ public class AlipayService implements ThirdpayService {
         requestPMap.put("sign", sign);
         requestPMap.put("sign_type", AlipayService.SIGN_TYPE);                           //签名方式
         //3.获取支付URL
-        String returnUrl = HttpUtil.packHttpsGetUrl(params.getString("payUrl"), requestPMap);
+        String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
         result.addItem("returnUrl", returnUrl);
         return result;
     }
@@ -217,7 +217,7 @@ public class AlipayService implements ThirdpayService {
         requestPMap.put("sign", sign);
         requestPMap.put("sign_type", AlipayService.SIGN_TYPE);                     //签名方式
         //3.获取支付URL
-        String returnUrl = HttpUtil.packHttpsGetUrl(params.getString("payUrl"), requestPMap);
+        String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
         result.addItem("returnUrl", returnUrl);
         return result;
     }
@@ -321,7 +321,7 @@ public class AlipayService implements ThirdpayService {
         requestPMap.put("sign", sign);
         requestPMap.put("sign_type", AlipayService.SIGN_TYPE);                     //签名方式
         //3.获取支付URL
-        String returnUrl = HttpUtil.packHttpsGetUrl(params.getString("payUrl"), requestPMap);
+        String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
         result.addItem("returnUrl", returnUrl);
         return result;
     }
@@ -717,7 +717,7 @@ public class AlipayService implements ThirdpayService {
         requestPMap.put("sign", sign);
         requestPMap.put("sign_type", AlipayService.SIGN_TYPE);
         //3.获取支付URL
-        String returnUrl = HttpUtil.packHttpsGetUrl(params.getString("payUrl"), requestPMap);
+        String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
         result.addItem("returnUrl", returnUrl);
         return result;
     }

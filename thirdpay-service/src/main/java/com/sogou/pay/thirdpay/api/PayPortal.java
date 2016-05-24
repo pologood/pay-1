@@ -49,6 +49,9 @@ public class PayPortal {
         serviceHashMap.put(AgencyType.ALIPAY.name(), alipayService);
         serviceHashMap.put(AgencyType.TENPAY.name(), tenpayService);
         serviceHashMap.put(AgencyType.WECHAT.name(), wechatService);
+        serviceHashMap.put(AgencyType.TEST_ALIPAY.name(), alipayService);
+        serviceHashMap.put(AgencyType.TEST_TENPAY.name(), tenpayService);
+        serviceHashMap.put(AgencyType.TEST_WECHAT.name(), wechatService);
     }
 
     public ResultMap preparePay(PMap params) {

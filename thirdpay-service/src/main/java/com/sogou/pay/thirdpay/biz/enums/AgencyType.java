@@ -14,6 +14,9 @@ public enum AgencyType {
     TENPAY(2000),
     WECHAT(3000),  // 微信
     BILL99(4000),
+    TEST_ALIPAY(1001),
+    TEST_TENPAY(2001),
+    TEST_WECHAT(3001),
     ;
     // SGPAY(10)
 
@@ -33,13 +36,17 @@ public enum AgencyType {
         mappings.put(TENPAY.name().toUpperCase(), TENPAY);
         mappings.put(WECHAT.name().toUpperCase(), WECHAT);
         mappings.put(BILL99.name().toUpperCase(), BILL99);
-        // mappings.put(UNIONPAY.name().toUpperCase(), UNIONPAY);
-        // mappings.put(SGPAY.name().toUpperCase(), SGPAY);
+        mappings.put(TEST_ALIPAY.name().toUpperCase(), TEST_ALIPAY);
+        mappings.put(TEST_TENPAY.name().toUpperCase(), TEST_TENPAY);
+        mappings.put(TEST_WECHAT.name().toUpperCase(), TEST_WECHAT);
 
         agencyList.add(ALIPAY.name().toUpperCase());
         agencyList.add(TENPAY.name().toUpperCase());
         agencyList.add(WECHAT.name().toUpperCase());
         agencyList.add(BILL99.name().toUpperCase());
+        agencyList.add(TEST_ALIPAY.name().toUpperCase());
+        agencyList.add(TEST_TENPAY.name().toUpperCase());
+        agencyList.add(TEST_WECHAT.name().toUpperCase());
     }
 
     /**
