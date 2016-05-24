@@ -73,9 +73,6 @@
           p:sqlSessionFactoryBeanName="sqlSessionFactory"/>
 
     <!-- spring 事务配置， 声明式事务，@Transactional标注-->
-    <context:annotation-config/>
-    <context:component-scan base-package="com.sogou.pay.service"/>
-
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
