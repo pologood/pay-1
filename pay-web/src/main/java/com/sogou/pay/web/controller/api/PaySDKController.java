@@ -38,36 +38,36 @@ import com.sogou.pay.web.utils.ControllerUtil;
 import com.sogou.pay.web.utils.ServletUtil;
 
 /**
- * @Author	huangguoqing 
- * @ClassName	PayController 
- * @Date	2015年2月28日 
+ * @Author	huangguoqing
+ * @ClassName	PayController
+ * @Date	2015年2月28日
  * @Description: 支付请求controller
  */
 @Controller
 //@RequestMapping(value = "/paysdk")
 @SuppressWarnings("all")
 public class PaySDKController extends BaseController{
-    
+
     private static final Logger logger = LoggerFactory.getLogger(PaySDKController.class);
-    
+
     @Autowired
     private PayManager payManager;
 
     @Autowired
     private ChannelAdaptManager channelAdaptMaanger;
-    
+
     @Autowired
     private AppManager appManager;
-    
+
     @Autowired
     private SecureManager secureManager;
-    
+
 //    @Autowired
 //    private PayApi payApi;
 
     @Autowired
     private PayPortal payPortal;
-    
+
     @Autowired
     private RedisUtils redisUtils;
 
@@ -75,8 +75,8 @@ public class PaySDKController extends BaseController{
     private SequenceFactory sequencerGenerator;
 
     /**
-     * @Author	huangguoqing 
-     * @MethodName	doPay 
+     * @Author	huangguoqing
+     * @MethodName	doPay
      * @param params 商户请求参数
      * @param request
      * @return ModelAndView
@@ -230,8 +230,8 @@ public class PaySDKController extends BaseController{
 
 
     /**
-     * @Author	huangguoqing 
-     * @MethodName	commonPay 
+     * @Author	huangguoqing
+     * @MethodName	commonPay
      * @param params 支付请求参数
      * @return result
      * @Date	2015年2月28日
@@ -266,7 +266,9 @@ public class PaySDKController extends BaseController{
             result.withError(ResultStatus.THIRD_PAY_ERROR);
             return result;
         }
-        if(Constant.ALIPAY.equals(payResult.getData().get("agencyCode"))) {
+       String agencyCode = payResult.getData().getString("agencyCode");
+        if(Constant.ALIPAY.equals(agencyCode)||
+                Constant.TEST_ALIPAY.equals(agencyCode)) {
             result.addItem("orderInfo", payGateResult.getData().get("strOrderInfo"));
             result.addItem("aliPublicKey", payGateResult.getData().get("aliPublicKey"));
         } else {
@@ -274,12 +276,12 @@ public class PaySDKController extends BaseController{
         }
         return result;
     }
-     
+
     private PMap<String,String> escapeSequence(PMap<String,String> pMap){
-        pMap.put("productName", 
+        pMap.put("productName",
                 StringUtils.trim((String)pMap.getString("productName").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;")));
         if(!StringUtils.isEmpty((String)pMap.getString("productDesc"))){
-            pMap.put("productDesc", 
+            pMap.put("productDesc",
                     StringUtils.trim((String)pMap.getString("productDesc").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;")));
         }
         return pMap;
