@@ -486,10 +486,11 @@ public class PayController extends BaseController{
         String url = (String)payResult.getReturnValue();
         String qrCode = null;
         try {
-            if(Constant.ALIPAY.equals(params.getBankId())){
+            if(Constant.ALIPAY.equals(params.getBankId())||
+                    Constant.TEST_ALIPAY.equals(params.getBankId())){
                 logger.info("【支付请求】生成的支付宝扫码值为：" + url);
                 result.addItem("qrCode", url);
-            } else if (Constant.WECHAT.equals(params.getBankId())){
+            } else{
                 qrCode = getWebChatCode(url);
                 logger.info("【支付请求】生成的微信扫码值为：" + qrCode);
                 result.addItem("qrCode", qrCode);
