@@ -3,7 +3,9 @@ package com.sogou.pay.manager.payment.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sogou.pay.service.entity.*;
 import com.sogou.pay.service.enums.PayOrderStatus;
+import com.sogou.pay.service.payment.*;
 import com.sogou.pay.thirdpay.api.PayPortal;
 import com.sogou.pay.common.enums.OrderStatus;
 import org.perf4j.aop.Profiled;
@@ -18,16 +20,6 @@ import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.manager.model.PayOrderQueryModel;
 import com.sogou.pay.manager.payment.OrderQueryManager;
-import com.sogou.pay.service.entity.App;
-import com.sogou.pay.service.entity.PayAgencyMerchant;
-import com.sogou.pay.service.entity.PayOrderInfo;
-import com.sogou.pay.service.entity.PayOrderRelation;
-import com.sogou.pay.service.entity.PayReqDetail;
-import com.sogou.pay.service.payment.AppService;
-import com.sogou.pay.service.payment.PayAgencyMerchantService;
-import com.sogou.pay.service.payment.PayOrderRelationService;
-import com.sogou.pay.service.payment.PayOrderService;
-import com.sogou.pay.service.payment.PayReqDetailService;
 import com.sogou.pay.service.utils.Constant;
 //import com.sogou.pay.thirdpay.api.QueryApi;
 
@@ -55,6 +47,9 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
     @Autowired
     private PayOrderService payOrderService;
 
+    @Autowired
+    private AgencyInfoService agencyInfoService;
+
     @Profiled(el = true, logger = "dbTimingLogger", tag = "OrderQueryManager_queryPayOrder",
             timeThreshold = 50, normalAndSlowSuffixesEnabled = true)
     @Override
@@ -63,7 +58,7 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
         //获取商户订单ID
         App app = appService.selectApp(model.getAppId());
         if(null == app){
-            logger.error("appId is not found.appId = " + model.getAppId());
+            logger.error("[queryPayOrder] App not found, appId={}", model.getAppId());
             result.withError(ResultStatus.PAY_APP_NOT_EXIST);
             return result;
         }
@@ -74,7 +69,7 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
             //1.根据orderId和appId查询订单信息
             PayOrderInfo payOrderInfo = payOrderService.selectPayOrderInfoByOrderId(model.getOrderId(), app.getAppId());
             if(null == payOrderInfo){
-                logger.error("【OrderQuery】payOrderInfo is not found.orderId = " + model.getOrderId()+",appId = " + app.getAppId());
+                logger.error("[queryPayOrder] PayOrderInfo not found, orderId={}, appId={}",model.getOrderId(),app.getAppId());
                 result.withError(ResultStatus.PAY_ORDER_NOT_EXIST);
                 return result;
             }
@@ -88,14 +83,14 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
             paramRelation.setPayId(payOrderInfo.getPayId());
             List<PayOrderRelation> relationList = payOrderRelationService.selectPayOrderRelation(paramRelation);
             if(null == relationList || relationList.size() == 0){
-                logger.error("PayOrderRelation is not found.payId = " + payOrderInfo.getPayId());
+                logger.error("[queryPayOrder] PayOrderRelation not found, payId={}", payOrderInfo.getPayId());
                 result.withError(ResultStatus.PAY_ORDER_RELATION_NOT_EXIST);
                 return result;
             }
             //3.查询支付单流水信息
             payReqDetailList = payReqDetailService.selectPayReqByReqIdList(relationList);
             if(null == payReqDetailList){
-                logger.error("payReqDetail is not found.orderId = " + model.getOrderId()+",appId = " + app.getAppId());
+                logger.error("[queryPayOrder] PayReqDetail not found, orderId={}, appId={}",model.getOrderId(),app.getAppId());
                 result.withError(ResultStatus.PAY_ORDER_NOT_EXIST);
                 return result;
             }
@@ -106,9 +101,17 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
                 merchant.setCompanyCode(app.getBelongCompany());
                 PayAgencyMerchant merchantQuery = payAgencyMerchantService.selectPayAgencyMerchant(merchant);
                 if(null == merchantQuery){
-                    logger.error("payAgencyMerchant is not found.agencyCode = " + payReqDetail.getAgencyCode()
-                            +"appId = " + app.getAppId() + "companyCode = " + app.getBelongCompany());
+                    logger.error("[queryPayOrder] PayAgencyMerchant not found, agencyCode={}, appId={}, companyCode={}",
+                            payReqDetail.getAgencyCode(),app.getAppId(),app.getBelongCompany());
                     result.withError(ResultStatus.PAY_MERCHANT_NOT_EXIST);
+                    return result;
+                }
+                AgencyInfo agencyInfo = agencyInfoService.getAgencyInfoByCode(payReqDetail.getAgencyCode(),
+                        payReqDetail.getAccessPlatform().toString(), payReqDetail.getPayFeeType().toString());
+                if(null == agencyInfo){
+                    logger.error("[queryPayOrder] AgencyInfo not found, agencyCode={}, accessPlatform={}, agencyType={}",
+                            payReqDetail.getAgencyCode(),payReqDetail.getAccessPlatform(),payReqDetail.getPayFeeType());
+                    result.withError(ResultStatus.PAY_AGENCY_NOT_EXIST);
                     return result;
                 }
                 //组装网关参数
@@ -117,7 +120,7 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
                 map.put("merchantNo", merchantQuery.getMerchantNo());
                 map.put("sellerEmail", merchantQuery.getSellerEmail());
                 map.put("md5securityKey", merchantQuery.getEncryptKey());
-                map.put("queryUrl", Constant.QUERY_URL_MAP.get(merchantQuery.getAgencyCode()));
+                map.put("queryUrl", agencyInfo.getQueryUrl());
                 map.put("serialNumber", payReqDetail.getPayDetailId());
                 logger.info("queryAPI params : " + map.toString());
                 //ResultMap apiResult = qeuryApi.queryOrder(map);

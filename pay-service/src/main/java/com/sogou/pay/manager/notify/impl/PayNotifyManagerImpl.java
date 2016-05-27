@@ -82,6 +82,9 @@ public class PayNotifyManagerImpl implements PayNotifyManager {
   @Autowired
   private SecureManager secureManager;
 
+  @Autowired
+  private AgencyInfoService agencyInfoService;
+
   /**
    * 业务上校验回调参数是否合法，包括
    * 1.验证
@@ -346,12 +349,20 @@ public class PayNotifyManagerImpl implements PayNotifyManager {
     merchant.setAppId(app.getAppId());
     merchant.setCompanyCode(app.getBelongCompany());
     merchant = payAgencyMerchantService.selectPayAgencyMerchant(merchant);
+
+    AgencyInfo agencyInfo = agencyInfoService.getAgencyInfoByCode(Constant.WECHAT,
+            "99", "99");
+    if(agencyInfo==null){
+      LOGGER.error("[getQueryOrderParam] PAY_AGENCY_NOT_EXIST");
+      result.withError(ResultStatus.PAY_AGENCY_NOT_EXIST);
+      return result;
+    }
     PMap<String, String> pmap = new PMap<String, String>();
     pmap.put("agencyCode", Constant.WECHAT);
     pmap.put("merchantNo", merchant.getMerchantNo());
     pmap.put("sellerEmail", merchant.getSellerEmail());
     pmap.put("md5securityKey", merchant.getEncryptKey());
-    pmap.put("queryUrl", Constant.QUERY_URL_MAP.get(Constant.WECHAT));
+    pmap.put("queryUrl", agencyInfo.getQueryUrl());
     pmap.put("serialNumber", map.get("payReqId").toString());
     result.withReturn(pmap);
     return result;
