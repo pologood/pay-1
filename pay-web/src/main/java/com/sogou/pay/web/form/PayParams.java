@@ -43,15 +43,15 @@ public class PayParams {
     private String accountId;   //付款方账号
     
     @NotBlank(message = "商品名称不能为空！")
-    @Length(max = 20)
+    @Length(max = 128, message = "商品名称最长为128个字符")
     private String productName; //商品名称
     
     @NotBlank(message = "商品数量不能为空")
-    @Length(max=6,message="商品数量最多为6位")
+    @Length(max=6,message="商品数量最长为6位数字")
     @PositiveNumber
     private String productNum;   //商品数量
     
-    @Length(max=400,message="商品描述最多400位")
+    @Length(max=512,message="商品描述最长为512个字符")
     private String productDesc;  //商品描述
     
     private String bankId;       //  渠道ID(一期做有银行ID)
