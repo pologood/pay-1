@@ -501,7 +501,8 @@ public class PayManagerImpl implements PayManager {
             //在第三方支付机构商户号
             payGateMap.put("merchantNo", payAgencyMerchant.getMerchantNo());
             //收款账号对应邮箱(支付宝支付时必填)
-            if (Constant.ALIPAY.equals(agencyCode) || Constant.WECHAT.equals(agencyCode)) 
+            if (Constant.ALIPAY.equals(agencyCode) || Constant.TEST_ALIPAY.equals(agencyCode) ||
+                    Constant.WECHAT.equals(agencyCode) || Constant.TEST_WECHAT.equals(agencyCode))
                 payGateMap.put("sellerEmail", payAgencyMerchant.getSellerEmail());
             //支付宝WAP、微信支付时使用（）
             payGateMap.put("prepayUrl", agencyInfo.getPrepayUrl());
