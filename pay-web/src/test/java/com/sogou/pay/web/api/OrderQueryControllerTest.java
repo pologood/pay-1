@@ -38,9 +38,9 @@ public class OrderQueryControllerTest extends BaseTest {
         //String url = "/orderQuery/refund";
         String url = "/api/refund/query";
         QueryRefundParams params = new QueryRefundParams();
-        params.setOrderId("OD20160121155435873");
+        params.setOrderId("OD20160530111427742");
         params.setSignType("0");
-        params.setAppId("1999");
+        params.setAppId("1000");
         Map map = BeanUtil.Bean2Map(params);
         map.put("sign", JSONObject.parse(controller.signData(map)));
         testGet(url, map);
