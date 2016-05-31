@@ -267,7 +267,7 @@ public class PayNotifyController extends BaseController {
 
     @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/webasync/wechat",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = {"/webasync/wechat"})
+    @RequestMapping(value = {"/webasync/wechat", "/webasync/test_wechat"})
     @ResponseBody
     public String handleNotifyWebAsyncWechat(@RequestBody String body) throws ServiceException {
         String agencyCode = "wechat";
