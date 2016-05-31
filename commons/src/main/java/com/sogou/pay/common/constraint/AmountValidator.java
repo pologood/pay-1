@@ -16,7 +16,7 @@ public class AmountValidator implements ConstraintValidator<Amount, String> {
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         // 正数，不超过10位
-        String regPosNumber = "^(([1-9][0-9]{0,9})|([0]{1}))(\\.[0-9]{2})$";
+        String regPosNumber = "^(([1-9][0-9]{0,9})|([0]{1}))((\\.[0-9]{2})|())$";
         return value == null || value.matches(regPosNumber);
     }
 }
