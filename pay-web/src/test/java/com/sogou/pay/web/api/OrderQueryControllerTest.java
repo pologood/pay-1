@@ -25,7 +25,7 @@ public class OrderQueryControllerTest extends BaseTest {
         //String url = "/orderQuery/pay";
         String url = "/api/pay/query";
         QueryRefundParams params = new QueryRefundParams();
-        params.setOrderId("OD20160526172749123");
+        params.setOrderId("OD20160531174609173");
         params.setSignType("0");
         params.setAppId("1000");
         Map map = BeanUtil.Bean2Map(params);

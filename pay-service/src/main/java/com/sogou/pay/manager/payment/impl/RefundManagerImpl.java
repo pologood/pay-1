@@ -79,7 +79,7 @@ public class RefundManagerImpl implements RefundManager {
             if (CollectionUtils.isNotEmpty(refundInfoList)) {
                 // 已经退款成功
                 logger.error("Refund Request ,Already SUCCESS,params :" + JSONUtil.Bean2JSON(model));
-               // return ResultMap.build(ResultStatus.REFUND_REFUND_ALREADY_DONE);
+                return ResultMap.build(ResultStatus.REFUND_REFUND_ALREADY_DONE);
             }
             //3.查订单与流水关联表
             PayOrderRelation payOrderRelation = new PayOrderRelation();
@@ -284,7 +284,9 @@ public class RefundManagerImpl implements RefundManager {
     private ResultMap refundSuccessInfo(RefundModel model, PayResDetail payResDetail, PayOrderInfo payOrderInfo,
                                         ResultMap refundResult, String refundId, String agencyCode, String merchantNo) {
         try {
-            if (AgencyType.WECHAT == AgencyType.getType(payResDetail.getAgencyCode()) || AgencyType.BILL99 == AgencyType.getType(payResDetail.getAgencyCode())) {
+            if (AgencyType.WECHAT == AgencyType.getType(payResDetail.getAgencyCode()) ||
+                    AgencyType.TEST_WECHAT == AgencyType.getType(payResDetail.getAgencyCode()) ||
+                    AgencyType.BILL99 == AgencyType.getType(payResDetail.getAgencyCode())) {
                 int payRefundFlag = 2;
                 BigDecimal allRefundMoney = payOrderInfo.getRefundMoney().add(model.getRefundAmount());
                 if (allRefundMoney.compareTo(payOrderInfo.getOrderMoney()) == 0) {
@@ -439,7 +441,8 @@ public class RefundManagerImpl implements RefundManager {
     private ResultMap fairWechatRefundSuccessInfo(FairAccRefundModel model, PayResDetail payResDetail,
                                                   ResultMap refundResult, String refundId, String agencyCode, String merchantNo) {
         try {
-            if (AgencyType.WECHAT == AgencyType.getType(payResDetail.getAgencyCode())) {
+            if (AgencyType.WECHAT == AgencyType.getType(payResDetail.getAgencyCode())||
+                    AgencyType.TEST_WECHAT == AgencyType.getType(payResDetail.getAgencyCode())) {
                 Date sucDate = new Date();
                 refundService.updateRefundSuccess(refundId, sucDate);
                 PayCheckWaiting payCheckWaiting = new PayCheckWaiting();

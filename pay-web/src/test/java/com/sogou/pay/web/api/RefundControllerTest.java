@@ -27,7 +27,7 @@ public class RefundControllerTest extends BaseTest {
         params.setAppId("1000");
         params.setBgUrl("http://center.pay.sogou.com/notify/testBgUrl");
         params.setSignType("0");
-        params.setOrderId("OD20160530111427742");
+        params.setOrderId("OD20160531174609173");
         //params.setRefundAmount("");
         Map map = BeanUtil.Bean2Map(params);
         map.put("sign", JSONObject.parse(controller.signData(map)));
