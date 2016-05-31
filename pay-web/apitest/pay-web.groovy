@@ -7,8 +7,8 @@ def host = "test.cash.sogou.com"
 def server = "http://$host"
 
 def ctx = [
-        appId: "6666",
-        md5_key: "5c50cef44ef048d9892b7b0",
+        appId: "1000",
+        md5_key: "862653da5865293b1ec8cc",
         pageUrl: "http://$host/notify/testBgUrl",
         bgUrl: "http://$host/notify/testBgUrl",
         gwPayWebUrl: "/gw/pay/web",
@@ -18,10 +18,9 @@ def ctx = [
         apiPayQueryUrl: "/api/pay/query",
         apiRefundUrl: "/api/refund",
         apiRefundQueryUrl: "/api/refund/query",
-        fakes: [
-                alipaySDKUrl: "",
-                alipayQRCodeUrl: "",
-                wechatSDKUrl: ""
+        fakeURL: [
+                TEST_ALIPAY: "http://test.stub.pay.sogou/api/alipay/directpay/mobile",
+                TEST_WECHAT: "http://test.stub.pay.sogou/api/wechat/pay/mobile"
         ]
 ]
 
@@ -33,7 +32,7 @@ CONFIG(bdd, [
         headers: [host: "$host"]
 ])
 
-def orderId = PayRoutines.apiPaySDK(bdd, ctx, "WECHAT")
+def orderId = PayRoutines.apiPayQRCode(bdd, ctx, "WECHAT")
 println orderId
 
 return

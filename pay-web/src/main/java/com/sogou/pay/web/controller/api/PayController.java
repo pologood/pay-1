@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.zxing.EncodeHintType;
 import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.thirdpay.api.PayPortal;
 import org.apache.commons.codec.binary.Base64;
@@ -401,10 +402,12 @@ public class PayController extends BaseController{
      * @Description:根据URL产生二维码字符串
      */
     private String getWebChatCode(String content) throws Exception{
-         BitMatrix bitMatrix = new QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, 330, 330);
+        Map<EncodeHintType, String> hints = new HashMap<>();
+        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+         BitMatrix bitMatrix = new QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, 300, 300, hints);
          BufferedImage
              qrcodeImg =
-             MatrixToImageWriter.toBufferedImage(bitMatrix, new MatrixToImageConfig(0, 0xffffffff));
+             MatrixToImageWriter.toBufferedImage(bitMatrix);
          ByteArrayOutputStream baos = new ByteArrayOutputStream();
          ImageIO.write(qrcodeImg, "PNG", baos);
          baos.close();
