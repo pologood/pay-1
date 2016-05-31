@@ -267,10 +267,11 @@ public class PayNotifyController extends BaseController {
 
     @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/webasync/wechat",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
-    @RequestMapping(value = {"/webasync/wechat", "/webasync/test_wechat"})
+    @RequestMapping(value = {"/webasync/{test_}wechat"})
     @ResponseBody
-    public String handleNotifyWebAsyncWechat(@RequestBody String body) throws ServiceException {
-        String agencyCode = "wechat";
+    public String handleNotifyWebAsyncWechat(@PathVariable("test_") String test_,
+                                             @RequestBody String body) throws ServiceException {
+        String agencyCode = test_ + "wechat";
         Map params = null;
         try {
             params = XMLUtil.XML2Map(body);
