@@ -37,6 +37,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -264,21 +265,23 @@ public class PayNotifyController extends BaseController {
         return "success";  // 返回结果只是表示收到回调
     }
 
-    @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/webasync",
+    @Profiled(el = true, logger = "webTimingLogger", tag = "/notify/webasync/wechat",
             timeThreshold = 500, normalAndSlowSuffixesEnabled = true)
     @RequestMapping(value = {"/webasync/wechat"})
     @ResponseBody
-    public String handleNotifyWebSync(@RequestBody String body) throws ServiceException {
+    public String handleNotifyWebAsyncWechat(@RequestBody String body) throws ServiceException {
         String agencyCode = "wechat";
         Map params = null;
         try {
             params = XMLUtil.XML2Map(body);
         }catch (Exception e){
-            log.error("[handleNotifyWebSync] 解析xml失败");
+            log.error("[handleNotifyWebAsyncWechat] 解析xml失败");
             return "success";
         }
         handleNotifyAsync("web", agencyCode, params);
-        return "success";
+        Map<String, String> result = new HashMap<>();
+        result.put("return_code", "SUCCESS");
+        return XMLUtil.Map2XML("xml", result);
     }
 
     @RequestMapping("/testBgUrl")
