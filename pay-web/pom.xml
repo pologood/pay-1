@@ -224,9 +224,9 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <packagingExcludes>
-                        WEB-INF/lib/slf4j-api-*.jar
-                    </packagingExcludes>
+                    <!--<packagingExcludes>-->
+                        <!--WEB-INF/lib/slf4j-api-*.jar-->
+                    <!--</packagingExcludes>-->
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
