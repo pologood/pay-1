@@ -76,7 +76,7 @@ public class OrderQueryManagerImpl implements OrderQueryManager {
             // 2.检查支付单里的支付状态是否成功，成功则返回
             if (payOrderInfo.getPayOrderStatus() == PayOrderStatus.SUCCESS.getValue()) {
                 result.withReturn(OrderStatus.SUCCESS);
-               // return result;
+                return result;
             }
             //2.根据payId查询关联表
             PayOrderRelation paramRelation = new PayOrderRelation();

@@ -36,8 +36,8 @@ public class PayControllerTest extends BaseTest {
         params.setProductName("测试商品");
         params.setProductNum("1");
         params.setProductDesc("测试商品描述");
-        params.setBankId("ALIPAY");
-        params.setAppId("1999");
+        params.setBankId("TEST_TENPAY");
+        params.setAppId("1000");
         params.setAccessPlatform("1");
         params.setSignType("0");
         params.setPageUrl("http://center.pay.sogou.com/notify/testBgUrl");

@@ -101,9 +101,10 @@ public class QueryRefundManagerImpl implements QueryRefundManager {
                 return ResultMap.build(ResultStatus.PAY_MERCHANT_NOT_EXIST);
             }
             //6.获得支付机构信息
-            String agencyType = "5";
+            String agencyType = "99";
             String sellerEmail = null;
-            if (agencyCode.equals(AgencyType.WECHAT.name())) {
+            if (agencyCode.equals(AgencyType.WECHAT.name())||
+                    agencyCode.equals(AgencyType.TEST_WECHAT.name())) {
                 agencyType = "3";
                 sellerEmail = agencyMerchant.getSellerEmail();
             }
