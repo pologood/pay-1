@@ -71,7 +71,7 @@ public class TenpayService implements ThirdpayService {
         // 资金回流到商户的现金帐号, 需要商户人工干预, 通过线下或者财付通转账的方式进行退款。
         REFUND_STATUS.put("7", OrderRefundStatus.OFFLINE.name());
         REFUND_STATUS.put("DEFAULT", OrderRefundStatus.UNKNOWN.name());//默认
-        REFUND_OPUSER.put("1234274801", new String[]{"1234274801123", "1234567809ted", "535221"});//搜狗网络商户账号、操作员账号、密码、证书导入密码
+        REFUND_OPUSER.put("1234274801", new String[]{"1234274801123", "1234567809ted", "813368"});//搜狗网络商户账号、操作员账号、密码、证书导入密码
         REFUND_OPUSER.put("1234639901", new String[]{"1234639901123", "1234567809ted", "145404"});//搜狗科技商户账号、操作员账号、密码、证书导入密码
     }
 
@@ -453,7 +453,7 @@ public class TenpayService implements ThirdpayService {
             log.error("[queryRefundOrder] 财付通退款查询返回参数异常, retcode!=0, 参数:" + params + ", 返回:" + resContent);
             return ResultMap.build(ResultStatus.THIRD_QUERY_REFUND_RESPONSE_PARAM_ERROR);
         }
-        String refund_state = getRefundStatus(tenpayMap.getString("refund_state_0"));
+        String refund_state = getRefundStatus(tenpayMap.getString("refund_state_0"));//财付通文档中为refund_status
         result.addItem("refund_status", refund_state);
         return result;
     }
