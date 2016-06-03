@@ -1,23 +1,30 @@
 package lib
 
-@Grab(group='com.google.zxing', module='core', version='3.2.1')
-@Grab(group='com.google.zxing', module='javase', version='3.2.1')
+@Grab(group = 'com.google.zxing', module = 'core', version = '3.2.1')
+@Grab(group = 'com.google.zxing', module = 'javase', version = '3.2.1')
+@Grab(group='org.apache.commons', module='commons-lang3', version='3.0')
+@Grab(group='com.fasterxml.jackson.core', module='jackson-databind', version='2.7.4')
 
 import com.google.zxing.BinaryBitmap
-import com.google.zxing.EncodeHintType
+import com.google.zxing.DecodeHintType
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.qrcode.QRCodeReader
-import groovy.util.slurpersupport.GPathResult
+import org.apache.commons.lang3.StringUtils
+import com.fasterxml.jackson.databind.ObjectMapper
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import java.time.*
 import java.time.format.DateTimeFormatter
 import org.apache.commons.codec.digest.DigestUtils
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 
 class PayUtils {
+
+    static ObjectMapper objectMapper = new ObjectMapper()
 
     static String signMD5(Map<String, Object> params, String md5_key) {
         def keys = new ArrayList<String>(params.keySet())
@@ -46,10 +53,20 @@ class PayUtils {
         return now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
     }
 
-    static String getValueFromXML(GPathResult node, String key) {
-        return node."**".find {
-            it["@name"] == key
-        }."@action"
+    static String urlEncode(String data) {
+        return URLEncoder.encode(data, "UTF-8")
+    }
+
+    static String urlDecode(String data) {
+        return URLDecoder.decode(data, "UTF-8")
+    }
+
+    static String jsonSerialize(Map<String, Object> params) {
+        try {
+            return objectMapper.writeValueAsString(params);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex)
+        }
     }
 
     static String QRCode2Text(String qrCode) {
@@ -63,12 +80,25 @@ class PayUtils {
             BufferedImage qrcodeImage = ImageIO.read(new ByteArrayInputStream(qrcodeBytes))
             BufferedImageLuminanceSource source = new BufferedImageLuminanceSource(qrcodeImage)
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source))
-            def hints = [(EncodeHintType.CHARACTER_SET): charset]
+            def hints = [(DecodeHintType.CHARACTER_SET): charset, (DecodeHintType.PURE_BARCODE): true]
             text = new QRCodeReader().decode(bitmap, hints).getText()
         } catch (Exception ex) {
-            ex.printStackTrace()
+            throw new RuntimeException(ex)
         }
         return text
+    }
+
+    static boolean isEmpty(String s){
+        return StringUtils.isEmpty(s)
+    }
+
+    static String parseHost(String url){
+        if(url.startsWith("http://")){
+            url = url.substring(7)
+        }else if(url.startsWith("https://")){
+            url = url.substring(8)
+        }
+        return url.split("[:\\?/]", 2)[0]
     }
 
 }
