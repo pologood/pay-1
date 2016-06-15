@@ -18,10 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sogou.pay.common.types.ResultMap;
-import com.sogou.pay.common.types.ResultStatus;
-import com.sogou.pay.common.utils.Base64;
 import com.sogou.pay.common.utils.MD5Util;
 import com.sogou.pay.common.types.PMap;
+import java.util.Base64;
 
 /**
  * @author 用户平台事业部---高朋辉
@@ -123,7 +122,7 @@ public class SecretKeyUtil {
         try {
 
             PKCS8EncodedKeySpec priPKCS8 = new PKCS8EncodedKeySpec(
-                    Base64.decode(privateKey));
+                    Base64.getDecoder().decode(privateKey));
             KeyFactory keyf = KeyFactory.getInstance(ALGORITHM);
             PrivateKey priKey = keyf.generatePrivate(priPKCS8);
 
@@ -135,7 +134,7 @@ public class SecretKeyUtil {
 
             byte[] signed = signature.sign();
 
-            return Base64.encode(signed);
+            return Base64.getEncoder().encodeToString(signed);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -154,7 +153,7 @@ public class SecretKeyUtil {
     public static boolean aliRSACheckSign(String content, String sign, String publicKey) {
         try {
             KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
-            byte[] encodedKey = Base64.decode(publicKey);
+            byte[] encodedKey = Base64.getDecoder().decode(publicKey);
             PublicKey pubKey = keyFactory
                     .generatePublic(new X509EncodedKeySpec(encodedKey));
 
@@ -164,7 +163,7 @@ public class SecretKeyUtil {
             signature.initVerify(pubKey);
             signature.update(content.getBytes("utf-8"));
 
-            return signature.verify(Base64.decode(sign));
+            return signature.verify(Base64.getDecoder().decode(sign));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -344,6 +343,70 @@ public class SecretKeyUtil {
             return false;
         }
         return returnSign.equals(signString);
+    }
+
+    /**
+     * 银联客户端支付--RSA加密
+     */
+    public static String unionRSASign(PMap<String, String> contextMap, String privateKey, String charset) {
+        // 组装签名报文
+        String signSource = buildSignSource(contextMap, true);
+        return unionRSASign(signSource, privateKey, charset);
+    }
+
+    /**
+     * 银联客户端支付--RSA加密
+     */
+    public static String unionRSASign(String content, String privateKey, String charset) {
+        try {
+            String digested = MD5Util.SHAEncode(content, charset);
+
+            PKCS8EncodedKeySpec priPKCS8 = new PKCS8EncodedKeySpec(
+                    Base64.getDecoder().decode(privateKey));
+            KeyFactory keyf = KeyFactory.getInstance(ALGORITHM);
+            PrivateKey priKey = keyf.generatePrivate(priPKCS8);
+
+            java.security.Signature signature = java.security.Signature
+                    .getInstance(SIGN_ALGORITHMS);
+
+            signature.initSign(priKey);
+            signature.update(digested.getBytes(charset));
+
+            byte[] signed = signature.sign();
+
+            return Base64.getEncoder().encodeToString(signed);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * 银联RSA验签名检查
+     */
+    public static boolean unionRSACheckSign(String content, String sign, String publicKey, String charset) {
+        try {
+
+            String digested = MD5Util.SHAEncode(content, charset);
+
+            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
+            byte[] encodedKey = Base64.getDecoder().decode(publicKey);
+            PublicKey pubKey = keyFactory
+                    .generatePublic(new X509EncodedKeySpec(encodedKey));
+
+            java.security.Signature signature = java.security.Signature
+                    .getInstance(SIGN_ALGORITHMS);
+
+            signature.initVerify(pubKey);
+            signature.update(digested.getBytes(charset));
+
+            return signature.verify(Base64.getDecoder().decode(sign));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }
