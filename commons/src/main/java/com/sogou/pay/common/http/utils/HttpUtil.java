@@ -97,6 +97,14 @@ public final class HttpUtil {
         }
     }
 
+    public static String urlDecode(String content) {
+        try {
+            return URLEncoder.encode(content, HttpConstant.DEFAULT_CHARSET);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("urlEncode error");
+        }
+    }
+
     public static ResultMap extractParams(String params) {
         ResultMap result = ResultMap.build();
         try {
@@ -104,6 +112,20 @@ public final class HttpUtil {
             for (String pair : pairs) {
                 String[] param = pair.split("=");
                 result.addItem(param[0], param[1]);
+            }
+        } catch (Exception ex) {
+            result.withError(ResultStatus.SYSTEM_ERROR);
+        }
+        return result;
+    }
+
+    public static ResultMap extractUrlParams(String params) {
+        ResultMap result = ResultMap.build();
+        try {
+            String[] pairs = params.split("&");
+            for (String pair : pairs) {
+                String[] param = pair.split("=");
+                result.addItem(urlDecode(param[0]), urlDecode(param[1]));
             }
         } catch (Exception ex) {
             result.withError(ResultStatus.SYSTEM_ERROR);

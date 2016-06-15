@@ -385,6 +385,15 @@ public class SecretKeyUtil {
     /**
      * 银联RSA验签名检查
      */
+    public static boolean unionRSACheckSign(PMap<String, String> contextMap, String sign, String publicKey, String charset) {
+        // 组装签名报文
+        String signSource = buildSignSource(contextMap, true);
+        return unionRSACheckSign(signSource, sign, publicKey, charset);
+    }
+
+    /**
+     * 银联RSA验签名检查
+     */
     public static boolean unionRSACheckSign(String content, String sign, String publicKey, String charset) {
         try {
 
