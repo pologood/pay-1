@@ -5,7 +5,7 @@ package com.sogou.pay.web.form.notify;
  * Date: 2015-03-04 16:38
  * 支付宝异步回调参数
  */
-public class AliRefundNotifyParams extends BaseRefundNotifyParams {
+public class AliRefundNotifyParams {
     private String notify_time;
     private String notify_type;
     private String notify_id;

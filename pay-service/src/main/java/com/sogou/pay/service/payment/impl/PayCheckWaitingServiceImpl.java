@@ -1,7 +1,7 @@
 package com.sogou.pay.service.payment.impl;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.manager.model.PayCheckUpdateModle;
+import com.sogou.pay.manager.model.PayCheckUpdateModel;
 import com.sogou.pay.service.dao.PayCheckWaitingDao;
 import com.sogou.pay.service.entity.PayCheckWaiting;
 import com.sogou.pay.service.payment.PayCheckWaitingService;
@@ -24,8 +24,8 @@ public class PayCheckWaitingServiceImpl implements PayCheckWaitingService {
     private PayCheckWaitingDao payCheckWaitingDao;
 
     @Override
-    public void insert(PayCheckWaiting payCheckWaiting) {
-        payCheckWaitingDao.insert(payCheckWaiting);
+    public int insert(PayCheckWaiting payCheckWaiting) {
+        return payCheckWaitingDao.insert(payCheckWaiting);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class PayCheckWaitingServiceImpl implements PayCheckWaitingService {
     }
 
     @Override
-    public void batchUpdateStatus(List<PayCheckUpdateModle> list) throws ServiceException {
+    public void batchUpdateStatus(List<PayCheckUpdateModel> list) throws ServiceException {
 
         payCheckWaitingDao.batchUpdateStatus(list);
     }

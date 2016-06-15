@@ -7,7 +7,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>商户订单数据(模拟1)</title>
-<script type="text/javascript" src="static/js/jq.js"></script>
+<script type="text/javascript" src="static/js/jquery-1.11.2.min.js"></script>
 <script type="text/javascript">
 	function doPay(){
 		var channel = document.getElementById("bankId").value;
@@ -21,10 +21,10 @@
 		}
 		dbform.submit();
 	}
-	function getSignData(){
-		$.ajax({ 
-            type: "post", 
-            url: "pay/getSignData.j", 
+	function getSign(){
+		$.ajax({
+			url: "api/pay/sign",
+            type: "GET",
             data:{version : document.getElementById("version").value,
             	pageUrl : document.getElementById("pageUrl").value,
             	bgUrl : document.getElementById("bgUrl").value,
@@ -69,7 +69,7 @@
 	<input type="text" id="accessPlatform" name="accessPlatform" value="1">接入平台  1:PC  2:WAP 3：SDK<br>
     <input type="text" id="bankCardType" name="bankCardType" value="">银行卡类型  1，借记卡  2，信用卡<br>
 	<input type="button" value="提交订单" onclick="doPay()">
-	<input type="button" value="获得sign" onclick="getSignData()">
+	<input type="button" value="获得sign" onclick="getSign()">
 	</form>
 	温馨提示：<br>
 	1.银行编码字段可空<br>

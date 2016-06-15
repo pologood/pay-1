@@ -9,12 +9,13 @@ import java.util.HashMap;
  * @date 2016/2/29
  */
 public enum OrderStatus implements ValueEnum{
-    NOTPAY(1),          // NOTPAY—未支付
-    USERPAYING(2),      // USERPAYING--支付中
-    SUCCESS(3),         // SUCCESS—支付完成
-    FAILURE(4),        // FAILURE--支付失败
-    CLOSED(5),          // CLOSED—已关闭
-    REFUND(6),          //REFUND-转入退款
+    NOTPAY(1),          // 未支付
+    USERPAYING(2),      // 支付中
+    SUCCESS(3),         // 支付完成
+    FAILURE(4),         // 支付失败
+    CLOSED(5),          // 已关闭
+    REFUND(6),          // 转入退款
+    PARTIAL(7),         // 部分支付
     ;
 
     private static HashMap<String, OrderStatus> map;
@@ -27,6 +28,7 @@ public enum OrderStatus implements ValueEnum{
         map.put("FAILURE", FAILURE);
         map.put("CLOSED", CLOSED);
         map.put("REFUND", REFUND);
+        map.put("PARTIAL", PARTIAL);
     }
 
     private OrderStatus(int value) {

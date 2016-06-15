@@ -39,7 +39,7 @@ public class PayOrderInfo{
     //支付渠道
     private String channelCode;
 
-    //支付单状态：1，未支付；2，部份支付；3，支付完成；4，无效；
+    //支付单状态：1，未支付；2，支付中；3，支付完成；4，无效；
     private Integer payOrderStatus;
 
     //退款金额

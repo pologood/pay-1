@@ -3,7 +3,7 @@ package com.sogou.pay.web.api;
 import com.alibaba.fastjson.JSONObject;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.web.BaseTest;
-import com.sogou.pay.web.controller.api.PayController;
+import com.sogou.pay.web.controller.api.APIController;
 import com.sogou.pay.web.form.QueryRefundParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class OrderQueryControllerTest extends BaseTest {
     @Autowired
-    PayController controller;
+    APIController controller;
 
     @Test
     public void testOrderQueryPay() {

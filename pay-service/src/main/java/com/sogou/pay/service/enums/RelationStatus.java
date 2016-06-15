@@ -2,10 +2,6 @@ package com.sogou.pay.service.enums;
 
 /**
  * 退款单退款状态枚举
- *
- * @author 用户平台事业部---高朋辉
- * @version 1.0
- * @date 2015/4/22
  */
 public enum RelationStatus {
     /**
@@ -21,7 +17,7 @@ public enum RelationStatus {
      */
     FAIL(2),
     /**
-     * 平账退款
+     * 已退款
      */
     REFUND(3);
 

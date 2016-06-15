@@ -5,10 +5,9 @@
     <resultMap type="com.sogou.pay.service.entity.AgencyInfo" id="agencyInfo">
         <result property="id" column="id"/>
         <result property="agencyCode" column="agency_code"/>
-        <result property="accessPlatform" column="access_platform"/>
         <result property="agencyName" column="agency_name"/>
+        <result property="accessPlatform" column="access_platform"/>
         <result property="aliasFlag" column="alias_flag"/>
-        <result property="agencyType" column="agency_type"/>
         <result property="prepayUrl" column="prepay_url"/>
         <result property="payUrl" column="pay_url"/>
         <result property="queryUrl" column="query_url"/>
@@ -34,8 +33,8 @@
     <select id="getAgencyInfoByCode" parameterType="String" resultMap="agencyInfo">
 
       SELECT * FROM t_pay_agency_info
-         WHERE agency_code = #{agencyCode} and (access_platform = #{accessPlatform} or access_platform=99) and
-            (agency_type = #{agencyType} or agency_type=99) order by access_platform,agency_type ASC limit 1
+         WHERE agency_code = #{agencyCode} and (access_platform = #{accessPlatform} or access_platform=99)
+         order by access_platform ASC limit 1
     </select>
 
     <!-- 根据ID获取单条信息-->

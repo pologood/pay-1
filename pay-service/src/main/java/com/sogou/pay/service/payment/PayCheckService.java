@@ -1,7 +1,7 @@
 package com.sogou.pay.service.payment;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.manager.model.PayCheckUpdateModle;
+import com.sogou.pay.manager.model.PayCheckUpdateModel;
 import com.sogou.pay.service.entity.PayCheck;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
 
@@ -24,7 +24,7 @@ public interface PayCheckService {
      * @param list
      * @throws ServiceException
      */
-    public void batchUpdateStatus(List<PayCheckUpdateModle> list) throws ServiceException;
+    public void batchUpdateStatus(List<PayCheckUpdateModel> list) throws ServiceException;
 
     /**
      * 删除

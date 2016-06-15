@@ -345,8 +345,8 @@ public class TenpayService implements ThirdpayService {
         // 3.获取支付机构请求报文处理配置
         TenpayHttpClient httpClient = new TenpayHttpClient();
         PMap tenpayMap;
-        httpClient.setCertFile(params.getString("privateCertFilePath"),
-                certPasswd, params.getString("publicCertFilePath"));
+        httpClient.setCertFile("e:"+params.getString("privateCertFilePath"),
+                certPasswd, "e:"+params.getString("publicCertFilePath"));
         Result httpResponse = httpClient.doGet(params.getString("refundUrl"), requestPMap);
         if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
             log.error("[refundOrder] 财付通退款HTTP请求失败, 参数:" + requestPMap);

@@ -1,5 +1,7 @@
 package com.sogou.pay.manager.model;
 
+import com.sogou.pay.service.entity.App;
+
 import java.math.BigDecimal;
 
 /**
@@ -7,39 +9,49 @@ import java.math.BigDecimal;
  * Date: 2015-03-02 18:25
  */
 public class RefundModel {
-    private int appId;
-    private String orderId;
-    private BigDecimal refundAmount;
-    private String bgurl;
-    public int getAppId() {
-        return appId;
-    }
+  private App app;
+  private String orderId;
+  private BigDecimal refundAmount;
+  private String bgurl;
+  private int refundStatus;
 
-    public void setAppId(int appId) {
-        this.appId = appId;
-    }
+  public App getApp() {
+    return app;
+  }
 
-    public String getOrderId() {
-        return orderId;
-    }
+  public void setApp(App app) {
+    this.app = app;
+  }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
+  public String getOrderId() {
+    return orderId;
+  }
 
-    public BigDecimal getRefundAmount() {
-        return refundAmount;
-    }
+  public void setOrderId(String orderId) {
+    this.orderId = orderId;
+  }
 
-    public void setRefundAmount(BigDecimal refundAmount) {
-        this.refundAmount = refundAmount;
-    }
+  public BigDecimal getRefundAmount() {
+    return refundAmount;
+  }
 
-    public String getBgurl() {
-        return bgurl;
-    }
+  public void setRefundAmount(BigDecimal refundAmount) {
+    this.refundAmount = refundAmount;
+  }
 
-    public void setBgurl(String bgurl) {
-        this.bgurl = bgurl;
-    }
+  public String getBgurl() {
+    return bgurl;
+  }
+
+  public void setBgurl(String bgurl) {
+    this.bgurl = bgurl;
+  }
+
+  public int getRefundStatus() {
+    return refundStatus;
+  }
+
+  public void setRefundStatus(int refundStatus) {
+    this.refundStatus = refundStatus;
+  }
 }

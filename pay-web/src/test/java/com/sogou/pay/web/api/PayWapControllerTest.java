@@ -3,7 +3,8 @@ package com.sogou.pay.web.api;
 import com.alibaba.fastjson.JSONObject;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.web.BaseTest;
-import com.sogou.pay.web.controller.api.PayController;
+import com.sogou.pay.web.controller.api.APIController;
+import com.sogou.pay.web.controller.api.GWController;
 import com.sogou.pay.web.form.PayParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import java.util.Map;
  */
 public class PayWapControllerTest extends BaseTest {
     @Autowired
-    PayController controller;
+    APIController apiController;
     
     @Test
     public void testPayWap() {
@@ -40,7 +41,7 @@ public class PayWapControllerTest extends BaseTest {
         params.setBankCardType("");
         Map map = BeanUtil.Bean2Map(params);
 
-        map.put("sign", JSONObject.parse(controller.signData(map)));
+        map.put("sign", JSONObject.parse(apiController.signData(map)));
         testGet(url, map);
     }
 

@@ -1,7 +1,7 @@
 package com.sogou.pay.service.payment;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.manager.model.PayCheckUpdateModle;
+import com.sogou.pay.manager.model.PayCheckUpdateModel;
 import com.sogou.pay.service.entity.PayCheckWaiting;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public interface PayCheckWaitingService {
      * @param payCheckWaiting
      * @throws ServiceException
      */
-    public void insert(PayCheckWaiting payCheckWaiting)throws ServiceException;
+    public int insert(PayCheckWaiting payCheckWaiting)throws ServiceException;
 
     /**
      * 根据流水号查询
@@ -34,7 +34,7 @@ public interface PayCheckWaitingService {
      * @param list
      * @throws ServiceException
      */
-    public void batchUpdateStatus(List<PayCheckUpdateModle> list)throws ServiceException;
+    public void batchUpdateStatus(List<PayCheckUpdateModel> list)throws ServiceException;
 
     /**
      * 求总金额 总数

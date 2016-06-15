@@ -26,10 +26,10 @@ public class RefundInfoDAOTest extends BaseTest {
         refundInfo.setOrderId("3000001");
         refundInfo.setAgencyCode("test");
         refundInfo.setMerchantNo("test");
-        refundInfo.setPayFeeType(2);
+        refundInfo.setRefundFeeType(2);
         refundInfo.setBalanceRefund(new BigDecimal(500));
         refundInfo.setAppId(1000);
-        refundInfo.setNetBalanceRefund(new BigDecimal(500.01));
+        refundInfo.setBankRefund(new BigDecimal(500.01));
         refundInfo.setOrderMoney(new BigDecimal(2000.03));
         refundInfo.setRefundMoney(new BigDecimal(1000.01));
         refundInfo.setRefundReqTime(new Date());

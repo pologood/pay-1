@@ -3,13 +3,13 @@ package com.sogou.pay.service.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * 支付机构对象
- *
- * @author 武景畔
- * @version 0.0.1
- */
-public class AgencyInfo implements Serializable {
+
+public class AgencyInfo {
+    public static final int ALIASFLAG_NONE = 0;//银行卡没有别名
+    public static final int ALIASFLAG_DEBIT = 1;//储蓄卡有别名
+    public static final int ALIASFLAG_CREDIT = 2;//信用卡有别名
+    public static final int ALIASFLAG_ALL = 3;//都有别名
+
 
     private Integer id;
     /**
@@ -32,10 +32,6 @@ public class AgencyInfo implements Serializable {
      */
     private Integer aliasFlag;
 
-    /**
-     * 机构类型
-     */
-    private Integer agencyType;
 
     /**
      * 预支付URL
@@ -125,14 +121,6 @@ public class AgencyInfo implements Serializable {
 
     public void setAliasFlag(Integer aliasFlag) {
         this.aliasFlag = aliasFlag;
-    }
-
-    public Integer getAgencyType() {
-        return agencyType;
-    }
-
-    public void setAgencyType(Integer agencyType) {
-        this.agencyType = agencyType;
     }
 
     public String getPayUrl() {
@@ -245,18 +233,6 @@ public class AgencyInfo implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    @Override
-    public String toString() {
-        return "AgencyInfo [agencyCode=" + agencyCode + ", accessPlatform="
-                + accessPlatform + ", agencyName=" + agencyName
-                + ", aliasFlag=" + aliasFlag + ", agencyType=" + agencyType
-                + ", prepayUrl=" + prepayUrl + ", payUrl=" + payUrl
-                + ", queryUrl=" + queryUrl + ", refundUrl=" + refundUrl
-                + ", refundNotifyBackUrl=" + refundNotifyBackUrl + ", transferNotifyBackUrl=" + transferNotifyBackUrl
-                + ", sendPhoneUrl=" + sendPhoneUrl + ", createTime="
-                + createTime + ", modifyTime=" + modifyTime + "]";
     }
 
 }

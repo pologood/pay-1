@@ -7,7 +7,7 @@
  */
 package com.sogou.pay.service.constants;
 
-import com.sogou.pay.thirdpay.biz.enums.AgencyType;
+import com.sogou.pay.service.enums.AgencyCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +23,14 @@ public class PaySet {
     /**
      * 已接通代付方式
      */
-    public static final List<AgencyType> IN_SERVICE_TRANSFER_PAYMENTS = new ArrayList<AgencyType>();
+    public static final List<AgencyCode> IN_SERVICE_TRANSFER_PAYMENTS = new ArrayList<AgencyCode>();
 
     static {
 
         /**
          * TENPAY
          */
-        IN_SERVICE_TRANSFER_PAYMENTS.add(AgencyType.TENPAY);
+        IN_SERVICE_TRANSFER_PAYMENTS.add(AgencyCode.TENPAY);
 
     }
 

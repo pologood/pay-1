@@ -28,9 +28,8 @@ import com.sogou.pay.manager.payment.AppManager;
 import com.sogou.pay.manager.payment.ChannelAdaptManager;
 import com.sogou.pay.manager.payment.PayTranferRequestManager;
 import com.sogou.pay.manager.payment.PayTransManager;
-import com.sogou.pay.manager.secure.SecureManager;
+import com.sogou.pay.web.manager.SecureManager;
 import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
-//import com.sogou.pay.thirdpay.api.PayApi;
 import com.sogou.pay.web.controller.BaseController;
 import com.sogou.pay.web.form.PayTransParams;
 import com.sogou.pay.web.form.PayTransferQueryParams;
@@ -46,8 +45,6 @@ import com.sogou.pay.web.utils.ServletUtil;
  * @Description: 支付请求controller
  */
 @Controller
-//@RequestMapping(value = "/payTrans")
-@SuppressWarnings("all")
 public class PayTransferController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(PayTransferController.class);
@@ -63,9 +60,6 @@ public class PayTransferController extends BaseController {
 
     @Autowired
     private SecureManager secureManager;
-
-//    @Autowired
-//    private PayApi payApi;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -127,7 +121,6 @@ public class PayTransferController extends BaseController {
 
     /**
      * @param batchNo
-     * @param request
      * @return ModelAndView
      * @Author qibaichao
      * @MethodName doRequest
@@ -153,8 +146,6 @@ public class PayTransferController extends BaseController {
     }
 
     /**
-     * @param batchNo
-     * @param request
      * @return ModelAndView
      * @Author qibaichao
      * @MethodName queryByBatchNo
@@ -179,7 +170,7 @@ public class PayTransferController extends BaseController {
             return JSONObject.toJSONString(result);
         }
         /**1.验证签名**/
-        Result signResult = secureManager.verifyAppSign(payTransferQueryParams);
+        Result signResult = secureManager.verifyAppSign(BeanUtil.Bean2Map(payTransferQueryParams), null, null);
         if(!Result.isSuccess(signResult)){
             logger.error("【支付请求】验证签名错误！");
             //获取业务平台签名失败
@@ -208,7 +199,7 @@ public class PayTransferController extends BaseController {
             return JSONObject.toJSONString(result);
         }
         /**1.验证签名**/
-        Result signResult = secureManager.verifyAppSign(payTransferRefundQueryParams);
+        Result signResult = secureManager.verifyAppSign(BeanUtil.Bean2Map(payTransferRefundQueryParams), null, null);
         if(!Result.isSuccess(signResult)){
             logger.error("【支付请求】验证签名错误！");
             //获取业务平台签名失败,跳到错误页面

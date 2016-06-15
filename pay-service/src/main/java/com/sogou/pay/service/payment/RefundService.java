@@ -11,10 +11,6 @@ import java.util.List;
  * Date: 2015-03-03 18:49
  */
 public interface RefundService {
-    public static final int REFUND_INIT = 1;
-    public static final int REFUND_SUCCESS = 2;
-    public static final int REFUND_FAIL = 3;
-    public static final int PAY_FEE_TYPE = 9;
 
     /**
      * 插入退款信息表
@@ -74,5 +70,5 @@ public interface RefundService {
      * @return 查询记录集合
      * @throws ServiceException
      */
-    public List<RefundInfo> selectRefundByOrderIdAndTimeDesc(String orderId) throws ServiceException;
+    public List<RefundInfo> selectRefundByOrderId(String orderId) throws ServiceException;
 }

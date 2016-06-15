@@ -1,6 +1,6 @@
 package com.sogou.pay.service.dao;
 
-import com.sogou.pay.manager.model.PayCheckUpdateModle;
+import com.sogou.pay.manager.model.PayCheckUpdateModel;
 import com.sogou.pay.service.entity.PayCheckWaiting;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -56,7 +56,7 @@ public interface PayCheckWaitingDao {
      * @Date 2015年2月16日
      * @Description:批量更新状态
      */
-    public int batchUpdateStatus(List<PayCheckUpdateModle> list);
+    public int batchUpdateStatus(List<PayCheckUpdateModel> list);
 
     /**
      * 根据日期、支付、统计BizAmt

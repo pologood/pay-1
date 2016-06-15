@@ -4,7 +4,7 @@ package com.sogou.pay.web.form.notify;
  * User: hujunfei
  * Date: 2015-03-06 18:13
  */
-public class TenRefundNotifyParams extends BaseRefundNotifyParams {
+public class TenRefundNotifyParams {
     private String sign_type;
     private String service_version;
     private String input_charset;

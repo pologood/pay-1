@@ -4,6 +4,7 @@ import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.service.dao.RefundInfoDAO;
 import com.sogou.pay.service.entity.RefundInfo;
+import com.sogou.pay.service.enums.RefundStatus;
 import com.sogou.pay.service.payment.RefundService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -64,7 +65,7 @@ public class RefundServiceImpl implements RefundService {
     @Override
     public int updateRefundSuccess(String refundId, Date resTime) throws ServiceException {
         try {
-            return refundInfoDAO.updateRefundStatus(refundId, RefundService.REFUND_SUCCESS, null, null, resTime);
+            return refundInfoDAO.updateRefundStatus(refundId, RefundStatus.SUCCESS.getValue(), null, null, resTime);
         } catch (Exception e) {
             throw new ServiceException(e, ResultStatus.SYSTEM_DB_ERROR);
         }
@@ -74,16 +75,16 @@ public class RefundServiceImpl implements RefundService {
     @Override
     public int updateRefundFail(String refundId, String errorCode, String errorInfo) throws ServiceException {
         try {
-            return refundInfoDAO.updateRefundStatus(refundId, RefundService.REFUND_FAIL, errorCode, errorInfo, null);
+            return refundInfoDAO.updateRefundStatus(refundId, RefundStatus.FAIL.getValue(), errorCode, errorInfo, null);
         } catch (Exception e) {
             throw new ServiceException(e, ResultStatus.SYSTEM_DB_ERROR);
         }
     }
 
     @Override
-    public List<RefundInfo> selectRefundByOrderIdAndTimeDesc(String orderId) throws ServiceException {
+    public List<RefundInfo> selectRefundByOrderId(String orderId) throws ServiceException {
         try {
-            return refundInfoDAO.selectRefundByOrderIdAndTimeDesc(orderId);
+            return refundInfoDAO.selectRefundByOrderId(orderId);
         } catch (Exception e) {
             throw new ServiceException(e, ResultStatus.SYSTEM_DB_ERROR);
         }

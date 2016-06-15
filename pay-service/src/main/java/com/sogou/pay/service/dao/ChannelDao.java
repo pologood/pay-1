@@ -1,5 +1,6 @@
 package com.sogou.pay.service.dao;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.sogou.pay.service.entity.Channel;
@@ -14,6 +15,6 @@ public interface ChannelDao {
 
     public int insertChannel(Channel channel);
 
-    public Channel selectChannelByCode(String channelCode);
+    public Channel selectChannelByCode(@Param("channelCode")String channelCode, @Param("accessPlatform")Integer accessPlatform);
 
 }

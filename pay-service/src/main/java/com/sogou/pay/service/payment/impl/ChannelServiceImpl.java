@@ -32,7 +32,7 @@ public class ChannelServiceImpl implements ChannelService {
      * @return 渠道信息
      */
     @Override
-    public Channel selectChannelByCode(String  channelCode) {
-        return  channelDao.selectChannelByCode(channelCode);
+    public Channel selectChannelByCode(String channelCode, Integer accessPlatform) {
+        return  channelDao.selectChannelByCode(channelCode, accessPlatform);
     }
 }

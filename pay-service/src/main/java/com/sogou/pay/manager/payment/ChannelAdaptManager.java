@@ -1,7 +1,7 @@
 package com.sogou.pay.manager.payment;
 
 import com.sogou.pay.common.types.ResultBean;
-import com.sogou.pay.manager.model.ChannelAdaptModel;
+import com.sogou.pay.manager.model.PayChannelAdapts;
 
 /**
  * @Author	wujingpan
@@ -17,5 +17,5 @@ public interface ChannelAdaptManager {
      * @param accessPlatform 接入平台 1：PC  2：移动
      * @return 适配列表
      */
-    public ResultBean<ChannelAdaptModel> getChannelAdapt(Integer appId,Integer accessPlatform);
+    public ResultBean<PayChannelAdapts> getChannelAdapts(Integer appId, Integer accessPlatform);
 }

@@ -36,7 +36,7 @@ public class PayNotifyControllerTest extends BaseTest {
         PayReqDetail payReqDetail = payReqDetailService.selectPayReqDetailById(reqId);
         if (null == payReqDetail) {
             log.error("[getSecretKey] 查询支付流水信息失败, reqId=" + reqId + ", agencyCode=" + agencyCode);
-            return ResultMap.build(ResultStatus.REQ_INFO_NOT_EXIST_ERROR);
+            return ResultMap.build(ResultStatus.REQ_DETAIL_NOT_EXIST_ERROR);
         }
         String merchantNo = payReqDetail.getMerchantNo();
         PayAgencyMerchant payAgencyMerchant = payAgencyMerchantService.selectByAgencyAndMerchant(agencyCode, merchantNo);

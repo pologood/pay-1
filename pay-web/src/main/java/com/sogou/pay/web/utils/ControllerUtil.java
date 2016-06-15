@@ -1,27 +1,14 @@
 package com.sogou.pay.web.utils;
 
-import com.sogou.pay.common.types.PMap;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by hujunfei Date: 15-1-5 Time: 下午3:15
- */
+
 public class ControllerUtil {
     private static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -50,33 +37,5 @@ public class ControllerUtil {
             validateResult = "";
         }
         return validateResult;*/
-    }
-
-
-    public static PMap<String, String> getParamPMap(HttpServletRequest request) {
-        PMap<String, String> params = new PMap<>();
-        Enumeration enumeration = request.getParameterNames();
-        while (enumeration.hasMoreElements()) {
-            String key = (String) enumeration.nextElement();
-            params.put(key, request.getParameter(key));
-        }
-        return params;
-    }
-
-    public static PMap<String, String> getXmlParamPMap(HttpServletRequest request) throws IOException, DocumentException {
-        PMap<String, String> params = new PMap<>();
-        InputStream inputStream = request.getInputStream();
-        SAXReader reader = new SAXReader();
-        Document document = reader.read(inputStream);
-        Element root = document.getRootElement();
-        List<Element> elementList = root.elements();
-
-        for(Element e : elementList)
-            params.put(e.getName(),e.getText());
-
-        inputStream.close();
-        inputStream = null;
-
-        return params;
     }
 }

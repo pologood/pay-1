@@ -218,7 +218,7 @@ public class AlipayService implements ThirdpayService {
         requestPMap.put("sign_type", AlipayService.SIGN_TYPE);                     //签名方式
         //3.获取支付URL
         String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
-        result.addItem("returnUrl", returnUrl);
+        result.addItem("qrCode", returnUrl);
         return result;
     }
 
@@ -254,7 +254,7 @@ public class AlipayService implements ThirdpayService {
             return ResultMap.build(ResultStatus.THIRD_PAY_PARAM_ERROR);
         }
         // 2.获取商户私钥路径
-        String privateCertFilePath = params.getString("privateCertFilePath");
+        String privateCertFilePath = "e:"+params.getString("privateCertFilePath");
         // 3.获取商户私钥
         String privateCertKey = SecretKeyUtil.loadKeyFromFile(privateCertFilePath);
         if (privateCertKey.equals("")) {
@@ -276,13 +276,13 @@ public class AlipayService implements ThirdpayService {
         requestString.append("&").append("sign_type").append("=").append(packit("RSA"));//签名方式
         String payInfo = requestString.toString();
         // 7.获取客户端需要的支付宝公钥
-        String publicCertFilePath = params.getString("publicCertFilePath");
+        String publicCertFilePath = "e:"+params.getString("publicCertFilePath");
         String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
         if (publicCertKey.equals("")) {
             log.error("[preparePayInfoSDK] 支付宝订单支付获取第三方支付账户公钥失败, 参数:" + params);
             return ResultMap.build(ResultStatus.THIRD_PAY_GET_KEY_ERROR);
         }
-        result.addItem("strOrderInfo", payInfo);
+        result.addItem("orderInfo", payInfo);
         result.addItem("aliPublicKey", publicCertKey);
         return result;
     }
@@ -851,7 +851,7 @@ public class AlipayService implements ThirdpayService {
         ResultMap result = ResultMap.build();
         PMap notifyParams = params.getPMap("data");
         //校验签名
-        String publicCertFilePath = params.getString("publicCertFilePath");
+        String publicCertFilePath = "e:"+params.getString("publicCertFilePath");
         // 3.获取商户私钥
         String privateCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
         if (privateCertKey.equals("")) {

@@ -1,7 +1,8 @@
 import static lib.BDD.*;
 import lib.*;
 
-def host = "test.cash.sogou.com"
+//def host = "test.cash.sogou.com"
+def host = "127.0.0.1"
 def server = "http://$host"
 
 def ctx = [
@@ -31,7 +32,7 @@ CONFIG(bdd, [
 ])
 
 //PC网页支付
-["ALIPAY", "TENPAY"].each {
+["ALIPAY"/*, "TENPAY"*/].each {
     def bankId = it
     println "[PayWeb]begin pay"
     def orderId = PayRoutines.gwPayWeb(bdd, ctx, "$bankId", null)
@@ -42,20 +43,21 @@ CONFIG(bdd, [
     println "[PayWeb]begin pay again, $orderId"
     orderId = PayRoutines.gwPayWeb(bdd, ctx, "$bankId", orderId)
     println "[PayWeb]end pay, $orderId"
-    println "[PayWeb]begin refund, $orderId"
-    PayRoutines.apiRefund(bdd, ctx, orderId)
-    println "[PayWeb]end refund"
-    println "[PayWeb]begin query again, $orderId"
-    PayRoutines.apiPayQuery(bdd, ctx, orderId)
-    println "[PayWeb]end query"
-    println "[PayWeb]begin query refund, $orderId"
-    PayRoutines.apiQueryRefund(bdd, ctx, orderId)
-    println "[PayWeb]end query refund"
-    println "[PayWeb]begin refund again, $orderId"
-    PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_REFUND_ALREADY_DONE")
-    println "[PayWeb]end refund"
+//    println "[PayWeb]begin refund, $orderId"
+//    PayRoutines.apiRefund(bdd, ctx, orderId)
+//    println "[PayWeb]end refund"
+//    println "[PayWeb]begin query again, $orderId"
+//    PayRoutines.apiPayQuery(bdd, ctx, orderId)
+//    println "[PayWeb]end query"
+//    println "[PayWeb]begin query refund, $orderId"
+//    PayRoutines.apiQueryRefund(bdd, ctx, orderId)
+//    println "[PayWeb]end query refund"
+//    println "[PayWeb]begin refund again, $orderId"
+//    PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_REFUND_ALREADY_DONE")
+//    println "[PayWeb]end refund"
 }
 
+return
 println ""
 
 //手机网页支付

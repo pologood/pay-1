@@ -22,7 +22,6 @@ import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.Base64;
 import com.sogou.pay.common.utils.MD5Util;
 import com.sogou.pay.common.types.PMap;
-import com.sogou.pay.thirdpay.biz.utils.billpay.BillMD5Util;
 
 /**
  * @author 用户平台事业部---高朋辉
@@ -346,84 +345,5 @@ public class SecretKeyUtil {
         }
         return returnSign.equals(signString);
     }
-
-
-    public static boolean billRSACheckSign(PMap<String, String> signMap,
-                                           String pubKeyPath, String sign) {
-        String sb = buildSignSource(signMap, false);
-        Pkipair pair = new Pkipair();
-        boolean isTrue;
-        try {
-            isTrue = pair.enCodeByCer(sb, sign, pubKeyPath);
-            return isTrue;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-
-    /**
-     * 快钱获取签名
-     */
-    public static String billRSASign(PMap signMsgMap, String path) {
-
-        String signMsg = buildSignSource(signMsgMap, false);
-        String base64 = "";
-        try {
-            // 密钥仓库
-            KeyStore ks = KeyStore.getInstance("PKCS12");
-            // 读取密钥仓库
-            FileInputStream ksfis = new FileInputStream(path);
-            BufferedInputStream ksbufin = new BufferedInputStream(ksfis);
-
-            char[] keyPwd = "123456".toCharArray();
-            //char[] keyPwd = "YaoJiaNiLOVE999Year".toCharArray();
-            ks.load(ksbufin, keyPwd);
-            // 从密钥仓库得到私钥
-            PrivateKey priK = (PrivateKey) ks.getKey("test-alias", keyPwd);
-            Signature signature = Signature.getInstance("SHA1withRSA");
-            signature.initSign(priK);
-            signature.update(signMsg.getBytes("utf-8"));
-            sun.misc.BASE64Encoder encoder = new sun.misc.BASE64Encoder();
-            base64 = encoder.encode(signature.sign());
-
-        } catch (FileNotFoundException e) {
-            System.out.println("文件找不到");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        System.out.println("test = " + base64);
-        return base64;
-    }
-
-    /**
-     * 快钱支付MD5签名 contextMap 签名参数 charset 参数编码
-     */
-    public static ResultMap billMD5Sign(PMap<String, String> contextMap, String charset) {
-        ResultMap result = ResultMap.build();
-        // 去掉map中的空值
-        PMap<String, String> signMap = new PMap<String, String>();
-        String value = "";
-        for (String Key : contextMap.keySet()) {
-            value = contextMap.get(Key);
-            if (value == null || value.equals("")) {
-                continue;
-            }
-            signMap.put(Key, value);
-        }
-        // 组装签名报文
-        String sb = buildSignSource(signMap, false);
-        String signMsgVal = "";
-        try {
-            signMsgVal = BillMD5Util.md5Hex(sb.getBytes(charset)).toUpperCase();
-        } catch (Exception e) {
-            result.withError(ResultStatus.PAY_SIGN_ERROR);
-            return result;
-        }
-        result.addItem("signValue", signMsgVal);
-        return result;
-    }
-
 
 }

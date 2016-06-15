@@ -8,6 +8,10 @@ import java.util.Date;
  * @Description: 支付单与支付流水关联表
  */
 public class PayOrderRelation {
+    public static final int INFOSTATUS_INIT = 0;
+    public static final int INFOSTATUS_SUCCESS = 1;
+    public static final int INFOSTATUS_REFUND = 3;
+
     //支付流水号
     private String payDetailId;
 

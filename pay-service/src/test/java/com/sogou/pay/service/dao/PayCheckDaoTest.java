@@ -1,10 +1,10 @@
 package com.sogou.pay.service.dao;
 
 import com.sogou.pay.common.utils.JSONUtil;
-import com.sogou.pay.manager.model.PayCheckUpdateModle;
+import com.sogou.pay.manager.model.PayCheckUpdateModel;
 import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayCheck;
-import com.sogou.pay.thirdpay.biz.enums.AgencyType;
+import com.sogou.pay.service.enums.AgencyCode;
 import com.sogou.pay.service.enums.OrderType;
 import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public class PayCheckDaoTest extends BaseTest {
         try {
             String merchantNo = "sogoucaipiao";
             String checkDate = "20150303";
-            String agencyCode = AgencyType.ALIPAY.name();
+            String agencyCode = AgencyCode.ALIPAY.name();
 
             List<PayCheck> payCheckList = new ArrayList<PayCheck>();
             PayCheck payCheck = null;
@@ -79,20 +79,20 @@ public class PayCheckDaoTest extends BaseTest {
     public void batchUpdateStatus() {
 
         try {
-            List<PayCheckUpdateModle> list = new ArrayList<PayCheckUpdateModle>();
-            PayCheckUpdateModle payCheckUpdateVo = new PayCheckUpdateModle();
+            List<PayCheckUpdateModel> list = new ArrayList<PayCheckUpdateModel>();
+            PayCheckUpdateModel payCheckUpdateVo = new PayCheckUpdateModel();
             payCheckUpdateVo.setInstructId("ZF20150318104155391002");
             payCheckUpdateVo.setPayCheckStatus(3);
             payCheckUpdateVo.setPayCheckId(3754);
             list.add(payCheckUpdateVo);
 
-            PayCheckUpdateModle payCheckUpdateVo2 = new PayCheckUpdateModle();
+            PayCheckUpdateModel payCheckUpdateVo2 = new PayCheckUpdateModel();
             payCheckUpdateVo2.setInstructId("1111234274801201503182132785");
             payCheckUpdateVo2.setPayCheckStatus(3);
             payCheckUpdateVo2.setPayCheckId(3755);
             list.add(payCheckUpdateVo2);
 
-            PayCheckUpdateModle payCheckUpdateVo3 = new PayCheckUpdateModle();
+            PayCheckUpdateModel payCheckUpdateVo3 = new PayCheckUpdateModel();
             payCheckUpdateVo3.setInstructId("1111234274801201503182146373");
             payCheckUpdateVo3.setPayCheckStatus(3);
             payCheckUpdateVo3.setPayCheckId(3756);
@@ -126,7 +126,7 @@ public class PayCheckDaoTest extends BaseTest {
         try {
             String merchantNo = "sogoucaipiao";
             String checkDate = "20150303";
-            String agencyCode = AgencyType.ALIPAY.name();
+            String agencyCode = AgencyCode.ALIPAY.name();
             int bizCode = OrderType.PAYCASH.getValue();
 
             int BATCH_SIZE = 500;

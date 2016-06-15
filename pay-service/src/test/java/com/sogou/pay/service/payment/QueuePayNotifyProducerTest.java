@@ -38,18 +38,6 @@ public class QueuePayNotifyProducerTest extends BaseTest {
     @Test
     public void sendRefundMessage() {
 
-        AppRefundNotifyModel appRefundNotifyModel = new AppRefundNotifyModel();
-        appRefundNotifyModel.setNotifyUrl("http://sg.pay.sogou.com/pay-web/notify/ali/pay/testBgUrl");
-        appRefundNotifyModel.setOrderId("111");
-        appRefundNotifyModel.setPayId("222");
-        appRefundNotifyModel.setRefundAmount("1");
-        appRefundNotifyModel.setRefundStatus("refund_success");
-        appRefundNotifyModel.setSign("aaa");
-        appRefundNotifyModel.setSignType("ddd");
-        appRefundNotifyModel.setRefundSuccessTime("");
-//        for (int i=0;i<10000;i++){
-        queueNotifyProducer.sendRefundMessage(appRefundNotifyModel);
-//        }
     }
 
     @Test

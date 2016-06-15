@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import com.sogou.pay.manager.model.PayCheckUpdateModle;
+import com.sogou.pay.manager.model.PayCheckUpdateModel;
 import com.sogou.pay.service.entity.PayCheck;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
 
@@ -37,7 +37,7 @@ public interface PayCheckDao {
      * @Date 2015年2月16日
      * @Description:批量更新状态
      */
-    public int batchUpdateStatus(List<PayCheckUpdateModle> list);
+    public int batchUpdateStatus(List<PayCheckUpdateModel> list);
 
     public int deleteInfo(@Param("checkDate") String checkDate, @Param("agencyCode") String agencyCode,
                           @Param("merchantNo") String merchantNo);

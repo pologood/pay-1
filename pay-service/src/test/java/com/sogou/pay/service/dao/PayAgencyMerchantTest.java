@@ -2,7 +2,7 @@ package com.sogou.pay.service.dao;
 
 import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayAgencyMerchant;
-import com.sogou.pay.thirdpay.biz.enums.AgencyType;
+import com.sogou.pay.service.enums.AgencyCode;
 import com.sogou.pay.service.payment.PayAgencyMerchantService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class PayAgencyMerchantTest extends BaseTest {
     public void  selectPayAgencyMerchants(){
 
         try {
-            String agencyCode = AgencyType.ALIPAY.name();
+            String agencyCode = AgencyCode.ALIPAY.name();
             List<PayAgencyMerchant>  list =  payAgencyMerchantService.selectPayAgencyMerchants(agencyCode);
             System.out.println( list);
         }catch (Exception e){

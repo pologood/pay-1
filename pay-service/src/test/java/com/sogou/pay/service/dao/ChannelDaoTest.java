@@ -16,7 +16,7 @@ public class ChannelDaoTest extends BaseTest {
 
     @Test
     public void selectByCode(){
-        Channel c = dao.selectChannelByCode("ABC");
+        Channel c = dao.selectChannelByCode("ABC", 1);
         System.out.println(c.getChannelName());
     }
 }

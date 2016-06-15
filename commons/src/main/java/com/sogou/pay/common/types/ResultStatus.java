@@ -17,6 +17,7 @@ public enum ResultStatus {
     INTERFACE_NOT_IMPLEMENTED(1003, "接口未实现"),
 
     //-------------------支付请求错误码--------2000至2999----------
+    PAY_SYSTEM_ERROR(1000, "支付时系统错误"),
     PAY_PARAM_ERROR(2000, "缺少必选参数或存在非法参数"),
     PAY_SIGN_ERROR(2001, "验证签名失败"),
     PAY_INSERT_PAY_ORDER_ERROR(2002, "插入支付单信息失败"),
@@ -49,7 +50,9 @@ public enum ResultStatus {
     REPAIR_ORDER_ERROR(3002, "补单调用失败"),
     INSERT_RES_DETAIL_ERROR(3003, "插入回调流水错误"),
     RES_DETAIL_ALREADY_EXIST(3004, "回调流水已经存在"),
-    REQ_INFO_NOT_EXIST_ERROR(3005, "支付请求流水不存在"),
+    RES_DETAIL_NOT_EXIST_ERROR(3005, "回调流水已经存在"),
+    REQ_DETAIL_NOT_EXIST_ERROR(3006, "支付请求流水不存在"),
+    PAY_NOTIFY_ERROR(3007, "支付回调处理失败"),
 
     //----------------------退款错误码--------4000至4999------------
     REFUND_SYSTEM_ERROR(4000, "退款时系统错误"),
@@ -76,9 +79,10 @@ public enum ResultStatus {
     FAIL_ACC_REFUND_NOT_AGENCY_ERROR(4022, "平账退款查询不到支付机构记录"),
 
     //----------------------对账错误码--------5000至5999------------
-    INSERT_PAY_CHECK_WAITING_ERROR(5000, "插入在线支付流水对帐单表错误"),
+    INSERT_PAY_CHECK_WAITING_ERROR(5000, "插入支付流水对帐单表错误"),
 
     //----------------------查询订单错误码--------6000至6499------------
+    QUERY_ORDER_SYSTEM_ERROR(6000,"订单查询时系统错误"),
     QUERY_ORDER_PARAM_ERROR(6000,"订单查询缺少必选参数或存在非法参数"),
     QUERY_ORDER_SIGN_ERROR(6001, "订单查询签名错误"),
     THIRD_QUERY_ERROR(6002, "第三方订单查询失败"),
@@ -90,15 +94,15 @@ public enum ResultStatus {
     THIRD_QUERY_XML_PARSE_ERROR(6008, "第三方订单查询解析响应报文异常"),
 
     //----------------------查询退款订单错误码--------6500至6599------------
-    QUERY_REFUND_REFUND_NOT_EXIST(6501, "此订单不存在退款记录"),
-    QUERY_REFUND_ORDER_NOT_EXIST(6502, "此订单不存在"),
+    REFUND_NOT_EXIST(6501, "此订单不存在退款记录"),
+    QUERY_REFUND_SYSTEM_ERROR(6503, "退款查询时系统错误"),
     THIRD_QUERY_REFUND_ERROR(6503, "第三方支付查询订单退款系统错误"),
-    THIRD_QUERY_REFUND_PARAM_ERROR(6504, "查询订单退款缺少必选参数或存在非法参数"),
-    THIRD_QUERY_REFUND_SIGN_ERROR(6505, "请求财付通查询订单退款签名错误"),
-    THIRD_QUERY_REFUND_HTTP_ERROR(6506, "请求支付宝查询订单退款HTTP异常"),
-    THIRD_QUERY_REFUND_RESPONSE_PARAM_ERROR(6507, "请求支付宝查询订单退款返回参数异常"),
-    THIRD_QUERY_REFUND_RESPONSE_SIGN_ERROR(6508, "财付通查询订单退款返回参数签名校验异常"),
-    THIRD_QUERY_REFUND_XML_PARSE_ERROR(6509, "支付宝查询订单退款请求返回XML参数转换Map异常"),
+    THIRD_QUERY_REFUND_PARAM_ERROR(6504, "第三方查询订单退款缺少必选参数或存在非法参数"),
+    THIRD_QUERY_REFUND_SIGN_ERROR(6505, "第三方查询订单退款签名失败"),
+    THIRD_QUERY_REFUND_HTTP_ERROR(6506, "第三方查询订单退款HTTP异常"),
+    THIRD_QUERY_REFUND_RESPONSE_PARAM_ERROR(6507, "第三方查询订单退款返回参数异常"),
+    THIRD_QUERY_REFUND_RESPONSE_SIGN_ERROR(6508, "第三方查询订单退款返回签名错误"),
+    THIRD_QUERY_REFUND_XML_PARSE_ERROR(6509, "第三方查询订单退款解析响应报文异常"),
 
     //----------------------查询订单退款错误码--------7000至7099------------
     BANK_PAY_PARAM_ERROR(7000, "批量银行代付接口请求缺少必选参数或存在非法参数"),
@@ -129,14 +133,7 @@ public enum ResultStatus {
     PAY_TRANFER_REQUEST_TIME_OUT(7109, "代付请求超时"),
     PAY_TRANFER_REQUEST_CONNECT_ERROR(7110, "代付请求前置机异常"),
 
-
-    //----------------------钱包业务码--------7200至7299-----------
-    WALLET_USER_NOT_LOGIN(7200, "用户未登录"),
-    WALLET_USER_NOT_EXIST(7200, "用户不存在"),
-    WALLET_LOGIN_FAILED(7200, "登录失败"),
-    WALLET_PAY_PASSWD_WRONG(7200, "支付密码错误"),
-    WALLET_PAY_CHANNEL_INVALID(7200, "支付渠道非法"),
-
+    THIRD_NOTIFY_ERROR(7200, "处理第三方通知失败"),
     ;
 
     private int code;
@@ -173,12 +170,6 @@ public enum ResultStatus {
         return this.name();
     }
 
-    /**
-     * 向外部输出的状态代码字符串
-     */
-    public String getOutputName() {
-        return this.name();
-    }
 
     @Override
     public String toString() {

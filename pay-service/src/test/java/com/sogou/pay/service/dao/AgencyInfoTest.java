@@ -30,7 +30,7 @@ public class AgencyInfoTest extends BaseTest {
     public void testSelectAgencyInfo(){
 
         String agencyCode = "ALIPAY";
-        AgencyInfo info = dao.getAgencyInfoByCode(agencyCode, "99", "99");
+        AgencyInfo info = dao.getAgencyInfoByCode(agencyCode, "99");
         //assertEquals("支付宝",info.getAgencyName());
         System.out.println(info.toString());
     }

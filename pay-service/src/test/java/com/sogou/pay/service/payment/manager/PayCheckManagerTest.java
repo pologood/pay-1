@@ -1,6 +1,7 @@
 package com.sogou.pay.service.payment.manager;
 
 import com.sogou.pay.common.utils.DateUtil;
+import com.sogou.pay.enums.AccessPlatform;
 import com.sogou.pay.manager.payment.PayCheckManager;
 import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.dao.PayCheckDao;
@@ -10,10 +11,9 @@ import com.sogou.pay.service.entity.PayAgencyMerchant;
 import com.sogou.pay.service.entity.PayCheck;
 import com.sogou.pay.service.entity.PayCheckDayLog;
 import com.sogou.pay.service.entity.PayCheckWaiting;
-import com.sogou.pay.thirdpay.biz.enums.AgencyType;
+import com.sogou.pay.service.enums.AgencyCode;
 import com.sogou.pay.service.enums.OperationLogStatus;
 import com.sogou.pay.service.enums.OrderType;
-import com.sogou.pay.service.enums.TerminalType;
 import com.sogou.pay.service.payment.PayAgencyMerchantService;
 import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public class PayCheckManagerTest extends BaseTest {
         Random rand = new Random();
         String checkDate = "20150303";
         String merchantNo = "sogoucaipiao";
-        String agencyCode = AgencyType.ALIPAY.name();
+        String agencyCode = AgencyCode.ALIPAY.name();
         PayCheckDayLog payCheckDayLog = null;
         try {
             //插入一条log
@@ -108,8 +108,8 @@ public class PayCheckManagerTest extends BaseTest {
                 payCheckWaiting.setBizAmt(new BigDecimal(dcmFmt.format(f)));
                 payCheckWaiting.setCommissionFeeAmt(BigDecimal.valueOf(0));
                 payCheckWaiting.setCheckDate(checkDate);
-                payCheckWaiting.setAgencyCode(AgencyType.ALIPAY.name());
-                payCheckWaiting.setAccessPlatform(TerminalType.WEB.getValue());
+                payCheckWaiting.setAgencyCode(AgencyCode.ALIPAY.name());
+                payCheckWaiting.setAccessPlatform(AccessPlatform.ACCESSPLATFORM_PC);
                 payCheckWaiting.setAppId(1);
                 payCheckWaiting.setMerchantNo(merchantNo);
                 list.add(payCheckWaiting);
@@ -139,11 +139,11 @@ public class PayCheckManagerTest extends BaseTest {
     @Test
     public void downloadData() {
 //        Date checkDate = DateUtil.parse("20151130");
-//        String agencyCode = AgencyType.ALIPAY.name();
+//        String agencyCode = AgencyCode.ALIPAY.name();
 //        Date checkDate = DateUtil.parse("20160126");
-//        String agencyCode = AgencyType.TENPAY.name();
+//        String agencyCode = AgencyCode.TENPAY.name();
         Date checkDate = DateUtil.parse("20160216");
-        String agencyCode = AgencyType.WECHAT.name();
+        String agencyCode = AgencyCode.WECHAT.name();
         try {
             payCheckManager.downloadOrderData(checkDate, agencyCode);
         } catch (Exception e) {
@@ -155,7 +155,7 @@ public class PayCheckManagerTest extends BaseTest {
     public void selectByAgencyAndMerchant() {
         try {
             String merchantNo = "1900000109";
-            String agencyCode = AgencyType.TENPAY.name();
+            String agencyCode = AgencyCode.TENPAY.name();
             PayAgencyMerchant payAgencyMerchant = payAgencyMerchantService.selectByAgencyAndMerchant(agencyCode, merchantNo);
             System.out.println(payAgencyMerchant);
         } catch (Exception e) {
@@ -167,7 +167,7 @@ public class PayCheckManagerTest extends BaseTest {
     public void checkData() {
         //财付通对账
         Date checkDate = DateUtil.parse("20151101");
-        String agencyCode = AgencyType.TENPAY.name();
+        String agencyCode = AgencyCode.TENPAY.name();
         try {
             payCheckManager.downloadOrderData(checkDate, agencyCode);
             payCheckManager.checkOrderData(checkDate, agencyCode);
@@ -175,14 +175,14 @@ public class PayCheckManagerTest extends BaseTest {
             e.printStackTrace();
         }
         //微信对账
-        agencyCode = AgencyType.WECHAT.name();
+        agencyCode = AgencyCode.WECHAT.name();
         try {
             payCheckManager.downloadOrderData(checkDate, agencyCode);
             payCheckManager.checkOrderData(checkDate, agencyCode);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        agencyCode = AgencyType.ALIPAY.name();
+        agencyCode = AgencyCode.ALIPAY.name();
         try {
             payCheckManager.downloadOrderData(checkDate, agencyCode);
             payCheckManager.checkOrderData(checkDate, agencyCode);
@@ -195,7 +195,7 @@ public class PayCheckManagerTest extends BaseTest {
     @Test
     public void checkAlipay() {
         Date checkDate = DateUtil.parse("20150413");
-        String agencyCode = AgencyType.ALIPAY.name();
+        String agencyCode = AgencyCode.ALIPAY.name();
         try {
             payCheckManager.downloadOrderData(checkDate, agencyCode);
             payCheckManager.checkOrderData(checkDate, agencyCode);
@@ -207,7 +207,7 @@ public class PayCheckManagerTest extends BaseTest {
     @Test
     public void checkTenpay() {
         Date checkDate = DateUtil.parse("20150421");
-        String agencyCode = AgencyType.TENPAY.name();
+        String agencyCode = AgencyCode.TENPAY.name();
         try {
             payCheckManager.downloadOrderData(checkDate, agencyCode);
             payCheckManager.checkOrderData(checkDate, agencyCode);
@@ -219,20 +219,7 @@ public class PayCheckManagerTest extends BaseTest {
     @Test
     public void checkWechat() {
         Date checkDate = DateUtil.parse("20151118");
-        String agencyCode = AgencyType.WECHAT.name();
-        try {
-            payCheckManager.downloadOrderData(checkDate, agencyCode);
-            payCheckManager.checkOrderData(checkDate, agencyCode);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void checkBill99() {
-        Date checkDate = DateUtil.parse("20150629");
-        String agencyCode = AgencyType.BILL99.name();
-        String merchantNo = "1234469202";
+        String agencyCode = AgencyCode.WECHAT.name();
         try {
             payCheckManager.downloadOrderData(checkDate, agencyCode);
             payCheckManager.checkOrderData(checkDate, agencyCode);
@@ -254,7 +241,7 @@ public class PayCheckManagerTest extends BaseTest {
     public void updatePayCheckResult() {
 
         Date checkDate = DateUtil.parse("20150303");
-        String agencyCode = AgencyType.ALIPAY.name();
+        String agencyCode = AgencyCode.ALIPAY.name();
         try {
             payCheckManager.updatePayCheckResult(checkDate, agencyCode);
         } catch (Exception e) {

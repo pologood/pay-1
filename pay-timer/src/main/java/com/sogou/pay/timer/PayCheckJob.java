@@ -3,7 +3,7 @@ package com.sogou.pay.timer;
 import com.sogou.pay.PayPlatformBizServiceLocator;
 import com.sogou.pay.common.annotation.Load;
 import com.sogou.pay.manager.payment.PayCheckManager;
-import com.sogou.pay.thirdpay.biz.enums.AgencyType;
+import com.sogou.pay.service.enums.AgencyCode;
 import com.sogou.pay.service.payment.PayAgencyMerchantService;
 import com.sogou.pay.service.payment.PayCheckResultService;
 import org.apache.http.client.utils.DateUtils;
@@ -27,10 +27,9 @@ public class PayCheckJob {
     private List<String> agencyCodeList = new ArrayList<String>();
 
     {
-        agencyCodeList.add(AgencyType.ALIPAY.name());
-        agencyCodeList.add(AgencyType.TENPAY.name());
-        agencyCodeList.add(AgencyType.WECHAT.name());
-        agencyCodeList.add(AgencyType.BILL99.name());
+        agencyCodeList.add(AgencyCode.ALIPAY.name());
+        agencyCodeList.add(AgencyCode.TENPAY.name());
+        agencyCodeList.add(AgencyCode.WECHAT.name());
     }
 
     @Load(locator = PayPlatformBizServiceLocator.class)
@@ -50,25 +49,12 @@ public class PayCheckJob {
         // 取前一天日期
         Date checkDate = getYesterday();
         logger.info("alipay check job start for checkDate:" + checkDate);
-        String agencyCode = AgencyType.ALIPAY.name();
+        String agencyCode = AgencyCode.ALIPAY.name();
         payCheckManager.downloadOrderData(checkDate, agencyCode);
         payCheckManager.checkOrderData(checkDate, agencyCode);
         logger.info("alipay check job end for checkDate:" + checkDate);
     }
 
-    /**
-     * 快钱对账任务
-     * 每日凌晨3点15执行一次
-     */
-    public void doBill99Job() {
-        // 取前一天日期
-        Date checkDate = getYesterday();
-        logger.info("bill99 check job start for checkDate:" + checkDate);
-        String agencyCode = AgencyType.BILL99.name();
-        payCheckManager.downloadOrderData(checkDate, agencyCode);
-        payCheckManager.checkOrderData(checkDate, agencyCode);
-        logger.info("bill99 check job end for checkDate:" + checkDate);
-    }
 
     /**
      * 财付通对账任务
@@ -79,7 +65,7 @@ public class PayCheckJob {
         // 取前一天日期
         Date checkDate = getYesterday();
         logger.info("tenpay check job start for checkDate:" + checkDate);
-        String agencyCode = AgencyType.TENPAY.name();
+        String agencyCode = AgencyCode.TENPAY.name();
         payCheckManager.downloadOrderData(checkDate, agencyCode);
         payCheckManager.checkOrderData(checkDate, agencyCode);
         logger.info("tenpay check job end for checkDate:" + checkDate);
@@ -94,7 +80,7 @@ public class PayCheckJob {
         // 取前一天日期
         Date checkDate = getYesterday();
         logger.info("wechat check job start for checkDate:" + checkDate);
-        String agencyCode = AgencyType.WECHAT.name();
+        String agencyCode = AgencyCode.WECHAT.name();
         payCheckManager.downloadOrderData(checkDate, agencyCode);
         payCheckManager.checkOrderData(checkDate, agencyCode);
         logger.info("wechat check job end for checkDate:" + checkDate);

@@ -1,6 +1,6 @@
 package com.sogou.pay.service.dao;
 
-import com.sogou.pay.manager.model.CommonAdaptModel;
+import com.sogou.pay.manager.model.PayChannelAdapt;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -18,6 +18,6 @@ public interface ChannelAdaptDao {
      * @param accessPlatform 接入平台 1：PC  2：移动
      * @return 适配列表
      */
-    public List<CommonAdaptModel> getChannelAdaptList(@Param("appId")Integer appId, @Param("accessPlatform")Integer
+    public List<PayChannelAdapt> getChannelAdaptList(@Param("appId")Integer appId, @Param("accessPlatform")Integer
             accessPlatform);
 }

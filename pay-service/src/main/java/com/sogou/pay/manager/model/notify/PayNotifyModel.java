@@ -90,18 +90,4 @@ public class PayNotifyModel {
     public void setChannelType(String channelType) {
         this.channelType = channelType;
     }
-
-    @Override
-    public String toString() {
-        return "PayNotifyModel{" +
-                "payDetailId='" + payDetailId + '\'' +
-                ", agencyOrderId='" + agencyOrderId + '\'' +
-                ", bankOrderId='" + bankOrderId + '\'' +
-//                ", payStatus=" + payStatus +
-                ", agencyPayTime=" + agencyPayTime +
-                ", trueMoney=" + trueMoney +
-                ", refundCode='" + refundCode + '\'' +
-                ", channelType='" + channelType + '\'' +
-                '}';
-    }
 }

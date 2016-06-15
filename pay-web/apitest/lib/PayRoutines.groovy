@@ -49,8 +49,8 @@ class PayRoutines {
 
         //如果为重复支付，直接返回
         if (payAgain) {
-            assert PayUtils.isEmpty(thirdPayUrl)
-            return orderId
+            //assert PayUtils.isEmpty(thirdPayUrl)
+            //return orderId
         }
 
         //跳转到第三方支付
@@ -179,7 +179,7 @@ class PayRoutines {
                 bankId        : bankId,
                 appId         : ctx.appId,
                 signType      : "0",
-                accessPlatform: "1"
+                accessPlatform: "4"
         ]
         def sign = PayUtils.signMD5(params, ctx.md5_key)
         params << [sign: sign]
@@ -263,7 +263,7 @@ class PayRoutines {
         def sign = PayUtils.signMD5(params, ctx.md5_key)
         params << [sign: sign]
 
-        GET(bdd, ctx.apiRefundUrl) {
+        POST(bdd, ctx.apiRefundUrl) {
             r.query = params
         }
         EXPECT(bdd) {

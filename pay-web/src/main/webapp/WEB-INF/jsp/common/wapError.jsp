@@ -11,7 +11,7 @@
 </head>
 <card id="Home" title="错误">
 <p align="center">
-  系统错误！
+系统错误
 <br />
 错误码：${errorCode}
 </p>

@@ -19,7 +19,7 @@ public interface RefundInfoDAO {
 
     public List<RefundInfo> selectByPayId(String payId);
 
-    public List<RefundInfo> selectRefundByOrderIdAndTimeDesc(String orderId);
+    public List<RefundInfo> selectRefundByOrderId(String orderId);
 
     public List<RefundInfo> selectByPayIdAndRefundStatus(@Param("payId") String payId, @Param("refundStatus") int refundStatus);
 

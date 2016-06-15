@@ -5,7 +5,8 @@ import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 import com.sogou.pay.web.BaseTest;
-import com.sogou.pay.web.controller.api.PayController;
+import com.sogou.pay.web.controller.api.APIController;
+import com.sogou.pay.web.controller.api.GWController;
 import com.sogou.pay.web.form.PayParams;
 
 import org.junit.Test;
@@ -20,8 +21,9 @@ import java.util.Map;
  * @Description:
  */
 public class PayControllerTest extends BaseTest {
+
     @Autowired
-    PayController controller;
+    APIController apiController;
     @Autowired
     SequenceFactory sequenceFactory;
     
@@ -45,7 +47,7 @@ public class PayControllerTest extends BaseTest {
         params.setBankCardType("");
         Map map = BeanUtil.Bean2Map(params);
 
-        map.put("sign", JSONObject.parse(controller.signData(map)));
+        map.put("sign", JSONObject.parse(apiController.signData(map)));
         testGet(url, map);
     }
 
@@ -68,7 +70,7 @@ public class PayControllerTest extends BaseTest {
         params.setPageUrl("http://center.pay.sogou.com/notify/testBgUrl");
         params.setBgUrl("http://center.pay.sogou.com/notify/testBgUrl");
         Map map = BeanUtil.Bean2Map(params);
-        map.put("sign", JSONObject.parse(controller.signData(map)));
+        map.put("sign", JSONObject.parse(apiController.signData(map)));
         testGet(url, map);
     }
 }

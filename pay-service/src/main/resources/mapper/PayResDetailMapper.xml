@@ -18,14 +18,13 @@
         <result column="bank_code" property="bankCode"/>
         <result column="bank_order_id" property="bankOrderId"/>
         <result column="agency_pay_time" property="agencyPayTime"/>
-        <result column="refund_code" property="refundCode"/>
         <result column="pay_status" property="payStatus"/>
         <result column="merchant_no" property="merchantNo"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
 
     <insert id="insertPayResDetail" parameterType="PayResDetail">
-        insert into t_pay_order_res_detail(
+        insert into t_pay_res_detail(
             pay_detail_id,
             access_platform,
             pay_fee_type,
@@ -37,7 +36,6 @@
             bank_code,
             bank_order_id,
             agency_pay_time,
-            refund_code,
             pay_status,
             merchant_no,
             create_time,
@@ -57,7 +55,6 @@
             #{bankCode},
             #{bankOrderId},
             #{agencyPayTime},
-            #{refundCode},
             #{payStatus},
             #{merchantNo},
             #{createTime},
@@ -67,14 +64,14 @@
     </insert>
 
     <select id="selectPayResById" parameterType="String" resultMap="PayResDetailMap">
-        SELECT * FROM t_pay_order_res_detail WHERE pay_detail_id = #{payDetailId}
+        SELECT * FROM t_pay_res_detail WHERE pay_detail_id = #{payDetailId}
     </select>
     <select id="selectByAgencyOrderId" parameterType="String" resultMap="PayResDetailMap">
-        SELECT * FROM t_pay_order_res_detail WHERE agency_order_id = #{agencyOrderId}
+        SELECT * FROM t_pay_res_detail WHERE agency_order_id = #{agencyOrderId}
     </select>
 
     <update id="updatePayResPayfeeById">
-        UPDATE t_pay_order_res_detail SET pay_fee = #{payFee},fee_rate = #{feeRate} WHERE pay_detail_id = #{payDetailId}
+        UPDATE t_pay_res_detail SET pay_fee = #{payFee},fee_rate = #{feeRate} WHERE pay_detail_id = #{payDetailId}
     </update>
 
 </mapper>

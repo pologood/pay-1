@@ -20,5 +20,5 @@ public interface ChannelService {
      * @param channelCode 渠道编码
      * @return 渠道实体
      */
-    public Channel selectChannelByCode(String channelCode);
+    public Channel selectChannelByCode(String channelCode, Integer accessPlatform);
 }

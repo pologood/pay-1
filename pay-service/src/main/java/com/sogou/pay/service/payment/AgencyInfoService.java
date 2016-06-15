@@ -16,10 +16,10 @@ public interface AgencyInfoService {
      * 获取支付机构基本信息
      * @param agencyCode 编码
      * @param accessPlatform 1：PC 2：移动 3：不区分 可空，默认为3
-     * @param agencyType:1：网关支付 2：第三方支付 3：扫码支付 4:SDK 5：全部  可空，默认为5
-     * @return AgencyInfo 
+     * @return AgencyInfo
      */
-    public AgencyInfo getAgencyInfoByCode(String agencyCode,String accessPlatform ,String agencyType);
+    public AgencyInfo getAgencyInfoByCode(String agencyCode,String accessPlatform);
+
 
     /**
      * 获取支付机构基本信息

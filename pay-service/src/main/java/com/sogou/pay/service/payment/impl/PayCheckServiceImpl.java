@@ -1,7 +1,7 @@
 package com.sogou.pay.service.payment.impl;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.manager.model.PayCheckUpdateModle;
+import com.sogou.pay.manager.model.PayCheckUpdateModel;
 import com.sogou.pay.service.dao.PayCheckDao;
 import com.sogou.pay.service.entity.PayCheck;
 import com.sogou.pay.service.payment.PayCheckService;
@@ -31,7 +31,7 @@ public class PayCheckServiceImpl implements PayCheckService {
     }
 
     @Override
-    public void batchUpdateStatus(List<PayCheckUpdateModle> list) throws ServiceException {
+    public void batchUpdateStatus(List<PayCheckUpdateModel> list) throws ServiceException {
 
         payCheckDao.batchUpdateStatus(list);
     }

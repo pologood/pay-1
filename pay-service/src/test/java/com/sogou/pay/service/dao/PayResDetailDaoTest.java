@@ -38,7 +38,6 @@ public class PayResDetailDaoTest extends BaseTest {
         payResDetail.setPayDetailId("ppppp");
         payResDetail.setTrueMoney(BigDecimal.valueOf(10.00));
         payResDetail.setPayDetailId("dddd1");
-        payResDetail.setRefundCode(null);
         payResDetail.setPayFee(new BigDecimal("0.1"));
         payResDetail.setFeeRate(new BigDecimal("0.01"));
         

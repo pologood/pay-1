@@ -1,7 +1,7 @@
 package com.sogou.pay.service.payment;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.manager.model.CommonAdaptModel;
+import com.sogou.pay.manager.model.PayChannelAdapt;
 
 import java.util.List;
 
@@ -16,5 +16,5 @@ public interface PayChannelAdaptService {
      * @param accessPlatform 接入平台 1：PC  2：移动
      * @return 适配列表
      */
-    public List<CommonAdaptModel> getChannelAdaptList(Integer appId, Integer accessPlatform) throws ServiceException;
+    public List<PayChannelAdapt> getChannelAdaptList(Integer appId, Integer accessPlatform) throws ServiceException;
 }
