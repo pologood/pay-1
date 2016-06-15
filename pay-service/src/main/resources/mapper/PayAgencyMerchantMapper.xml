@@ -50,7 +50,7 @@
         <if test = "appId != null">
           AND (app_id=#{appId} OR app_id IS NULL)
         </if>
-        ORDER BY  app_id DESC LIMIT 1
+        ORDER BY company_code ASC LIMIT 1
     </select>
 
     <select id="selectPayAgencyMerchantById" parameterType="int" resultMap="payAgencyMerchantMap">
@@ -71,7 +71,7 @@
         SELECT
         <include refid="columnList" />
         FROM t_pay_agency_merchant
-        WHERE agency_code = #{agencyCode}  and merchant_no=#{merchantNo} limit 1
+        WHERE agency_code = #{agencyCode} and merchant_no=#{merchantNo} limit 1
     </select>
 
 

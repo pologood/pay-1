@@ -28,7 +28,7 @@
               AND (pay_fee_type = #{payFeeType} or pay_fee_type = 99)
               AND (access_platform = #{accessPlatform} or access_platform = 99)
               AND status = 1
-        ORDER BY access_platform DESC limit 0,1
+        ORDER BY access_platform ASC limit 0,1
     </select>
  
 </mapper>
