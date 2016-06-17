@@ -5,6 +5,7 @@
  */
 package com.sogou.pay.thirdpay.service.Unionpay;
 
+import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause.ReturnRowsClause;
 import com.google.common.collect.ImmutableMap;
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.common.exception.ServiceException;
@@ -16,10 +17,16 @@ import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.common.utils.MapUtil;
+import com.sogou.pay.thirdpay.biz.enums.InternalChannelType;
+import com.sogou.pay.thirdpay.biz.enums.UnionpayBizType;
+import com.sogou.pay.thirdpay.biz.enums.UnionpaySubTxnType;
 import com.sogou.pay.thirdpay.biz.enums.UnionpayTxnType;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
 import com.sogou.pay.thirdpay.service.Tenpay.TenpayUtils;
 import com.sogou.pay.thirdpay.service.ThirdpayService;
+
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,35 +74,101 @@ public class UnionpayService implements ThirdpayService {
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
   public ResultMap preparePayInfoSDK(PMap params) throws ServiceException {
-    ResultMap result = doRequest(params, getPreparePayInfoRequestParams(params, InternalChannelType.sdk));
-    if (!Result.isSuccess(result)) {
-      LOG.error("[preparePayInfoSDK] failed, params={}", params);
-      return result;
+    PMap requestMap = getPrepayReq(params, InternalChannelType.SDK);
+    if (!MapUtil.checkAllExist(requestMap)) {
+      LOG.error("[preparePayInfoSDK]empty param:{}", requestMap);
+      return ResultMap.build(ResultStatus.PAY_PARAM_ERROR);
+    }
+    ResultMap signResult = sign(params, requestMap);
+    if (!Result.isSuccess(signResult)) return signResult;
+    ResultMap sendResult = send(params, requestMap);
+    if (!Result.isSuccess(sendResult)) return sendResult;
+    ResultMap signCheckResult = checkSign(params, sendResult.getData());
+    if (!ResultMap.isSuccess(signCheckResult)) return signCheckResult;
+    ResultMap resultMap = ResultMap.build();
+    if (SUCCESS_RESPONSE_CODE != sendResult.getData().getString("respCode")) {
+      resultMap.addItem("error_code", sendResult.getData().getString("respCode"));
+      resultMap.addItem("error_msg", sendResult.getData().getString("respMsg"));
+      resultMap.withError(ResultStatus.THIRD_PAY_ERROR);
+    } else resultMap.addItem("orderInfo", sendResult.getData());
+    return sendResult;
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  private ResultMap checkSign(PMap params, PMap signMap) {
+    String publicCertFilePath = getCertFilePath(params, false);
+    String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
+    if (publicCertKey.length() == 0) {
+      LOG.error("[checkSign]get public key error:{}", publicCertKey);
+      return ResultMap.build(ResultStatus.THIRD_PAY_GET_KEY_ERROR);
     }
 
-    PMap resultPMap = (PMap) result.getItem("resultPMap");
-    return result.addItem("token", resultPMap.getString("tn"));
+    if (!SecretKeyUtil.unionRSACheckSign(signMap, (String) signMap.remove("signature"), publicCertKey, CHARSET)) {
+      LOG.error("[checkSign]failed:{}", signMap);
+      return ResultMap.build(ResultStatus.THIRD_PAY_RESPONSE_SIGN_ERROR);
+    }
+    return ResultMap.build();
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  private ResultMap send(PMap params, PMap requestMap) {
+    Result response = HttpService.getInstance().doPost(params.getString("payUrl"), requestMap, CHARSET, null);
+    if (!Result.isSuccess(response)) {
+      LOG.error("[send]http request error:{}", requestMap);
+      return ResultMap.build(ResultStatus.THIRD_PAY_HTTP_ERROR);
+    }
+    String resContent = (String) response.getReturnValue();
+    ResultMap responseMap;
+    if (StringUtils.isBlank(resContent) || !ResultMap.isSuccess(responseMap = HttpUtil.extractUrlParams(resContent))
+        || MapUtils.isEmpty(responseMap.getData())) {
+      LOG.error("[send]http response error:params={} and respnose={}", requestMap, resContent);
+      return ResultMap.build(ResultStatus.THIRD_PAY_RESPONSE_PARAM_ERROR);
+    }
+    return responseMap;
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  private ResultMap sign(PMap params, PMap signMap) {
+    String privateCertFilePath = getCertFilePath(params, true);
+    String privateCertKey = SecretKeyUtil.loadKeyFromFile(privateCertFilePath);
+    if (privateCertKey.length() == 0) {
+      LOG.error("[sign]get private key error:{}", privateCertFilePath);
+      return ResultMap.build(ResultStatus.THIRD_PAY_GET_KEY_ERROR);
+    }
+    String sign = SecretKeyUtil.unionRSASign(signMap, privateCertKey, CHARSET);
+    if (sign == null) {
+      LOG.error("[sign]error:{}", signMap);
+      return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
+    }
+    signMap.put("signature", sign);
+    return ResultMap.build();
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  private PMap<String, String> getPreparePayInfoRequestParams(PMap params, InternalChannelType internalChannelType) {
-    PMap<String, String> result = new PMap<>();
+  private PMap getPrepayReq(PMap params, InternalChannelType internalChannelType) {
+    PMap result = new PMap<>();
 
-    result.put("version", VERSION);
-    result.put("encoding", CHARSET);
-    result.put("certId", CERTID);
-    result.put("signMethod", SIGNMETHOD);
-    result.put("txnType", UnionpayTxnType.consumption.getValue());
-    result.put("txnSubType", TXNSUBTYPE);
-    result.put("bizType", BizType.DEFAULT.getValue());
-    result.put("channelType", channelMap.get(internalChannelType));
-    result.put("backUrl", params.getString("serverNotifyUrl"));
-    result.put("accessType", ACCESSTYPE);
-    result.put("merId", params.getString("merchantNo"));
-    result.put("orderId", params.getString("serialNumber"));
-    result.put("txnTime", LocalDateTime.now().format(FORMATTER));
-    result.put("txnAmt", TenpayUtils.fenParseFromYuan(params.getString("orderAmount")));
-    result.put("currencyCode", CURRENCYCODE);
+    /*必填*/
+    result.put("version", VERSION);//版本号 
+    result.put("encoding", CHARSET);//编码方式 
+    result.put("certId", CERTID);//证书ID 
+    result.put("signMethod", SIGNMETHOD);//签名方法 
+    result.put("txnType", UnionpayTxnType.CONSUMPTION.getValue());//交易类型 
+    result.put("txnSubType", UnionpaySubTxnType.SELF_SERVICE_CONSUMPTION.getValue());//交易子类 
+    result.put("bizType", UnionpayBizType.B2C_GATEWAY_PAYMENT.getValue());//产品类型 
+    result.put("channelType", channelMap.get(internalChannelType));//渠道类型 
+    result.put("backUrl", params.getString("serverNotifyUrl"));//后台通知地址 
+    result.put("accessType", ACCESSTYPE);//接入类型 
+    result.put("merId", params.getString("merchantNo"));//商户代码 
+    result.put("orderId", params.getString("serialNumber"));//商户订单号 
+    result.put("txnTime", LocalDateTime.now().format(FORMATTER));//订单发送时间 
+    result.put("txnAmt", TenpayUtils.fenParseFromYuan(params.getString("orderAmount")));//交易金额 
+    result.put("currencyCode", CURRENCYCODE);//交易币种 
+
+    /*选填*/
+    if (StringUtils.isNotBlank(params.getString("accountId"))) result.put("accNo", params.getString("accountId"));//账号 1后台类消费交易时上送全卡号或卡号后 4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
+    if (ChannelType.MOBILE.getValue().equalsIgnoreCase(result.getString("channelType")))
+      result.put("orderDesc", params.getString("subject"));//订单描述 移动支付上送
 
     return result;
   }
@@ -105,6 +178,11 @@ public class UnionpayService implements ThirdpayService {
     // TODO Auto-generated method stub
     return null;
 
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  private String getCertFilePath(PMap params, boolean isPrivate) {
+    return "e:" + params.getString(String.format("%sCertFilePath", isPrivate ? "private" : "public"));
   }
 
   private ResultMap doRequest(PMap params, PMap requestPMap) throws ServiceException {
@@ -178,9 +256,9 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("version", VERSION); //版本号
     requestPMap.put("encoding", CHARSET); //字符集编码
     requestPMap.put("signMethod", SIGNMETHOD); //签名方法 目前只支持01-RSA方式证书加密
-    requestPMap.put("txnType", UnionpayTxnType.trade_inquiry.getValue()); //交易类型 00-查询
-    requestPMap.put("txnSubType", TXNSUBTYPE); //交易子类型  默认00
-    requestPMap.put("bizType", BizType.B2C_GATEWAY_PAYMENT.getValue()); //业务类型
+    requestPMap.put("txnType", UnionpayTxnType.TRADE_INQUIRY.getValue()); //交易类型 00-查询
+    requestPMap.put("txnSubType", UnionpaySubTxnType.DEFAULT.getValue()); //交易子类型  默认00
+    requestPMap.put("bizType", UnionpayBizType.B2C_GATEWAY_PAYMENT.getValue()); //业务类型
     requestPMap.put("accessType", ACCESSTYPE); //接入类型，商户接入固定填0，不需修改
     requestPMap.put("merId", params.getString("merchantNo")); //商户号
     requestPMap.put("queryId", params.getString("serialNumber")); //原消费交易返回的的queryId
@@ -207,10 +285,10 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("version", VERSION); //版本号
     requestPMap.put("encoding", CHARSET); //字符集编码
     requestPMap.put("signMethod", SIGNMETHOD); //签名方法 目前只支持01-RSA方式证书加密
-    requestPMap.put("txnType", UnionpayTxnType.refund.getValue()); //交易类型 04-退货
-    requestPMap.put("txnSubType", TXNSUBTYPE); //交易子类型  默认00
-    requestPMap.put("bizType", BizType.B2C_GATEWAY_PAYMENT.getValue()); //业务类型
-    requestPMap.put("channelType", ExternalChannelType.mobile.getValue()); //渠道类型，07-PC，08-手机
+    requestPMap.put("txnType", UnionpayTxnType.REFUND.getValue()); //交易类型 04-退货
+    requestPMap.put("txnSubType", UnionpaySubTxnType.DEFAULT.getValue()); //交易子类型  默认00
+    requestPMap.put("bizType", UnionpayBizType.B2C_GATEWAY_PAYMENT.getValue()); //业务类型
+    requestPMap.put("channelType", ChannelType.MOBILE.getValue()); //渠道类型，07-PC，08-手机
     requestPMap.put("merId", params.getString("merchantNo")); //商户号
     requestPMap.put("accessType", ACCESSTYPE); //接入类型，商户接入固定填0，不需修改
     requestPMap.put("orderId", params.getString("refundSerialNumber")); //商户退款单号，8-40位数字字母，不能含“-”或“_”
@@ -403,54 +481,23 @@ public class UnionpayService implements ThirdpayService {
 
   private static String CERTID;
 
-  private static String ACCESSTYPE = "0";//0 for ordinary merchant 2 for platform merchant
-
-  private static String TXNSUBTYPE = "00";//默认00; 01自助消费,通过地址的方式区分前台消费和后台消费(含无跳转支付); 03分期付款
+  private static String ACCESSTYPE = "0";//0普通商户; 1首单机构; 2平台商户
 
   private static String CURRENCYCODE = "156";//rmb
 
   private static String SIGNMETHOD = "01";//rsa
 
-  enum BizType {
-    DEFAULT("000000"), //默认
-    STOCK_FUND("000101"), //基金业务之股票基金
-    MONETARY_FUND("000102"), //基金业务之货币基金
-    B2C_GATEWAY_PAYMENT("000201"), //B2C网关支付
-    AUTHENTICATION_PAYMENT("000301"), //认证支付2.0
-    GRADE_PAYMENT("000302"), //评级支付
-    PAYMENT("000401"), //代付
-    COLLECTION("000501"), //代收
-    BILL_PAYMENT("000601"), //账单支付
-    INTERBANK_PAYMENT("000801"), //跨行支付
-    BINDING_PAYMENT("000901"), //绑定支付
-    ORDER("001001"), //订购
-    B2B("000202"); //B2B
+  private static String SUCCESS_RESPONSE_CODE = "00";
+
+  private static Map<InternalChannelType, String> channelMap = ImmutableMap.of(InternalChannelType.GATEWAY,
+      ChannelType.INTERNET.getValue(), InternalChannelType.SDK, ChannelType.MOBILE.getValue());
+
+  enum ChannelType {
+    VOICE("05"), INTERNET("07"), MOBILE("08");
 
     private String value;
 
-    private BizType(String value) {
-      this.value = value;
-    }
-
-    public String getValue() {
-      return value;
-    }
-
-  }
-
-  private static Map<InternalChannelType, String> channelMap = ImmutableMap.of(InternalChannelType.gateway,
-      ExternalChannelType.internet.getValue(), InternalChannelType.sdk, ExternalChannelType.mobile.getValue());
-
-  enum InternalChannelType {
-    account, gateway, qrcode, sdk, wap;
-  }
-
-  enum ExternalChannelType {
-    voice("05"), internet("07"), mobile("08");
-
-    private String value;
-
-    private ExternalChannelType(String value) {
+    private ChannelType(String value) {
       this.value = value;
     }
 
