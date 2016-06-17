@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -96,18 +97,22 @@ public class UnionpayService implements ThirdpayService {
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
   private ResultMap checkSign(PMap params, PMap signMap) {
-    String publicCertFilePath = getCertFilePath(params, false);
-    String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
+    String publicCertKey = getKey(params, false);
     if (publicCertKey.length() == 0) {
-      LOG.error("[checkSign]get public key error:{}", publicCertKey);
+      LOG.error("[checkSign]get public key error:{}", params);
       return ResultMap.build(ResultStatus.THIRD_PAY_GET_KEY_ERROR);
     }
-
     if (!SecretKeyUtil.unionRSACheckSign(signMap, (String) signMap.remove("signature"), publicCertKey, CHARSET)) {
       LOG.error("[checkSign]failed:{}", signMap);
       return ResultMap.build(ResultStatus.THIRD_PAY_RESPONSE_SIGN_ERROR);
     }
     return ResultMap.build();
+  }
+  
+  @SuppressWarnings("rawtypes")
+  private String getKey(PMap params,boolean isPrivate){
+    String certFilePath = getCertFilePath(params, isPrivate);
+    return SecretKeyUtil.loadKeyFromFile(certFilePath);
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -129,10 +134,9 @@ public class UnionpayService implements ThirdpayService {
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
   private ResultMap sign(PMap params, PMap signMap) {
-    String privateCertFilePath = getCertFilePath(params, true);
-    String privateCertKey = SecretKeyUtil.loadKeyFromFile(privateCertFilePath);
+    String privateCertKey = getKey(params, true);
     if (privateCertKey.length() == 0) {
-      LOG.error("[sign]get private key error:{}", privateCertFilePath);
+      LOG.error("[sign]get private key error:{}", params);
       return ResultMap.build(ResultStatus.THIRD_PAY_GET_KEY_ERROR);
     }
     String sign = SecretKeyUtil.unionRSASign(signMap, privateCertKey, CHARSET);
@@ -363,11 +367,17 @@ public class UnionpayService implements ThirdpayService {
 
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public ResultMap getReqIDFromNotifySDKAsync(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    String orderId;
+    if (params == null || StringUtils.isBlank(orderId = params.getString("orderId"))) {
+      LOG.error("[getReqIDFromNotifySDKAsync]error:{}", params);
+      return ResultMap.build(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
+    }
+    ResultMap resultMap = ResultMap.build();
+    resultMap.addItem("reqId", orderId);
+    return resultMap;
   }
 
   @Override
@@ -414,9 +424,17 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap handleNotifySDKAsync(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    PMap notifyParams;
+    ResultMap resultMap = ResultMap.build(), signCheckResult = checkSign(params, notifyParams = params.getPMap("data"));
+    if (!Result.isSuccess(resultMap)) return signCheckResult;
+    resultMap.addItem("reqId", notifyParams.getString("orderId"));//商户订单号
+    resultMap.addItem("agencyOrderId", notifyParams.getString("queryId"));//交易查询流水号
+    resultMap.addItem("tradeStatus", getTradeStatus(notifyParams.getString("respCode")));//交易状态
+    resultMap.addItem("agencyPayTime",
+        String.format("%s%s", LocalDate.now().getYear(), notifyParams.getString("traceTime")));//交易传输时间 MMDDHHmmss,需加上YYYY
+    resultMap.addItem("trueMoney", new BigDecimal(notifyParams.getString("txnAmt"))
+        .divide(new BigDecimal("100"), 2, BigDecimal.ROUND_UP).toString());//交易金额 整数分转两位小数元
+    return resultMap;
   }
 
   @Override
