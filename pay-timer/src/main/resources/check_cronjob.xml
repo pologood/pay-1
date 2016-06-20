@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <bean id="checkTimer" class="com.sogou.pay.timer.check.CheckTimer"/>
+
+    <!-- 对账任务 -->
+    <bean id="alipayCheckDataJob"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="checkTimer"/>
+        </property>
+        <property name="targetMethod">
+            <value>doAlipayJob</value>
+        </property>
+        <property name="concurrent">
+            <value>false</value>
+        </property>
+    </bean>
+    <bean id="tenpayCheckDataJob"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="checkTimer"/>
+        </property>
+        <property name="targetMethod">
+            <value>doTenpayJob</value>
+        </property>
+        <property name="concurrent">
+            <value>false</value>
+        </property>
+    </bean>
+    <bean id="wechatCheckDataJob"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="checkTimer"/>
+        </property>
+        <property name="targetMethod">
+            <value>doWechatJob</value>
+        </property>
+        <property name="concurrent">
+            <value>false</value>
+        </property>
+    </bean>
+    <bean id="reCheckDataJob"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="checkTimer"/>
+        </property>
+        <property name="targetMethod">
+            <value>doRecheckData</value>
+        </property>
+        <property name="concurrent">
+            <value>false</value>
+        </property>
+    </bean>
+
+    <!-- 定义触发时间 -->
+    <bean id="alipayCheckDataJobTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="alipayCheckDataJob"/>
+        </property>
+        <property name="cronExpression">
+            <!-- 每日凌晨2点15执行一次 -->
+            <!--<value>${alipayCheckDataJobCronExpression}</value>-->
+            <value>0 15 02 ? * *</value>
+            <!--<value>0 */1 * * * ?</value>-->
+        </property>
+    </bean>
+    <bean id="tenpayCheckDataJobTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="tenpayCheckDataJob"/>
+        </property>
+        <property name="cronExpression">
+            <!-- 每日7点30执行一次 -->
+            <!--<value>${tenpayCheckDataJobCronExpression}</value>-->
+            <value>0 30 07 ? * *</value>
+            <!--<value>0 */1 * * * ?</value>-->
+        </property>
+    </bean>
+    <bean id="wechatCheckDataJobTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="wechatCheckDataJob"/>
+        </property>
+        <property name="cronExpression">
+            <!-- 每日10点30执行一次 -->
+            <!--<value>${wechatCheckDataJobCronExpression}</value>-->
+            <value>0 30 10 ? * *</value>
+            <!--<value>0 */1 * * * ?</value>-->
+        </property>
+    </bean>
+    <bean id="reCheckDataJobTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="reCheckDataJob"/>
+        </property>
+        <property name="cronExpression">
+            <!-- 每间隔24小时-->
+            <value>0 0 0/24 * * ?</value>
+        </property>
+    </bean>
+
+</beans>

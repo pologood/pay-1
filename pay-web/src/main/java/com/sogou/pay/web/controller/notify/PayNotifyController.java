@@ -8,7 +8,7 @@ import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.common.utils.XMLUtil;
-import com.sogou.pay.manager.model.notify.PayNotifyModel;
+import com.sogou.pay.manager.model.PayNotifyModel;
 import com.sogou.pay.web.manager.notify.PayNotifyManager;
 import com.sogou.pay.web.manager.api.RefundManager;
 import com.sogou.pay.service.entity.PayAgencyMerchant;

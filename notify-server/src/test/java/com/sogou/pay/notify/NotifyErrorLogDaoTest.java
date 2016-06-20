@@ -1,6 +1,6 @@
 package com.sogou.pay.notify;
 
-import com.alibaba.fastjson.JSON;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.notify.dao.NotifyErrorLogDao;
 import com.sogou.pay.notify.entity.NotifyErrorLog;
 import com.sogou.pay.notify.utils.DateUtils;
@@ -38,7 +38,7 @@ public class NotifyErrorLogDaoTest extends BaseTest {
         paramMap.put("tradeStatus", "TRADE_FINISHED");
         paramMap.put("successTime", "20151030153655");
         paramMap.put("appId", "5000");
-        notifyErrorLog.setNotifyParams(JSON.toJSONString(paramMap));
+        notifyErrorLog.setNotifyParams(JSONUtil.Bean2JSON(paramMap));
         notifyErrorLog.setNextTime(DateUtils.nextTime());
         notifyErrorLogDao.insertErrorLog(notifyErrorLog);
     }

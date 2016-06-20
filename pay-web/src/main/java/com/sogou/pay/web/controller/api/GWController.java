@@ -6,8 +6,7 @@ import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.manager.model.PayChannelAdapts;
 import com.sogou.pay.manager.model.PayChannelAdapt;
-import com.sogou.pay.manager.payment.AppManager;
-import com.sogou.pay.manager.payment.ChannelAdaptManager;
+import com.sogou.pay.web.manager.ChannelAdaptManager;
 import com.sogou.pay.service.payment.AppService;
 import com.sogou.pay.web.manager.api.PayManager;
 import com.sogou.pay.web.manager.SecureManager;
@@ -51,9 +50,6 @@ public class GWController extends BaseController {
 
   @Autowired
   private ChannelAdaptManager channelAdaptMaanger;
-
-  @Autowired
-  private AppManager appManager;
 
   @Autowired
   private SecureManager secureManager;
@@ -104,18 +100,18 @@ public class GWController extends BaseController {
     }
 
     //获得收款方信息
-    Result<App> appResult = appManager.selectAppInfo(payParams.getInt("appId"));
-    if (!Result.isSuccess(appResult)) {
-      logger.error("[doPay][selectAppInfo][Failed] params={}, result={}", JSONUtil.Bean2JSON(payParams),
+    App app = appService.selectApp(payParams.getInt("appId"));
+    if (app == null) {
+      logger.error("[doPay][selectApp][Failed] params={}, result={}", JSONUtil.Bean2JSON(payParams),
               JSONUtil.Bean2JSON(result));
-      return setErrorPage(appResult.getStatus(), platform);
+      return setErrorPage(ResultStatus.PAY_APP_NOT_EXIST, platform);
     }
 
     //收银台页面
     ModelAndView view = new ModelAndView("cashier");
     view.addObject("payParams", payParams);
     view.addObject("queryParams", queryParams);
-    view.addObject("companyName", COMPANYMAP.get(appResult.getReturnValue().getBelongCompany()));
+    view.addObject("companyName", COMPANYMAP.get(app.getBelongCompany()));
     view.addObject("thirdPayList", thirdPayList);
     view.addObject("qrCodeList", qrCodeList);
     view.addObject("bankList", bankList);

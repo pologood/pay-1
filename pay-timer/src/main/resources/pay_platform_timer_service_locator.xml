@@ -6,195 +6,15 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 
-    <!-- 扫描文件（自动将servicec层注入） -->
-    <context:component-scan base-package="com.sogou.pay.timer.*"/>
+    <!--&lt;!&ndash; 扫描文件（自动将servicec层注入） &ndash;&gt;-->
+    <!--<context:component-scan base-package="com.sogou.pay"/>-->
+    <!--&lt;!&ndash; 引入config配置文件 &ndash;&gt;-->
+    <!--<context:property-placeholder location="classpath:config-${spring.profiles.active}.properties"/>-->
+    <!--<context:annotation-config/>-->
 
-    <!-- 引入config配置文件 -->
-    <context:property-placeholder location="classpath:config-${spring.profiles.active}.properties"/>
-
-    <!-- 工作的bean -->
-    <bean id="payCheckJob" class="com.sogou.pay.timer.PayCheckJob"/>
-    <bean id="payTransferJob" class="com.sogou.pay.timer.PayTransferJob"/>
-
-    <!-- 对账任务 -->
-    <!-- 定义调用对象和调用对象的方法 -->
-    <bean id="alipayCheckDataJob"
-          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject"><!-- 调用的类 -->
-            <ref bean="payCheckJob"/>
-        </property>
-        <property name="targetMethod"><!-- 调用类中的方法 -->
-            <value>doAlipayJob</value>
-        </property>
-    </bean>
-    <!-- 定义调用对象和调用对象的方法 -->
-    <bean id="tenpayCheckDataJob"
-          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject">
-            <ref bean="payCheckJob"/>
-        </property>
-        <property name="targetMethod">
-            <value>doTenpayJob</value>
-        </property>
-        <property name="concurrent">
-            <value>false</value>
-        </property>
-    </bean>
-    <!-- 定义调用对象和调用对象的方法 -->
-    <bean id="wechatCheckDataJob"
-          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <!-- 调用的类 -->
-        <property name="targetObject">
-            <ref bean="payCheckJob"/>
-        </property>
-        <!-- 调用类中的方法 -->
-        <property name="targetMethod">
-            <value>doWechatJob</value>
-        </property>
-        <property name="concurrent">
-            <value>false</value>
-        </property>
-    </bean>
-    <!-- 定义调用对象和调用对象的方法 -->
-    <bean id="reCheckDataJob"
-          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject">
-            <ref bean="payCheckJob"/>
-        </property>
-        <property name="targetMethod">
-            <value>doRecheckData</value>
-        </property>
-        <property name="concurrent">
-            <value>false</value>
-        </property>
-    </bean>
-    <!-- 定义调用对象和调用对象的方法 -->
-    <bean id="payTransferRequestJob"
-          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject">
-            <ref bean="payTransferJob"/>
-        </property>
-        <property name="targetMethod">
-            <value>doRequestJob</value>
-        </property>
-        <property name="concurrent">
-            <value>false</value>
-        </property>
-    </bean>
-
-    <!-- 定义调用对象和调用对象的方法 -->
-    <bean id="payTransferQueryJob"
-          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject">
-            <ref bean="payTransferJob"/>
-        </property>
-        <property name="targetMethod">
-            <value>doQueryJob</value>
-        </property>
-        <property name="concurrent">
-            <value>false</value>
-        </property>
-    </bean>
-
-    <!-- 定义退票查询 -->
-    <bean id="payTransferRefundQueryJob"
-          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject">
-            <ref bean="payTransferJob"/>
-        </property>
-        <property name="targetMethod">
-            <value>doRefundQueryJob</value>
-        </property>
-        <property name="concurrent">
-            <value>false</value>
-        </property>
-    </bean>
-
-
-    <!-- 定义触发时间 -->
-    <bean id="alipayCheckDataJobTrigger"
-          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail">
-            <ref bean="alipayCheckDataJob"/>
-        </property>
-        <property name="cronExpression">
-            <!-- 每日凌晨2点15执行一次 -->
-            <!--<value>${alipayCheckDataJobCronExpression}</value>-->
-            <value>0 15 02 ? * *</value>
-            <!--<value>0 */1 * * * ?</value>-->
-        </property>
-    </bean>
-
-    <bean id="tenpayCheckDataJobTrigger"
-          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail">
-            <ref bean="tenpayCheckDataJob"/>
-        </property>
-        <property name="cronExpression">
-            <!-- 每日7点30执行一次 -->
-            <!--<value>${tenpayCheckDataJobCronExpression}</value>-->
-            <value>0 30 07 ? * *</value>
-            <!--<value>0 */1 * * * ?</value>-->
-        </property>
-    </bean>
-
-    <bean id="wechatCheckDataJobTrigger"
-          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail">
-            <ref bean="wechatCheckDataJob"/>
-        </property>
-        <property name="cronExpression">
-            <!-- 每日10点30执行一次 -->
-            <!--<value>${wechatCheckDataJobCronExpression}</value>-->
-            <value>0 30 10 ? * *</value>
-            <!--<value>0 */1 * * * ?</value>-->
-        </property>
-    </bean>
-
-    <bean id="reCheckDataJobTrigger"
-          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail">
-            <ref bean="reCheckDataJob"/>
-        </property>
-        <property name="cronExpression">
-            <!-- 每间隔24小时-->
-            <value>0 0 0/24 * * ?</value>
-        </property>
-    </bean>
-
-    <bean id="payTransferRequestJobTrigger"
-          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail">
-            <ref bean="payTransferRequestJob"/>
-        </property>
-        <property name="cronExpression">
-            <!-- 每间隔五分钟-->
-            <value>0 */1 * * * ?</value>
-        </property>
-    </bean>
-
-    <bean id="payTransferQueryJobTrigger"
-          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail">
-            <ref bean="payTransferQueryJob"/>
-        </property>
-        <property name="cronExpression">
-            <!-- 每间隔五分钟-->
-            <value>0 */1 * * * ?</value>
-        </property>
-    </bean>
-
-    <bean id="payTransferRefundQueryJobTrigger"
-          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail">
-            <ref bean="payTransferRefundQueryJob"/>
-        </property>
-        <property name="cronExpression">
-            <!-- 次日7点30-->
-            <value>0 30 07 ? * *</value>
-        </property>
-    </bean>
-    <!-- *********************触发任务*************************** -->
+    <import resource="spring-service.xml"/>
+    <import resource="check_cronjob.xml"/>
+    <import resource="transfer_cronjob.xml"/>
 
     <!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序 -->
     <bean id="startQuertz" lazy-init="false" autowire="no"
@@ -207,12 +27,11 @@
                 <ref bean="wechatCheckDataJobTrigger"/>
                 <ref bean="reCheckDataJobTrigger"/>
                 <!-- 代付任务-->
-                <ref bean="payTransferRequestJobTrigger"/>
-                <ref bean="payTransferQueryJobTrigger"/>
-                <ref bean="payTransferRefundQueryJobTrigger"/>
+                <ref bean="transferJobTrigger"/>
+                <ref bean="queryTransferJobTrigger"/>
+                <ref bean="queryTransferRefundJobTrigger"/>
             </list>
         </property>
     </bean>
-    <!-- *********************触发结束 ***************************** -->
 
 </beans>

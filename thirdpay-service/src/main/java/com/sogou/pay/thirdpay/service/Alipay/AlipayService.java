@@ -722,6 +722,16 @@ public class AlipayService implements ThirdpayService {
         return result;
     }
 
+    @Override
+    public ResultMap queryTransfer(PMap params) throws ServiceException {
+        throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public ResultMap queryTransferRefund(PMap params) throws ServiceException {
+        throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    }
+
     public ResultMap getReqIDFromNotifyWebSync(PMap params) throws ServiceException {
         ResultMap result = ResultMap.build();
         String is_succes = params.getString("is_success");//接口是否调用成功

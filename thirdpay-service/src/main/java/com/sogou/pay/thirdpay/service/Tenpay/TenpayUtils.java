@@ -1,22 +1,8 @@
-/**
- *
- * @author 用户平台事业部---高朋辉
- * @version 1.0
- * @date 2015/1/9 11:24
- */
 package com.sogou.pay.thirdpay.service.Tenpay;
 
-import com.sogou.pay.common.utils.MD5Util;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
+import com.sogou.pay.common.utils.DigestUtil;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TenpayUtils {
@@ -109,7 +95,7 @@ public class TenpayUtils {
 
     public static String getNonceStr() {
         Random random = new Random();
-        return MD5Util.MD5Encode(String.valueOf(random.nextInt(10000)), CHARSET_UTF_8);
+        return DigestUtil.MD5Encode(String.valueOf(random.nextInt(10000)), CHARSET_UTF_8);
     }
 
     public static String getTimeStamp() {

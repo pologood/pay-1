@@ -2,10 +2,8 @@ package com.sogou.pay.thirdpay.biz.utils;
 
 import java.io.*;
 import java.security.KeyFactory;
-import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
@@ -18,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sogou.pay.common.types.ResultMap;
-import com.sogou.pay.common.utils.MD5Util;
+import com.sogou.pay.common.utils.DigestUtil;
 import com.sogou.pay.common.types.PMap;
 import java.util.Base64;
 
@@ -306,7 +304,7 @@ public class SecretKeyUtil {
         context = context + "&key=" + md5securityKey;
         String signString = null;
         try {
-            signString = MD5Util.MD5Encode(context, charset).toUpperCase();
+            signString = DigestUtil.MD5Encode(context, charset).toUpperCase();
         } catch (Exception e) {
             return null;
         }
@@ -337,7 +335,7 @@ public class SecretKeyUtil {
         sb = sb + "&key=" + md5securityKey;
         String signString;
         try {
-            signString = MD5Util.MD5Encode(sb, charset).toUpperCase();
+            signString = DigestUtil.MD5Encode(sb, charset).toUpperCase();
             LOGGER.info("compute sign={}, return sign={}", signString, returnSign);
         } catch (Exception e) {
             return false;
@@ -359,7 +357,7 @@ public class SecretKeyUtil {
      */
     public static String unionRSASign(String content, String privateKey, String charset) {
         try {
-            String digested = MD5Util.SHAEncode(content, charset);
+            String digested = DigestUtil.SHAEncode(content, charset);
 
             PKCS8EncodedKeySpec priPKCS8 = new PKCS8EncodedKeySpec(
                     Base64.getDecoder().decode(privateKey));
@@ -397,7 +395,7 @@ public class SecretKeyUtil {
     public static boolean unionRSACheckSign(String content, String sign, String publicKey, String charset) {
         try {
 
-            String digested = MD5Util.SHAEncode(content, charset);
+            String digested = DigestUtil.SHAEncode(content, charset);
 
             KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
             byte[] encodedKey = Base64.getDecoder().decode(publicKey);

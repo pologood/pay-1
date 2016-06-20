@@ -1,32 +1,51 @@
 package com.sogou.pay.common.utils;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sogou.pay.common.types.PMap;
 
 import java.util.Map;
 
-/**
- * Created by hujunfei Date: 14-12-30 Time: 下午1:37
- */
 public class JSONUtil {
-    public static Map JSON2Map(String json) {
-        return JSON.parseObject(json, Map.class);
-    }
 
-    public static PMap JSON2PMap(String json) {
-        return JSON.parseObject(json, PMap.class);
-    }
+  private static ObjectMapper objectMapper = new ObjectMapper();
 
-    public static String Map2JSON(Map map) {
-        return JSON.toJSONString(map);
+  public static Map JSON2Map(String json) {
+    try {
+      return objectMapper.readValue(json, Map.class);
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
     }
+  }
 
-    public static <T> T JSON2Bean(String json, Class<T> clazz) {
-        return JSON.parseObject(json, clazz);
+  public static PMap JSON2PMap(String json) {
+    try {
+      return objectMapper.readValue(json, PMap.class);
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
     }
+  }
 
-
-    public static String Bean2JSON(Object bean) {
-        return JSON.toJSONString(bean);
+  public static String Map2JSON(Map map) {
+    try {
+      return objectMapper.writeValueAsString(map);
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
     }
+  }
+
+  public static <T> T JSON2Bean(String json, Class<T> clazz) {
+    try {
+      return objectMapper.readValue(json, clazz);
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  public static String Bean2JSON(Object bean) {
+    try {
+      return objectMapper.writeValueAsString(bean);
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
+  }
 }

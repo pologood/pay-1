@@ -208,7 +208,7 @@ public class SignUtil {
         sb = sb + "&key=" + md5securityKey;
         String signString;
         try {
-            signString = MD5Util.MD5Encode(sb, charset).toUpperCase();
+            signString = DigestUtil.MD5Encode(sb, charset).toUpperCase();
         } catch (Exception e) {
             result.withError(ResultStatus.THIRD_SIGN_ERROR);
             return result;

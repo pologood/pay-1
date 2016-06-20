@@ -12,7 +12,7 @@ import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.enums.BankCardType;
 import com.sogou.pay.enums.ChannelType;
 import com.sogou.pay.manager.model.PayOrderQueryModel;
-import com.sogou.pay.manager.model.notify.PayNotifyModel;
+import com.sogou.pay.manager.model.PayNotifyModel;
 import com.sogou.pay.service.entity.*;
 import com.sogou.pay.service.enums.RelationStatus;
 import com.sogou.pay.service.payment.*;
@@ -390,6 +390,8 @@ public class PayManager {
       payGateMap.put("subject", params.getString("productName"));
       //买家IP
       payGateMap.put("buyerIp", params.getString("userIp"));
+      //买家付款账号
+      payGateMap.put("accountId", params.getString("accountId"));
       //MD5加密密钥
       payGateMap.put("md5securityKey", payAgencyMerchant.getEncryptKey());
       //支付机构公钥证书路径

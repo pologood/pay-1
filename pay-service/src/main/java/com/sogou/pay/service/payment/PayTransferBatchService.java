@@ -25,4 +25,6 @@ public interface PayTransferBatchService {
 
     public void updateNotifyFlagByBatchNo(String appId, String batchNo, int nofityFlag);
 
+    public PayTransferBatch queryByYurref(String Yurref);
+
 }

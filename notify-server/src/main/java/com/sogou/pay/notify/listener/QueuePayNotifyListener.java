@@ -1,6 +1,6 @@
 package com.sogou.pay.notify.listener;
 
-import com.alibaba.fastjson.JSON;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.notify.enums.NotifyTypeEnum;
 import com.sogou.pay.notify.service.NotifyService;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class QueuePayNotifyListener implements MessageListener {
         try {
             if (message instanceof ObjectMessage) {
                 final ObjectMessage objectMessage = (ObjectMessage) message;
-                logger.info("queue pay notify listener begin ：" + JSON.toJSONString(objectMessage.getObject()));
+                logger.info("queue pay notify listener begin : {}", JSONUtil.Bean2JSON(objectMessage.getObject()));
                 Map map = (Map) objectMessage.getObject();
                 String payId = String.valueOf(map.get("payId"));
                 String notifyUrl = String.valueOf(map.remove("appBgUrl"));

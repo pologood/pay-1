@@ -3,11 +3,7 @@ package com.sogou.pay.common.http.client;
 import org.apache.http.Header;
 
 /**
- * @Author qibaichao
- * @ClassName Response
- * @Date 2014年9月12日
- * @Description:
- *               HTTP响应包装类
+ * HTTP响应包装类
  */
 public class Response {
 

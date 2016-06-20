@@ -329,7 +329,7 @@ public class TenpayService implements ThirdpayService {
         String opUserPasswd = op_user_pwds[1];//操作员登录密码
         String certPasswd = op_user_pwds[2];//证书导入密码
         //操作员密码md5加密
-        String op_user_passwd_md5 = MD5Util.MD5Encode(opUserPasswd, TenpayService.INPUT_CHARSET).toUpperCase();
+        String op_user_passwd_md5 = DigestUtil.MD5Encode(opUserPasswd, TenpayService.INPUT_CHARSET).toUpperCase();
         requestPMap.put("op_user_id", op_user_id);               // 商户账号
         requestPMap.put("op_user_passwd", op_user_passwd_md5); // 商户账号密码密钥md5加密之后
 
@@ -601,6 +601,16 @@ public class TenpayService implements ThirdpayService {
 
     @Override
     public ResultMap prepareTransferInfo(PMap params) throws ServiceException {
+        throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public ResultMap queryTransfer(PMap params) throws ServiceException {
+        throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public ResultMap queryTransferRefund(PMap params) throws ServiceException {
         throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
     }
 

@@ -609,6 +609,16 @@ public class WechatService implements ThirdpayService {
     throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
+  @Override
+  public ResultMap queryTransfer(PMap params) throws ServiceException {
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+  }
+
+  @Override
+  public ResultMap queryTransferRefund(PMap params) throws ServiceException {
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+  }
+
   //实际上，微信扫码支付并没有同步通知，是由搜狗支付中心页面模拟发起的同步通知
   public ResultMap getReqIDFromNotifyWebSync(PMap params) throws ServiceException {
     ResultMap result = ResultMap.build();

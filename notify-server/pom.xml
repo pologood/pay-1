@@ -17,6 +17,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.sogou.pay</groupId>
+            <artifactId>pay-service</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>

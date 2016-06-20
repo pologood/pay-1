@@ -9,8 +9,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -21,11 +19,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.client.utils.URIBuilder;
-//import org.apache.http.conn.HttpClientConnectionManager;
-//import org.apache.http.conn.ssl.DefaultHostnameVerifier;
-//import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-//import org.apache.http.conn.ssl.SSLSocketFactory;
-//import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -40,10 +33,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 
 /**
- * @Author qibaichao
- * @ClassName HttpCaller
- * @Date 2014年9月12日
- * @Description:HTTP调用工具类，内部使用连接池管理
+ * HTTP调用工具类
  */
 public class HttpCaller {
 

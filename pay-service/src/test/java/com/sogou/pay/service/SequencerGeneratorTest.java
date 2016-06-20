@@ -17,13 +17,13 @@ public class SequencerGeneratorTest extends BaseTest {
     @Test
     public void getPayTransferBatchNo() {
         for(int i=0;i<1000;i++){
-            String no = sequencerGenerator.getPayTransferYurref();
+            String no = sequencerGenerator.getTransferBatchNo();
             System.out.println(no);
         }
     }
     @Test
     public void getPayTransferNo() {
-        String no = sequencerGenerator.getPayTransferNo();
+        String no = sequencerGenerator.getTransferNo();
         System.out.println(no);
         System.out.println(no.length());
 

@@ -3,7 +3,7 @@ package com.sogou.pay.notify;
 import com.sogou.pay.notify.dao.NotifyErrorLogDao;
 import com.sogou.pay.notify.entity.NotifyErrorLog;
 import com.sogou.pay.notify.job.NotifyPayJob;
-import com.sogou.pay.notify.service.impl.NotifyServiceImpl;
+import com.sogou.pay.notify.service.NotifyService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +19,7 @@ public class NotifyPayJobTest extends BaseTest {
     private NotifyErrorLogDao notifyErrorLogDao;
 
     @Autowired
-    private NotifyServiceImpl notifyService;
+    private NotifyService notifyService;
 
     @Test
     public void doJob() {

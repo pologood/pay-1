@@ -8,7 +8,6 @@ package com.sogou.pay.common.utils;
  */
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -18,6 +17,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DateUtil {
+
+  public static final String DATE_FORMAT_DAY_OF_YEAR = "MMdd";
 
   public static final String DATE_FORMAT_DAY_SHORT = "yyyyMMdd";
 
@@ -253,7 +254,7 @@ public class DateUtil {
    * 计算两个日期间隔的秒数
    *
    * @param firstDate 小者
-   * @param lastDate 大者
+   * @param lastDate  大者
    * @return int 默认-1
    */
   public static long getTimeIntervalMins(Date firstDate, Date lastDate) {
@@ -269,7 +270,7 @@ public class DateUtil {
    * 计算两个日期间隔的天数
    *
    * @param firstDate 小者
-   * @param lastDate 大者
+   * @param lastDate  大者
    * @return int 默认-1
    */
   public static int getDayNum(Date firstDate, Date lastDate) {
@@ -277,8 +278,6 @@ public class DateUtil {
     long between_days = timeInterval / (3600 * 24);
     return Integer.parseInt(String.valueOf(between_days));
   }
-
-  /* ------------------------- format/parse impl ------------------------- */
 
   static SimpleDateFormat getFormat(String pattern) {
     Map<String, SimpleDateFormat> cache = _simpleDateFormatCache.get();
@@ -301,31 +300,4 @@ public class DateUtil {
       return new ConcurrentHashMap<String, SimpleDateFormat>();
     }
   };
-
-  static final Date _emptyDate = new Date(0);
-
-  /**
-   * 生成token过期时间点
-   */
-  public static long generatorVaildTime(int expiresIn) {
-    DateTime dateTime = new DateTime();
-    long vaildTime = dateTime.plusSeconds(expiresIn).getMillis();
-    return vaildTime;
-  }
-
-  public static int getIntervalSec(long t1, long t2) {
-    return (int) (t1 - t2);
-  }
-
-  public static String getDateByTimeStamp(long timestamp) {
-    Long timestampMs = timestamp * 1000;
-    String date = new SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss").format(new Date(timestampMs));
-    return date;
-  }
-
-  public static boolean isExpired(Date createTime, long validPeriod) {
-    if (Objects.isNull(createTime)) return false;
-    return new Date().getTime() - createTime.getTime() > validPeriod;
-  }
-
 }

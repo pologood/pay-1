@@ -1,6 +1,5 @@
 package com.sogou.pay.common.http.client;
 
-import com.sogou.pay.common.utils.httpclient.HttpMethod;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -10,11 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @Author qibaichao
- * @ClassName Request
- * @Date 2014年9月12日
- * @Description:
- *               HTTP请求信息包装类
+ * HTTP请求信息包装类
  */
 public class Request {
     public static int GET = 0;
@@ -102,7 +97,7 @@ public class Request {
         }
     }
 
-    public void addParam(Map<String, Object> paramMap) {
+    public void addParam(Map<String, ?> paramMap) {
 
         for (String key : paramMap.keySet()) {
             parameters.add(new BasicNameValuePair(key, paramMap.get(key).toString()));

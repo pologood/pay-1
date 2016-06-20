@@ -5,11 +5,9 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import com.sogou.pay.manager.model.Record;
 import com.sogou.pay.service.entity.PayTransfer;
 
 /**
- * Created by qibaichao on 2015/6/1.
  * 代付单
  */
 @Repository

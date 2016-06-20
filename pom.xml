@@ -58,25 +58,23 @@
 
         <java-version>1.8</java-version>
         <slf4j.version>1.7.5</slf4j.version>
-        <junit.version>4.11</junit.version>
+        <junit.version>4.12</junit.version>
         <mockito-all.version>1.9.5</mockito-all.version>
         <metrics.version>3.0.1</metrics.version>
-        <spring.version>3.2.9.RELEASE</spring.version>
+        <spring.version>4.2.5.RELEASE</spring.version>
+        <spring-boot.version>1.3.3.RELEASE</spring-boot.version>
         <logback.version>1.1.7</logback.version>
-        <guava.version>15.0</guava.version>
-        <fastjson.version>1.1.27</fastjson.version>
+        <guava.version>18.0</guava.version>
         <jackson.version>2.6.5</jackson.version>
         <commons-codec.version>1.6</commons-codec.version>
         <dom4j.version>1.6.1</dom4j.version>
         <mysql-connector.version>5.1.17</mysql-connector.version>
-        <httpclient.version>4.4-beta1</httpclient.version>
-        <joda-time.version>2.1</joda-time.version>
-        <logback-ext-spring.version>0.1.1</logback-ext-spring.version>
+        <httpclient.version>4.5.2</httpclient.version>
+        <logback-ext-spring.version>0.1.4</logback-ext-spring.version>
         <groovy.version>1.8.6</groovy.version>
         <raven.version>4.1.1</raven.version>
         <mybatis.version>3.2.4</mybatis.version>
         <activemq.version>5.11.1</activemq.version>
-        <!--<unitils.version>3.4.2</unitils.version>-->
     </properties>
 
 
@@ -86,11 +84,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <version>3.0.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -105,12 +98,12 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-assert-core</artifactId>
-            <version>2.0M10</version>
-            <scope>test</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.easytesting</groupId>-->
+            <!--<artifactId>fest-assert-core</artifactId>-->
+            <!--<version>2.0M10</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -285,6 +278,7 @@
                 <version>${httpclient.version}</version>
             </dependency>
 
+
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
@@ -295,7 +289,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
-                <classifier>cdi1.0</classifier>
             </dependency>
 
             <dependency>
@@ -305,23 +298,24 @@
                 <scope>provided</scope>
             </dependency>
 
-            <dependency>
-                <groupId>joda-time</groupId>
-                <artifactId>joda-time</artifactId>
-                <version>${joda-time.version}</version>
-            </dependency>
 
             <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>${fastjson.version}</version>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+
             <!-- activeMq start-->
             <dependency>
                 <groupId>org.apache.activemq</groupId>
@@ -338,7 +332,7 @@
             <dependency>
                 <groupId>org.logback-extensions</groupId>
                 <artifactId>logback-ext-spring</artifactId>
-                <version>0.1.1</version>
+                <version>${logback-ext-spring.version}</version>
             </dependency>
 
 <!--            <dependency>
@@ -379,14 +373,19 @@
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
-                <version>4.3.0.Final</version>
+                <version>5.2.4.Final</version>
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>3.0-alpha-1</version>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
             </dependency>
 
+            <dependency>
+                <groupId>javax.el</groupId>
+                <artifactId>javax.el-api</artifactId>
+                <version>3.0.0</version>
+            </dependency>
 
             <!--<dependency>
                 <groupId>org.unitils</groupId>

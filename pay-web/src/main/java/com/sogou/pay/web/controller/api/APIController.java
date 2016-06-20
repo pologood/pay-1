@@ -1,6 +1,5 @@
 package com.sogou.pay.web.controller.api;
 
-import com.alibaba.fastjson.JSONObject;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultMap;
@@ -13,13 +12,13 @@ import com.sogou.pay.manager.model.RefundModel;
 import com.sogou.pay.web.manager.api.RefundManager;
 import com.sogou.pay.service.entity.App;
 import com.sogou.pay.service.payment.AppService;
-import com.sogou.pay.web.form.QueryRefundParams;
+import com.sogou.pay.web.form.RefundQueryForm;
 import com.sogou.pay.web.manager.SecureManager;
 import com.sogou.pay.web.portal.PayPortal;
 import com.sogou.pay.web.controller.BaseController;
 import com.sogou.pay.web.form.PayForm;
-import com.sogou.pay.web.form.PayOrderQueryParams;
-import com.sogou.pay.web.form.RefundParams;
+import com.sogou.pay.web.form.PayQueryForm;
+import com.sogou.pay.web.form.RefundForm;
 import com.sogou.pay.web.utils.ControllerUtil;
 import com.sogou.pay.web.utils.ServletUtil;
 import com.sogou.pay.web.manager.api.PayManager;
@@ -162,7 +161,7 @@ public class APIController extends BaseController {
   @RequestMapping(value = "/pay/query", method = RequestMethod.GET,
           produces = "application/json; charset=utf-8")
   @ResponseBody
-  public ResultMap queryPay(PayOrderQueryParams params, HttpServletRequest request) {
+  public ResultMap queryPay(PayQueryForm params, HttpServletRequest request) {
     ResultMap resultMap;
     //检查参数
     resultMap = commonCheck(params);
@@ -192,7 +191,7 @@ public class APIController extends BaseController {
   @RequestMapping(value = "/refund", method = RequestMethod.POST,
           produces = "application/json; charset=utf-8")
   @ResponseBody
-  public ResultMap doRefund(RefundParams params, HttpServletRequest request) {
+  public ResultMap doRefund(RefundForm params, HttpServletRequest request) {
     String ip = ServletUtil.getRealIp(request);
     logger.debug("[doRefund] refund request coming, IP={}, params={}", ip, JSONUtil.Bean2JSON(params));
     ResultMap resultMap;
@@ -232,7 +231,7 @@ public class APIController extends BaseController {
   @RequestMapping(value = "/refund/query", method = RequestMethod.GET,
           produces = "application/json; charset=utf-8")
   @ResponseBody
-  public ResultMap queryRefund(QueryRefundParams params) {
+  public ResultMap queryRefund(RefundQueryForm params) {
     logger.debug("[queryRefund] query refund request coming, params={}", JSONUtil.Bean2JSON(params));
     ResultMap resultMap;
     //检查参数
@@ -265,15 +264,17 @@ public class APIController extends BaseController {
   @RequestMapping(value = "/pay/sign", method = RequestMethod.GET,
           produces = "application/json; charset=utf-8")
   @ResponseBody
-  public String signData(@RequestParam Map<String, String> paramsMap) {
+  public ResultMap signData(@RequestParam Map<String, String> paramsMap) {
     int appId = Integer.parseInt(paramsMap.get("appId"));
     App app = appService.selectApp(appId);
     if (app == null) {
       logger.error("[signData] appid not exists, params={}", JSONUtil.Bean2JSON(paramsMap));
       return null;
     }
-    Result result = secureManager.doAppSign(paramsMap, signExcludes, app.getSignKey());
-    return JSONObject.toJSONString(paramsMap.get("sign"));
+    secureManager.doAppSign(paramsMap, signExcludes, app.getSignKey());
+    ResultMap resultMap = ResultMap.build();
+    resultMap.addItem("sign",paramsMap.get("sign"));
+    return resultMap;
   }
 
 }

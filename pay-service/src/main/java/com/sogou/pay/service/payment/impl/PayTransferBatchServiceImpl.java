@@ -55,4 +55,8 @@ public class PayTransferBatchServiceImpl implements PayTransferBatchService {
         payTransferBatchDao.updateNotifyFlagByBatchNo(appId, batchNo, nofityFlag);
     }
 
+    @Override
+    public PayTransferBatch queryByYurref(String Yurref){
+        return payTransferBatchDao.queryByYurref(Yurref);
+    }
 }

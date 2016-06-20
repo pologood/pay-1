@@ -1,9 +1,9 @@
 package com.sogou.pay.common.http.client;
 
-import com.alibaba.fastjson.JSON;
 import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultBean;
 import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.utils.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,10 +11,7 @@ import javax.net.ssl.SSLContext;
 import java.util.Map;
 
 /**
- * @Author qibaichao
- * @ClassName HttpService
- * @Date 2014年9月12日
- * @Description: HTTP工具类
+ * HTTP工具类
  */
 public class HttpService {
 
@@ -26,7 +23,7 @@ public class HttpService {
         return httpService;
     }
 
-    public Result doGet(String url, Map<String, Object> paramMap, String charset, SSLContext sslContext) {
+    public Result doGet(String url, Map<String, ?> paramMap, String charset, SSLContext sslContext) {
         return doCall(url, null, paramMap, Request.GET, charset, sslContext);
     }
 
@@ -34,7 +31,7 @@ public class HttpService {
         return doCall(url, requestBody, null, Request.GET, charset, sslContext);
     }
 
-    public Result doPost(String url, Map<String, Object> paramMap, String charset, SSLContext sslContext) {
+    public Result doPost(String url, Map<String, ?> paramMap, String charset, SSLContext sslContext) {
         return doCall(url, null, paramMap, Request.POST, charset, sslContext);
     }
 
@@ -42,10 +39,10 @@ public class HttpService {
         return doCall(url, requestBody, null, Request.POST, charset, sslContext);
     }
 
-    private Result doCall(String url, String requestBody, Map<String, Object> paramMap, int method, String charset, SSLContext sslContext) {
+    private Result doCall(String url, String requestBody, Map<String, ?> paramMap, int method, String charset, SSLContext sslContext) {
 
         logger.info(String.format("[doCall] 参数: url=%s, requestBody=%s, paramMap=%s, method=%s, charset=%s", url,
-                requestBody, JSON.toJSONString(paramMap), method, charset));
+                requestBody, JSONUtil.Bean2JSON(paramMap), method, charset));
 
         Result result = ResultBean.build();
         if (url == null || "".equals(url)) {

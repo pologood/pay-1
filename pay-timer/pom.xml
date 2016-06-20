@@ -13,12 +13,17 @@
     <dependencies>
         <dependency>
             <groupId>com.sogou.pay</groupId>
+            <artifactId>commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sogou.pay</groupId>
             <artifactId>pay-service</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sogou.pay</groupId>
-            <artifactId>commons</artifactId>
+            <artifactId>thirdpay-service</artifactId>
         </dependency>
+
         <!-- 定时 quartz begin -->
         <dependency>
             <groupId>org.quartz-scheduler</groupId>

@@ -1,8 +1,3 @@
-/*
- * $Id$
- *
- * Copyright (c) 2015 Sogou.com. All Rights Reserved.
- */
 package com.sogou.pay.thirdpay.service.Unionpay;
 
 import com.sogou.pay.common.enums.OrderStatus;
@@ -14,17 +9,22 @@ import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.common.utils.MapUtil;
-import com.sogou.pay.common.utils.StringUtil;
-import com.sogou.pay.thirdpay.biz.enums.AlipayTradeCode;
-import com.sogou.pay.thirdpay.biz.enums.CheckType;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
 import com.sogou.pay.thirdpay.service.Tenpay.TenpayUtils;
 import com.sogou.pay.thirdpay.service.ThirdpayService;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
+
+import java.io.*;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 
 //--------------------- Change Logs----------------------
@@ -33,6 +33,8 @@ import java.util.HashMap;
 public class UnionpayService implements ThirdpayService {
   private static final Logger log = LoggerFactory.getLogger(UnionpayService.class);
   public static final String INPUT_CHARSET = "UTF-8";                           // 字符编码格式 UTF-8
+  @Value(value = "${unionpay.bill.tmpdir}")
+  public static String tmpdir;
 
   private static HashMap<String, String> TRADE_STATUS = new HashMap<String, String>();
 
@@ -119,7 +121,7 @@ public class UnionpayService implements ThirdpayService {
       return result;
     }
     PMap resultPMap = HttpUtil.extractUrlParams(resContent).getData();
-    //获取商户私钥路径
+    //获取银联公钥路径
     String publicCertFilePath = "e:" + params.getString("publicCertFilePath");
     //获取银联公钥
     String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
@@ -215,9 +217,66 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap downloadOrder(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
+    PMap requestPMap = new PMap();
 
+    Date checkDate = (Date) params.get("checkDate");
+    String unionpayCheckDate = DateUtil.format(checkDate, DateUtil.DATE_FORMAT_DAY_OF_YEAR);
+
+    //组装请求参数
+    requestPMap.put("version", "5.0.0");               //版本号
+    requestPMap.put("encoding", UnionpayService.INPUT_CHARSET);             //字符集编码
+    requestPMap.put("signMethod", "01");                        //签名方法 目前只支持01-RSA方式证书加密
+    requestPMap.put("txnType", "76");                           //交易类型 76-对账单
+    requestPMap.put("txnSubType", "01");                        //交易子类型  下载对账单
+    requestPMap.put("bizType", "000000");                       //业务类型
+    requestPMap.put("merId", params.getString("merchantNo"));                //商户号
+    requestPMap.put("accessType", "0");                         //接入类型，商户接入固定填0，不需修改
+    requestPMap.put("settleDate", unionpayCheckDate);          //对账日期，一年内MMdd
+    requestPMap.put("txnTime", DateUtil.format(params.getDate("refundReqTime"), DateUtil.DATE_FORMAT_SECOND_SHORT));      //订单发送时间，格式为YYYYMMDDhhmmss，必须取当前时间，否则会报txnTime无效
+    requestPMap.put("fileType", "00");                          //对账文件类型 00-zip
+
+    ResultMap result = doRequest(params, requestPMap);
+    if (!Result.isSuccess(result)) {
+      log.error("[downloadOrder] failed, params={}", params);
+      return result;
+    }
+
+    PMap resultPMap = (PMap) result.getItem("resultPMap");
+    String fileType = resultPMap.getString("fileType");
+    String fileName = requestPMap.getString("fileName");
+    String fileContent = requestPMap.getString("fileContent");
+
+    try {
+      //保存对账文件
+      File compressedfile = new File(new File(tmpdir), fileName + "." + fileType);
+      OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(compressedfile), UnionpayService.INPUT_CHARSET);
+      BufferedWriter bw = new BufferedWriter(osw);
+      bw.write(fileContent);
+      bw.flush();
+      bw.close();
+      osw.close();
+      //解压对账文件
+      byte[] buffer = new byte[1024];
+      ZipFile zipFile = new ZipFile(compressedfile);
+      Enumeration<ZipArchiveEntry> enums = zipFile.getEntries();
+      while (enums.hasMoreElements()) {
+        ZipArchiveEntry entry = enums.nextElement();
+        File billFile = new File(new File(tmpdir), entry.getName());
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(billFile));
+        BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(entry));
+        int len = 0;
+        while ((len = bis.read(buffer)) >= 0) {
+          bos.write(buffer, 0, len);
+        }
+        bos.flush();
+        bos.close();
+        bis.close();
+      }
+    } catch (Exception ex) {
+      log.error("[downloadOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), ex);
+      return ResultMap.build(ResultStatus.SAVE_BILL_FAILED);
+    }
+    return ResultMap.build();
   }
 
   private String getTradeStatus(String unionpayTradeStatus) {
@@ -232,6 +291,16 @@ public class UnionpayService implements ThirdpayService {
     // TODO Auto-generated method stub
     return null;
 
+  }
+
+  @Override
+  public ResultMap queryTransfer(PMap params) throws ServiceException {
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+  }
+
+  @Override
+  public ResultMap queryTransferRefund(PMap params) throws ServiceException {
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   @Override
@@ -323,7 +392,7 @@ public class UnionpayService implements ThirdpayService {
 
     ResultMap result = ResultMap.build();
     PMap notifyParams = params.getPMap("data");
-    //获取商户私钥路径
+    //获取银联公钥路径
     String publicCertFilePath = "e:" + params.getString("publicCertFilePath");
     //获取银联公钥
     String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);

@@ -1,7 +1,6 @@
 package com.sogou.pay.service.payment.impl;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.manager.model.Record;
 import com.sogou.pay.service.dao.PayTransferDao;
 import com.sogou.pay.service.entity.PayTransfer;
 import com.sogou.pay.service.payment.PayTransferService;
@@ -9,7 +8,6 @@ import com.sogou.pay.service.payment.PayTransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 /**
