@@ -5,7 +5,6 @@
  */
 package com.sogou.pay.thirdpay.service.Unionpay;
 
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause.ReturnRowsClause;
 import com.google.common.collect.ImmutableMap;
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.common.exception.ServiceException;
@@ -478,14 +477,6 @@ public class UnionpayService implements ThirdpayService {
   public ResultMap handleNotifyTransfer(PMap params) throws ServiceException {
     // TODO Auto-generated method stub
     return null;
-
-  }
-
-  private void sign(TreeMap<String, String> params) {
-    if (params == null || params.isEmpty()) return;
-    StringBuilder sb = new StringBuilder();
-    params.keySet().forEach(k -> sb.append(k).append('=').append(params.get(k)).append('&'));
-    String signString = sb.substring(0, sb.length() - 1);
 
   }
 
