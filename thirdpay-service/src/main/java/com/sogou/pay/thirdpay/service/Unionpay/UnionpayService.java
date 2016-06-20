@@ -1,8 +1,3 @@
-/*
- * $Id$
- *
- * Copyright (c) 2015 Sogou.com. All Rights Reserved.
- */
 package com.sogou.pay.thirdpay.service.Unionpay;
 
 import com.sogou.pay.common.enums.OrderStatus;
@@ -47,17 +42,18 @@ import java.util.Map;
 //@author wangwenlong Initial Created at 2016年6月15日;
 //-------------------------------------------------------
 public class UnionpayService implements ThirdpayService {
-  private static final Logger log = LoggerFactory.getLogger(UnionpayService.class);
-  public static final String INPUT_CHARSET = "UTF-8";                           // 字符编码格式 UTF-8
   @Value(value = "${unionpay.bill.tmpdir}")
   public static String tmpdir;
 
-  private static HashMap<String, String> TRADE_STATUS = new HashMap<String, String>();
+  private static HashMap<String, String> TRADE_STATUS = new HashMap<>();
+  private static HashMap<InternalChannelType, String> channelMap = new HashMap<>();
 
   static {
     TRADE_STATUS.put("00", OrderStatus.SUCCESS.name());//交易成功结束
     TRADE_STATUS.put("A6", OrderStatus.SUCCESS.name());//交易有缺陷成功
     TRADE_STATUS.put("DEFAULT", OrderStatus.FAILURE.name());//默认
+    channelMap.put(InternalChannelType.GATEWAY,ChannelType.INTERNET.getValue());
+    channelMap.put(InternalChannelType.SDK,ChannelType.MOBILE.getValue());
   }
 
   @Override
@@ -118,7 +114,6 @@ public class UnionpayService implements ThirdpayService {
     return sendResult;
   }
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
   private ResultMap checkSign(PMap params, PMap signMap) {
     String publicCertKey = getKey(params, false);
     if (publicCertKey.length() == 0) {
@@ -132,13 +127,11 @@ public class UnionpayService implements ThirdpayService {
     return ResultMap.build();
   }
 
-  @SuppressWarnings("rawtypes")
   private String getKey(PMap params,boolean isPrivate){
     String certFilePath = getCertFilePath(params, isPrivate);
     return SecretKeyUtil.loadKeyFromFile(certFilePath);
   }
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
   private ResultMap send(PMap params, PMap requestMap) {
     Result response = HttpService.getInstance().doPost(params.getString("payUrl"), requestMap, CHARSET, null);
     if (!Result.isSuccess(response)) {
@@ -155,7 +148,6 @@ public class UnionpayService implements ThirdpayService {
     return responseMap;
   }
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
   private ResultMap sign(PMap params, PMap signMap) {
     String privateCertKey = getKey(params, true);
     if (privateCertKey.length() == 0) {
@@ -171,7 +163,6 @@ public class UnionpayService implements ThirdpayService {
     return ResultMap.build();
   }
 
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   private PMap getPrepayReq(PMap params, InternalChannelType internalChannelType) {
     PMap result = new PMap<>();
 
@@ -207,7 +198,6 @@ public class UnionpayService implements ThirdpayService {
 
   }
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
   private String getCertFilePath(PMap params, boolean isPrivate) {
     return "e:" + params.getString(String.format("%sCertFilePath", isPrivate ? "private" : "public"));
   }
@@ -350,7 +340,7 @@ public class UnionpayService implements ThirdpayService {
 
     //组装请求参数
     requestPMap.put("version", "5.0.0");               //版本号
-    requestPMap.put("encoding", UnionpayService.INPUT_CHARSET);             //字符集编码
+    requestPMap.put("encoding", UnionpayService.CHARSET);             //字符集编码
     requestPMap.put("signMethod", "01");                        //签名方法 目前只支持01-RSA方式证书加密
     requestPMap.put("txnType", "76");                           //交易类型 76-对账单
     requestPMap.put("txnSubType", "01");                        //交易子类型  下载对账单
@@ -363,7 +353,7 @@ public class UnionpayService implements ThirdpayService {
 
     ResultMap result = doRequest(params, requestPMap);
     if (!Result.isSuccess(result)) {
-      log.error("[downloadOrder] failed, params={}", params);
+      LOG.error("[downloadOrder] failed, params={}", params);
       return result;
     }
 
@@ -375,7 +365,7 @@ public class UnionpayService implements ThirdpayService {
     try {
       //保存对账文件
       File compressedfile = new File(new File(tmpdir), fileName + "." + fileType);
-      OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(compressedfile), UnionpayService.INPUT_CHARSET);
+      OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(compressedfile), UnionpayService.CHARSET);
       BufferedWriter bw = new BufferedWriter(osw);
       bw.write(fileContent);
       bw.flush();
@@ -399,7 +389,7 @@ public class UnionpayService implements ThirdpayService {
         bis.close();
       }
     } catch (Exception ex) {
-      log.error("[downloadOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), ex);
+      LOG.error("[downloadOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), ex);
       return ResultMap.build(ResultStatus.SAVE_BILL_FAILED);
     }
     return ResultMap.build();
@@ -587,9 +577,6 @@ public class UnionpayService implements ThirdpayService {
   private static String SIGNMETHOD = "01";//rsa
 
   private static String SUCCESS_RESPONSE_CODE = "00";
-
-  private static Map<InternalChannelType, String> channelMap = ImmutableMap.of(InternalChannelType.GATEWAY,
-      ChannelType.INTERNET.getValue(), InternalChannelType.SDK, ChannelType.MOBILE.getValue());
 
   enum ChannelType {
     VOICE("05"), INTERNET("07"), MOBILE("08");
