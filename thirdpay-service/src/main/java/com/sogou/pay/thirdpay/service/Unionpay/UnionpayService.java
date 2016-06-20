@@ -35,7 +35,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 //--------------------- Change Logs----------------------
 //@author wangwenlong Initial Created at 2016年6月15日;
@@ -66,9 +65,24 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap preparePayInfoQRCode(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    PMap requestMap = getPrepayReq(params, InternalChannelType.GATEWAY);
+    if (!MapUtil.checkAllExist(requestMap)) {
+      LOG.error("[preparePayInfoSDK]empty param:{}", requestMap);
+      return ResultMap.build(ResultStatus.PAY_PARAM_ERROR);
+    }
+    ResultMap signResult = sign(params, requestMap);
+    if (!Result.isSuccess(signResult)) return signResult;
+    ResultMap sendResult = send(params, requestMap);
+    if (!Result.isSuccess(sendResult)) return sendResult;
+    ResultMap signCheckResult = checkSign(params, sendResult.getData());
+    if (!ResultMap.isSuccess(signCheckResult)) return signCheckResult;
+    ResultMap resultMap = ResultMap.build();
+    if (SUCCESS_RESPONSE_CODE != sendResult.getData().getString("respCode")) {
+      resultMap.addItem("error_code", sendResult.getData().getString("respCode"));
+      resultMap.addItem("error_msg", sendResult.getData().getString("respMsg"));
+      resultMap.withError(ResultStatus.THIRD_PAY_ERROR);
+    } else resultMap.addItem("orderInfo", sendResult.getData());
+    return sendResult;
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
