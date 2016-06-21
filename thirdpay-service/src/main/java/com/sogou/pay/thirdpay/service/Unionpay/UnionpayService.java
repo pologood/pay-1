@@ -43,6 +43,7 @@ import java.util.Objects;
 //-------------------------------------------------------
 @Service
 public class UnionpayService implements ThirdpayService {
+
   @Value(value = "${unionpay.bill.tmpdir}")
   public static String tmpdir;
 
@@ -58,13 +59,13 @@ public class UnionpayService implements ThirdpayService {
     channelMap.put(InternalChannelType.SDK, ChannelType.MOBILE.getValue());
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public ResultMap preparePayInfoAccount(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    return preparePayInfoGatway(params);
   }
 
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
   public ResultMap preparePayInfoGatway(PMap params) throws ServiceException {
     PMap requestMap = getPrepayReq(params, InternalChannelType.GATEWAY);
@@ -74,17 +75,10 @@ public class UnionpayService implements ThirdpayService {
     }
     ResultMap signResult = sign(params, requestMap);
     if (!Result.isSuccess(signResult)) return signResult;
-    ResultMap sendResult = send(params, requestMap);
-    if (!Result.isSuccess(sendResult)) return sendResult;
-    ResultMap signCheckResult = checkSign(params, sendResult.getData());
-    if (!ResultMap.isSuccess(signCheckResult)) return signCheckResult;
+    String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestMap);
     ResultMap resultMap = ResultMap.build();
-    if (SUCCESS_RESPONSE_CODE != sendResult.getData().getString("respCode")) {
-      resultMap.addItem("error_code", sendResult.getData().getString("respCode"));
-      resultMap.addItem("error_msg", sendResult.getData().getString("respMsg"));
-      resultMap.withError(ResultStatus.THIRD_PAY_ERROR);
-    } else resultMap.addItem("orderInfo", sendResult.getData());
-    return sendResult;
+    resultMap.addItem("returnUrl", returnUrl);
+    return resultMap;
   }
 
   @Override
@@ -176,6 +170,7 @@ public class UnionpayService implements ThirdpayService {
     result.put("txnSubType", UnionpaySubTxnType.SELF_SERVICE_CONSUMPTION.getValue());//交易子类
     result.put("bizType", UnionpayBizType.B2C_GATEWAY_PAYMENT.getValue());//产品类型
     result.put("channelType", channelMap.get(internalChannelType));//渠道类型
+    if (internalChannelType == InternalChannelType.GATEWAY) result.put("frontUrl", params.getString("pageNotifyUrl"));//前台返回商户结果时使用，前台类交易需上送
     result.put("backUrl", params.getString("serverNotifyUrl"));//后台通知地址
     result.put("accessType", ACCESSTYPE);//接入类型
     result.put("merId", params.getString("merchantNo"));//商户代码
