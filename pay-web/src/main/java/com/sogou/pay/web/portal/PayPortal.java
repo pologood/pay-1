@@ -10,6 +10,7 @@ import com.sogou.pay.service.enums.AgencyCode;
 import com.sogou.pay.thirdpay.service.Alipay.AlipayService;
 import com.sogou.pay.thirdpay.service.Tenpay.TenpayService;
 import com.sogou.pay.thirdpay.service.ThirdpayService;
+import com.sogou.pay.thirdpay.service.Unionpay.UnionpayService;
 import com.sogou.pay.thirdpay.service.Wechat.WechatService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,6 +44,9 @@ public class PayPortal {
   @Autowired
   private WechatService wechatService;
 
+  @Autowired
+  private UnionpayService unionpayService;
+
   private HashMap<String, ThirdpayService> serviceHashMap;
 
   @Autowired
@@ -51,6 +55,7 @@ public class PayPortal {
     serviceHashMap.put(AgencyCode.ALIPAY.name(), alipayService);
     serviceHashMap.put(AgencyCode.TENPAY.name(), tenpayService);
     serviceHashMap.put(AgencyCode.WECHAT.name(), wechatService);
+    serviceHashMap.put(AgencyCode.UNIONPAY.name(), unionpayService);
     serviceHashMap.put(AgencyCode.TEST_ALIPAY.name(), alipayService);
     serviceHashMap.put(AgencyCode.TEST_TENPAY.name(), tenpayService);
     serviceHashMap.put(AgencyCode.TEST_WECHAT.name(), wechatService);
@@ -99,10 +104,10 @@ public class PayPortal {
           result.build(ResultStatus.THIRD_PAY_CHANNEL_NOT_EXIST);
       }
     } catch (ServiceException e) {
-      log.error("[preparePay] failed, params={}, {}", JSONUtil.Bean2JSON(params), e.getStackTrace());
+      log.error("[preparePay] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       result.withError(e.getStatus());
     } catch (Exception e) {
-      log.error("[preparePay] failed, params={}, {}", JSONUtil.Bean2JSON(params), e.getStackTrace());
+      log.error("[preparePay] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       result.withError(ResultStatus.THIRD_PAY_ERROR);
     }
     return result;

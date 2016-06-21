@@ -26,6 +26,7 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 
 import java.io.*;
@@ -41,6 +42,7 @@ import java.util.Map;
 //--------------------- Change Logs----------------------
 //@author wangwenlong Initial Created at 2016年6月15日;
 //-------------------------------------------------------
+@Service
 public class UnionpayService implements ThirdpayService {
   @Value(value = "${unionpay.bill.tmpdir}")
   public static String tmpdir;

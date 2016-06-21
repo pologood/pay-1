@@ -45,7 +45,7 @@
           AND agency_code=#{agencyCode}
         </if>
         <if test = "companyCode != null">
-          AND company_code=#{companyCode}
+          AND company_code=#{companyCode} OR company_code=99
         </if>
         <if test = "appId != null">
           AND (app_id=#{appId} OR app_id IS NULL)
