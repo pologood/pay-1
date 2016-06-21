@@ -568,7 +568,7 @@ public class UnionpayService implements ThirdpayService {
 
   private static String CHARSET = "UTF-8";
 
-  private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("YYYYMMDDHHmmss");
+  private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
   private static String CERTID;
 
