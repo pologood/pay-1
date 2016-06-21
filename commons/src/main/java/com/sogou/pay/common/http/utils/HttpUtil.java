@@ -71,14 +71,14 @@ public final class HttpUtil {
         try {
             StringBuilder sb = new StringBuilder();
             for (Map.Entry<String, Object> entry : (Set<Map.Entry<String, Object>>) params.entrySet()) {
-                String key = (String) entry.getKey();
+                String key = entry.getKey();
                 Object value = entry.getValue();
                 if (StringUtil.isBlank(key) || value == null) {
                     continue;
                 }
-                sb.append(URLEncoder.encode(key, HttpUtil.DEFAULT_CHARSET));
+                sb.append(urlEncode(key));
                 sb.append("=");
-                sb.append(URLEncoder.encode(value.toString(), HttpUtil.DEFAULT_CHARSET));
+                sb.append(urlEncode(value.toString()));
                 sb.append("&");
             }
             if (sb.length() > 0) {
@@ -100,7 +100,7 @@ public final class HttpUtil {
 
     public static String urlDecode(String content) {
         try {
-            return URLEncoder.encode(content, HttpUtil.DEFAULT_CHARSET);
+            return URLDecoder.decode(content, HttpUtil.DEFAULT_CHARSET);
         } catch (Exception e) {
             throw new IllegalArgumentException("urlEncode error");
         }

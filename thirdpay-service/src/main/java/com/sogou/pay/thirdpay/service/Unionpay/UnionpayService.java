@@ -44,11 +44,19 @@ import java.util.Map;
 //-------------------------------------------------------
 @Service
 public class UnionpayService implements ThirdpayService {
+  private static final Logger LOG = LoggerFactory.getLogger(UnionpayService.class);
   @Value(value = "${unionpay.bill.tmpdir}")
   public static String tmpdir;
-
   private static HashMap<String, String> TRADE_STATUS = new HashMap<>();
   private static HashMap<InternalChannelType, String> channelMap = new HashMap<>();
+  private static String VERSION = "5.0.0";
+  private static String CHARSET = "UTF-8";
+  private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+  private static String CERTID = "40220995861346480087409489142384722381";
+  private static String ACCESSTYPE = "0";//0普通商户; 1首单机构; 2平台商户
+  private static String CURRENCYCODE = "156";//rmb
+  private static String SIGNMETHOD = "01";//rsa
+  private static String SUCCESS_RESPONSE_CODE = "00";
 
   static {
     TRADE_STATUS.put("00", OrderStatus.SUCCESS.name());//交易成功结束
@@ -172,7 +180,7 @@ public class UnionpayService implements ThirdpayService {
     /*必填*/
     result.put("version", VERSION);//版本号
     result.put("encoding", CHARSET);//编码方式
-    //result.put("certId", CERTID);//证书ID
+    result.put("certId", CERTID);//证书ID
     result.put("signMethod", SIGNMETHOD);//签名方法
     result.put("txnType", UnionpayTxnType.CONSUMPTION.getValue());//交易类型
     result.put("txnSubType", UnionpaySubTxnType.SELF_SERVICE_CONSUMPTION.getValue());//交易子类
@@ -564,24 +572,6 @@ public class UnionpayService implements ThirdpayService {
     return null;
 
   }
-
-  private static final Logger LOG = LoggerFactory.getLogger(UnionpayService.class);
-
-  private static String VERSION = "5.0.0";
-
-  private static String CHARSET = "UTF-8";
-
-  private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-
-  private static String CERTID;
-
-  private static String ACCESSTYPE = "0";//0普通商户; 1首单机构; 2平台商户
-
-  private static String CURRENCYCODE = "156";//rmb
-
-  private static String SIGNMETHOD = "01";//rsa
-
-  private static String SUCCESS_RESPONSE_CODE = "00";
 
   enum ChannelType {
     VOICE("05"), INTERNET("07"), MOBILE("08");
