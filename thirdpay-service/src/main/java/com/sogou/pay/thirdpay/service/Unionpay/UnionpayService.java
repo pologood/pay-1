@@ -74,7 +74,7 @@ public class UnionpayService implements ThirdpayService {
   public ResultMap preparePayInfoQRCode(PMap params) throws ServiceException {
     PMap requestMap = getPrepayReq(params, InternalChannelType.GATEWAY);
     if (!MapUtil.checkAllExist(requestMap)) {
-      LOG.error("[preparePayInfoSDK]empty param:{}", requestMap);
+      LOG.error("[preparePayInfoQRCode]empty param:{}", requestMap);
       return ResultMap.build(ResultStatus.PAY_PARAM_ERROR);
     }
     ResultMap signResult = sign(params, requestMap);
