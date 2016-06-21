@@ -119,7 +119,6 @@ public class TransferController extends BaseController {
       logger.error("【支付请求】" + doProcessResult.getStatus().getMessage());
     logger.info("【支付请求】支付请求结束！");
     return doProcessResult;
-
   }
 
   @Profiled(el = true, logger = "webTimingLogger", tag = "/payTrans/queryByBatchNo",

@@ -105,7 +105,7 @@ public class CheckManager {
    */
   public void downloadOrderData(Date checkDate, String agencyCode) {
 
-    logger.info(String.format("[downloadOrderData] 开始下载对账单, 参数: checkDate=%s, agencyCode=%s", checkDate, agencyCode));
+    logger.info("[downloadOrderData] begin, checkDate={}, agencyCode={}", checkDate, agencyCode);
 
     PayCheckDayLog payCheckDayLog = null;
     try {
@@ -113,7 +113,7 @@ public class CheckManager {
       //验证商户是否存在
       List<PayAgencyMerchant> payAgencyMerchants = payAgencyMerchantService.selectPayAgencyMerchants(agencyCode);
       if (payAgencyMerchants == null || payAgencyMerchants.size() == 0) {
-        logger.warn("no payAgencyMerchant for agencyCode: " + agencyCode);
+        logger.warn("[downloadOrderData] PayAgencyMerchant not exists, agencyCode={}", agencyCode);
         return;
       }
       AgencyInfo agencyInfo = agencyInfoService.getAgencyInfoByCode(agencyCode, "99");
@@ -139,17 +139,17 @@ public class CheckManager {
 
       }
 
-      logger.info(String.format("[downloadOrderData] 对账单下载完成, 参数: checkDate=%s, agencyCode=%s", checkDate, agencyCode));
+      logger.info("[downloadOrderData] finish, checkDate={}, agencyCode={}", checkDate, agencyCode);
 
       payCheckDayLogService.updateStatus(payCheckDayLog.getId(), OperationLogStatus.DOWNLOADSUCCESS.value(),
               payCheckDayLog.getVersion(), OperationLogStatus.DOWNLOADSUCCESS.name());
 
     } catch (Exception e) {
-      logger.info("[downloadOrderData] 下载对账单失败", e.getMessage());
+      logger.info("[downloadOrderData] failed, {}", e);
       try {
         payCheckDayLogService.updateStatus(payCheckDayLog.getId(), OperationLogStatus.FAIL.value(), payCheckDayLog.getVersion(), OperationLogStatus.FAIL.name());
       } catch (ServiceException se) {
-        logger.info("[downloadOrderData] 下载对账单失败", se.getMessage());
+        logger.info("[downloadOrderData] failed, {}", se);
       }
     }
   }
@@ -163,7 +163,7 @@ public class CheckManager {
    */
   public void checkOrderData(Date checkDate, String agencyCode) {
 
-    logger.info(String.format("check and updating data start!checkDate: %s| agencyCode: %s", checkDate, agencyCode));
+    logger.info("[checkOrderData] begin, checkDate={}, agencyCode={}", checkDate, agencyCode);
 
     PayCheckDayLog payCheckDayLog = null;
     try {
@@ -173,8 +173,7 @@ public class CheckManager {
 
       // 对账文件下载验证
       if (payCheckDayLog == null || payCheckDayLog.getStatus() != OperationLogStatus.DOWNLOADSUCCESS.value()) {
-        logger.warn(String
-                .format("payCheckDayLog record is not exist or record download error. checkDate: %s| agencyCode: %s", checkDate, agencyCode));
+        logger.warn("[checkOrderData] PayCheckDayLog not exists, checkDate={}, agencyCode={}", checkDate, agencyCode);
         return;
       }
       /**
@@ -222,15 +221,13 @@ public class CheckManager {
       payCheckDayLogService.updateStatus(payCheckDayLog.getId(), OperationLogStatus.SUCCESS.value(),
               payCheckDayLog.getVersion(), OperationLogStatus.SUCCESS.name());
 
-      logger.info(String.format("check and updating  check data finished!checkDate: %s| agencyCode: %s|total: %d",
-              checkDate, agencyCode, total));
+      logger.info("[checkOrderData] finish, checkDate={}, agencyCode={}, total={}", checkDate, agencyCode, total);
     } catch (Exception ex) {
-      ex.printStackTrace();
-      logger.error(ex.getMessage());
+      logger.info("[checkOrderData] failed, {}", ex);
       try {
         payCheckDayLogService.updateStatus(payCheckDayLog.getId(), OperationLogStatus.FAIL.value(), payCheckDayLog.getVersion(), OperationLogStatus.FAIL.name());
       } catch (ServiceException se) {
-        logger.error(se.getMessage());
+        logger.info("[checkOrderData] failed, {}", se);
       }
     }
   }
@@ -340,7 +337,7 @@ public class CheckManager {
       //result = payNotifyManager.doProcess(payNotifyModel);
     } else if (payCheck.getBizCode() == OrderType.REFUND.getValue()) {
       //退款补单
-     // result = refundNotifyManager.repairRefundOrder(payCheck.getInstructId(), payCheck.getOutOrderId());
+      // result = refundNotifyManager.repairRefundOrder(payCheck.getInstructId(), payCheck.getOutOrderId());
     } else if (payCheck.getBizCode() == OrderType.WITHDRAW.getValue()) {
       //提现补单
       PMap params = new PMap<String, Object>();
@@ -354,7 +351,7 @@ public class CheckManager {
       params.put("merchantNo", payCheck.getMerchantNo());
       params.put("payType", 99);
       params.put("bankCode", payCheck.getAgencyCode());
-     // result = withdrawNotifyManager.doProcess(params);
+      // result = withdrawNotifyManager.doProcess(params);
     }
     return result;
   }

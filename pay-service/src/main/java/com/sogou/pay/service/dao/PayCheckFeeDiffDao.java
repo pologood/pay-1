@@ -1,10 +1,12 @@
 package com.sogou.pay.service.dao;
 
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * Created by qibaichao on 2015/3/23.
  */
+@Repository
 public interface PayCheckFeeDiffDao {
     /**
      *

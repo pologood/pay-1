@@ -131,7 +131,7 @@ public class NotifyService {
         notifyErrorLogDao.updateErrorLog(notifyErrorLog);
       }
     } catch (Exception e) {
-      logger.error(e.getMessage());
+      logger.error("[doSchduledNotify] failed, {}", e);
     }
   }
 

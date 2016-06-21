@@ -15,6 +15,6 @@ public class TimerRunner {
      */
     public static void main(String[] args) {
         PayPlatformTimerServiceLocator.getApplicationContext();
-        logger.info("TimerRunner start");
+        logger.info("pay-timer start");
     }
 }

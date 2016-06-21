@@ -122,7 +122,7 @@ public class PayManager {
       //继续支付
       result.withReturn(info.getPayId());
     } catch (ServiceException e) {
-      logger.error("[createOrder] failed, params={}", JSONUtil.Bean2JSON(params));
+      logger.error("[createOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       result.withError(ResultStatus.PAY_SYSTEM_ERROR);
     }
     return result;
@@ -205,7 +205,7 @@ public class PayManager {
     try {
       payReqDetailService.insertPayReqDetail(payReqDetail);
     } catch (ServiceException e) {
-      logger.error("[createAgencyOrder] insertPayReqDetail failed, params={}", JSONUtil.Bean2JSON(params));
+      logger.error("[createAgencyOrder] insertPayReqDetail failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       return (ResultMap) result.withError(e.getStatus());
     }
     //生成支付单与支付流水单关联
@@ -217,7 +217,7 @@ public class PayManager {
     try {
       payOrderRelationService.insertPayOrderRelation(payOrderRelation);
     } catch (ServiceException e) {
-      logger.error("[createAgencyOrder] insertPayOrderRelation failed, params={}", JSONUtil.Bean2JSON(params));
+      logger.error("[createAgencyOrder] insertPayOrderRelation failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       return (ResultMap) result.withError(e.getStatus());
     }
 
@@ -326,7 +326,7 @@ public class PayManager {
       }
       result.withReturn(payId);
     } catch (Exception e) {
-      logger.error("[insertPayOrder] insert pay order failed, {}", e.getStackTrace().toString());
+      logger.error("[insertPayOrder] insert pay order failed, {}", e);
       result.withError(ResultStatus.PAY_SYSTEM_ERROR);
     }
     return result;
@@ -407,7 +407,7 @@ public class PayManager {
       result.withReturn(payGateMap);
     } catch (Exception e) {
       e.printStackTrace();
-      logger.error("[getThirdPayServiceParams] error, {}", e.getStackTrace().toString());
+      logger.error("[getThirdPayServiceParams] error, {}", e);
       result.withError(ResultStatus.PAY_SYSTEM_ERROR);
     }
     return result;
@@ -451,7 +451,7 @@ public class PayManager {
       }
       //查询支付单流水信息
       payReqDetailList = payReqDetailService.selectPayReqByReqIdList(relationList);
-      if (payReqDetailList==null) {
+      if (payReqDetailList == null) {
         logger.error("[queryPayOrder] PayReqDetail not found, params={}", JSONUtil.Bean2JSON(relationList));
         return (ResultMap) result.withError(ResultStatus.PAY_ORDER_NOT_EXIST);
       }
@@ -468,7 +468,7 @@ public class PayManager {
         }
         AgencyInfo agencyInfo = agencyInfoService.getAgencyInfoByCode(payReqDetail.getAgencyCode(),
                 payReqDetail.getAccessPlatform().toString());
-        if (agencyInfo==null) {
+        if (agencyInfo == null) {
           logger.error("[queryPayOrder] AgencyInfo not found, params={}", JSONUtil.Bean2JSON(payReqDetail));
           return (ResultMap) result.withError(ResultStatus.PAY_AGENCY_NOT_EXIST);
         }
@@ -493,7 +493,7 @@ public class PayManager {
       result.addItem("payStatus", payStatus);
       result.addItem("payReqId", payReqId);
     } catch (Exception e) {
-      logger.error("[queryPayOrder] failed, params={}, {}", JSONUtil.Bean2JSON(model), e.getStackTrace());
+      logger.error("[queryPayOrder] failed, params={}, {}", JSONUtil.Bean2JSON(model), e);
       result.withError(ResultStatus.SYSTEM_ERROR);
     }
     return result;

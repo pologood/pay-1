@@ -30,7 +30,7 @@ public class TransferJob extends BatchScheduledJob {
       payTransferBatchList = payTransferBatchService
               .queryByTradeStatus(PayTransferBatchStatus.FINAL_APPROVED.getValue());
       int size = payTransferBatchList.size();
-      logger.info("【代付请求job】 size:" + size);
+      logger.info("[getProcessObjectList] size={}", size);
       if (size != 0) {
         return this.castToObjectList(payTransferBatchList);
       }

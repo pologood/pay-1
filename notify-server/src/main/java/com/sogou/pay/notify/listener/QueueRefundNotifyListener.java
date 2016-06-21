@@ -35,7 +35,7 @@ public class QueueRefundNotifyListener implements MessageListener {
     if (message instanceof ObjectMessage) {
       final ObjectMessage objectMessage = (ObjectMessage) message;
       try {
-        logger.info("Queue Refund Notify Listener Begin : {}", JSONUtil.Bean2JSON(objectMessage.getObject()));
+        logger.info("[onMessage] begin, {}", JSONUtil.Bean2JSON(message));
 
         AppRefundNotifyModel appRefundNotifyModel = (AppRefundNotifyModel) objectMessage.getObject();
 
@@ -53,9 +53,9 @@ public class QueueRefundNotifyListener implements MessageListener {
         notifyService.firstNotify(NotifyTypeEnum.REFUND_NOTIFY.value(), null,
                 appRefundNotifyModel.getNotifyUrl(), notifyParam);
 
-        logger.info("Queue Refund Notify Listener End : {}", JSONUtil.Bean2JSON(objectMessage.getObject()));
+        logger.info("[onMessage] finish, {}", JSONUtil.Bean2JSON(message));
       } catch (Exception e) {
-        logger.error("Queue Refund Notify Listener Error :", e);
+        logger.info("[onMessage] failed, {}", e);
       }
     }
   }

@@ -39,13 +39,13 @@ public class TransferManager {
     try {
       PayTransferBatch payTransferBatch = payTransferBatchService.queryByBatchNo(appId, batchNo);
       if (payTransferBatch == null) {
-        logger.error("【代发批次信息不存在!】,batchNo = " + batchNo);
+        logger.error("[queryTransfer] PayTransferBatch not exists, batchNo={}", batchNo);
         result.withError(ResultStatus.PAY_TRANFER_BATCH_NOT_EXIST);
         return result;
       }
       result = queryTransfer(payTransferBatch);
     } catch (Exception ex) {
-      logger.error("【代付查询异常】," + ex.getMessage());
+      logger.error("[queryTransfer] failed, {}", ex);
       result.withError(ResultStatus.SYSTEM_ERROR);
     }
     return result;
@@ -78,7 +78,7 @@ public class TransferManager {
       }
 
     } catch (Exception ex) {
-      logger.error("【代付查询异常】," + ex.getMessage());
+      logger.error("[queryTransfer] failed, {}", ex);
       result.withError(ResultStatus.SYSTEM_ERROR);
     }
     return result;
@@ -98,11 +98,10 @@ public class TransferManager {
         //首选查询一遍，如果代付单状态为成功，要修改为失败，说明是退票
         payTransfer = payTransferService.queryBySerialNo(updatePayTransfer.getString("SerialNo"));
         if (payTransfer == null) {
-          logger.warn("【代付单信息不存在!】 serialNo:" + updatePayTransfer.getString("SerialNo"));
+          logger.warn("[updateBatchAndDetail] PayTransfer not exists, serialNo={}", updatePayTransfer.getString("SerialNo"));
           continue;
         }
         if (payTransfer.getPayStatus() != updatePayTransfer.getInt("PayStatus")) {
-          logger.info("【付款单状态发生变更!】,变更前" + payTransfer.getPayStatus() + ",变更后:" + updatePayTransfer.getInt("PayStatus"));
           if (payTransfer.getPayStatus() == PayTransferStatus.SUCCESS.getValue()
                   && updatePayTransfer.getInt("PayStatus") == PayTransferStatus.FAIL.getValue()) {
             payTransferService.updateStatusBySerialNo(updatePayTransfer.getString("SerialNo"),
@@ -113,37 +112,37 @@ public class TransferManager {
           }
         }
       }
-    } catch (Exception e) {
-      logger.error("数据库错误error：" + e);
+    } catch (Exception ex) {
+      logger.error("[updateBatchAndDetail] failed, {}", ex);
     }
   }
 
   public Result transfer(String appId, String batchNo) {
-    logger.info("【代发批次处理开始!】,batchNo = " + batchNo);
+    logger.info("[transfer] begin, appId={}, batchNo={}, {}", appId, batchNo);
     ResultBean result = ResultBean.build();
     try {
       PayTransferBatch payTransferBatch = payTransferBatchService.queryByBatchNo(appId, batchNo);
       //验证代发单批次是否存在
       if (payTransferBatch == null) {
-        logger.error("【代发批次信息不存在!】,batchNo = " + batchNo);
+        logger.error("[transfer] PayTransferBatch not exists, appId={}, batchNo={}", appId, batchNo);
         result.withError(ResultStatus.PAY_TRANFER_BATCH_NOT_EXIST);
         return result;
       }
       if (payTransferBatch.getTradeState() != PayTransferBatchStatus.FINAL_APPROVED.getValue()) {
-        logger.error("【代发批次单审核状态不是审核通过!】,batchNo = " + batchNo);
+        logger.error("[transfer] PayTransferBatch not approved, appId={}, batchNo={}", appId, batchNo);
         result.withError(ResultStatus.PAY_TRANFER_BATCH_STATUS_NOT_AUDIT_PASS);
         return result;
       }
       //验证代发单是否存在
       List<PayTransfer> payTransferList = payTransferService.queryByBatchNo(appId, batchNo);
       if (CollectionUtils.isEmpty(payTransferList)) {
-        logger.error("【代发单信息不存在!】,batchNo = " + batchNo);
+        logger.error("[transfer] PayTransfer not exists, appId={}, batchNo={}", appId, batchNo);
         result.withError(ResultStatus.PAY_TRANFER_NOT_EXIST);
         return result;
       }
 
       if (payTransferBatch.getTradeState() == PayTransferBatchStatus.IN_PROCESSING.getValue()) {
-        logger.error("【代发批次已经提交到银行，请勿重复提交!】，batchNo = " + batchNo);
+        logger.error("[transfer] PayTransferBatch already in processing, appId={}, batchNo={}", appId, batchNo);
         result.withError(ResultStatus.PAY_TRANFER_BATCH_REPEAT_SUBMITTED);
         return result;
       }
@@ -162,10 +161,10 @@ public class TransferManager {
       }
       return resultMap;
     } catch (Exception e) {
-      logger.error("代发请求异常,batchNo :" + batchNo + "error：" + e);
+      logger.error("[transfer] failed, appId={}, batchNo={}, {}", appId, batchNo, e);
       result.withError(ResultStatus.SYSTEM_ERROR);
     }
-    logger.info("【代发批次处理结束!】,batchNo = " + batchNo);
+    logger.info("[transfer] finish, appId={}, batchNo={}, {}", appId, batchNo);
     return result;
   }
 
@@ -187,20 +186,20 @@ public class TransferManager {
       }
 
       List<String> yurrefList = (List<String>) resultMap.getItem("result");
-      logger.info("【包含退票的批次号有】:size：" + yurrefList.size() + ",batchNos:" + yurrefList);
+      logger.info("[queryTransferRefund] found refund, yurrefList={}", yurrefList);
       PayTransferBatch payTransferBatch = null;
       if (CollectionUtils.isNotEmpty(yurrefList)) {
         for (String yurref : yurrefList) {
           payTransferBatch = payTransferBatchService.queryByYurref(yurref);
           if (payTransferBatch == null) {
-            logger.warn("【代付信息不存在】，业务参考号：yurref=" + yurref);
+            logger.info("[queryTransferRefund] PayTransferBatch not exists, yurref={}", yurref);
             continue;
           }
           queryTransfer(payTransferBatch);
         }
       }
-    } catch (Exception e) {
-      logger.error(e.getMessage());
+    } catch (Exception ex) {
+      logger.info("[queryTransferRefund] failed, {}", ex);
     }
     return ResultMap.build();
   }

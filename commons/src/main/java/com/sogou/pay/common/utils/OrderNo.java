@@ -1,6 +1,5 @@
 package com.sogou.pay.common.utils;
 
-import com.sogou.pay.common.utils.SequenceGenerator;
 import org.springframework.stereotype.Service;
 
 

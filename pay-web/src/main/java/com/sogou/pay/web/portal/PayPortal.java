@@ -140,10 +140,10 @@ public class PayPortal {
     try {
       result = thirdpayService.refundOrder(params);
     } catch (ServiceException e) {
-      log.error("[refundOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e.getStackTrace());
+      log.error("[refundOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       return (ResultMap) result.withError(e.getStatus());
     } catch (Exception e) {
-      log.error("[refundOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e.getStackTrace());
+      log.error("[refundOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       return (ResultMap) result.withError(ResultStatus.THIRD_REFUND_ERROR);
     }
     return result;
@@ -165,10 +165,10 @@ public class PayPortal {
     try {
       result = thirdpayService.queryOrder(params);
     } catch (ServiceException e) {
-      log.error("[queryOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e.getStackTrace());
+      log.error("[queryOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       return result.build(e.getStatus());
     } catch (Exception e) {
-      log.error("[queryOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e.getStackTrace());
+      log.error("[queryOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       return result.build(ResultStatus.THIRD_QUERY_ERROR);
     }
     return result;
@@ -189,10 +189,10 @@ public class PayPortal {
     try {
       result = thirdpayService.queryRefundOrder(params);
     } catch (ServiceException e) {
-      log.error("[queryRefund] failed, params={}, {}", JSONUtil.Bean2JSON(params), e.getStackTrace());
+      log.error("[queryRefund] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       return result.build(e.getStatus());
     } catch (Exception e) {
-      log.error("[queryRefund] failed, params={}, {}", JSONUtil.Bean2JSON(params), e.getStackTrace());
+      log.error("[queryRefund] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       return result.build(ResultStatus.THIRD_QUERY_REFUND_ERROR);
     }
     return result;
@@ -228,10 +228,10 @@ public class PayPortal {
           break;
       }
     } catch (ServiceException e) {
-      log.error("[getReqIDFromNotify] failed, params={}, {}", JSONUtil.Bean2JSON(params), e.getStackTrace());
+      log.error("[getReqIDFromNotify] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       return result.build(e.getStatus());
     } catch (Exception e) {
-      log.error("[getReqIDFromNotify] failed, params={}, {}", JSONUtil.Bean2JSON(params), e.getStackTrace());
+      log.error("[getReqIDFromNotify] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       return result.build(ResultStatus.THIRD_NOTIFY_ERROR);
     }
     return result;
@@ -268,10 +268,10 @@ public class PayPortal {
           break;
       }
     } catch (ServiceException e) {
-      log.error("[handleNotify] failed, params={}, {}", JSONUtil.Bean2JSON(params), e.getStackTrace());
+      log.error("[handleNotify] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       return result.build(e.getStatus());
     } catch (Exception e) {
-      log.error("[handleNotify] failed, params={}, {}", JSONUtil.Bean2JSON(params), e.getStackTrace());
+      log.error("[handleNotify] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       return result.build(ResultStatus.THIRD_NOTIFY_ERROR);
     }
     return result;

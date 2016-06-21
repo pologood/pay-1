@@ -1,10 +1,3 @@
-/*
- * Copyright 2012-2014 Wanda.cn All right reserved. This software is the
- * confidential and proprietary information of Wanda.cn ("Confidential
- * Information"). You shall not disclose such Confidential Information and shall
- * use it only in accordance with the terms of the license agreement you entered
- * into with Wanda.cn.
- */
 package com.sogou.pay.notify.job;
 
 import com.sogou.pay.notify.entity.NotifyErrorLog;
@@ -70,7 +63,7 @@ public class NotifyPayJob extends BatchScheduledJob {
      */
     @Override
     public void batchProcess(List<Object> objectList) {
-        logger.info("【schduled batch process start size】：" + objectList.size());
+        logger.info("[batchProcess] begin, objectList.size={}",objectList.size());
         for (Object object : objectList) {
             // 类型判断
             if (object instanceof NotifyErrorLog) {
@@ -78,7 +71,7 @@ public class NotifyPayJob extends BatchScheduledJob {
                 notifyService.scheduledNotify(notifyErrorLogPo);
             }
         }
-        logger.info("【schduled batch process end 】");
+        logger.info("[batchProcess] finish");
         // GC
         objectList = null;
     }

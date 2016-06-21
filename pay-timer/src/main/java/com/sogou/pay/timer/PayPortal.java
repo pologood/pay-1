@@ -52,10 +52,10 @@ public class PayPortal {
             ThirdpayService thirdpayService = serviceHashMap.get(agencyCode);
             return thirdpayService.downloadOrder(params);
         } catch (ServiceException se) {
-            logger.warn("[downloadOrder] 下载对账单异常", se);
+            logger.warn("[downloadOrder] 下载对账单异常, {}", se);
             return ResultMap.build(se.getStatus());
         } catch (Exception e) {
-            logger.error("[downloadOrder] 下载对账单异常", e);
+            logger.error("[downloadOrder] 下载对账单异常, {}", e);
             return ResultMap.build(ResultStatus.THIRD_QUERY_ERROR);
         }
     }
@@ -66,10 +66,10 @@ public class PayPortal {
             ThirdpayService thirdpayService = serviceHashMap.get(agencyCode);
             return thirdpayService.prepareTransferInfo(params);
         } catch (ServiceException se) {
-            logger.warn("[transfer] 发起代付异常", se);
+            logger.warn("[transfer] 发起代付异常, {}", se);
             return ResultMap.build(se.getStatus());
         } catch (Exception e) {
-            logger.error("[transfer] 发起代付异常", e);
+            logger.error("[transfer] 发起代付异常, {}", e);
             return ResultMap.build(ResultStatus.THIRD_QUERY_ERROR);
         }
     }
@@ -80,10 +80,10 @@ public class PayPortal {
             ThirdpayService thirdpayService = serviceHashMap.get(agencyCode);
             return thirdpayService.queryTransfer(params);
         } catch (ServiceException se) {
-            logger.warn("[queryTransfer] 查询代付异常", se);
+            logger.warn("[queryTransfer] 查询代付异常, {}", se);
             return ResultMap.build(se.getStatus());
         } catch (Exception e) {
-            logger.error("[queryTransfer] 查询代付异常", e);
+            logger.error("[queryTransfer] 查询代付异常, {}", e);
             return ResultMap.build(ResultStatus.THIRD_QUERY_ERROR);
         }
     }
@@ -94,10 +94,10 @@ public class PayPortal {
             ThirdpayService thirdpayService = serviceHashMap.get(agencyCode);
             return thirdpayService.queryTransferRefund(params);
         } catch (ServiceException se) {
-            logger.warn("[queryTransferRefund] 查询代付退票异常", se);
+            logger.warn("[queryTransferRefund] 查询代付退票异常, {}", se);
             return ResultMap.build(se.getStatus());
         } catch (Exception e) {
-            logger.error("[queryTransferRefund] 查询代付退票异常", e);
+            logger.error("[queryTransferRefund] 查询代付退票异常, {}", e);
             return ResultMap.build(ResultStatus.THIRD_QUERY_ERROR);
         }
     }

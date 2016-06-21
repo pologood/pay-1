@@ -49,20 +49,17 @@ public abstract class BatchScheduledJob {
    * Cast to object list.
    */
   public List<Object> castToObjectList(List<?> list) {
-    List<Object> objectList = new ArrayList<Object>();
+    List<Object> objectList = new ArrayList<>();
     objectList.addAll(list);
     return objectList;
   }
 
   public void doProcessor() {
     long startTime = System.currentTimeMillis();
-    logger.info(getProcessorName() + " start.");
-
+    logger.info("[doProcessor] {} start", getProcessorName());
     doAction();
-
-    logger.info(getProcessorName() + " end.");
     long endTime = System.currentTimeMillis();
-    logger.info(getProcessorName() + " cost " + (endTime - startTime) + " milliseconds");
+    logger.info("[doProcessor] {} end, time cost={} ms", getProcessorName(), endTime - startTime);
   }
 
 

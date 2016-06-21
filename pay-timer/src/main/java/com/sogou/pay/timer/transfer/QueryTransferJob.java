@@ -16,44 +16,44 @@ import java.util.List;
 @Component
 public class QueryTransferJob extends BatchScheduledJob {
 
-    private static final Logger logger = LoggerFactory.getLogger(QueryTransferJob.class);
+  private static final Logger logger = LoggerFactory.getLogger(QueryTransferJob.class);
 
-    @Autowired
-    private TransferManager transferManager;
+  @Autowired
+  private TransferManager transferManager;
 
-    @Autowired
-    private PayTransferBatchService payTransferBatchService;
+  @Autowired
+  private PayTransferBatchService payTransferBatchService;
 
-    @Override
-    public List<Object> getProcessObjectList() {
-        List<PayTransferBatch> payTransferBatchList = null;
-        try {
-            // 查询交易状态为处理中的
-            payTransferBatchList = payTransferBatchService.queryByTradeStatus(PayTransferBatchStatus.IN_PROCESSING.getValue());
-            int size = payTransferBatchList.size();
-            logger.info("【代付查询job】 size:" + size);
-            if (size != 0) {
-                return this.castToObjectList(payTransferBatchList);
-            }
-        } catch (Exception ex) {
-            logger.error(ex.getMessage());
-        }
-        return null;
+  @Override
+  public List<Object> getProcessObjectList() {
+    List<PayTransferBatch> payTransferBatchList = null;
+    try {
+      // 查询交易状态为处理中的
+      payTransferBatchList = payTransferBatchService.queryByTradeStatus(PayTransferBatchStatus.IN_PROCESSING.getValue());
+      int size = payTransferBatchList.size();
+      logger.info("[getProcessObjectList] size={}", size);
+      if (size != 0) {
+        return this.castToObjectList(payTransferBatchList);
+      }
+    } catch (Exception ex) {
+      logger.error(ex.getMessage());
     }
+    return null;
+  }
 
-    @Override
-    public void batchProcess(List<Object> objectList) {
+  @Override
+  public void batchProcess(List<Object> objectList) {
 
-        for (Object object : objectList) {
-            if (object instanceof PayTransferBatch) {
-                PayTransferBatch payTransferBatch = (PayTransferBatch) object;
-                transferManager.queryTransfer(payTransferBatch);
-            }
-        }
+    for (Object object : objectList) {
+      if (object instanceof PayTransferBatch) {
+        PayTransferBatch payTransferBatch = (PayTransferBatch) object;
+        transferManager.queryTransfer(payTransferBatch);
+      }
     }
+  }
 
-    @Override
-    protected String getProcessorName() {
-        return QueryTransferJob.class.getName();
-    }
+  @Override
+  protected String getProcessorName() {
+    return QueryTransferJob.class.getName();
+  }
 }

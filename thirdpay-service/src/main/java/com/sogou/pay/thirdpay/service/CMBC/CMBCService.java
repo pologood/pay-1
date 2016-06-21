@@ -58,7 +58,8 @@ public class CMBCService implements ThirdpayService {
 
   @Override
   public ResultMap queryOrder(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);}
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+  }
 
   @Override
   public ResultMap refundOrder(PMap params) throws ServiceException {
@@ -84,7 +85,7 @@ public class CMBCService implements ThirdpayService {
 
     Result httpResponse = HttpService.getInstance().doPost(params.getString("prepayUrl"), paramsStr, CMBCService.INPUT_CHARSET, null);
     if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
-      log.error("[prepareTransferInfo] 招行代付HTTP请求失败, 参数: {}", BeanUtil.Bean2Map(params));
+      log.error("[prepareTransferInfo] 招行代付HTTP请求失败, 参数: {}", JSONUtil.Bean2JSON(params));
       result.withError(ResultStatus.THIRD_PAY_HTTP_ERROR);
       return result;
     }
@@ -112,7 +113,7 @@ public class CMBCService implements ThirdpayService {
 
     Result httpResponse = HttpService.getInstance().doPost(params.getString("queryUrl"), paramsStr, CMBCService.INPUT_CHARSET, null);
     if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
-      log.error("[queryTransfer] 招行代付查询HTTP请求失败, 参数: {}", BeanUtil.Bean2Map(params));
+      log.error("[queryTransfer] 招行代付查询HTTP请求失败, 参数: {}", JSONUtil.Bean2JSON(params));
       result.withError(ResultStatus.THIRD_PAY_HTTP_ERROR);
       return result;
     }
@@ -121,7 +122,7 @@ public class CMBCService implements ThirdpayService {
     if (isDetail) {
       PMap resultPMap = parseTransferQueryResult(resContent);
       return result.addItem("result", resultPMap);
-    }else{
+    } else {
       List<PMap> resultPMap = parseTransferDetailQueryResult(resContent);
       return result.addItem("result", resultPMap);
     }
@@ -134,7 +135,7 @@ public class CMBCService implements ThirdpayService {
 
     Result httpResponse = HttpService.getInstance().doPost(params.getString("queryRefundUrl"), paramsStr, CMBCService.INPUT_CHARSET, null);
     if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
-      log.error("[queryTransferRefund] 招行代付退票查询HTTP请求失败, 参数: {}", BeanUtil.Bean2Map(params));
+      log.error("[queryTransferRefund] 招行代付退票查询HTTP请求失败, 参数: {}", JSONUtil.Bean2JSON(params));
       result.withError(ResultStatus.THIRD_PAY_HTTP_ERROR);
       return result;
     }
@@ -325,7 +326,7 @@ public class CMBCService implements ThirdpayService {
     String reqSta = String.valueOf(propAgent.get("REQSTA"));
     //判断业务请求状态 是否完成
     if (!"FIN".equals(reqSta)) {
-      log.info("【查询交易概要信息,业务请求状态不是完成状态】 reqSta:" + reqSta);
+      log.info("【查询交易概要信息,业务请求状态不是完成状态】 reqSta: {}", reqSta);
       return null;
     }
     //更新 代付批次状态 为成功
@@ -365,11 +366,11 @@ public class CMBCService implements ThirdpayService {
       throw new RuntimeException("响应报文解析失败");
     }
     if (pktRsp.isError()) {
-      log.info("【查询交易明细信息，错误信息】，errorMsg:" + pktRsp.getERRMSG());
+      log.info("【查询交易明细信息，错误信息】，errorMsg: {}", pktRsp.getERRMSG());
       return null;
     }
     int size = pktRsp.getSectionSize("NTQATDQYZ");
-    log.info("【查询交易明细信息】，size :" + size);
+    log.info("【查询交易明细信息】，size={}", size);
     if (size != 0) {
       updateList = new ArrayList<>();
       //代付序列号
@@ -410,7 +411,7 @@ public class CMBCService implements ThirdpayService {
    */
   private String getTransferQueryRefundParams(PMap params) {
 
-    String beginDate  = params.getString("beginDate");
+    String beginDate = params.getString("beginDate");
     String endDate = params.getString("endDate");
 
 
@@ -441,11 +442,11 @@ public class CMBCService implements ThirdpayService {
       throw new RuntimeException("响应报文解析失败");
     }
     if (pktRsp.isError()) {
-      log.error("【查询账户交易信息错误】,errorMsg:" + pktRsp.getERRMSG());
+      log.error("【查询账户交易信息错误】,errorMsg: {}", pktRsp.getERRMSG());
       return null;
     }
     int size = pktRsp.getSectionSize("NTQTSINFZ");
-    log.info("【查询账户交易信息】 size :" + size);
+    log.info("【查询账户交易信息】 size={}", size);
     if (size == 0) {
       return null;
     }

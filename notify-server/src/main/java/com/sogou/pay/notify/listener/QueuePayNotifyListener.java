@@ -14,12 +14,8 @@ import javax.jms.ObjectMessage;
 import java.util.Map;
 
 /**
- * @Author qibaichao
- * @ClassName QueuePayNotifyListener
- * @Date 2014年9月16日
- * @Description:支付结果通知队列监听
+ * 支付结果通知队列监听
  */
-@SuppressWarnings("unchecked")
 @Service
 public class QueuePayNotifyListener implements MessageListener {
 
@@ -39,16 +35,16 @@ public class QueuePayNotifyListener implements MessageListener {
     public void onMessage(Message message) {
         try {
             if (message instanceof ObjectMessage) {
+                logger.info("[onMessage] begin, {}", JSONUtil.Bean2JSON(message));
                 final ObjectMessage objectMessage = (ObjectMessage) message;
-                logger.info("queue pay notify listener begin : {}", JSONUtil.Bean2JSON(objectMessage.getObject()));
                 Map map = (Map) objectMessage.getObject();
                 String payId = String.valueOf(map.get("payId"));
                 String notifyUrl = String.valueOf(map.remove("appBgUrl"));
                 notifyService.firstNotify(NotifyTypeEnum.PAY_NOTIFY.value(), payId, notifyUrl, map);
-                logger.info("queue pay notify listener end");
+                logger.info("[onMessage] finish, {}", JSONUtil.Bean2JSON(message));
             }
         } catch (Exception e) {
-            logger.error("queue pay notify listener error:", e);
+            logger.error("[onMessage] failed, {}", e);
         }
     }
 }

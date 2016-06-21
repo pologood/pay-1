@@ -19,12 +19,12 @@ public class NotifyRunner {
 
         try {
             NotifyServerLocator.getApplicationContext();
-            logger.info("pay notify start");
+            logger.info("[main] pay-notify start");
             while (System.in.available() == 0) {
                 Thread.sleep(5000);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[main] failed, {]", e);
             System.exit(100);
         }
     }

@@ -1,10 +1,3 @@
-/*
- * Copyright 2014-2016 cyou.cn All right reserved. This software is the
- * confidential and proprietary information of cyou.cn ("Confidential
- * Information"). You shall not disclose such Confidential Information and shall
- * use it only in accordance with the terms of the license agreement you entered
- * into with cyou.cn.
- */
 package com.sogou.pay.notify.dao;
 
 import com.sogou.pay.notify.entity.NotifyErrorLog;

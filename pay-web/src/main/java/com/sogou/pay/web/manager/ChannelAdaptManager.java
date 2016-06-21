@@ -33,7 +33,7 @@ public class ChannelAdaptManager {
       }
       result.success(buildAdaptData(adaptList));
     } catch (ServiceException e) {
-      logger.error("收银台银行列表适配异常，业务平台编码:" + appId + "接入平台：" + accessPlatform);
+      logger.error("[getChannelAdapts] 收银台银行列表适配异常, appId={}, accessPlatform={}", appId, accessPlatform);
       result.withError(ResultStatus.SYSTEM_ERROR);
     }
     return result;
