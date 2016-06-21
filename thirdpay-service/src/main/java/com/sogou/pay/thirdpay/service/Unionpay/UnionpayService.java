@@ -54,8 +54,8 @@ public class UnionpayService implements ThirdpayService {
     TRADE_STATUS.put("00", OrderStatus.SUCCESS.name());//交易成功结束
     TRADE_STATUS.put("A6", OrderStatus.SUCCESS.name());//交易有缺陷成功
     TRADE_STATUS.put("DEFAULT", OrderStatus.FAILURE.name());//默认
-    channelMap.put(InternalChannelType.GATEWAY,ChannelType.INTERNET.getValue());
-    channelMap.put(InternalChannelType.SDK,ChannelType.MOBILE.getValue());
+    channelMap.put(InternalChannelType.GATEWAY, ChannelType.INTERNET.getValue());
+    channelMap.put(InternalChannelType.SDK, ChannelType.MOBILE.getValue());
   }
 
   @Override
@@ -129,13 +129,14 @@ public class UnionpayService implements ThirdpayService {
     return ResultMap.build();
   }
 
-  private String getKey(PMap params,boolean isPrivate){
+  private String getKey(PMap params, boolean isPrivate) {
     String certFilePath = getCertFilePath(params, isPrivate);
     return SecretKeyUtil.loadKeyFromFile(certFilePath);
   }
 
   private ResultMap send(PMap params, PMap requestMap) {
-    Result response = HttpService.getInstance().doPost(params.getString("payUrl"), requestMap, CHARSET, null);
+    UnionpayHttpClient httpClient = new UnionpayHttpClient(CHARSET);
+    Result response = httpClient.doPost(params.getString("payUrl"), requestMap);
     if (!Result.isSuccess(response)) {
       LOG.error("[send]http request error:{}", requestMap);
       return ResultMap.build(ResultStatus.THIRD_PAY_HTTP_ERROR);
@@ -143,7 +144,7 @@ public class UnionpayService implements ThirdpayService {
     String resContent = (String) response.getReturnValue();
     ResultMap responseMap;
     if (StringUtils.isBlank(resContent) || !ResultMap.isSuccess(responseMap = HttpUtil.extractUrlParams(resContent))
-        || MapUtils.isEmpty(responseMap.getData())) {
+            || MapUtils.isEmpty(responseMap.getData())) {
       LOG.error("[send]http response error:params={} and respnose={}", requestMap, resContent);
       return ResultMap.build(ResultStatus.THIRD_PAY_RESPONSE_PARAM_ERROR);
     }
@@ -171,7 +172,7 @@ public class UnionpayService implements ThirdpayService {
     /*必填*/
     result.put("version", VERSION);//版本号
     result.put("encoding", CHARSET);//编码方式
-    result.put("certId", CERTID);//证书ID
+    //result.put("certId", CERTID);//证书ID
     result.put("signMethod", SIGNMETHOD);//签名方法
     result.put("txnType", UnionpayTxnType.CONSUMPTION.getValue());//交易类型
     result.put("txnSubType", UnionpaySubTxnType.SELF_SERVICE_CONSUMPTION.getValue());//交易子类
@@ -186,7 +187,8 @@ public class UnionpayService implements ThirdpayService {
     result.put("currencyCode", CURRENCYCODE);//交易币种
 
     /*选填*/
-    if (StringUtils.isNotBlank(params.getString("accountId"))) result.put("accNo", params.getString("accountId"));//账号 1后台类消费交易时上送全卡号或卡号后 4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
+    if (StringUtils.isNotBlank(params.getString("accountId")))
+      result.put("accNo", params.getString("accountId"));//账号 1后台类消费交易时上送全卡号或卡号后 4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
     if (ChannelType.MOBILE.getValue().equalsIgnoreCase(result.getString("channelType")))
       result.put("orderDesc", params.getString("subject"));//订单描述 移动支付上送
 
@@ -228,7 +230,8 @@ public class UnionpayService implements ThirdpayService {
     }
     requestPMap.put("signature", sign);
 
-    Result httpResponse = HttpService.getInstance().doPost(params.getString("refundUrl"), requestPMap, CHARSET, null);
+    UnionpayHttpClient httpClient = new UnionpayHttpClient(CHARSET);
+    Result httpResponse = httpClient.doPost(params.getString("refundUrl"), requestPMap);
     if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
       LOG.error("[doRequest] 银联请求HTTP请求失败, 参数: {}", requestPMap);
       result.withError(ResultStatus.THIRD_REFUND_HTTP_ERROR);
@@ -512,9 +515,9 @@ public class UnionpayService implements ThirdpayService {
     resultMap.addItem("agencyOrderId", notifyParams.getString("queryId"));//交易查询流水号
     resultMap.addItem("tradeStatus", getTradeStatus(notifyParams.getString("respCode")));//交易状态
     resultMap.addItem("agencyPayTime",
-        String.format("%s%s", LocalDate.now().getYear(), notifyParams.getString("traceTime")));//交易传输时间 MMDDHHmmss,需加上YYYY
+            String.format("%s%s", LocalDate.now().getYear(), notifyParams.getString("traceTime")));//交易传输时间 MMDDHHmmss,需加上YYYY
     resultMap.addItem("trueMoney", new BigDecimal(notifyParams.getString("txnAmt"))
-        .divide(new BigDecimal("100"), 2, BigDecimal.ROUND_UP).toString());//交易金额 整数分转两位小数元
+            .divide(new BigDecimal("100"), 2, BigDecimal.ROUND_UP).toString());//交易金额 整数分转两位小数元
     return resultMap;
   }
 

@@ -123,7 +123,7 @@ public class HttpCaller {
       httpResponse = httpClient.execute(httpRequestBase);
       HttpEntity entity = httpResponse.getEntity();
       if (httpResponse.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-        throw new RuntimeException("[call] HTTP响应异常, {}" + httpResponse.getStatusLine());
+        //throw new RuntimeException("[call] HTTP响应异常, {}" + httpResponse.getStatusLine());
       }
       Charset charset = ContentType.getOrDefault(entity).getCharset();
       if (charset == null)
@@ -169,7 +169,7 @@ public class HttpCaller {
       httpClient = HttpClients.custom()//.setConnectionManager(connectionManager)
               .setDefaultRequestConfig(defaultRequestConfig).setSSLHostnameVerifier(hostnameVerifier).build();
     } else {
-      httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).setSslcontext(sslContext)
+      httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).setSSLContext(sslContext)
               .setSSLHostnameVerifier(hostnameVerifier).build();
     }
     return httpClient;
