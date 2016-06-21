@@ -10,9 +10,7 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLContext;
 import java.util.Map;
 
-/**
- * HTTP工具类
- */
+
 public class HttpService {
 
   private static final Logger logger = LoggerFactory.getLogger(HttpService.class);
@@ -41,12 +39,12 @@ public class HttpService {
 
   private Result doCall(String url, String requestBody, Map<String, ?> paramMap, int method, String charset, SSLContext sslContext) {
 
-    logger.info("[doCall] 参数: url={}, requestBody={}, paramMap={}, method={}, charset={}", url,
+    logger.info("[doCall] HTTP请求参数: url={}, requestBody={}, paramMap={}, method={}, charset={}", url,
             requestBody, JSONUtil.Bean2JSON(paramMap), method, charset);
 
     Result result = ResultBean.build();
     if (url == null || "".equals(url)) {
-      logger.error("[doCall] 参数错误");
+      logger.error("[doCall] HTTP请求参数错误");
       result.withError(ResultStatus.SYSTEM_ERROR);
       return result;
     }
@@ -63,10 +61,9 @@ public class HttpService {
       else if (paramMap != null)
         request.addParam(paramMap);
       Response response = HttpCaller.getInstance().call(request);
-      result.withReturn(new String(response.getByteData(), response.getCharset()));
+      result.withReturn(response.getStringData());
     } catch (Exception e) {
-      e.printStackTrace();
-      logger.error("[doCall] HTTP请求失败, {}", e);
+      logger.error("[doCall] HTTP请求失败:", e);
       result.withError(ResultStatus.SYSTEM_ERROR);
     }
     return result;
