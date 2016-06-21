@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-
 import java.io.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -37,17 +36,19 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 //--------------------- Change Logs----------------------
 //@author wangwenlong Initial Created at 2016年6月15日;
 //-------------------------------------------------------
 @Service
 public class UnionpayService implements ThirdpayService {
+
   @Value(value = "${unionpay.bill.tmpdir}")
   public static String tmpdir;
 
   private static HashMap<String, String> TRADE_STATUS = new HashMap<>();
+
   private static HashMap<InternalChannelType, String> channelMap = new HashMap<>();
 
   static {
@@ -67,13 +68,6 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap preparePayInfoGatway(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
-  }
-
-  @Override
-  public ResultMap preparePayInfoQRCode(PMap params) throws ServiceException {
     PMap requestMap = getPrepayReq(params, InternalChannelType.GATEWAY);
     if (!MapUtil.checkAllExist(requestMap)) {
       LOG.error("[preparePayInfoQRCode]empty param:{}", requestMap);
@@ -95,6 +89,11 @@ public class UnionpayService implements ThirdpayService {
   }
 
   @Override
+  public ResultMap preparePayInfoQRCode(PMap params) throws ServiceException {
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+  }
+
+  @Override
   public ResultMap preparePayInfoSDK(PMap params) throws ServiceException {
     PMap requestMap = getPrepayReq(params, InternalChannelType.SDK);
     if (!MapUtil.checkAllExist(requestMap)) {
@@ -108,7 +107,7 @@ public class UnionpayService implements ThirdpayService {
     ResultMap signCheckResult = checkSign(params, sendResult.getData());
     if (!ResultMap.isSuccess(signCheckResult)) return signCheckResult;
     ResultMap resultMap = ResultMap.build();
-    if (SUCCESS_RESPONSE_CODE != sendResult.getData().getString("respCode")) {
+    if (!Objects.equals(OrderStatus.SUCCESS.name(), getTradeStatus(sendResult.getData().getString("respCode")))) {
       resultMap.addItem("error_code", sendResult.getData().getString("respCode"));
       resultMap.addItem("error_msg", sendResult.getData().getString("respMsg"));
       resultMap.withError(ResultStatus.THIRD_PAY_ERROR);
@@ -122,10 +121,10 @@ public class UnionpayService implements ThirdpayService {
       LOG.error("[checkSign]get public key error:{}", params);
       return ResultMap.build(ResultStatus.THIRD_PAY_GET_KEY_ERROR);
     }
-    if (!SecretKeyUtil.unionRSACheckSign(signMap, (String) signMap.remove("signature"), publicCertKey, CHARSET)) {
+    /*if (!SecretKeyUtil.unionRSACheckSign(signMap, (String) signMap.remove("signature"), publicCertKey, CHARSET)) {
       LOG.error("[checkSign]failed:{}", signMap);
       return ResultMap.build(ResultStatus.THIRD_PAY_RESPONSE_SIGN_ERROR);
-    }
+    }*/
     return ResultMap.build();
   }
 
@@ -144,7 +143,7 @@ public class UnionpayService implements ThirdpayService {
     String resContent = (String) response.getReturnValue();
     ResultMap responseMap;
     if (StringUtils.isBlank(resContent) || !ResultMap.isSuccess(responseMap = HttpUtil.extractUrlParams(resContent))
-            || MapUtils.isEmpty(responseMap.getData())) {
+        || MapUtils.isEmpty(responseMap.getData())) {
       LOG.error("[send]http response error:params={} and respnose={}", requestMap, resContent);
       return ResultMap.build(ResultStatus.THIRD_PAY_RESPONSE_PARAM_ERROR);
     }
@@ -172,7 +171,7 @@ public class UnionpayService implements ThirdpayService {
     /*必填*/
     result.put("version", VERSION);//版本号
     result.put("encoding", CHARSET);//编码方式
-    //result.put("certId", CERTID);//证书ID
+    result.put("certId", getCertId(params));//证书ID
     result.put("signMethod", SIGNMETHOD);//签名方法
     result.put("txnType", UnionpayTxnType.CONSUMPTION.getValue());//交易类型
     result.put("txnSubType", UnionpaySubTxnType.SELF_SERVICE_CONSUMPTION.getValue());//交易子类
@@ -187,12 +186,16 @@ public class UnionpayService implements ThirdpayService {
     result.put("currencyCode", CURRENCYCODE);//交易币种
 
     /*选填*/
-    if (StringUtils.isNotBlank(params.getString("accountId")))
-      result.put("accNo", params.getString("accountId"));//账号 1后台类消费交易时上送全卡号或卡号后 4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
+    if (StringUtils.isNotBlank(params.getString("accountId"))) result.put("accNo", params.getString("accountId"));//账号 1后台类消费交易时上送全卡号或卡号后 4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
     if (ChannelType.MOBILE.getValue().equalsIgnoreCase(result.getString("channelType")))
       result.put("orderDesc", params.getString("subject"));//订单描述 移动支付上送
 
     return result;
+  }
+
+  @SuppressWarnings("rawtypes")
+  private String getCertId(PMap params) {
+    return CERTID;
   }
 
   @Override
@@ -344,17 +347,17 @@ public class UnionpayService implements ThirdpayService {
     String unionpayCheckDate = DateUtil.format(checkDate, DateUtil.DATE_FORMAT_DAY_OF_YEAR);
 
     //组装请求参数
-    requestPMap.put("version", "5.0.0");               //版本号
-    requestPMap.put("encoding", UnionpayService.CHARSET);             //字符集编码
-    requestPMap.put("signMethod", "01");                        //签名方法 目前只支持01-RSA方式证书加密
-    requestPMap.put("txnType", "76");                           //交易类型 76-对账单
-    requestPMap.put("txnSubType", "01");                        //交易子类型  下载对账单
-    requestPMap.put("bizType", "000000");                       //业务类型
-    requestPMap.put("merId", params.getString("merchantNo"));                //商户号
-    requestPMap.put("accessType", "0");                         //接入类型，商户接入固定填0，不需修改
-    requestPMap.put("settleDate", unionpayCheckDate);          //对账日期，一年内MMdd
-    requestPMap.put("txnTime", DateUtil.format(params.getDate("refundReqTime"), DateUtil.DATE_FORMAT_SECOND_SHORT));      //订单发送时间，格式为YYYYMMDDhhmmss，必须取当前时间，否则会报txnTime无效
-    requestPMap.put("fileType", "00");                          //对账文件类型 00-zip
+    requestPMap.put("version", "5.0.0"); //版本号
+    requestPMap.put("encoding", UnionpayService.CHARSET); //字符集编码
+    requestPMap.put("signMethod", "01"); //签名方法 目前只支持01-RSA方式证书加密
+    requestPMap.put("txnType", "76"); //交易类型 76-对账单
+    requestPMap.put("txnSubType", "01"); //交易子类型  下载对账单
+    requestPMap.put("bizType", "000000"); //业务类型
+    requestPMap.put("merId", params.getString("merchantNo")); //商户号
+    requestPMap.put("accessType", "0"); //接入类型，商户接入固定填0，不需修改
+    requestPMap.put("settleDate", unionpayCheckDate); //对账日期，一年内MMdd
+    requestPMap.put("txnTime", DateUtil.format(params.getDate("refundReqTime"), DateUtil.DATE_FORMAT_SECOND_SHORT)); //订单发送时间，格式为YYYYMMDDhhmmss，必须取当前时间，否则会报txnTime无效
+    requestPMap.put("fileType", "00"); //对账文件类型 00-zip
 
     ResultMap result = doRequest(params, requestPMap);
     if (!Result.isSuccess(result)) {
@@ -515,9 +518,9 @@ public class UnionpayService implements ThirdpayService {
     resultMap.addItem("agencyOrderId", notifyParams.getString("queryId"));//交易查询流水号
     resultMap.addItem("tradeStatus", getTradeStatus(notifyParams.getString("respCode")));//交易状态
     resultMap.addItem("agencyPayTime",
-            String.format("%s%s", LocalDate.now().getYear(), notifyParams.getString("traceTime")));//交易传输时间 MMDDHHmmss,需加上YYYY
+        String.format("%s%s", LocalDate.now().getYear(), notifyParams.getString("traceTime")));//交易传输时间 MMDDHHmmss,需加上YYYY
     resultMap.addItem("trueMoney", new BigDecimal(notifyParams.getString("txnAmt"))
-            .divide(new BigDecimal("100"), 2, BigDecimal.ROUND_UP).toString());//交易金额 整数分转两位小数元
+        .divide(new BigDecimal("100"), 2, BigDecimal.ROUND_UP).toString());//交易金额 整数分转两位小数元
     return resultMap;
   }
 
@@ -573,7 +576,7 @@ public class UnionpayService implements ThirdpayService {
 
   private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-  private static String CERTID;
+  private static String CERTID = "40220995861346480087409489142384722381";
 
   private static String ACCESSTYPE = "0";//0普通商户; 1首单机构; 2平台商户
 
