@@ -141,7 +141,7 @@ public class UnionpayService implements ThirdpayService {
     }
     String resContent = (String) response.getReturnValue();
     ResultMap responseMap;
-    if (StringUtils.isBlank(resContent) || !ResultMap.isSuccess(responseMap = HttpUtil.extractUrlParams(resContent))
+    if (StringUtils.isBlank(resContent) || !ResultMap.isSuccess(responseMap = HttpUtil.extractParams(resContent))
         || MapUtils.isEmpty(responseMap.getData())) {
       LOG.error("[send]http response error:params={} and respnose={}", requestMap, resContent);
       return ResultMap.build(ResultStatus.THIRD_PAY_RESPONSE_PARAM_ERROR);
