@@ -56,6 +56,7 @@ public class UnionpayService implements ThirdpayService {
     TRADE_STATUS.put("DEFAULT", OrderStatus.FAILURE.name());//默认
     channelMap.put(InternalChannelType.GATEWAY, ChannelType.INTERNET.getValue());
     channelMap.put(InternalChannelType.SDK, ChannelType.MOBILE.getValue());
+    channelMap.put(InternalChannelType.WAP, ChannelType.MOBILE.getValue());
   }
 
   @SuppressWarnings("rawtypes")
@@ -69,7 +70,7 @@ public class UnionpayService implements ThirdpayService {
   public ResultMap preparePayInfoGatway(PMap params) throws ServiceException {
     PMap requestMap = getPrepayReq(params, InternalChannelType.GATEWAY);
     if (!MapUtil.checkAllExist(requestMap)) {
-      LOG.error("[preparePayInfoQRCode]empty param:{}", requestMap);
+      LOG.error("[preparePayInfoGatway]empty param:{}", requestMap);
       return ResultMap.build(ResultStatus.PAY_PARAM_ERROR);
     }
     ResultMap signResult = sign(params, requestMap);
@@ -105,6 +106,21 @@ public class UnionpayService implements ThirdpayService {
       resultMap.withError(ResultStatus.THIRD_PAY_ERROR);
     } else resultMap.addItem("orderInfo", sendResult.getData());
     return sendResult;
+  }
+
+  @Override
+  public ResultMap preparePayInfoWap(PMap params) throws ServiceException {
+    PMap requestMap = getPrepayReq(params, InternalChannelType.WAP);
+    if (!MapUtil.checkAllExist(requestMap)) {
+      LOG.error("[preparePayInfoWap]empty param:{}", requestMap);
+      return ResultMap.build(ResultStatus.PAY_PARAM_ERROR);
+    }
+    ResultMap signResult = sign(params, requestMap);
+    if (!Result.isSuccess(signResult)) return signResult;
+    String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestMap);
+    ResultMap resultMap = ResultMap.build();
+    resultMap.addItem("returnUrl", returnUrl);
+    return resultMap;
   }
 
   private ResultMap checkSign(PMap params, PMap signMap) {
@@ -170,7 +186,7 @@ public class UnionpayService implements ThirdpayService {
     result.put("txnSubType", UnionpaySubTxnType.SELF_SERVICE_CONSUMPTION.getValue());//交易子类
     result.put("bizType", UnionpayBizType.B2C_GATEWAY_PAYMENT.getValue());//产品类型
     result.put("channelType", channelMap.get(internalChannelType));//渠道类型
-    if (internalChannelType == InternalChannelType.GATEWAY) result.put("frontUrl", params.getString("pageNotifyUrl"));//前台返回商户结果时使用，前台类交易需上送
+    result.put("frontUrl", params.getString("pageNotifyUrl"));//前台返回商户结果时使用，前台类交易需上送
     result.put("backUrl", params.getString("serverNotifyUrl"));//后台通知地址
     result.put("accessType", ACCESSTYPE);//接入类型
     result.put("merId", params.getString("merchantNo"));//商户代码
@@ -180,11 +196,11 @@ public class UnionpayService implements ThirdpayService {
     result.put("currencyCode", CURRENCYCODE);//交易币种
 
     /*选填*/
-    if (StringUtils.isNotBlank(params.getString("accountId"))) result.put("accNo", params.getString("accountId"));//账号 1后台类消费交易时上送全卡号或卡号后 4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
-    if (ChannelType.MOBILE.getValue().equalsIgnoreCase(result.getString("channelType")))
+    if (StringUtils.isNotBlank(params.getString("accountId"))) result.put("accNo", params.getString("accountId"));//账号 1后台类消费交易时上送全卡号或卡号后4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
+    if (ChannelType.MOBILE.getValue().equals(result.getString("channelType")))
       result.put("orderDesc", params.getString("subject"));//订单描述 移动支付上送
     String bankCode = getBankCode(params);
-    if (bankCode != null) result.put("issInsCode", bankCode);//1当账号类型为02-存折时需填写;2在前台类交易时填写默认银行代码,支持直接跳转到网银
+    if (StringUtils.isNotBlank(bankCode)) result.put("issInsCode", bankCode);//1当账号类型为02-存折时需填写;2在前台类交易时填写默认银行代码,支持直接跳转到网银
 
     return result;
   }
@@ -196,11 +212,6 @@ public class UnionpayService implements ThirdpayService {
   @SuppressWarnings("rawtypes")
   private String getCertId(PMap params) {
     return CERTID;
-  }
-
-  @Override
-  public ResultMap preparePayInfoWap(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   private String getCertFilePath(PMap params, boolean isPrivate) {
@@ -611,196 +622,196 @@ public class UnionpayService implements ThirdpayService {
   HXB 华夏银行
   BOEAD 东亚银行
   ABCD 中国农业银行
-
+  
       全渠道平台银行卡开通支持银行列表
-	ABC 中国农业银行
-	AHRCU 安徽省农村信用社
-	AYB 安阳市商业银行
-	BANKOFAS 鞍山银行
-	BCCB 北京银行
-	BDBK 保定市商业银行
-	BEAI 东亚银行
-	BOBBG 广西北部湾银行
-	BOC 中国银行
-	BOCOM 交通银行
-	BOCZ 沧州银行
-	BOFS 抚顺银行
-	BOHC 渤海银行
-	BOHH 新疆汇和银行
-	BOHLD 葫芦岛市商业银行
-	BOIMC 内蒙古银行
-	BOJS 江苏银行
-	BOLY 洛阳银行
-	BOLZ 柳州银行
-	BOQHD 秦皇岛市商业银行
-	BORZ 日照银行
-	BOS 上海银行
-	BOSZ 苏州银行
-	BOSZS 石嘴山银行股份有限公司
-	BOWH 乌海银行
-	BOZK 周口市商业银行
-	BQH 青海银行
-	BRCB 北京农村商业银行
-	BSB 包商银行
-	BTCB 包商银行
-	CBCRB 重庆北碚稠州村镇银行
-	CBOA 安顺市商业银行
-	CBZZ 郑州银行
-	CCB 中国建设银行
-	CCCB 长沙银行
-	CCQTGB 重庆三峡银行
-	CDB 承德银行
-	CDCB 成都银行
-	CDRCB 成都农商银行
-	CEB 光大银行
-	CIB 兴业银行深圳分行
-	CITIB 花旗银行
-	CJCCB 江苏长江商业银行
-	CMB 招商银行（网银）
-	CMBC 中国民生银行深圳分行
-	CNCB 中信银行信用卡
-	CQCB 重庆银行
-	CQRCB 重庆农村商业银行股份有限公司
-	CRB 珠海华润银行
-	CSRCBANK 常熟农商银行
-	CYCB 朝阳银行
-	CZCB 浙江稠州商业银行
-	CZCCB 长治商行
-	CZSB 浙商银行
-	DGCB 东莞银行
-	DGCU 东莞农村商业银行
-	DLCB 大连银行
-	DYCB 东营商行
-	DYCC 德阳银行
-	DZBCHINA 德州市商业银行
-	EBCL 恒丰银行
-	FJHXB 福建海峡银行
-	FJNX 福建农信
-	FTYZB 深圳福田银座村镇银行
-	FUXINBANK 阜新银行股份有限公司
-	GDB 广东发展银行
-	GDRCC 广东农村信用社
-	GHCRB 广州花都稠州村镇银行
-	GLB 桂林银行
-	GRCB 广州农村商业银行
-	GSRCU 甘肃省农村信用社
-	GXNX 广西农村信用社联合社
-	GYCB 贵阳银行
-	GZCB 广州银行
-	GZCCB 赣州银行
-	HANABANK 韩亚银行
-	HBC 湖北银行
-	HBCB 哈尔滨银行
-	HBSB 鹤壁银行
-	HBXH 湖北省农村信用社联合社
-	HDCB 邯郸银行
-	HEBB 河北银行
-	HEBNX 河北省农村信用社
-	HKBCHINA 汉口银行
-	HNB 海南农信
-	HNRCC 湖南农信社
-	HSB 衡水市商业银行
-	HSCB 徽商银行
-	HXB 华夏银行
-	HZCB 杭州银行
-	HZCCB 湖州银行
-	ICBC 中国工商银行
-	IMRCC 内蒙古农信社
-	JCCB 晋城市商业银行
-	JHB 金华银行
-	JJCCB 九江银行
-	JLCB 吉林银行股份有限公司
-	JLPRCU 吉林省农村信用社
-	JNBANK 济宁银行股份有限公司
-	JNRCB 江南农村商业银行
-	JSB 晋商银行
-	JSRCU 江苏省农村信用社联合社
-	JXCCB 嘉兴银行
-	JXNXS 江西农信
-	JYRB 江苏江阴农村商业银行
-	JZCB 锦州银行
-	JZCCB 晋中市商业银行
-	KLB 昆仑银行
-	KMCB 富滇银行
-	KSRB 昆山农村商业银行
-	LJB 龙江银行股份有限公司
-	LSB 临商银行
-	LSBANKCHINA 莱芜市商业银行
-	LSCCB 乐山市商业银行
-	LSZSH 凉山州商业银行
-	LUOHEBANK 漯河商行
-	LZCB 兰州银行
-	LZCCB 泸州市商业银行
-	MIANYANGCCB 绵阳市商业银行
-	MXHCB 梅县客家村镇银行
-	NBCB 宁波银行
-	NCCB 南昌银行
-	NCCC 南充商行
-	NJCB 南京银行
-	ORDOSB 鄂尔多斯银行
-	PAB 平安银行
-	PJCB 盘锦市商业银行
-	PSBC 邮政储蓄银行
-	PZHCCB 攀枝花市商业银行
-	QDCB 青岛银行
-	QHRCU 青海省农村信用社联合社
-	QJCCB 曲靖市商业银行
-	QLB 齐鲁银行
-	QZCCB 泉州银行
-	RCCOSD 山东省农村信用社-新
-	SCB 渣打银行
-	SCRCU 四川省农村信用合作社
-	SDB 深圳发展银行
-	SDEBANK 佛山市顺德区农村信用合作联社
-	SDRCB 顺德农商
-	SG 法国兴业银行（中国）有限公司
-	SHBC 新韩银行
-	SMXB 三门峡市商业银行
-	SNCCB 遂宁市商业银行
-	SPDB 上海浦东发展银行
-	SQB 商丘银行
-	SRB 上饶银行
-	SRCB 上海农商行
-	SXCCB 绍兴银行
-	SXRCU 山西省农村信用社
-	SZRB 深圳农村商业银行
-	TACCB 泰安市商业银行
-	TCRCB 太仓农村商业银行
-	TJBHB 天津滨海农村商业银行
-	TJCB 天津银行
-	TLCB 浙江泰隆商业银行
-	TRCB 天津农村商业银行
-	TSCCB 唐山市商业银行
-	TZB 台州市商业银行
-	UOB 大华银行
-	UQCB 乌鲁木齐市商业银行
-	WFCB 潍坊银行
-	WHCCB 威海市商业银行
-	WJRCB 吴江农村商业银行
-	WRCB 无锡农村商业银行
-	WZCB 温州银行
-	XCCB 许昌市商业银行
-	XJKCCB 库尔勒市商业银行
-	XMCCB 厦门银行股份有限公司
-	XTBK 邢台银行
-	YACCB 雅安市商业银行
-	YBCCB 宜宾市商业银行
-	YCCCB 宁夏银行
-	YDRCB 山西尧都农村商业银行
-	YKCB 营口市商业银行
-	YNRCC 云南省农村信用社
-	YQCCB 阳泉市商业银行
-	YRRCB 黄河农村商业银行
-	YTCB 烟台市商业银行
-	YXCCB 玉溪市商业银行
-	YZRB 宁波鄞州农村合作银行
-	ZCCB 齐商银行
-	ZGCB 自贡市商业银行
-	ZJKCCB 张家口市商业银行
-	ZJMTCB 浙江民泰商业银行
-	ZJRB 张家港农村商业银行
-	ZYCCB 遵义市商业银行股份有限公司
-	tzunionpay 泰州银联商务
+  ABC 中国农业银行
+  AHRCU 安徽省农村信用社
+  AYB 安阳市商业银行
+  BANKOFAS 鞍山银行
+  BCCB 北京银行
+  BDBK 保定市商业银行
+  BEAI 东亚银行
+  BOBBG 广西北部湾银行
+  BOC 中国银行
+  BOCOM 交通银行
+  BOCZ 沧州银行
+  BOFS 抚顺银行
+  BOHC 渤海银行
+  BOHH 新疆汇和银行
+  BOHLD 葫芦岛市商业银行
+  BOIMC 内蒙古银行
+  BOJS 江苏银行
+  BOLY 洛阳银行
+  BOLZ 柳州银行
+  BOQHD 秦皇岛市商业银行
+  BORZ 日照银行
+  BOS 上海银行
+  BOSZ 苏州银行
+  BOSZS 石嘴山银行股份有限公司
+  BOWH 乌海银行
+  BOZK 周口市商业银行
+  BQH 青海银行
+  BRCB 北京农村商业银行
+  BSB 包商银行
+  BTCB 包商银行
+  CBCRB 重庆北碚稠州村镇银行
+  CBOA 安顺市商业银行
+  CBZZ 郑州银行
+  CCB 中国建设银行
+  CCCB 长沙银行
+  CCQTGB 重庆三峡银行
+  CDB 承德银行
+  CDCB 成都银行
+  CDRCB 成都农商银行
+  CEB 光大银行
+  CIB 兴业银行深圳分行
+  CITIB 花旗银行
+  CJCCB 江苏长江商业银行
+  CMB 招商银行（网银）
+  CMBC 中国民生银行深圳分行
+  CNCB 中信银行信用卡
+  CQCB 重庆银行
+  CQRCB 重庆农村商业银行股份有限公司
+  CRB 珠海华润银行
+  CSRCBANK 常熟农商银行
+  CYCB 朝阳银行
+  CZCB 浙江稠州商业银行
+  CZCCB 长治商行
+  CZSB 浙商银行
+  DGCB 东莞银行
+  DGCU 东莞农村商业银行
+  DLCB 大连银行
+  DYCB 东营商行
+  DYCC 德阳银行
+  DZBCHINA 德州市商业银行
+  EBCL 恒丰银行
+  FJHXB 福建海峡银行
+  FJNX 福建农信
+  FTYZB 深圳福田银座村镇银行
+  FUXINBANK 阜新银行股份有限公司
+  GDB 广东发展银行
+  GDRCC 广东农村信用社
+  GHCRB 广州花都稠州村镇银行
+  GLB 桂林银行
+  GRCB 广州农村商业银行
+  GSRCU 甘肃省农村信用社
+  GXNX 广西农村信用社联合社
+  GYCB 贵阳银行
+  GZCB 广州银行
+  GZCCB 赣州银行
+  HANABANK 韩亚银行
+  HBC 湖北银行
+  HBCB 哈尔滨银行
+  HBSB 鹤壁银行
+  HBXH 湖北省农村信用社联合社
+  HDCB 邯郸银行
+  HEBB 河北银行
+  HEBNX 河北省农村信用社
+  HKBCHINA 汉口银行
+  HNB 海南农信
+  HNRCC 湖南农信社
+  HSB 衡水市商业银行
+  HSCB 徽商银行
+  HXB 华夏银行
+  HZCB 杭州银行
+  HZCCB 湖州银行
+  ICBC 中国工商银行
+  IMRCC 内蒙古农信社
+  JCCB 晋城市商业银行
+  JHB 金华银行
+  JJCCB 九江银行
+  JLCB 吉林银行股份有限公司
+  JLPRCU 吉林省农村信用社
+  JNBANK 济宁银行股份有限公司
+  JNRCB 江南农村商业银行
+  JSB 晋商银行
+  JSRCU 江苏省农村信用社联合社
+  JXCCB 嘉兴银行
+  JXNXS 江西农信
+  JYRB 江苏江阴农村商业银行
+  JZCB 锦州银行
+  JZCCB 晋中市商业银行
+  KLB 昆仑银行
+  KMCB 富滇银行
+  KSRB 昆山农村商业银行
+  LJB 龙江银行股份有限公司
+  LSB 临商银行
+  LSBANKCHINA 莱芜市商业银行
+  LSCCB 乐山市商业银行
+  LSZSH 凉山州商业银行
+  LUOHEBANK 漯河商行
+  LZCB 兰州银行
+  LZCCB 泸州市商业银行
+  MIANYANGCCB 绵阳市商业银行
+  MXHCB 梅县客家村镇银行
+  NBCB 宁波银行
+  NCCB 南昌银行
+  NCCC 南充商行
+  NJCB 南京银行
+  ORDOSB 鄂尔多斯银行
+  PAB 平安银行
+  PJCB 盘锦市商业银行
+  PSBC 邮政储蓄银行
+  PZHCCB 攀枝花市商业银行
+  QDCB 青岛银行
+  QHRCU 青海省农村信用社联合社
+  QJCCB 曲靖市商业银行
+  QLB 齐鲁银行
+  QZCCB 泉州银行
+  RCCOSD 山东省农村信用社-新
+  SCB 渣打银行
+  SCRCU 四川省农村信用合作社
+  SDB 深圳发展银行
+  SDEBANK 佛山市顺德区农村信用合作联社
+  SDRCB 顺德农商
+  SG 法国兴业银行（中国）有限公司
+  SHBC 新韩银行
+  SMXB 三门峡市商业银行
+  SNCCB 遂宁市商业银行
+  SPDB 上海浦东发展银行
+  SQB 商丘银行
+  SRB 上饶银行
+  SRCB 上海农商行
+  SXCCB 绍兴银行
+  SXRCU 山西省农村信用社
+  SZRB 深圳农村商业银行
+  TACCB 泰安市商业银行
+  TCRCB 太仓农村商业银行
+  TJBHB 天津滨海农村商业银行
+  TJCB 天津银行
+  TLCB 浙江泰隆商业银行
+  TRCB 天津农村商业银行
+  TSCCB 唐山市商业银行
+  TZB 台州市商业银行
+  UOB 大华银行
+  UQCB 乌鲁木齐市商业银行
+  WFCB 潍坊银行
+  WHCCB 威海市商业银行
+  WJRCB 吴江农村商业银行
+  WRCB 无锡农村商业银行
+  WZCB 温州银行
+  XCCB 许昌市商业银行
+  XJKCCB 库尔勒市商业银行
+  XMCCB 厦门银行股份有限公司
+  XTBK 邢台银行
+  YACCB 雅安市商业银行
+  YBCCB 宜宾市商业银行
+  YCCCB 宁夏银行
+  YDRCB 山西尧都农村商业银行
+  YKCB 营口市商业银行
+  YNRCC 云南省农村信用社
+  YQCCB 阳泉市商业银行
+  YRRCB 黄河农村商业银行
+  YTCB 烟台市商业银行
+  YXCCB 玉溪市商业银行
+  YZRB 宁波鄞州农村合作银行
+  ZCCB 齐商银行
+  ZGCB 自贡市商业银行
+  ZJKCCB 张家口市商业银行
+  ZJMTCB 浙江民泰商业银行
+  ZJRB 张家港农村商业银行
+  ZYCCB 遵义市商业银行股份有限公司
+  tzunionpay 泰州银联商务
   */
 
 }
