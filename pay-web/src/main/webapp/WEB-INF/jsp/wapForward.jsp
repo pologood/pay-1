@@ -13,7 +13,7 @@
 <form name="form1" action="${payUrl}" method="post">
 </form>
 <script type="text/javascript">
-    document.form1.submit();
+    if(document.form1.action!=""){document.form1.submit();}
 </script>
 </body>
 </html>

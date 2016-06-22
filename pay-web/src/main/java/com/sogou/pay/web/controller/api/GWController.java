@@ -119,8 +119,8 @@ public class GWController extends BaseController {
     return view;
   }
 
-  private ModelAndView createAgencyView(PMap paramsMap) {
-    ModelAndView view = new ModelAndView("webForward");
+  private ModelAndView createAgencyView(PMap paramsMap, String platform) {
+    ModelAndView view = new ModelAndView(String.format("%sForward", platform));
     view.addObject("payUrl", paramsMap.get("payUrl"));
     return view;
   }
@@ -206,7 +206,7 @@ public class GWController extends BaseController {
       }
       payParamsMap.put("payUrl", payGateResult.getItem("returnUrl"));
       //返回支付页面
-      return createAgencyView(payParamsMap);
+      return createAgencyView(payParamsMap, platform);
     }
   }
 }

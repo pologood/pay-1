@@ -69,9 +69,9 @@
 	<input type="text" id="productDesc" name="productDesc" value="">商品描述(字节数不能大于512)<br>
 	<input type="text" id="bankId" name="bankId" value="ALIPAY">银行编码(可空，必须与支付中心所使用的编码一致)<br>
 	<input type="text" id="appId" name="appId" value="1999">业务平台标识(不为空)<br>
-	<input type="text" id="signType" name="signType" value="0">签名类型（可空 0：MD5 1:SHA）<br>
+	<input type="text" id="signType" name="signType" value="0">签名类型（可空 0:MD5 1:SHA）<br>
 	<input type="text" id="sign" name="sign" value="">签名值(不可为空)<br>
-	<input type="text" id="accessPlatform" name="accessPlatform" value="1">接入平台  1:PC  2:WAP 3：SDK 4:QRCode<br>
+	<input type="text" id="accessPlatform" name="accessPlatform" value="1">接入平台  1:PC  2:WAP  3:SDK  4:QRCode<br>
     <input type="text" id="bankCardType" name="bankCardType" value="">银行卡类型  1:借记卡  2:信用卡<br>
 	<input type="button" value="提交订单" onclick="doPay()">
 	<input type="button" value="获得sign" onclick="getSign()">
