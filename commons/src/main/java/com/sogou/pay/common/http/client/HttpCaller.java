@@ -4,12 +4,8 @@ package com.sogou.pay.common.http.client;
  * Created by xiepeidong on 2016/1/15.
  */
 
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -24,7 +20,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,74 +34,14 @@ import javax.net.ssl.SSLSession;
 public class HttpCaller {
 
   private static final Logger logger = LoggerFactory.getLogger(HttpCaller.class);
-
-
-  /**
-   * 连接超时时间，由bean factory设置，缺省为8秒钟
-   */
   private static final int DEFAULT_CONNECTIONT_IMEOUT = 8000;
-
-  /**
-   * 回应超时时间, 由bean factory设置，缺省为30秒钟
-   */
-  private static final int DEFAULT_SO_TIMEOUT = 30000;
-
-  /**
-   * 闲置连接超时时间, 由bean factory设置，缺省为30秒钟
-   */
-  private static final int DEFAULT_IDLE_TIMEOUT = 30000;
-
-  /**
-   * 每个host默认最大连接数
-   */
-  private static final int DEFAULT_MAX_CONN_PERHOST = 30;
-
-  /**
-   * 默认全局最大连接数
-   */
-  private static final int DEFAULT_MAX_TOTAL_CONN = 90;
-
-  /**
-   * HTTP连接管理器，该连接管理器必须是线程安全的.
-   */
-  private PoolingHttpClientConnectionManager connectionManager;
-
   private static HttpCaller httpCaller = new HttpCaller();
 
-//    private IdleConnectionMonitorThread idleEvictThread;
-
-  /**
-   * 工厂方法
-   *
-   * @return
-   */
-  public static HttpCaller getInstance() {
-    return httpCaller;
+  private HttpCaller() {
   }
 
-  /**
-   * 私有的构造方法
-   */
-  private HttpCaller() {
-
-//        // 创建一个线程安全的HTTP连接池
-//        connectionManager = new PoolingHttpClientConnectionManager();
-//        connectionManager.setMaxTotal(DEFAULT_MAX_TOTAL_CONN);
-//        connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_CONN_PERHOST);
-//
-//        // Validate connections after 1 sec of inactivity
-//        connectionManager.setValidateAfterInactivity(1000);
-//
-//
-//        idleEvictThread = new IdleConnectionMonitorThread(connectionManager);
-//        idleEvictThread.start();
-//
-//        Runtime.getRuntime().addShutdownHook(new Thread() {
-//            @Override
-//            public void run() {
-//                httpCaller.shutdown();
-//            }
-//        });
+  public static HttpCaller getInstance() {
+    return httpCaller;
   }
 
   public Response call(Request request) {
@@ -122,22 +57,22 @@ public class HttpCaller {
       }
       httpResponse = httpClient.execute(httpRequestBase);
       HttpEntity entity = httpResponse.getEntity();
-      if (httpResponse.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-        //throw new RuntimeException("[call] HTTP响应异常, {}" + httpResponse.getStatusLine());
-      }
       Charset charset = ContentType.getOrDefault(entity).getCharset();
       if (charset == null)
         response.setCharset(request.getCharset());
       else
         response.setCharset(charset.name());
-      response.setResponseHeaders(httpResponse.getAllHeaders());
-      response.setByteData(EntityUtils.toByteArray(entity));
+      response.setHeaders(httpResponse.getAllHeaders());
+      response.setStatus(httpResponse.getStatusLine().getStatusCode());
+      response.setData(EntityUtils.toByteArray(entity));
+      if (response.getStatus() != 200)
+        throw new RuntimeException("[HttpCaller.call] status=" +
+                response.getStatus() + ", data=" + response.getStringData());
     } catch (Exception e) {
-      e.printStackTrace();
       if (httpRequestBase != null) {
         httpRequestBase.abort();
       }
-      throw new RuntimeException("[call] HTTP请求异常, " + e);
+      throw new RuntimeException(e);
     } finally {
       // 释放连接
       HttpClientUtils.closeQuietly(httpResponse);
@@ -145,14 +80,6 @@ public class HttpCaller {
     return response;
   }
 
-  /**
-   * @param connectionTimeout
-   * @return
-   * @Author qibaichao
-   * @MethodName getHttpClient
-   * @Date 2014年9月28日
-   * @Description:从连接池中取一个http连接来初始化HttpClient实例
-   */
   private CloseableHttpClient getHttpClient(int connectionTimeout, SSLContext sslContext) {
 
     RequestConfig defaultRequestConfig = RequestConfig.custom().setExpectContinueEnabled(true)
@@ -175,125 +102,51 @@ public class HttpCaller {
     return httpClient;
   }
 
-  /**
-   * @param request
-   * @return
-   * @Author qibaichao
-   * @MethodName buildHttpGet
-   * @Date 2014年9月28日
-   * @Description: 组装httpGet
-   */
-  private HttpGet buildHttpGet(Request request) {
-    try {
-      URIBuilder builder = null;
-      if (request.getUrl() != null) {
-        builder = new URIBuilder(request.getUrl());
-      } else {
-        builder = new URIBuilder();
-        builder.setScheme(request.getScheme()).setHost(request.getHost()).setPath(request.getPath());
-      }
-      if (request.getRequestBody() != null) {
-        builder.setCustomQuery(request.getRequestBody());
-      } else {
-        for (NameValuePair pair : request.getNameValuePairList()) {
-          String value = pair.getValue();
-          if (request.isExcludeEmptyValue() && (value == null || "".equals(value))) {
-            continue;
-          }
-          builder.addParameter(pair.getName(), value);
+  private HttpGet buildHttpGet(Request request) throws Exception {
+    URIBuilder builder = null;
+    if (request.getUrl() != null) {
+      builder = new URIBuilder(request.getUrl());
+    } else {
+      builder = new URIBuilder();
+      builder.setScheme(request.getScheme()).setHost(request.getHost()).setPath(request.getPath());
+    }
+    if (request.getRequestBody() != null) {
+      builder.setCustomQuery(request.getRequestBody());
+    } else {
+      for (NameValuePair pair : request.getNameValuePairList()) {
+        String value = pair.getValue();
+        if (request.isExcludeEmptyValue() && (value == null || "".equals(value))) {
+          continue;
         }
+        builder.addParameter(pair.getName(), value);
       }
-      URI uri = builder.build();
-      logger.info("[buildHttpGet] 构造uri={}", uri.toString());
-
-      HttpGet httpGet = new HttpGet(uri);
-      return httpGet;
-    } catch (URISyntaxException e) {
-      throw new IllegalArgumentException("[buildHttpGet] 构造HttpGet失败, ", e);
     }
+    URI uri = builder.build();
+    logger.info("[buildHttpGet] 构造uri={}", uri.toString());
+
+    HttpGet httpGet = new HttpGet(uri);
+    return httpGet;
   }
 
-  /**
-   * @param request
-   * @return
-   * @Author qibaichao
-   * @MethodName buildHttpPost
-   * @Date 2014年9月28日
-   * @Description:组装HttpPost
-   */
-  private HttpPost buildHttpPost(Request request) {
+  private HttpPost buildHttpPost(Request request) throws Exception {
     HttpPost httpPost;
-    try {
-      URIBuilder builder = null;
-      if (request.getUrl() != null) {
-        builder = new URIBuilder(request.getUrl());
-      } else {
-        builder = new URIBuilder();
-        builder.setScheme(request.getScheme()).setHost(request.getHost()).setPath(request.getPath());
-      }
-      HttpEntity entity = null;
-      if (request.getRequestBody() != null) {
-        entity = new StringEntity(request.getRequestBody(), request.getCharset());
-      } else {
-        entity = new UrlEncodedFormEntity(request.getNameValuePairList(), request.getCharset());
-      }
-      URI uri = builder.build();
-      httpPost = new HttpPost(uri);
-      httpPost.setEntity(entity);
-      return httpPost;
-    } catch (UnsupportedEncodingException e) {
-      throw new IllegalArgumentException("request unsupported encoding error.", e);
-    } catch (URISyntaxException e) {
-      throw new IllegalArgumentException("request uri syntax error.", e);
+    URIBuilder builder = null;
+    if (request.getUrl() != null) {
+      builder = new URIBuilder(request.getUrl());
+    } else {
+      builder = new URIBuilder();
+      builder.setScheme(request.getScheme()).setHost(request.getHost()).setPath(request.getPath());
     }
+    HttpEntity entity = null;
+    if (request.getRequestBody() != null) {
+      entity = new StringEntity(request.getRequestBody(), request.getCharset());
+    } else {
+      entity = new UrlEncodedFormEntity(request.getNameValuePairList(), request.getCharset());
+    }
+    URI uri = builder.build();
+    httpPost = new HttpPost(uri);
+    httpPost.setEntity(entity);
+    return httpPost;
   }
 
-//    public void shutdown() {
-//        this.idleEvictThread.shutdown();
-//        this.connectionManager.shutdown();
-//    }
-
-//    /**
-//     * @Author qibaichao
-//     * @ClassName IdleConnectionMonitorThread
-//     * @Date 2014年9月12日
-//     * @Description: 守护线程，定时清理过期和空闲时间超时的连接
-//     */
-//    private static class IdleConnectionMonitorThread extends Thread {
-//
-//        private final HttpClientConnectionManager connMgr;
-//        private volatile boolean shutdown;
-//
-//        public IdleConnectionMonitorThread(HttpClientConnectionManager connMgr) {
-//            this.connMgr = connMgr;
-//            this.setDaemon(true);// 守护线程
-//        }
-//
-//        @Override
-//        public void run() {
-//            try {
-//                while (!shutdown) {
-//                    synchronized (this) {
-//                        wait(5000);
-//                        // 关闭过期连接
-//                        connMgr.closeExpiredConnections();
-//                        // 可选地，关闭空闲超过30秒的连接
-//                        connMgr.closeIdleConnections(DEFAULT_IDLE_TIMEOUT, TimeUnit.MILLISECONDS);
-//                    }
-//                }
-//            } catch (InterruptedException ex) {
-//                // 终止
-//            }
-//        }
-//
-//        public void shutdown() {
-//            if (!shutdown) {
-//                shutdown = true;
-//                synchronized (this) {
-//                    notifyAll();
-//                }
-//            }
-//        }
-//
-//    }
 }

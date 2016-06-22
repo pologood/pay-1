@@ -36,8 +36,8 @@ public enum ResultStatus {
     THIRD_PAY_SIGN_ERROR(2015, "请求第三方支付时签名失败"),
     THIRD_PAY_HTTP_ERROR(2016, "请求第三方支付时发起HTTP请求失败"),
     THIRD_PAY_RESPONSE_PARAM_ERROR(2017, "请求第三方支付时返回参数异常"),
-    THIRD_PAY_RESPONSE_SIGN_ERROR(2018, "第三方退款返回签名错误"),
-    THIRD_PAY_XML_PARSE_ERROR(2019, "第三方退款解析响应报文异常"),
+    THIRD_PAY_RESPONSE_SIGN_ERROR(2018, "请求第三方支付时返回签名错误"),
+    THIRD_PAY_XML_PARSE_ERROR(2019, "请求第三方支付时解析响应报文异常"),
     THIRD_PAY_GET_KEY_ERROR(2020, "获取第三方支付账户密钥异常"),
     THIRD_PAY_CHANNEL_NOT_EXIST(2021, "该支付渠道不存在"),
 

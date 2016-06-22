@@ -7,37 +7,46 @@ import org.apache.http.Header;
  */
 public class Response {
 
-    /**
-     * 返回中的Header信息
-     */
-    private Header[] responseHeaders;
 
-    /**
-     * 返回内容的字符编码
-     */
-    private String charset = "UTF-8";
+  private Header[] headers;
+  private int status;
+  private String charset = "UTF-8";
+  private byte[] data;
 
-    /**
-     * byte类型的result
-     */
-    private byte[] byteData;
+  public String getCharset() {
+    return charset;
+  }
 
-    public String getCharset() {
-        return charset;
-    }
+  public void setCharset(String respCharset) {
+    this.charset = respCharset;
+  }
 
-    public void setCharset(String respCharset) { this.charset = respCharset; }
+  public Header[] getHeaders() {
+    return headers;
+  }
 
-    public Header[] getResponseHeaders() {
-        return responseHeaders;
-    }
+  public void setHeaders(Header[] headers) {
+    this.headers = headers;
+  }
 
-    public void setResponseHeaders(Header[] responseHeaders) {
-        this.responseHeaders = responseHeaders;
-    }
+  public int getStatus() {
+    return status;
+  }
 
-    public byte[] getByteData() { return byteData; }
+  public void setStatus(int status) {
+    this.status = status;
+  }
 
-    public void setByteData(byte[] byteData) { this.byteData = byteData; }
+  public byte[] getData() {
+    return data;
+  }
+
+  public void setData(byte[] data) {
+    this.data = data;
+  }
+
+  public String getStringData() throws Exception {
+    return new String(data, charset);
+  }
 
 }

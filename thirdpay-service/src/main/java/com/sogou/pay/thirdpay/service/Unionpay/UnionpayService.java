@@ -2,7 +2,6 @@ package com.sogou.pay.thirdpay.service.Unionpay;
 
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.http.client.HttpService;
 import com.sogou.pay.common.http.utils.HttpUtil;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.types.Result;
@@ -201,9 +200,7 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap preparePayInfoWap(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   private String getCertFilePath(PMap params, boolean isPrivate) {
@@ -413,9 +410,7 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap prepareTransferInfo(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   @Override
@@ -430,30 +425,22 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap getReqIDFromNotifyWebSync(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   @Override
   public ResultMap getReqIDFromNotifyWebAsync(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   @Override
   public ResultMap getReqIDFromNotifyWapSync(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   @Override
   public ResultMap getReqIDFromNotifyWapAsync(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   @Override
@@ -477,37 +464,27 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap getReqIDFromNotifyTransfer(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   @Override
   public ResultMap handleNotifyWebSync(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   @Override
   public ResultMap handleNotifyWebAsync(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   @Override
   public ResultMap handleNotifyWapSync(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   @Override
   public ResultMap handleNotifyWapAsync(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   @Override
@@ -564,9 +541,7 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap handleNotifyTransfer(PMap params) throws ServiceException {
-    // TODO Auto-generated method stub
-    return null;
-
+    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   private static final Logger LOG = LoggerFactory.getLogger(UnionpayService.class);
