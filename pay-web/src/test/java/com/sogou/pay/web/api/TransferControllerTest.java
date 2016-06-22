@@ -57,7 +57,7 @@ public class TransferControllerTest extends BaseTest {
         params.setRecordList(JSONUtil.Bean2JSON(records));
         Map map = BeanUtil.Bean2Map(params);
 
-        map.put("sign", apiController.signData(map));
+        map.put("sign", apiController.signData(map).getItem("sign"));
         testGet(url, map);
     }
 

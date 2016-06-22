@@ -23,7 +23,7 @@ public class RefundControllerTest extends BaseTest {
         params.setSignType("0");
         params.setOrderId("OD20160601180233150");
         Map map = BeanUtil.Bean2Map(params);
-        map.put("sign", controller.signData(map));
+        map.put("sign", controller.signData(map).getItem("sign"));
         testGet(url, map);
     }
 }

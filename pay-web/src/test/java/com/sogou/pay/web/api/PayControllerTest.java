@@ -46,7 +46,7 @@ public class PayControllerTest extends BaseTest {
         params.setBankCardType("");
         Map map = BeanUtil.Bean2Map(params);
 
-        map.put("sign", apiController.signData(map));
+        map.put("sign", apiController.signData(map).getItem("sign"));
         testGet(url, map);
     }
 
@@ -70,7 +70,7 @@ public class PayControllerTest extends BaseTest {
         params.setBankCardType("");
         Map map = BeanUtil.Bean2Map(params);
 
-        map.put("sign", apiController.signData(map));
+        map.put("sign", apiController.signData(map).getItem("sign"));
         testGet(url, map);
     }
 
@@ -93,7 +93,7 @@ public class PayControllerTest extends BaseTest {
         params.setPageUrl("http://center.pay.sogou.com/notify/testBgUrl");
         params.setBgUrl("http://center.pay.sogou.com/notify/testBgUrl");
         Map map = BeanUtil.Bean2Map(params);
-        map.put("sign", apiController.signData(map));
+        map.put("sign", apiController.signData(map).getItem("sign"));
         testGet(url, map);
     }
 
@@ -117,7 +117,7 @@ public class PayControllerTest extends BaseTest {
         params.setBankCardType("");
         Map map = BeanUtil.Bean2Map(params);
 
-        map.put("sign", apiController.signData(map));
+        map.put("sign", apiController.signData(map).getItem("sign"));
         testGet(url, map);
     }
 

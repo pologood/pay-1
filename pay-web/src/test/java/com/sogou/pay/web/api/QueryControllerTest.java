@@ -17,11 +17,11 @@ public class QueryControllerTest extends BaseTest {
     public void testOrderQueryPay() {
         String url = "/api/pay/query";
         RefundQueryForm params = new RefundQueryForm();
-        params.setOrderId("OD20160601153255653");
+        params.setOrderId("OD20160621185411886");
         params.setSignType("0");
         params.setAppId("1999");
         Map map = BeanUtil.Bean2Map(params);
-        map.put("sign", controller.signData(map));
+        map.put("sign", controller.signData(map).getItem("sign"));
         testGet(url, map);
     }
 
@@ -33,7 +33,7 @@ public class QueryControllerTest extends BaseTest {
         params.setSignType("0");
         params.setAppId("1000");
         Map map = BeanUtil.Bean2Map(params);
-        map.put("sign", controller.signData(map));
+        map.put("sign", controller.signData(map).getItem("sign"));
         testGet(url, map);
     }
 
