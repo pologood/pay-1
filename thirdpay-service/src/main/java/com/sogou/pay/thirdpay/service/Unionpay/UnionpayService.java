@@ -238,7 +238,7 @@ public class UnionpayService implements ThirdpayService {
       result.withError(ResultStatus.THIRD_QUERY_RESPONSE_PARAM_ERROR);
       return result;
     }
-    PMap resultPMap = HttpUtil.extractUrlParams(resContent).getData();
+    PMap resultPMap = HttpUtil.extractParams(resContent).getData();
     //获取银联公钥路径
     String publicCertFilePath = "e:" + params.getString("publicCertFilePath");
     //获取银联公钥
@@ -418,12 +418,12 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap getReqIDFromNotifyWebSync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    return getReqIDFromNotifySDKAsync(params);
   }
 
   @Override
   public ResultMap getReqIDFromNotifyWebAsync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    return getReqIDFromNotifySDKAsync(params);
   }
 
   @Override
@@ -462,12 +462,12 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap handleNotifyWebSync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    return handleNotifySDKAsync(params);
   }
 
   @Override
   public ResultMap handleNotifyWebAsync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    return handleNotifySDKAsync(params);
   }
 
   @Override
