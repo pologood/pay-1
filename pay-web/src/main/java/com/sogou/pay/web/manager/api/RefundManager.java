@@ -72,7 +72,7 @@ public class RefundManager {
       //查订单与支付流水关联表
       PayOrderRelation payOrderRelation = new PayOrderRelation();
       payOrderRelation.setPayId(payOrderInfo.getPayId());
-      payOrderRelation.setInfoStatus(RelationStatus.SUCCESS.getValue());
+      //payOrderRelation.setInfoStatus(RelationStatus.SUCCESS.getValue());
       List<PayOrderRelation> relations = payOrderRelationService.selectPayOrderRelation(payOrderRelation);
       if (CollectionUtils.isEmpty(relations)) {
         logger.error("[refundOrder] PayOrderRelation not exists, params={}", JSONUtil.Bean2JSON(payOrderRelation));
@@ -114,7 +114,7 @@ public class RefundManager {
       if (RefundFlag.SUCCESS.getValue() == payOrderInfo.getRefundFlag()) {
         logger.info("[isOrderRefundable] order already refunded, params={}, result={}", JSONUtil.Bean2JSON(model),
                 JSONUtil.Bean2JSON(payOrderInfo));
-        return ResultMap.build(ResultStatus.REFUND_REFUND_ALREADY_DONE);
+//        return ResultMap.build(ResultStatus.REFUND_REFUND_ALREADY_DONE);
       }
       //检查退款金额与支付金额是否相同
       BigDecimal payMoney = payOrderInfo.getOrderMoney();            //订单支付金额
@@ -236,8 +236,8 @@ public class RefundManager {
       pMap.put("md5securityKey", agencyMerchant.getEncryptKey());                               //MD5加密秘钥
       pMap.put("publicCertFilePath", agencyMerchant.getPubKeypath());                           //公钥证书地址
       pMap.put("privateCertFilePath", agencyMerchant.getPrivateKeypath());                      //私钥证书地址
-      pMap.put("refundSerialNumber", refundId);                                                 //订单号
-      pMap.put("refundReqTime", DateUtil.format(new Date(), DateUtil.DATE_FORMAT_SECOND_SHORT));// 请求时间
+      pMap.put("refundSerialNumber", refundId);                                                 //退款单号
+      pMap.put("refundReqTime", DateUtil.formatShortTime(new Date()));// 请求时间
       pMap.put("serialNumber", payResDetail.getPayDetailId());                                  //订单号
       pMap.put("agencySerialNumber", payResDetail.getAgencyOrderId());                          //支付机构订单号
       pMap.put("refundAmount", String.valueOf(model.getRefundAmount().doubleValue()));                     //退款金额
@@ -248,7 +248,7 @@ public class RefundManager {
       if (!Result.isSuccess(refundResult)) {
         String errorCode = (String) refundResult.getData().get("error_code");                 //退款错误码
         String errorInfo = (String) refundResult.getData().get("error_info");                 //退款错误信息
-        refundService.updateRefundFail(refundId, errorCode, errorInfo);
+        refundService.updateRefundFail(refundId, null, errorCode, errorInfo);
         return ResultMap.build(ResultStatus.THIRD_REFUND_ERROR);
       }
       return refundResult;
@@ -261,7 +261,7 @@ public class RefundManager {
   //退款成功之后的业务逻辑
   @Transactional
   public ResultMap completeRefund(RefundModel model, PayResDetail payResDetail, PayOrderInfo payOrderInfo,
-                                  String thirdRefundId, String refundId, boolean needUpdateOrder) throws Exception {
+                                  String agencyRefundId, String refundId, boolean needUpdateOrder) throws Exception {
     if (needUpdateOrder) {
       //更新支付单退款状态
       BigDecimal allRefundMoney = payOrderInfo.getRefundMoney().add(model.getRefundAmount());
@@ -279,9 +279,9 @@ public class RefundManager {
     //更新支付关联单和退款单状态
     Date sucDate = new Date();
     payOrderRelationService.updatePayOrderRelation(RelationStatus.REFUND.getValue(), payResDetail.getPayDetailId());
-    refundService.updateRefundSuccess(refundId, sucDate);
+    refundService.updateRefundSuccess(refundId, agencyRefundId, sucDate);
     //插入对账单
-    if (!insertPayCheckWaiting(model, payResDetail, thirdRefundId, refundId, sucDate)) {
+    if (!insertPayCheckWaiting(model, payResDetail, agencyRefundId, refundId, sucDate)) {
       logger.error("[completeRefund] 插入对账单失败: {}", JSONUtil.Bean2JSON(model));
       throw new RuntimeException(ResultStatus.INSERT_PAY_CHECK_WAITING_ERROR.getMessage());
     }
@@ -333,8 +333,8 @@ public class RefundManager {
       }
       //检查支付单的退款状态是否退款成功
       if (payOrderInfo.getRefundFlag() == RefundFlag.SUCCESS.getValue()) {
-        result.withReturn(OrderRefundStatus.SUCCESS);
-        return result;
+        //result.withReturn(OrderRefundStatus.SUCCESS);
+        //return result;
       }
       //检查是否有退款单
       List<RefundInfo> refundInfoList = refundService.selectRefundByOrderId(orderId);
@@ -345,8 +345,8 @@ public class RefundManager {
       //检查退款单状态是否有退款成功的
       for (RefundInfo refundInfo : refundInfoList)
         if (refundInfo.getRefundStatus() == RefundStatus.SUCCESS.getValue()) {
-          result.withReturn(OrderRefundStatus.SUCCESS);
-          return result;
+          //result.withReturn(OrderRefundStatus.SUCCESS);
+          //return result;
         }
       //准备向第三方发起查询
       RefundInfo refundInfo = refundInfoList.get(0);
@@ -375,8 +375,11 @@ public class RefundManager {
       queryRefundPMap.put("merchantNo", agencyMerchant.getMerchantNo());
       queryRefundPMap.put("sellerEmail", agencyMerchant.getSellerEmail());
       queryRefundPMap.put("md5securityKey", agencyMerchant.getEncryptKey());
+      queryRefundPMap.put("publicCertFilePath", agencyMerchant.getPubKeypath());
+      queryRefundPMap.put("privateCertFilePath", agencyMerchant.getPrivateKeypath());
       queryRefundPMap.put("queryRefundUrl", agencyInfo.getQueryRefundUrl());
-      queryRefundPMap.put("out_refund_no", refundInfo.getRefundId());
+      queryRefundPMap.put("refundSerialNumber", refundInfo.getRefundId());
+      queryRefundPMap.put("agencySerialNumber", refundInfo.getAgencyRefundId());
       ResultMap queryRefundResult = payPortal.queryRefund(queryRefundPMap);
       if (!Result.isSuccess(queryRefundResult)) {
         logger.error("[queryRefund] queryRefund failed, params={}, result={}", JSONUtil.Bean2JSON(queryRefundPMap),

@@ -459,7 +459,7 @@ public class AlipayService implements ThirdpayService {
     requestPMap.put("service", AlipayService.ALIPAY_SERVICE_QUERY_REFUND);                  //查询订单接口名
     requestPMap.put("partner", params.getString("merchantNo"));                //商户号
     requestPMap.put("_input_charset", AlipayService.INPUT_CHARSET);               //编码
-    requestPMap.put("batch_no", params.getString("out_refund_no"));             //退款号
+    requestPMap.put("batch_no", params.getString("refundSerialNumber"));             //退款号
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[queryRefundOrder] 支付宝退款查询参数错误, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_QUERY_REFUND_PARAM_ERROR);

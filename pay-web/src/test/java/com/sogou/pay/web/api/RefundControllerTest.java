@@ -18,12 +18,12 @@ public class RefundControllerTest extends BaseTest {
     public void testRefund() {
         String url = "/api/refund";
         RefundForm params = new RefundForm();
-        params.setAppId("1000");
+        params.setAppId("1999");
         params.setBgUrl("http://center.pay.sogou.com/notify/testBgUrl");
         params.setSignType("0");
-        params.setOrderId("OD20160601180233150");
+        params.setOrderId("OD20160622195216784");
         Map map = BeanUtil.Bean2Map(params);
         map.put("sign", controller.signData(map).getItem("sign"));
-        testGet(url, map);
+        testPost(url, map);
     }
 }

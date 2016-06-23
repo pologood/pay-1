@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class RefundInfo implements Serializable {
     private String refundId;                // 退款单号
+    private String agencyRefundId;          // 第三方支付机构退款单号
     private String payDetailId;             // 支付流水号
     private String payId;                   // 支付单号
     private String orderId;                 // 商户订单ID
@@ -34,6 +35,14 @@ public class RefundInfo implements Serializable {
 
     public void setRefundId(String refundId) {
         this.refundId = refundId;
+    }
+
+    public String getAgencyRefundId() {
+        return agencyRefundId;
+    }
+
+    public void setAgencyRefundId(String agencyRefundId) {
+        this.agencyRefundId = agencyRefundId;
     }
 
     public String getPayDetailId() {

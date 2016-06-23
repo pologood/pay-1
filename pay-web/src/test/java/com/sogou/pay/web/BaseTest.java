@@ -130,11 +130,11 @@ public class BaseTest extends Assert {
             addHeaders(builder, headers);
             builder.contentType(mediaType);
             builder.characterEncoding("UTF-8");
-            if (method == HttpMethod.POST) {
-                addBody(builder, params, mediaType);
-            } else {
+//            if (method == HttpMethod.POST) {
+//                addBody(builder, params, mediaType);
+//            } else {
                 addParams(builder, params);
-            }
+//            }
 
             //String mediaType = "application/json; charset=UTF-8";
             //String mediaType = "application/x-www-form-urlencoded; charset=UTF-8";

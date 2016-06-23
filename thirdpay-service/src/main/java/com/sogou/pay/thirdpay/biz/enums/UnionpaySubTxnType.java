@@ -10,7 +10,7 @@ package com.sogou.pay.thirdpay.biz.enums;
 //-------------------------------------------------------
 public enum UnionpaySubTxnType {
 
-  DEFAULT(""),//默认
+  DEFAULT("00"),//默认
   SELF_SERVICE_CONSUMPTION("01"),//自助消费 通过地址的方式区分前台消费和后台消费(含无跳转支付)
   INSTALMENT("03");//分期付款
   

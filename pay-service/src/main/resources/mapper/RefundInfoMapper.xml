@@ -5,6 +5,7 @@
 <mapper namespace="com.sogou.pay.service.dao.RefundInfoDAO">
     <resultMap id="refundInfoList" type="com.sogou.pay.service.entity.RefundInfo">
         <result column="refund_id" property="refundId"/>
+        <result column="agency_refund_id" property="agencyRefundId"/>
         <result column="pay_detail_id" property="payDetailId"/>
         <result column="pay_id" property="payId"/>
         <result column="order_id" property="orderId"/>
@@ -28,13 +29,14 @@
         <result column="check_date" property="checkDate"/>
     </resultMap>
     <sql id="tableColumns">
-        refund_id,pay_detail_id,pay_id,order_id,app_id,app_bg_url,agency_code,merchant_no,buyer_account
+        refund_id,agency_refund_id,pay_detail_id,pay_id,order_id,app_id,app_bg_url,agency_code,merchant_no,buyer_account
         ,refund_fee_type,order_money,use_balance,refund_money,bank_refund,balance_refund,refund_status,task_status,refund_error_code
         ,refund_error_info,refund_req_time,refund_res_time,check_date
     </sql>
     <insert id="insert" parameterType="RefundInfo" keyProperty="refund_id">
         insert into t_refund_info(
             refund_id,
+            agency_refund_id,
             pay_detail_id,
             pay_id,
             order_id,
@@ -58,6 +60,7 @@
             check_date
         ) values (
             #{refundId},
+            #{agencyRefundId},
             #{payDetailId},
             #{payId},
             #{orderId},
@@ -96,7 +99,7 @@
     <select id="selectByPayIdAndRefundStatus" resultMap="refundInfoList">
         SELECT
         <include refid="tableColumns"/>
-        FROM t_refund_info WHERE pay_id=#{payId} AND refund_status=#{refundStatus} AND pay_fee_type !=9
+        FROM t_refund_info WHERE pay_id=#{payId} AND refund_status=#{refundStatus}
     </select>
 
     <update id="updateRefundStatusOldToNew">
@@ -104,7 +107,7 @@
     </update>
 
     <update id="updateRefundStatus">
-        UPDATE t_refund_info SET refund_status=#{newStatus}, refund_error_code=#{errorCode}, refund_error_info=#{errorInfo},
+        UPDATE t_refund_info SET agency_refund_id=#{agencyRefundId}, refund_status=#{newStatus}, refund_error_code=#{errorCode}, refund_error_info=#{errorInfo},
         refund_res_time=#{resTime} WHERE refund_id=#{refundId}
     </update>
 

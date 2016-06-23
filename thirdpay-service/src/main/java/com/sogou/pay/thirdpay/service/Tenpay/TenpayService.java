@@ -398,7 +398,7 @@ public class TenpayService implements ThirdpayService {
     PMap requestPMap = new PMap();
     requestPMap.put("input_charset", TenpayService.INPUT_CHARSET);
     requestPMap.put("partner", params.getString("merchantNo"));
-    requestPMap.put("out_refund_no", params.getString("out_refund_no"));
+    requestPMap.put("out_refund_no", params.getString("refundSerialNumber"));
     requestPMap.put("service_version", "1.1");
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[queryRefundOrder] 财付通退款查询参数错误, 参数: {}", requestPMap);

@@ -15,6 +15,14 @@ public enum ResultStatus {
     SYSTEM_DB_ERROR(1001, "数据库系统错误"),
     SIGNATURE_ERROR(1002, "签名错误"),
     INTERFACE_NOT_IMPLEMENTED(1003, "接口未实现"),
+    THIRD_ERROR(1100,"第三方请求失败"),
+    THIRD_PARAM_ERROR(1101, "第三方请求缺少必选参数或存在非法参数"),
+    THIRD_SIGN_ERROR(1102, "第三方请求签名失败"),
+    THIRD_HTTP_ERROR(1103, "第三方请求发起HTTP请求失败"),
+    THIRD_RESPONSE_PARAM_ERROR(1104, "第三方请求返回参数异常"),
+    THIRD_RESPONSE_SIGN_ERROR(1105, "第三方请求返回签名错误"),
+    THIRD_GET_KEY_ERROR(2020, "获取第三方密钥异常"),
+
 
     //-------------------支付请求错误码--------2000至2999----------
     PAY_SYSTEM_ERROR(1000, "支付时系统错误"),

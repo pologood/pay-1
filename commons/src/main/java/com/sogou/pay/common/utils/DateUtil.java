@@ -48,6 +48,11 @@ public class DateUtil {
     return format(time, DATE_FORMAT_SECOND);
   }
 
+
+  public static String formatShortTime(Date time) {
+    return format(time, DATE_FORMAT_SECOND_SHORT);
+  }
+
   /**
    * 获取某一日期的起始时间（0点0分0秒），参数为null时则返回当前日期的起始时间
    *

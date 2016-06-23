@@ -399,7 +399,7 @@ public class PayManager {
       //本地私钥证书路径
       payGateMap.put("privateCertFilePath", payAgencyMerchant.getPrivateKeypath());
       //支付请求时间
-      payGateMap.put("payTime", new SimpleDateFormat("yyyyMMddHHmmss").format(params.getDate("payTime")));
+      payGateMap.put("payTime", DateUtil.formatShortTime(params.getDate("payTime")));
       //订单金额
       payGateMap.put("orderAmount", params.getString("orderAmount"));
       //支付请求流水号
@@ -432,8 +432,8 @@ public class PayManager {
       //检查支付单里的支付状态是否成功，成功则返回
       boolean orderSuccess = payOrderInfo.getPayOrderStatus() == OrderStatus.SUCCESS.getValue();
       if (orderSuccess && !model.isFromCashier()) {
-        result.addItem("payStatus", OrderStatus.SUCCESS);
-        return result;
+        //result.addItem("payStatus", OrderStatus.SUCCESS);
+        //return result;
       }
       //根据payId查询关联表
       PayOrderRelation paramRelation = new PayOrderRelation();
@@ -478,8 +478,11 @@ public class PayManager {
         queryPMap.put("merchantNo", merchantQuery.getMerchantNo());
         queryPMap.put("sellerEmail", merchantQuery.getSellerEmail());
         queryPMap.put("md5securityKey", merchantQuery.getEncryptKey());
+        queryPMap.put("publicCertFilePath", merchantQuery.getPubKeypath());
+        queryPMap.put("privateCertFilePath", merchantQuery.getPrivateKeypath());
         queryPMap.put("queryUrl", agencyInfo.getQueryUrl());
         queryPMap.put("serialNumber", payReqId);
+        queryPMap.put("payTime", DateUtil.formatShortTime(payReqDetail.getCreateTime()));
         ResultMap queryResult = payPortal.queryOrder(queryPMap);
         if (!Result.isSuccess(queryResult)) {
           logger.error("[queryPayOrder] queryOrder failed, params={}, result={}", JSONUtil.Bean2JSON(queryPMap),

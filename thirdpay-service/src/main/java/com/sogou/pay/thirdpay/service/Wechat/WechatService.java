@@ -416,7 +416,7 @@ public class WechatService implements ThirdpayService {
     requestPMap.put("appid", params.getString("sellerEmail"));          // 公众账号ID
     requestPMap.put("mch_id", params.getString("merchantNo"));          // 商户号
     requestPMap.put("nonce_str", TenpayUtils.getNonceStr());                  // 随机字符串，不长于32位
-    requestPMap.put("out_refund_no", params.getString("out_refund_no"));  //商户退款号
+    requestPMap.put("out_refund_no", params.getString("refundSerialNumber"));  //商户退款号
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[queryRefundOrder] 微信退款查询参数错误, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_QUERY_REFUND_PARAM_ERROR);

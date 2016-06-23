@@ -55,6 +55,7 @@ public class RefundNotifyManager {
     logger.info("[handleRefundNotify] 处理退款通知开始: {}", JSONUtil.Bean2JSON(params));
     try {
       String refundId = params.getString("reqId");
+      String agencyRefundId = params.getString("agencyRefundId");
       BigDecimal refundMoney = new BigDecimal(params.getString("refundMoney"));
       String refundStatus = params.getString("refundStatus");
       //查询退款订单
@@ -72,7 +73,7 @@ public class RefundNotifyManager {
       //判断退款状态和退款金额，更新退款表错误信息
       if (!"SUCCESS".equals(refundStatus)) {
         //失败状态
-        refundService.updateRefundFail(refundId, refundStatus, null);
+        refundService.updateRefundFail(refundId, agencyRefundId, refundStatus, null);
         return ResultMap.build(ResultStatus.THIRD_NOTIFY_REFUND_PARAM_ERROR);
       } else if (refundMoney.compareTo(refundInfo.getRefundMoney()) != 0) {
         //金额不一致
@@ -102,7 +103,7 @@ public class RefundNotifyManager {
       model.setApp(app);
       model.setRefundAmount(refundInfo.getRefundMoney());
       ResultMap result = refundManager.completeRefund(model, payResDetail, payOrderInfo,
-              null, refundInfo.getRefundId(), !isFairRefund);
+              agencyRefundId, refundId, !isFairRefund);
       if (!Result.isSuccess(result) || isFairRefund) {
         return result;
       }

@@ -46,6 +46,7 @@ public interface RefundInfoDAO {
      * @return 更新记录数
      */
     public int updateRefundStatus(@Param("refundId") String refundId,
+                                  @Param("agencyRefundId") String agencyRefundId,
                                   @Param("newStatus") int newStatus,
                                   @Param("errorCode") String errorCode,
                                   @Param("errorInfo") String errorInfo,
