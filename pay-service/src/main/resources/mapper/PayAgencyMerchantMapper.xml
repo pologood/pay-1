@@ -40,12 +40,12 @@
         SELECT
         <include refid="columnList" />
         FROM t_pay_agency_merchant
-        WHERE 1 = 1
+        WHERE is_used = 1
         <if test = "agencyCode != null">
           AND agency_code=#{agencyCode}
         </if>
         <if test = "companyCode != null">
-          AND company_code=#{companyCode} OR company_code=99
+          AND (company_code=#{companyCode} OR company_code=99)
         </if>
         <if test = "appId != null">
           AND (app_id=#{appId} OR app_id IS NULL)
