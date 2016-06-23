@@ -14,6 +14,7 @@ public enum AgencyCode {
     TEST_ALIPAY(1001),
     TEST_TENPAY(2001),
     TEST_WECHAT(3001),
+    TEST_UNIONPAY(5001),
     ;
 
     private int value;
@@ -33,6 +34,7 @@ public enum AgencyCode {
         mappings.put(TEST_ALIPAY.name().toUpperCase(), TEST_ALIPAY);
         mappings.put(TEST_TENPAY.name().toUpperCase(), TEST_TENPAY);
         mappings.put(TEST_WECHAT.name().toUpperCase(), TEST_WECHAT);
+        mappings.put(TEST_UNIONPAY.name().toUpperCase(), TEST_UNIONPAY);
     }
 
     public static AgencyCode getValue(String party) {
