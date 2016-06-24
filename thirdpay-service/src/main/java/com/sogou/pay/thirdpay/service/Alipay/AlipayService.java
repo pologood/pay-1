@@ -262,7 +262,7 @@ public class AlipayService implements ThirdpayService {
       return ResultMap.build(ResultStatus.THIRD_PAY_GET_KEY_ERROR);
     }
     // 6.组装商户需要的订单信息参数
-    StringBuilder requestString = new StringBuilder(SecretKeyUtil.buildSignSource(requestPMap, true));
+    StringBuilder requestString = new StringBuilder(SecretKeyUtil.buildSignSource(requestPMap));
     // 4.签名
     String
             sign =
