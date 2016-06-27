@@ -60,8 +60,8 @@ public final class HttpUtil {
             } else {
                 return newUrl + "?" + packUrlParams(params);
             }
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("URL parse error");
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -85,24 +85,24 @@ public final class HttpUtil {
                 sb.deleteCharAt(sb.length() - 1);
             }
             return sb.toString();
-        } catch (Exception e) {
-            throw new IllegalArgumentException("packUrlParams error");
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     public static String urlEncode(String content) {
         try {
             return URLEncoder.encode(content, HttpUtil.DEFAULT_CHARSET);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("urlEncode error");
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     public static String urlDecode(String content) {
         try {
             return URLDecoder.decode(content, HttpUtil.DEFAULT_CHARSET);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("urlEncode error");
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -115,7 +115,7 @@ public final class HttpUtil {
                 result.addItem(param[0], param[1]);
             }
         } catch (Exception ex) {
-            result.withError(ResultStatus.SYSTEM_ERROR);
+            throw new RuntimeException(ex);
         }
         return result;
     }
@@ -129,7 +129,7 @@ public final class HttpUtil {
                 result.addItem(urlDecode(param[0]), urlDecode(param[1]));
             }
         } catch (Exception ex) {
-            result.withError(ResultStatus.SYSTEM_ERROR);
+            throw new RuntimeException(ex);
         }
         return result;
     }

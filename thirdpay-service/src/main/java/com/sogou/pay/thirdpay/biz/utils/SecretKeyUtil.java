@@ -32,7 +32,7 @@ public class SecretKeyUtil {
    */
   private static String md5(String text) throws Exception {
 
-    return DigestUtils.md5Hex(getContentBytes(text, "utf-8"));
+    return DigestUtils.md5Hex(text.getBytes("utf-8"));
 
   }
 

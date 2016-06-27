@@ -35,7 +35,7 @@ public interface RefundInfoDAO {
                                           @Param("newStatus") int newStatus,
                                           @Param("oldStatus") int oldStatus,
                                           @Param("errorCode") String errorCode,
-                                          @Param("errorInfo") String errorInfo,
+                                          @Param("errorMsg") String errorMsg,
                                           @Param("resTime") Date resTime);
 
     /**
@@ -49,6 +49,6 @@ public interface RefundInfoDAO {
                                   @Param("agencyRefundId") String agencyRefundId,
                                   @Param("newStatus") int newStatus,
                                   @Param("errorCode") String errorCode,
-                                  @Param("errorInfo") String errorInfo,
+                                  @Param("errorMsg") String errorMsg,
                                   @Param("resTime") Date resTime);
 }

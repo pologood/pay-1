@@ -64,11 +64,11 @@ public interface RefundService {
    *
    * @param refundId  退款单号
    * @param errorCode 第三方错误码
-   * @param errorInfo 第三方错误信息
+   * @param errorMsg 第三方错误信息
    * @return 修改记录数
    * @throws ServiceException
    */
-  public int updateRefundFail(String refundId, String agencyRefundId, String errorCode, String errorInfo) throws ServiceException;
+  public int updateRefundFail(String refundId, String agencyRefundId, String errorCode, String errorMsg) throws ServiceException;
 
   /**
    * 根据订单ID查询退款单

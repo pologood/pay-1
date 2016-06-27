@@ -107,7 +107,7 @@
     </update>
 
     <update id="updateRefundStatus">
-        UPDATE t_refund_info SET agency_refund_id=#{agencyRefundId}, refund_status=#{newStatus}, refund_error_code=#{errorCode}, refund_error_info=#{errorInfo},
+        UPDATE t_refund_info SET agency_refund_id=#{agencyRefundId}, refund_status=#{newStatus}, refund_error_code=#{errorCode}, refund_error_info=#{errorMsg},
         refund_res_time=#{resTime} WHERE refund_id=#{refundId}
     </update>
 

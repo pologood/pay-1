@@ -40,7 +40,7 @@ public class TransferManager {
       PayTransferBatch payTransferBatch = payTransferBatchService.queryByBatchNo(appId, batchNo);
       if (payTransferBatch == null) {
         logger.error("[queryTransfer] PayTransferBatch not exists, batchNo={}", batchNo);
-        result.withError(ResultStatus.PAY_TRANFER_BATCH_NOT_EXIST);
+        result.withError(ResultStatus.PAY_TRANSFER_BATCH_NOT_EXIST);
         return result;
       }
       result = queryTransfer(payTransferBatch);
@@ -125,25 +125,25 @@ public class TransferManager {
       //验证代发单批次是否存在
       if (payTransferBatch == null) {
         logger.error("[transfer] PayTransferBatch not exists, appId={}, batchNo={}", appId, batchNo);
-        result.withError(ResultStatus.PAY_TRANFER_BATCH_NOT_EXIST);
+        result.withError(ResultStatus.PAY_TRANSFER_BATCH_NOT_EXIST);
         return result;
       }
       if (payTransferBatch.getTradeState() != PayTransferBatchStatus.FINAL_APPROVED.getValue()) {
         logger.error("[transfer] PayTransferBatch not approved, appId={}, batchNo={}", appId, batchNo);
-        result.withError(ResultStatus.PAY_TRANFER_BATCH_STATUS_NOT_AUDIT_PASS);
+        result.withError(ResultStatus.PAY_TRANSFER_BATCH_STATUS_NOT_AUDIT_PASS);
         return result;
       }
       //验证代发单是否存在
       List<PayTransfer> payTransferList = payTransferService.queryByBatchNo(appId, batchNo);
       if (CollectionUtils.isEmpty(payTransferList)) {
         logger.error("[transfer] PayTransfer not exists, appId={}, batchNo={}", appId, batchNo);
-        result.withError(ResultStatus.PAY_TRANFER_NOT_EXIST);
+        result.withError(ResultStatus.PAY_TRANSFER_NOT_EXIST);
         return result;
       }
 
       if (payTransferBatch.getTradeState() == PayTransferBatchStatus.IN_PROCESSING.getValue()) {
         logger.error("[transfer] PayTransferBatch already in processing, appId={}, batchNo={}", appId, batchNo);
-        result.withError(ResultStatus.PAY_TRANFER_BATCH_REPEAT_SUBMITTED);
+        result.withError(ResultStatus.PAY_TRANSFER_BATCH_ALREADY_SUBMITTED);
         return result;
       }
       PMap payTransferBatchPMap = BeanUtil.Bean2PMap(payTransferBatch);

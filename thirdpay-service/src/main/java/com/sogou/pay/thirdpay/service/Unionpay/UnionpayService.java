@@ -133,6 +133,7 @@ public class UnionpayService implements ThirdpayService {
     /*选填*/
     if (StringUtils.isNotBlank(params.getString("accountId")))
       requestPMap.put("accNo", params.getString("accountId"));//账号 1后台类消费交易时上送全卡号或卡号后4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
+    //bankCode暂时不起作用，需要开通银联的网银前置
     String bankCode = params.getString("bankCode");
     if (StringUtils.isNotBlank(bankCode))
       requestPMap.put("issInsCode", bankCode);//1当账号类型为02-存折时需填写;2在前台类交易时填写默认银行代码,支持直接跳转到网银
@@ -180,7 +181,7 @@ public class UnionpayService implements ThirdpayService {
     }
     if (!SecretKeyUtil.unionRSACheckSign(signMap, (String) signMap.remove("signature"), publicCertKey, CHARSET)) {
       LOG.error("[verifySign] failed: {}", signMap);
-      return ResultMap.build(ResultStatus.THIRD_RESPONSE_SIGN_ERROR);
+      return ResultMap.build(ResultStatus.THIRD_VERIFY_SIGN_ERROR);
     }
     return ResultMap.build();
   }
@@ -220,8 +221,8 @@ public class UnionpayService implements ThirdpayService {
     String respCode = responsePMap.getString("respCode");
     if (!Objects.equals(OrderStatus.SUCCESS.name(), getTradeStatus(respCode))) {
       LOG.error("[doRequest] response error, requestPMap={}, resultPMap={}", requestPMap, responsePMap);
-      result.addItem("error_code", respCode);
-      result.addItem("error_msg", responsePMap.getString("respMsg"));
+      result.addItem("errorCode", respCode);
+      result.addItem("errorMsg", responsePMap.getString("respMsg"));
       result.withError(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
       return result;
     }
@@ -238,11 +239,12 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("signMethod", SIGNMETHOD); //签名方法 目前只支持01-RSA方式证书加密
     requestPMap.put("txnType", UnionpayTxnType.TRADE_INQUIRY.getValue()); //交易类型 00-查询
     requestPMap.put("txnSubType", UnionpaySubTxnType.DEFAULT.getValue()); //交易子类型  默认00
-    requestPMap.put("bizType", UnionpayBizType.DEFAULT.getValue()); //业务类型
+    requestPMap.put("bizType", UnionpayBizType.B2C_GATEWAY_PAYMENT.getValue()); //业务类型
     requestPMap.put("accessType", ACCESSTYPE); //接入类型，商户接入固定填0，不需修改
     requestPMap.put("merId", params.getString("merchantNo")); //商户号
     requestPMap.put("orderId", params.getString("serialNumber")); //我方订单号
     requestPMap.put("txnTime", params.getString("payTime"));//订单发送时间
+
 
     ResultMap result = doRequest(params.getString("queryUrl"), params, requestPMap);
     if (!Result.isSuccess(result)) {
@@ -251,7 +253,7 @@ public class UnionpayService implements ThirdpayService {
     }
 
     PMap responsePMap = (PMap) result.getItem("responsePMap");
-    return result.addItem("order_state", getTradeStatus(responsePMap.getString("origRespCode")));
+    return result.addItem("payStatus", getTradeStatus(responsePMap.getString("origRespCode")));
   }
 
   @Override
@@ -264,8 +266,8 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("signMethod", SIGNMETHOD); //签名方法 目前只支持01-RSA方式证书加密
     requestPMap.put("txnType", UnionpayTxnType.REFUND.getValue()); //交易类型 04-退货
     requestPMap.put("txnSubType", UnionpaySubTxnType.DEFAULT.getValue()); //交易子类型  默认00
-    requestPMap.put("bizType", UnionpayBizType.DEFAULT.getValue()); //业务类型
-    requestPMap.put("channelType", ChannelType.MOBILE.getValue()); //渠道类型，07-PC，08-手机
+    requestPMap.put("bizType", UnionpayBizType.B2C_GATEWAY_PAYMENT.getValue()); //业务类型
+    requestPMap.put("channelType", ChannelType.INTERNET.getValue()); //渠道类型，07-PC，08-手机
     requestPMap.put("merId", params.getString("merchantNo")); //商户号
     requestPMap.put("accessType", ACCESSTYPE); //接入类型，商户接入固定填0，不需修改
     requestPMap.put("orderId", params.getString("refundSerialNumber")); //商户退款单号，8-40位数字字母，不能含“-”或“_”
@@ -283,9 +285,10 @@ public class UnionpayService implements ThirdpayService {
     }
 
     PMap responsePMap = (PMap) result.getItem("responsePMap");
-    return result.addItem("third_refund_id", responsePMap.getString("queryId"));
+    return result.addItem("agencyRefundId", responsePMap.getString("queryId"));
   }
 
+  //暂时调不通，文档里说通过queryId可查询，实际不能
   @Override
   public ResultMap queryRefundOrder(PMap params) throws ServiceException {
     PMap requestPMap = new PMap();
@@ -296,7 +299,7 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("signMethod", SIGNMETHOD); //签名方法 目前只支持01-RSA方式证书加密
     requestPMap.put("txnType", UnionpayTxnType.TRADE_INQUIRY.getValue()); //交易类型 00-查询
     requestPMap.put("txnSubType", UnionpaySubTxnType.DEFAULT.getValue()); //交易子类型  默认00
-    requestPMap.put("bizType", UnionpayBizType.DEFAULT.getValue()); //业务类型
+    requestPMap.put("bizType", UnionpayBizType.B2C_GATEWAY_PAYMENT.getValue()); //业务类型
     requestPMap.put("accessType", ACCESSTYPE); //接入类型，商户接入固定填0，不需修改
     requestPMap.put("merId", params.getString("merchantNo")); //商户号
     requestPMap.put("queryId", params.getString("agencySerialNumber")); //原消费交易返回的的queryId
@@ -308,7 +311,7 @@ public class UnionpayService implements ThirdpayService {
     }
 
     PMap responsePMap = (PMap) result.getItem("responsePMap");
-    return result.addItem("refund_status", getTradeStatus(responsePMap.getString("origRespCode")));
+    return result.addItem("refundStatus", getTradeStatus(responsePMap.getString("origRespCode")));
   }
 
   @Override
@@ -319,15 +322,15 @@ public class UnionpayService implements ThirdpayService {
     String unionpayCheckDate = DateUtil.format(checkDate, DateUtil.DATE_FORMAT_DAY_OF_YEAR);
 
     //组装请求参数
-    requestPMap.put("version", "5.0.0"); //版本号
-    requestPMap.put("encoding", UnionpayService.CHARSET); //字符集编码
+    requestPMap.put("version", VERSION); //版本号
+    requestPMap.put("encoding", CHARSET); //字符集编码
     requestPMap.put("certId", params.getString("md5securityKey"));//证书ID
-    requestPMap.put("signMethod", "01"); //签名方法 目前只支持01-RSA方式证书加密
-    requestPMap.put("txnType", "76"); //交易类型 76-对账单
+    requestPMap.put("signMethod", SIGNMETHOD); //签名方法 目前只支持01-RSA方式证书加密
+    requestPMap.put("txnType", UnionpayTxnType.DOWNLOAD.getValue()); //交易类型 76-对账单
     requestPMap.put("txnSubType", "01"); //交易子类型  下载对账单
-    requestPMap.put("bizType", "000000"); //业务类型
+    requestPMap.put("bizType", UnionpayBizType.DEFAULT.getValue()); //业务类型
     requestPMap.put("merId", params.getString("merchantNo")); //商户号
-    requestPMap.put("accessType", "0"); //接入类型，商户接入固定填0，不需修改
+    requestPMap.put("accessType", ACCESSTYPE); //接入类型，商户接入固定填0，不需修改
     requestPMap.put("settleDate", unionpayCheckDate); //对账日期，一年内MMdd
     requestPMap.put("txnTime", DateUtil.formatShortTime(new Date())); //订单发送时间，格式为YYYYMMDDhhmmss，必须取当前时间，否则会报txnTime无效
     requestPMap.put("fileType", "00"); //对账文件类型 00-zip
@@ -410,12 +413,12 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap getReqIDFromNotifyWapSync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    return getReqIDFromNotifySDKAsync(params);
   }
 
   @Override
   public ResultMap getReqIDFromNotifyWapAsync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    return getReqIDFromNotifySDKAsync(params);
   }
 
   @Override
@@ -423,7 +426,7 @@ public class UnionpayService implements ThirdpayService {
     String orderId;
     if (params == null || StringUtils.isBlank(orderId = params.getString("orderId"))) {
       LOG.error("[getReqIDFromNotifySDKAsync]error:{}", params);
-      return ResultMap.build(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
+      return ResultMap.build(ResultStatus.THIRD_NOTIFY_PARAM_ERROR);
     }
     ResultMap resultMap = ResultMap.build();
     resultMap.addItem("reqId", orderId);
@@ -454,12 +457,12 @@ public class UnionpayService implements ThirdpayService {
 
   @Override
   public ResultMap handleNotifyWapSync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    return handleNotifySDKAsync(params);
   }
 
   @Override
   public ResultMap handleNotifyWapAsync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
+    return handleNotifySDKAsync(params);
   }
 
   @Override
@@ -467,37 +470,30 @@ public class UnionpayService implements ThirdpayService {
     PMap notifyParams;
     ResultMap resultMap = ResultMap.build(), signCheckResult = verifySign(params, notifyParams = params.getPMap("data"));
     if (!Result.isSuccess(resultMap)) return signCheckResult;
-    resultMap.addItem("reqId", notifyParams.getString("orderId"));//商户订单号
-    resultMap.addItem("agencyOrderId", notifyParams.getString("queryId"));//交易查询流水号
-    resultMap.addItem("tradeStatus", getTradeStatus(notifyParams.getString("respCode")));//交易状态
-    resultMap.addItem("agencyPayTime",
-            String.format("%s%s", LocalDate.now().getYear(), notifyParams.getString("traceTime")));//交易传输时间 MMDDHHmmss,需加上YYYY
-    resultMap.addItem("trueMoney", new BigDecimal(notifyParams.getString("txnAmt"))
-            .divide(new BigDecimal("100"), 2, BigDecimal.ROUND_UP).toString());//交易金额 整数分转两位小数元
+
+    //提取关键参数
+    String orderId = notifyParams.getString("orderId");
+    String queryId = notifyParams.getString("queryId");
+    String txnAmt = notifyParams.getString("txnAmt");
+    txnAmt = String.valueOf(new BigDecimal(txnAmt).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
+    String respCode = getTradeStatus(notifyParams.getString("respCode"));
+    String traceTime = notifyParams.getString("traceTime");
+    traceTime = String.format("%s%s", LocalDate.now().getYear(), traceTime);
+
+    resultMap.addItem("reqId", orderId);//商户订单号
+    resultMap.addItem("agencyPayId", queryId);//交易查询流水号
+    resultMap.addItem("payStatus", respCode);//交易状态
+    resultMap.addItem("agencyPayTime", traceTime);//交易传输时间 MMDDHHmmss,需加上YYYY
+    resultMap.addItem("payMoney", txnAmt);//交易金额 整数分转两位小数元
     return resultMap;
   }
 
   @Override
   public ResultMap handleNotifyRefund(PMap params) throws ServiceException {
 
-    ResultMap result = ResultMap.build();
-    PMap notifyParams = params.getPMap("data");
-    //获取银联公钥路径
-    String publicCertFilePath = "e:" + params.getString("publicCertFilePath");
-    //获取银联公钥
-    String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
-    if (publicCertKey.equals("")) {
-      LOG.error("[handleNotifyRefund] 银联回调获取银联公钥失败, 参数: {}", publicCertFilePath);
-      return ResultMap.build(ResultStatus.THIRD_PAY_GET_KEY_ERROR);
-    }
-    //验证响应合法性
-    String sign = (String) notifyParams.remove("signature");
-    boolean signOK = SecretKeyUtil.unionRSACheckSign(notifyParams, sign, publicCertKey, CHARSET);
-    if (!signOK) {
-      LOG.error("[handleNotifyRefund] 银联回调返回参数签名错误, 参数: {}", params);
-      result.withError(ResultStatus.THIRD_REFUND_RESPONSE_SIGN_ERROR);
-      return result;
-    }
+    PMap notifyParams;
+    ResultMap resultMap = ResultMap.build(), signCheckResult = verifySign(params, notifyParams = params.getPMap("data"));
+    if (!Result.isSuccess(resultMap)) return signCheckResult;
 
     //提取关键参数
     String orderId = notifyParams.getString("orderId");
@@ -506,12 +502,12 @@ public class UnionpayService implements ThirdpayService {
     txnAmt = String.valueOf(new BigDecimal(txnAmt).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
     String respCode = getTradeStatus(notifyParams.getString("respCode"));
 
-    result.addItem("reqId", orderId);//商户网站唯一退款单号
-    result.addItem("agencyRefundId", queryId);//第三方退款单号
-    result.addItem("refundStatus", respCode);//交易状态
-    result.addItem("refundMoney", txnAmt);//支付金额
+    resultMap.addItem("reqId", orderId);//商户网站唯一退款单号
+    resultMap.addItem("agencyRefundId", queryId);//第三方退款单号
+    resultMap.addItem("refundStatus", respCode);//退款状态
+    resultMap.addItem("refundMoney", txnAmt);//退款金额
 
-    return result;
+    return resultMap;
   }
 
   @Override

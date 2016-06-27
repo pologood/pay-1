@@ -25,7 +25,7 @@ public class AgencyInfoServiceImpl implements AgencyInfoService {
 
 
     @Override
-    public AgencyInfo getAgencyInfoByCode(String agencyCode,String accessPlatform){
+    public AgencyInfo getAgencyInfoByCode(String agencyCode,Integer accessPlatform){
         return dao.getAgencyInfoByCode(agencyCode,accessPlatform);
     }
 

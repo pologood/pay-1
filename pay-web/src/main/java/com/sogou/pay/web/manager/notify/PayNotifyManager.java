@@ -69,7 +69,7 @@ public class PayNotifyManager {
       PayReqDetail payReqDetail = payReqDetailService.selectPayReqDetailById(payDetailId);
       if (payReqDetail == null) {
         logger.error("[handlePayNotify] 查询PayReqDetail失败: {}", JSONUtil.Bean2JSON(payNotifyModel));
-        return (ResultMap) result.withError(ResultStatus.REQ_DETAIL_NOT_EXIST_ERROR);
+        return (ResultMap) result.withError(ResultStatus.REQ_DETAIL_NOT_EXIST);
       }
       //检验金额
       BigDecimal trueMoney = payReqDetail.getTrueMoney();
@@ -77,14 +77,14 @@ public class PayNotifyManager {
       if (trueMoney.compareTo(trueMoney_notify) != 0) {
         logger.error("[handlePayNotify] 金额不相等, payReqId={}, PayReqDetail.trueMoney={}, payNotifyModel.trueMoney={}"
                 , payReqDetail.getPayDetailId(), trueMoney, trueMoney_notify);
-        return (ResultMap) result.withError(ResultStatus.REQ_DETAIL_NOT_EXIST_ERROR);
+        return (ResultMap) result.withError(ResultStatus.REQ_DETAIL_NOT_EXIST);
       }
       //获取支付单号
       String payOrderId = payOrderRelationService.selectPayOrderId(payDetailId);
       PayOrderInfo payOrderInfo = payOrderService.selectPayOrderById(payOrderId);
       if (payOrderInfo == null) {
         logger.error("[handlePayNotify] 查询PayOrderInfo失败: {}", JSONUtil.Bean2JSON(payNotifyModel));
-        return (ResultMap) result.withError(ResultStatus.PAY_ORDER_NOT_EXIST);
+        return (ResultMap) result.withError(ResultStatus.ORDER_NOT_EXIST);
       }
 
       payManager.completePay(payNotifyModel, payOrderInfo, payReqDetail);
@@ -92,7 +92,7 @@ public class PayNotifyManager {
       //最后,检验重复支付
       if (OrderStatus.SUCCESS.getValue() == payOrderInfo.getPayOrderStatus()) {
         //重复支付，需退款
-        logger.info("[handlePayNotify] 重复支付，需退款: {}", JSONUtil.Bean2JSON(payNotifyModel));
+        logger.warn("[handlePayNotify] 重复支付，需退款: {}", JSONUtil.Bean2JSON(payNotifyModel));
         App app = new App();
         app.setAppId(payOrderInfo.getAppId());
         RefundModel model = new RefundModel();
@@ -115,7 +115,7 @@ public class PayNotifyManager {
       result.withError(ResultStatus.RES_DETAIL_ALREADY_EXIST);
     } catch (Exception e) {
       logger.error("[handlePayNotify] 处理第三方异步通知失败: {}, {}", JSONUtil.Bean2JSON(payNotifyModel), e);
-      result.withError(ResultStatus.PAY_NOTIFY_ERROR);
+      result.withError(ResultStatus.HANDLE_THIRD_NOTIFY_ERROR);
     }
     return result;
   }
@@ -151,7 +151,7 @@ public class PayNotifyManager {
     App app = appService.selectApp(payOrderInfo.getAppId());
     if (app == null) {
       logger.error("[syncNotifyApp] app not exists, appId={}", payOrderInfo.getAppId());
-      return ResultMap.build(ResultStatus.PAY_APP_NOT_EXIST);
+      return ResultMap.build(ResultStatus.APPID_NOT_EXIST);
     }
     Map<String, String> notifyMap = new HashMap<>();
     notifyMap.put("isSuccess", "T");

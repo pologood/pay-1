@@ -82,7 +82,7 @@ public class APIController extends BaseController {
     List validateResult = ControllerUtil.validateParams(params);
     if (validateResult.size() > 0) {
       logger.error("[doPay][validateParams][Failed]{}", validateResult.toString().substring(1, validateResult.toString().length() - 1));
-      return (ResultMap) resultMap.withError(ResultStatus.PAY_PARAM_ERROR);
+      return (ResultMap) resultMap.withError(ResultStatus.PARAM_ERROR);
     }
     PMap paramsMap = BeanUtil.Bean2PMap(params);
     //查询业务线信息
@@ -90,7 +90,7 @@ public class APIController extends BaseController {
     App app = appService.selectApp(appId);
     if (app == null) {
       logger.error("[commonCheck] appid not exists, params={}", JSONUtil.Bean2JSON(params));
-      return (ResultMap) resultMap.withError(ResultStatus.PAY_APP_NOT_EXIST);
+      return (ResultMap) resultMap.withError(ResultStatus.APPID_NOT_EXIST);
     }
     //验证签名
     //如果是收银台请求，则排除bankId, accessPlatform再验签
@@ -143,15 +143,13 @@ public class APIController extends BaseController {
     }
     //调用支付网关
     PMap payGateParams = (PMap) result2.getReturnValue();
-    ResultMap<String> result3 = payPortal.preparePay(payGateParams);
-    if (!Result.isSuccess(result3)) {
+    resultMap = payPortal.preparePay(payGateParams);
+    if (!Result.isSuccess(resultMap)) {
       logger.error("[doPay][preparePay][Failed] params={}, result={}", JSONUtil.Bean2JSON(payGateParams),
-              JSONUtil.Bean2JSON(result3));
-      return (ResultMap) resultMap.withError(ResultStatus.THIRD_PAY_ERROR);
+              JSONUtil.Bean2JSON(resultMap));
     }
 
     //返回结果
-    resultMap.addItems(result3.getData());
     return resultMap;
   }
 
@@ -175,13 +173,11 @@ public class APIController extends BaseController {
     payOrderModel.setApp((App) paramsMap.get("app"));
     payOrderModel.setOrderId(params.getOrderId());
     payOrderModel.setFromCashier(Objects.equals(params.getFromCashier(), "true"));
-    ResultMap result = payManager.queryPayOrder(payOrderModel);
-    if (!Result.isSuccess(result)) {
+    resultMap = payManager.queryPayOrder(payOrderModel);
+    if (!Result.isSuccess(resultMap)) {
       logger.error("[queryPay][queryPayOrder][Failed] params={}, result={}", JSONUtil.Bean2JSON(payOrderModel),
-              JSONUtil.Bean2JSON(result));
-      return result;
+              JSONUtil.Bean2JSON(resultMap));
     }
-    resultMap.addItems(result.getData());
     return resultMap;
   }
 
@@ -210,17 +206,10 @@ public class APIController extends BaseController {
     if (params.getRefundAmount() != null)//退款金额可选
       refundModel.setRefundAmount(new BigDecimal(params.getRefundAmount()));  //订单退款金额
     refundModel.setBgurl(params.getBgUrl());                                //回调url
-    ResultMap refundResult = refundManager.refundOrder(refundModel);
-    if (!Result.isSuccess(refundResult)) {
+    resultMap = refundManager.refundOrder(refundModel);
+    if (!Result.isSuccess(resultMap)) {
       logger.error("[doRefund] refund failed, IP={}, params={}, result={}", ip, JSONUtil.Bean2JSON(refundModel),
-              JSONUtil.Bean2JSON(refundResult));
-      resultMap.withError(refundResult.getStatus());
-      if (null != refundResult.getData().get("error_code")) {
-        resultMap.addItem("errorCode", refundResult.getData().get("error_code").toString());
-      }
-      if (null != refundResult.getData().get("error_info")) {
-        resultMap.addItem("errorMsg", refundResult.getData().get("error_info").toString());
-      }
+              JSONUtil.Bean2JSON(resultMap));
     }
     logger.debug("[doRefund] refund request end, IP={}, result={}", ip, JSONUtil.Bean2JSON(resultMap));
     return resultMap;
@@ -248,14 +237,11 @@ public class APIController extends BaseController {
     model.setOrderId(params.getOrderId());               //订单id
     model.setSign(params.getSign());                     //签名
     model.setSignType(params.getSignType());            //签名类型
-    ResultMap queryRefundMap = refundManager.queryRefund(model);
-    if (!Result.isSuccess(queryRefundMap)) {
+    resultMap = refundManager.queryRefund(model);
+    if (!Result.isSuccess(resultMap)) {
       logger.error("[queryRefund] queryRefund failed, params={}, result={}", JSONUtil.Bean2JSON(model),
-              JSONUtil.Bean2JSON(queryRefundMap));
-      resultMap.withError(queryRefundMap.getStatus());
-      return resultMap;
+              JSONUtil.Bean2JSON(resultMap));
     }
-    resultMap.addItem("refundStatus", queryRefundMap.getReturnValue());
     logger.debug("[queryRefund] query refund request end, params={}", JSONUtil.Bean2JSON(resultMap));
     return resultMap;
   }
@@ -272,9 +258,7 @@ public class APIController extends BaseController {
       return null;
     }
     secureManager.doAppSign(paramsMap, signExcludes, app.getSignKey());
-    ResultMap resultMap = ResultMap.build();
-    resultMap.addItem("sign",paramsMap.get("sign"));
-    return resultMap;
+    return ResultMap.build().addItem("sign",paramsMap.get("sign"));
   }
 
 }

@@ -22,7 +22,7 @@ public interface AgencyInfoDao {
      * @return AgencyInfo
      */
     public AgencyInfo getAgencyInfoByCode(@Param("agencyCode")String agencyCode,
-                                          @Param("accessPlatform")String accessPlatform);
+                                          @Param("accessPlatform")Integer accessPlatform);
     /**
      * 获取支付机构基本信息
      * @param id 主键

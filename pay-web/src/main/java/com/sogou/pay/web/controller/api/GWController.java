@@ -104,7 +104,7 @@ public class GWController extends BaseController {
     if (app == null) {
       logger.error("[doPay][selectApp][Failed] params={}, result={}", JSONUtil.Bean2JSON(payParams),
               JSONUtil.Bean2JSON(result));
-      return setErrorPage(ResultStatus.PAY_APP_NOT_EXIST, platform);
+      return setErrorPage(ResultStatus.APPID_NOT_EXIST, platform);
     }
 
     //收银台页面
@@ -133,7 +133,7 @@ public class GWController extends BaseController {
     if (validateResult.size() > 0) {
       logger.error("[doPay][validateParams][Failed] params={}, result={}", JSONUtil.Bean2JSON(payForm),
               validateResult.toString());
-      return setErrorPage(ResultStatus.PAY_PARAM_ERROR, platform);
+      return setErrorPage(ResultStatus.PARAM_ERROR, platform);
     }
     //验证签名
     PMap payParamsMap = BeanUtil.Bean2PMap(payForm);
@@ -142,7 +142,7 @@ public class GWController extends BaseController {
     App app = appService.selectApp(appId);
     if (app == null) {
       logger.error("[doPay][selectApp][Failed] appid not exists, params={}", JSONUtil.Bean2JSON(payParamsMap));
-      return setErrorPage(ResultStatus.PAY_APP_NOT_EXIST, platform);
+      return setErrorPage(ResultStatus.APPID_NOT_EXIST, platform);
     }
     //如果是收银台请求，则排除bankId, accessPlatform再验签
     boolean fromCashier = Objects.equals(payForm.getFromCashier(), "true");

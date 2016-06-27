@@ -1,5 +1,6 @@
 package com.sogou.pay.timer.check;
 
+import com.sogou.pay.enums.AccessPlatform;
 import com.sogou.pay.timer.PayPortal;
 import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.common.types.PMap;
@@ -116,9 +117,9 @@ public class CheckManager {
         logger.warn("[downloadOrderData] PayAgencyMerchant not exists, agencyCode={}", agencyCode);
         return;
       }
-      AgencyInfo agencyInfo = agencyInfoService.getAgencyInfoByCode(agencyCode, "99");
+      AgencyInfo agencyInfo = agencyInfoService.getAgencyInfoByCode(agencyCode, AccessPlatform.ACCESSPLATFORM_PC);
 
-      String checkDateStr = DateUtil.format(checkDate, DateUtil.DATE_FORMAT_DAY_SHORT);
+      String checkDateStr = DateUtil.formatCompactDate(checkDate);
       payCheckDayLog = payCheckDayLogService.getByCheckDateAndAgency(checkDateStr, agencyCode);
       // 如果没有日志，插入一条新记录
       if (payCheckDayLog == null) {
@@ -484,8 +485,8 @@ public class CheckManager {
     params.put("checkDate", checkDate);
     params.put("checkType", CheckType.ALL);
     params.put("merchantNo", merchantNo);
-    params.put("key", payAgencyMerchant.getEncryptKey());
     params.put("downloadUrl", agencyInfo.getDownloadUrl());
+    params.put("md5securityKey", payAgencyMerchant.getEncryptKey());
     params.put("publicCertFilePath", payAgencyMerchant.getPubKeypath());
     params.put("privateCertFilePath", payAgencyMerchant.getPrivateKeypath());
     params.put("sellerEmail", payAgencyMerchant.getSellerEmail());

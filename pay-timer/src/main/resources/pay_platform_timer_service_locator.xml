@@ -17,21 +17,21 @@
     <import resource="transfer_cronjob.xml"/>
 
     <!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序 -->
-    <bean id="startQuertz" lazy-init="false" autowire="no"
-          class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-        <property name="triggers">
-            <list>
-                <!-- 对账任务-->
-                <ref bean="alipayCheckDataJobTrigger"/>
-                <ref bean="tenpayCheckDataJobTrigger"/>
-                <ref bean="wechatCheckDataJobTrigger"/>
-                <ref bean="reCheckDataJobTrigger"/>
-                <!-- 代付任务-->
-                <ref bean="transferJobTrigger"/>
-                <ref bean="queryTransferJobTrigger"/>
-                <ref bean="queryTransferRefundJobTrigger"/>
-            </list>
-        </property>
-    </bean>
+    <!--<bean id="startQuertz" lazy-init="false" autowire="no"-->
+          <!--class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
+        <!--<property name="triggers">-->
+            <!--<list>-->
+                <!--&lt;!&ndash; 对账任务&ndash;&gt;-->
+                <!--<ref bean="alipayCheckDataJobTrigger"/>-->
+                <!--<ref bean="tenpayCheckDataJobTrigger"/>-->
+                <!--<ref bean="wechatCheckDataJobTrigger"/>-->
+                <!--<ref bean="reCheckDataJobTrigger"/>-->
+                <!--&lt;!&ndash; 代付任务&ndash;&gt;-->
+                <!--<ref bean="transferJobTrigger"/>-->
+                <!--<ref bean="queryTransferJobTrigger"/>-->
+                <!--<ref bean="queryTransferRefundJobTrigger"/>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
 
 </beans>

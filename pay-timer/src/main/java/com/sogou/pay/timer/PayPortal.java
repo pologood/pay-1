@@ -10,6 +10,7 @@ import com.sogou.pay.thirdpay.service.Alipay.AlipayService;
 import com.sogou.pay.thirdpay.service.CMBC.CMBCService;
 import com.sogou.pay.thirdpay.service.Tenpay.TenpayService;
 import com.sogou.pay.thirdpay.service.ThirdpayService;
+import com.sogou.pay.thirdpay.service.Unionpay.UnionpayService;
 import com.sogou.pay.thirdpay.service.Wechat.WechatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,9 @@ public class PayPortal {
     @Autowired
     private CMBCService cmbcService;
 
+    @Autowired
+    private UnionpayService unionpayService;
+
     private HashMap<String, ThirdpayService> serviceHashMap;
 
     @Autowired
@@ -44,6 +48,8 @@ public class PayPortal {
         serviceHashMap.put(AgencyCode.TENPAY.name(), tenpayService);
         serviceHashMap.put(AgencyCode.WECHAT.name(), wechatService);
         serviceHashMap.put(AgencyCode.CMBC.name(), cmbcService);
+        serviceHashMap.put(AgencyCode.UNIONPAY.name(), unionpayService);
+        serviceHashMap.put(AgencyCode.TEST_UNIONPAY.name(), unionpayService);
     }
 
     public ResultMap downloadOrder(PMap params) {
@@ -56,7 +62,7 @@ public class PayPortal {
             return ResultMap.build(se.getStatus());
         } catch (Exception e) {
             logger.error("[downloadOrder] 下载对账单异常, {}", e);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_ERROR);
         }
     }
 
@@ -70,7 +76,7 @@ public class PayPortal {
             return ResultMap.build(se.getStatus());
         } catch (Exception e) {
             logger.error("[transfer] 发起代付异常, {}", e);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_ERROR);
         }
     }
 
@@ -84,7 +90,7 @@ public class PayPortal {
             return ResultMap.build(se.getStatus());
         } catch (Exception e) {
             logger.error("[queryTransfer] 查询代付异常, {}", e);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_ERROR);
         }
     }
 
@@ -98,7 +104,7 @@ public class PayPortal {
             return ResultMap.build(se.getStatus());
         } catch (Exception e) {
             logger.error("[queryTransferRefund] 查询代付退票异常, {}", e);
-            return ResultMap.build(ResultStatus.THIRD_QUERY_ERROR);
+            return ResultMap.build(ResultStatus.THIRD_ERROR);
         }
     }
 

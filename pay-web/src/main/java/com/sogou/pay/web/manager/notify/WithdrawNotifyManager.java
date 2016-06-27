@@ -1,6 +1,5 @@
 package com.sogou.pay.web.manager.notify;
 
-import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
@@ -51,12 +50,9 @@ public class WithdrawNotifyManager {
             payCheckWaiting.setBankCode((String)params.get("bankCode"));//支付渠道
 
             payCheckWaitingService.insert(payCheckWaiting);
-        }catch (ServiceException e){
-            LOGGER.error("WithdrawNotifyManager.doProcess failed" + e.getMessage());
-            result.withError(ResultStatus.INSERT_PAY_CHECK_WAITING_ERROR);
         }catch (Exception e){
-            LOGGER.error("WithdrawNotifyManager.doProcess failed" + e.getMessage());
-            result.withError(ResultStatus.REPAIR_ORDER_ERROR);
+            LOGGER.error("[doProcess] failed, {}", e);
+            result.withError(ResultStatus.HANDLE_THIRD_NOTIFY_ERROR);
         }
         return result;
     }
