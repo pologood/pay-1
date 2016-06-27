@@ -21,23 +21,23 @@ public class HttpService {
     return httpService;
   }
 
-  public Result doGet(String url, Map<String, ?> paramMap, String charset, SSLContext sslContext) {
+  public Result<?> doGet(String url, Map<String, ?> paramMap, String charset, SSLContext sslContext) {
     return doCall(url, null, paramMap, Request.GET, charset, sslContext);
   }
 
-  public Result doGet(String url, String requestBody, String charset, SSLContext sslContext) {
+  public Result<?> doGet(String url, String requestBody, String charset, SSLContext sslContext) {
     return doCall(url, requestBody, null, Request.GET, charset, sslContext);
   }
 
-  public Result doPost(String url, Map<String, ?> paramMap, String charset, SSLContext sslContext) {
+  public Result<?> doPost(String url, Map<String, ?> paramMap, String charset, SSLContext sslContext) {
     return doCall(url, null, paramMap, Request.POST, charset, sslContext);
   }
 
-  public Result doPost(String url, String requestBody, String charset, SSLContext sslContext) {
+  public Result<?> doPost(String url, String requestBody, String charset, SSLContext sslContext) {
     return doCall(url, requestBody, null, Request.POST, charset, sslContext);
   }
 
-  private Result doCall(String url, String requestBody, Map<String, ?> paramMap, int method, String charset, SSLContext sslContext) {
+  private Result<?> doCall(String url, String requestBody, Map<String, ?> paramMap, int method, String charset, SSLContext sslContext) {
 
     logger.info("[doCall] HTTP请求参数: url={}, requestBody={}, paramMap={}, method={}, charset={}", url,
             requestBody, JSONUtil.Bean2JSON(paramMap), method, charset);
