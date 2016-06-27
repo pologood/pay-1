@@ -6,32 +6,26 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 
-    <!--&lt;!&ndash; 扫描文件（自动将servicec层注入） &ndash;&gt;-->
-    <!--<context:component-scan base-package="com.sogou.pay"/>-->
-    <!--&lt;!&ndash; 引入config配置文件 &ndash;&gt;-->
-    <!--<context:property-placeholder location="classpath:config-${spring.profiles.active}.properties"/>-->
-    <!--<context:annotation-config/>-->
-
     <import resource="spring-service.xml"/>
     <import resource="check_cronjob.xml"/>
     <import resource="transfer_cronjob.xml"/>
 
     <!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序 -->
-    <!--<bean id="startQuertz" lazy-init="false" autowire="no"-->
-          <!--class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
-        <!--<property name="triggers">-->
-            <!--<list>-->
-                <!--&lt;!&ndash; 对账任务&ndash;&gt;-->
-                <!--<ref bean="alipayCheckDataJobTrigger"/>-->
-                <!--<ref bean="tenpayCheckDataJobTrigger"/>-->
-                <!--<ref bean="wechatCheckDataJobTrigger"/>-->
-                <!--<ref bean="reCheckDataJobTrigger"/>-->
-                <!--&lt;!&ndash; 代付任务&ndash;&gt;-->
-                <!--<ref bean="transferJobTrigger"/>-->
-                <!--<ref bean="queryTransferJobTrigger"/>-->
-                <!--<ref bean="queryTransferRefundJobTrigger"/>-->
-            <!--</list>-->
-        <!--</property>-->
-    <!--</bean>-->
+    <bean id="startQuertz" lazy-init="false" autowire="no"
+          class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <!-- 对账任务-->
+                <ref bean="alipayCheckDataJobTrigger"/>
+                <ref bean="tenpayCheckDataJobTrigger"/>
+                <ref bean="wechatCheckDataJobTrigger"/>
+                <ref bean="reCheckDataJobTrigger"/>
+                <!-- 代付任务-->
+                <ref bean="transferJobTrigger"/>
+                <ref bean="queryTransferJobTrigger"/>
+                <ref bean="queryTransferRefundJobTrigger"/>
+            </list>
+        </property>
+    </bean>
 
 </beans>
