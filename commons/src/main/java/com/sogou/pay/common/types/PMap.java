@@ -4,66 +4,64 @@ import com.sogou.pay.common.utils.ConvertUtil;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Created by hujunfei Date: 15-1-9 Time: 上午10:53
- * <br/>无法转换则抛出IllegalArgumentException
- */
 public class PMap<K, V> extends HashMap<K, V> {
-    public PMap() {
-        super();
-    }
 
-    public PMap(int initialCapacity) {
-        super(initialCapacity);
-    }
+  private static final long serialVersionUID = 2294806098649305447L;
 
-    public PMap(Map m) {
-        super(m);
-    }
+  public PMap() {
+    super();
+  }
 
-    /**
-     * 实际调用toString()方法
-     *
-     * @param key
-     * @return
-     */
-    public String getString(K key) {
-        Object value = this.get(key);
-        return value == null ? null : value.toString();
-    }
+  public PMap(int initialCapacity) {
+    super(initialCapacity);
+  }
 
-    public String[] getStrings(K key) {
-        return (String[]) this.get(key);
-    }
+  public PMap(Map<K, V> m) {
+    super(m);
+  }
 
-    public int getInt(K key) {
-        return ConvertUtil.toInt(this.get(key));
-    }
+  /**
+   * 实际调用toString()方法
+   *
+   * @param key
+   * @return
+   */
+  public String getString(K key) {
+    Object value = this.get(key);
+    return value == null ? null : value.toString();
+  }
 
-    public long getLong(K key) {
-        return ConvertUtil.toLong(this.get(key));
-    }
+  public String[] getStrings(K key) {
+    return (String[]) this.get(key);
+  }
 
-    public boolean getBoolean(K key) {
-        return ConvertUtil.toBool(this.get(key));
-    }
+  public int getInt(K key) {
+    return ConvertUtil.toInt(this.get(key));
+  }
 
-    public double getDouble(K key) {
-        return ConvertUtil.toDouble(this.get(key));
-    }
+  public long getLong(K key) {
+    return ConvertUtil.toLong(this.get(key));
+  }
 
-    public Date getDate(K key) {
-        return ConvertUtil.toDate(this.get(key));
-    }
+  public boolean getBoolean(K key) {
+    return ConvertUtil.toBool(this.get(key));
+  }
 
-    public PMap getPMap(K key) {
-        try {
-            return (PMap) this.get(key);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Get PMap Error: " + key);
-        }
+  public double getDouble(K key) {
+    return ConvertUtil.toDouble(this.get(key));
+  }
+
+  public Date getDate(K key) {
+    return ConvertUtil.toDate(this.get(key));
+  }
+
+  public PMap<?, ?> getPMap(K key) {
+    try {
+      return (PMap<?, ?>) this.get(key);
+    } catch (Exception e) {
+      throw new IllegalArgumentException(String.format("Get PMap Error:%s", key));
     }
+  }
 }

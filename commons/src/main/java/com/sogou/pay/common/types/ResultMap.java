@@ -1,11 +1,7 @@
 package com.sogou.pay.common.types;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Created by hjf on 15-2-28.
- */
 public class ResultMap<T> extends Result<T> {
 
     private PMap<String, Object> data = new PMap<>();
@@ -22,7 +18,7 @@ public class ResultMap<T> extends Result<T> {
         return new ResultMap<>(resultStatus, null);
     }
 
-    public ResultMap<T> addItems(Map data) {
+    public ResultMap<T> addItems(Map<String, Object> data) {
         this.data.putAll(data);
         return this;
     }
