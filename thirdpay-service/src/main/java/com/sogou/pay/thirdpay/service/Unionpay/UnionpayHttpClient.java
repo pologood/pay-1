@@ -15,7 +15,6 @@ public class UnionpayHttpClient {
 
     private static final String TLS = "TLS";
 
-
     private String charset = "UTF-8";
 
     private SSLContext sslContext;
@@ -42,7 +41,7 @@ public class UnionpayHttpClient {
         return null;
     }
 
-    public Result doGet(String url, Map<String, Object> paramMap) {
+    public Result<?> doGet(String url, Map<String, ?> paramMap) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doGet(url, paramMap, this.charset, this.sslContext);
         } else {
@@ -50,7 +49,7 @@ public class UnionpayHttpClient {
         }
     }
 
-    public Result doGet(String url, String paramString) {
+    public Result<?> doGet(String url, String paramString) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doGet(url, paramString, this.charset, this.sslContext);
         } else {
@@ -58,7 +57,7 @@ public class UnionpayHttpClient {
         }
     }
 
-    public Result doPost(String url, Map<String, Object> paramMap) {
+    public Result<?> doPost(String url, Map<String, ?> paramMap) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doPost(url, paramMap, this.charset, this.sslContext);
         } else {
@@ -66,7 +65,7 @@ public class UnionpayHttpClient {
         }
     }
 
-    public Result doPost(String url, String paramString) {
+    public Result<?> doPost(String url, String paramString) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doPost(url, paramString, this.charset, this.sslContext);
         } else {
