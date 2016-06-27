@@ -46,7 +46,7 @@ public class UnionpayService implements ThirdpayService {
   private static HashMap<String, String> TRADE_STATUS = new HashMap<>();
   private static String VERSION = "5.0.0";
   private static String CHARSET = "UTF-8";
-  private static String ACCESSTYPE = "0";//0普通商户; 1首单机构; 2平台商户
+  private static String ACCESSTYPE = "0";//0普通商户; 1收单机构; 2平台商户
   private static String CURRENCYCODE = "156";//rmb
   private static String SIGNMETHOD = "01";//rsa
 

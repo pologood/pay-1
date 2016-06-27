@@ -118,22 +118,18 @@ public class AlipayService implements ThirdpayService {
     BigDecimal oAmount = new BigDecimal(params.getString("orderAmount"));
     String orderAmount = oAmount.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
     requestPMap.put("total_fee", orderAmount);                                    //交易金额
+    requestPMap.put("sign_type", AlipayService.SIGN_TYPE);                     //签名方式
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[preparePayInfoAccount] 支付宝订单支付参数错误, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PAY_PARAM_ERROR);
     }
-    String md5securityKey = params.getString("md5securityKey");
     //2.获取md5签名
-    String
-            sign =
-            SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey);
+    String sign = SecretKeyUtil.aliMD5Sign(requestPMap, params.getString("md5securityKey"));
     if (sign == null) {
       log.error("[preparePayInfoAccount] 支付宝订单支付签名失败, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
     }
     requestPMap.put("sign", sign);
-    requestPMap.put("sign_type", AlipayService.SIGN_TYPE);                     //签名方式
-
     //3.获取支付URL
     String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
     result.addItem("returnUrl", returnUrl);
@@ -161,20 +157,18 @@ public class AlipayService implements ThirdpayService {
     BigDecimal oAmount = new BigDecimal(params.getString("orderAmount"));
     String orderAmount = oAmount.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
     requestPMap.put("total_fee", orderAmount);
+    requestPMap.put("sign_type", AlipayService.SIGN_TYPE);                           //签名方式
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[preparePayInfoGatway] 支付宝订单支付参数错误, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PAY_PARAM_ERROR);
     }
-    String md5securityKey = params.getString("md5securityKey");
     //2.获取md5签名
-    String
-            sign = SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey);
+    String sign = SecretKeyUtil.aliMD5Sign(requestPMap, params.getString("md5securityKey"));
     if (sign == null) {
       log.error("[preparePayInfoGatway] 支付宝订单支付签名失败, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
     }
-    requestPMap.put("sign", sign);
-    requestPMap.put("sign_type", AlipayService.SIGN_TYPE);                           //签名方式
+    requestPMap.put("sign", sign);    
     //3.获取支付URL
     String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
     result.addItem("returnUrl", returnUrl);
@@ -198,7 +192,7 @@ public class AlipayService implements ThirdpayService {
     BigDecimal oAmount = new BigDecimal(params.getString("orderAmount"));
     String orderAmount = oAmount.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
     requestPMap.put("total_fee", orderAmount);                                    //支付金额
-    String md5securityKey = params.getString("md5securityKey");
+    requestPMap.put("sign_type", AlipayService.SIGN_TYPE);                     //签名方式
     /**账户支付和扫码支付区别参数开始**/
     requestPMap.put("qr_pay_mode", AlipayService.QR_PAY_MODE);
     /**账户支付和扫码关支付区别参数结束**/
@@ -207,15 +201,12 @@ public class AlipayService implements ThirdpayService {
       return ResultMap.build(ResultStatus.THIRD_PAY_PARAM_ERROR);
     }
     //2.获取md5签名
-    String
-            sign =
-            SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey);
+    String sign = SecretKeyUtil.aliMD5Sign(requestPMap, params.getString("md5securityKey"));
     if (sign == null) {
       log.error("[preparePayInfoQRCode] 支付宝订单支付签名失败, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
     }
-    requestPMap.put("sign", sign);
-    requestPMap.put("sign_type", AlipayService.SIGN_TYPE);                     //签名方式
+    requestPMap.put("sign", sign);    
     //3.获取支付URL
     String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
     result.addItem("qrCode", returnUrl);
@@ -264,9 +255,7 @@ public class AlipayService implements ThirdpayService {
     // 6.组装商户需要的订单信息参数
     StringBuilder requestString = new StringBuilder(SecretKeyUtil.buildSignSource(requestPMap));
     // 4.签名
-    String
-            sign =
-            SecretKeyUtil.aliRSASign(requestString.toString(), privateCertKey);
+    String sign = SecretKeyUtil.aliRSASign(requestString.toString(), privateCertKey);
     if (sign == null) {
       log.error("[preparePayInfoSDK] 支付宝订单支付签名失败, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
@@ -309,11 +298,8 @@ public class AlipayService implements ThirdpayService {
       log.error("[preparePayInfoWap] 支付宝订单支付参数错误, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PAY_PARAM_ERROR);
     }
-    String md5securityKey = params.getString("md5securityKey");
     //2.获取md5签名
-    String
-            sign =
-            SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey);
+    String sign = SecretKeyUtil.aliMD5Sign(requestPMap, params.getString("md5securityKey"));
     if (sign == null) {
       log.error("[preparePayInfoWap] 支付宝订单支付签名失败, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PAY_SIGN_ERROR);
@@ -335,15 +321,12 @@ public class AlipayService implements ThirdpayService {
     requestPMap.put("partner", params.getString("merchantNo"));                //商户号
     requestPMap.put("_input_charset", AlipayService.INPUT_CHARSET);               //编码
     requestPMap.put("out_trade_no", params.getString("serialNumber"));             //订单号
-    String md5securityKey = params.getString("md5securityKey");                //加密秘钥
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[queryOrder] 支付宝订单查询参数错误, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_QUERY_PARAM_ERROR);
     }
     //2.获取md5签名
-    String
-            sign =
-            SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey);
+    String sign = SecretKeyUtil.aliMD5Sign(requestPMap, params.getString("md5securityKey"));
     if (sign == null) {
       log.error("[queryOrder] 支付宝订单查询签名失败, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_QUERY_SIGN_ERROR);
@@ -414,10 +397,7 @@ public class AlipayService implements ThirdpayService {
       log.error("[refundOrder] 支付宝退款参数错误, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_REFUND_PARAM_ERROR);
     }
-    String md5securityKey = params.getString("md5securityKey");
-    String
-            sign =
-            SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey);
+    String sign = SecretKeyUtil.aliMD5Sign(requestPMap, params.getString("md5securityKey"));
     if (sign == null) {
       log.error("[refundOrder] 支付宝退款签名失败, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_REFUND_SIGN_ERROR);
@@ -465,11 +445,8 @@ public class AlipayService implements ThirdpayService {
       return ResultMap.build(ResultStatus.THIRD_QUERY_REFUND_PARAM_ERROR);
     }
     // 2.获取商户私钥
-    String md5securityKey = params.getString("md5securityKey");                //加密秘钥
     // 3.签名
-    String
-            sign =
-            SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey);
+    String sign = SecretKeyUtil.aliMD5Sign(requestPMap, params.getString("md5securityKey"));
     if (sign == null) {
       log.error("[queryRefundOrder] 支付宝退款查询签名失败, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_QUERY_REFUND_SIGN_ERROR);
@@ -705,10 +682,7 @@ public class AlipayService implements ThirdpayService {
       log.error("[prepareTransferInfo] 支付宝批量付款参数错误, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_REFUND_PARAM_ERROR);
     }
-    String md5securityKey = params.getString("md5securityKey");
-    String
-            sign =
-            SecretKeyUtil.aliMD5Sign(requestPMap, md5securityKey);
+    String sign = SecretKeyUtil.aliMD5Sign(requestPMap, params.getString("md5securityKey"));
     if (sign == null) {
       log.error("[prepareTransferInfo] 支付宝批量付款签名失败, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_REFUND_SIGN_ERROR);
