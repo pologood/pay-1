@@ -1,8 +1,8 @@
 import static lib.BDD.*;
 import lib.*;
 
-//def host = "test.cash.sogou.com"
-def host = "127.0.0.1"
+def host = "test.cash.sogou.com"
+//def host = "127.0.0.1"
 def server = "http://$host"
 
 def ctx = [
