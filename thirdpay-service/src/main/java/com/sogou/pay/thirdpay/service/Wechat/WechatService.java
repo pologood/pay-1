@@ -102,7 +102,7 @@ public class WechatService implements ThirdpayService {
     String md5securityKey = params.getString("md5securityKey");
     String sign =
             SecretKeyUtil
-                    .tenMD5Sign(requestPMap, md5securityKey, WechatService.INPUT_CHARSET);
+                    .tenMD5Sign(requestPMap, md5securityKey);
     if (sign == null) {
       log.error("[prepay] 微信订单支付签名失败, 参数: {}", requestPMap);
       result.withError(ResultStatus.THIRD_PAY_SIGN_ERROR);
@@ -144,8 +144,7 @@ public class WechatService implements ThirdpayService {
     //5.签名校验
     boolean
             signMd5 =
-            SecretKeyUtil.tenMD5CheckSign(prepayPMap, md5securityKey, prepayPMap.getString("sign"),
-                    WechatService.INPUT_CHARSET);
+            SecretKeyUtil.tenMD5CheckSign(prepayPMap, md5securityKey, prepayPMap.getString("sign"));
     if (!signMd5) {
       log.error("[prepay] 微信订单支付返回参数签名错误, 参数: {}", prepayPMap);
       result.withError(ResultStatus.THIRD_PAY_RESPONSE_SIGN_ERROR);
@@ -206,7 +205,7 @@ public class WechatService implements ThirdpayService {
     String md5securityKey = params.getString("md5securityKey");
     String signMd5 =
             SecretKeyUtil
-                    .tenMD5Sign(requestPMap, md5securityKey, WechatService.INPUT_CHARSET);
+                    .tenMD5Sign(requestPMap, md5securityKey);
     if (signMd5 == null) {
       log.error("[preparePayInfoSDK] 微信订单支付签名失败, 参数: {}", requestPMap);
       result.withError(ResultStatus.THIRD_PAY_SIGN_ERROR);
@@ -244,7 +243,7 @@ public class WechatService implements ThirdpayService {
     String md5securityKey = params.getString("md5securityKey");
     String sign =
             SecretKeyUtil
-                    .tenMD5Sign(requestPMap, md5securityKey, WechatService.INPUT_CHARSET);
+                    .tenMD5Sign(requestPMap, md5securityKey);
     if (sign == null) {
       log.error("[queryOrder] 微信订单查询签名失败, 参数: {}", requestPMap);
       result.withError(ResultStatus.THIRD_QUERY_SIGN_ERROR);
@@ -285,8 +284,7 @@ public class WechatService implements ThirdpayService {
     //5.签名校验
     boolean
             signMd5 =
-            SecretKeyUtil.tenMD5CheckSign(orderPMap, md5securityKey, orderPMap.getString("sign"),
-                    WechatService.INPUT_CHARSET);
+            SecretKeyUtil.tenMD5CheckSign(orderPMap, md5securityKey, orderPMap.getString("sign"));
     if (!signMd5) {
       log.error("[queryOrder] 微信订单查询返回参数签名错误, 参数: {}", orderPMap);
       result.withError(ResultStatus.THIRD_QUERY_RESPONSE_SIGN_ERROR);
@@ -339,7 +337,7 @@ public class WechatService implements ThirdpayService {
     //2.计算md5签名
     String md5securityKey = params.getString("md5securityKey");        // 加密秘钥
     String sign =
-            SecretKeyUtil.tenMD5Sign(requestPMap, md5securityKey, WechatService.INPUT_CHARSET);
+            SecretKeyUtil.tenMD5Sign(requestPMap, md5securityKey);
     if (sign == null) {
       log.error("[refundOrder] 微信退款签名失败，参数: {}" , requestPMap);
       result.withError(ResultStatus.THIRD_REFUND_SIGN_ERROR);
@@ -383,8 +381,7 @@ public class WechatService implements ThirdpayService {
     boolean
             signMd5 =
             SecretKeyUtil
-                    .tenMD5CheckSign(responsePMap, md5securityKey, responsePMap.getString("sign"),
-                            WechatService.INPUT_CHARSET);
+                    .tenMD5CheckSign(responsePMap, md5securityKey, responsePMap.getString("sign"));
     if (!signMd5) {
       log.error("[refundOrder] 微信退款返回参数签名错误, 参数: {}", responsePMap);
       result.withError(ResultStatus.THIRD_REFUND_RESPONSE_SIGN_ERROR);
@@ -424,7 +421,7 @@ public class WechatService implements ThirdpayService {
     //2.计算md5签名
     String md5securityKey = params.getString("md5securityKey");        // 加密秘钥
     String sign = SecretKeyUtil
-            .tenMD5Sign(requestPMap, md5securityKey, WechatService.INPUT_CHARSET);
+            .tenMD5Sign(requestPMap, md5securityKey);
     if (sign == null) {
       log.error("[queryRefundOrder] 微信退款查询签名失败, 参数: {}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_QUERY_REFUND_SIGN_ERROR);
@@ -462,8 +459,7 @@ public class WechatService implements ThirdpayService {
     //5.校验签名
     boolean
             signMd5 =
-            SecretKeyUtil.tenMD5CheckSign(orderPMap, md5securityKey, orderPMap.getString("sign"),
-                    WechatService.INPUT_CHARSET);
+            SecretKeyUtil.tenMD5CheckSign(orderPMap, md5securityKey, orderPMap.getString("sign"));
     if (!signMd5) {
       log.error("[queryRefundOrder] 微信退款查询返回参数签名异常, 参数: {}, 返回: {}", requestPMap , resContent);
       return ResultMap.build(ResultStatus.THIRD_QUERY_REFUND_RESPONSE_SIGN_ERROR);
@@ -507,7 +503,7 @@ public class WechatService implements ThirdpayService {
     }
     //获取md5签名
     String key = params.getString("key");
-    String sign = SecretKeyUtil.tenMD5Sign(requestPMap, key, WechatService.INPUT_CHARSET);
+    String sign = SecretKeyUtil.tenMD5Sign(requestPMap, key);
     if (sign == null) {
       log.error("[downloadOrder] 微信下载对账单签名失败, 参数: {}", requestPMap);
       result.withError(ResultStatus.THIRD_QUERY_SIGN_ERROR);
@@ -694,7 +690,7 @@ public class WechatService implements ThirdpayService {
     //校验签名
     String md5securityKey = params.getString("md5securityKey");
     String out_sign = notifyParams.getString("sign");
-    if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, WechatService.INPUT_CHARSET)) {
+    if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign)) {
       log.error("[handleNotifyWebAsync] 微信扫码支付异步回调校验签名失败, 参数: {}", params);
       result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
       return result;
