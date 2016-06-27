@@ -63,7 +63,7 @@ public class RefundNotifyManager {
       if (refundInfo == null) {
         //退款单不存在
         logger.error("[handleRefundNotify] 查询退款订单失败, 参数: {}", JSONUtil.Bean2JSON(params));
-        return ResultMap.build(ResultStatus.THIRD_NOTIFY_REFUND_PARAM_ERROR);
+        return ResultMap.build(ResultStatus.REFUND_NOT_EXIST);
       }
       if (refundInfo.getRefundStatus() == RefundStatus.SUCCESS.getValue()) {
         //重复通知
@@ -74,11 +74,11 @@ public class RefundNotifyManager {
       if (!"SUCCESS".equals(refundStatus)) {
         //失败状态
         refundService.updateRefundFail(refundId, agencyRefundId, refundStatus, null);
-        return ResultMap.build(ResultStatus.THIRD_NOTIFY_REFUND_PARAM_ERROR);
+        return ResultMap.build(ResultStatus.REFUND_FAILED);
       } else if (refundMoney.compareTo(refundInfo.getRefundMoney()) != 0) {
         //金额不一致
         logger.error("[handleRefundNotify] 退款金额与交易金额不一致, 参数: {}", JSONUtil.Bean2JSON(params));
-        return ResultMap.build(ResultStatus.THIRD_NOTIFY_REFUND_PARAM_ERROR);
+        return ResultMap.build(ResultStatus.REFUND_NOT_EXIST);
       }
       //如果需要，查询支付单
       boolean isFairRefund = refundInfo.getRefundStatus() == RefundStatus.FAIR.getValue();
@@ -87,14 +87,14 @@ public class RefundNotifyManager {
         payOrderInfo = payOrderService.selectPayOrderInfoByOrderId(refundInfo.getOrderId(), refundInfo.getAppId());
         if (payOrderInfo == null) {
           logger.error("[handleRefundNotify] PayOrderInfo not exists, params={}", refundInfo.getOrderId());
-          return ResultMap.build(ResultStatus.PAY_ORDER_NOT_EXIST);
+          return ResultMap.build(ResultStatus.ORDER_NOT_EXIST);
         }
       }
       //查询支付流水单
       PayResDetail payResDetail = payResDetailService.selectPayResById(refundInfo.getPayDetailId());
       if (payResDetail == null) {
         logger.error("[handleRefundNotify] 回调流水不存在, payDetailId={}", refundInfo.getPayDetailId());
-        return ResultMap.build(ResultStatus.RES_DETAIL_NOT_EXIST_ERROR);
+        return ResultMap.build(ResultStatus.RES_DETAIL_NOT_EXIST);
       }
       //退款成功，更新支付单退款金额、退款单退款成功状态
       App app = new App();
@@ -114,7 +114,7 @@ public class RefundNotifyManager {
       return result;
     } catch (Exception e) {
       logger.error("[handleRefundNotify] 退款通知错误, 参数: {}", JSONUtil.Bean2JSON(params), e);
-      return ResultMap.build(ResultStatus.SYSTEM_ERROR);
+      return ResultMap.build(ResultStatus.HANDLE_THIRD_NOTIFY_ERROR);
     }
   }
 

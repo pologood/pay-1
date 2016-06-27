@@ -61,11 +61,23 @@ public class CheckManagerTest extends BaseTest {
 
   @Test
   public void checkWechat() {
-    Date checkDate = DateUtil.parse("20151118");
+    Date checkDate = DateUtil.parse("20160622");
     String agencyCode = AgencyCode.WECHAT.name();
     try {
       checkManager.downloadOrderData(checkDate, agencyCode);
       checkManager.checkOrderData(checkDate, agencyCode);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test
+  public void checkUnionpay() {
+    Date checkDate = DateUtil.parse("20160623");
+    String agencyCode = AgencyCode.UNIONPAY.name();
+    try {
+      checkManager.downloadOrderData(checkDate, agencyCode);
+      //checkManager.checkOrderData(checkDate, agencyCode);
     } catch (Exception e) {
       e.printStackTrace();
     }

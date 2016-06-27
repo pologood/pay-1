@@ -73,9 +73,9 @@ public class RefundServiceImpl implements RefundService {
 
 
   @Override
-  public int updateRefundFail(String refundId, String agencyRefundId, String errorCode, String errorInfo) throws ServiceException {
+  public int updateRefundFail(String refundId, String agencyRefundId, String errorCode, String errorMsg) throws ServiceException {
     try {
-      return refundInfoDAO.updateRefundStatus(refundId, agencyRefundId, RefundStatus.FAIL.getValue(), errorCode, errorInfo, null);
+      return refundInfoDAO.updateRefundStatus(refundId, agencyRefundId, RefundStatus.FAIL.getValue(), errorCode, errorMsg, null);
     } catch (Exception e) {
       throw new ServiceException(e, ResultStatus.SYSTEM_DB_ERROR);
     }

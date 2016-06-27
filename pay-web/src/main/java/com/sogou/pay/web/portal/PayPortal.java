@@ -70,13 +70,13 @@ public class PayPortal {
     if (StringUtil.isEmpty(params.getString("agencyCode"), params.getString("payChannel"),
             params.getString("orderAmount"), params.getString("md5securityKey"))) {
       log.error("[preparePay] params invalid, params={}", JSONUtil.Bean2JSON(params));
-      return (ResultMap) result.withError(ResultStatus.THIRD_PAY_PARAM_ERROR);
+      return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
     //验证金额是否大于0
     BigDecimal oAmount = new BigDecimal(params.getString("orderAmount"));
     if (oAmount.compareTo(new BigDecimal(0)) != 1) {
       log.error("[preparePay] params invalid, params={}", JSONUtil.Bean2JSON(params));
-      return (ResultMap) result.withError(ResultStatus.THIRD_PAY_PARAM_ERROR);
+      return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
 
     String agencyCode = params.getString("agencyCode");
@@ -109,7 +109,7 @@ public class PayPortal {
       result.withError(e.getStatus());
     } catch (Exception e) {
       log.error("[preparePay] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
-      result.withError(ResultStatus.THIRD_PAY_ERROR);
+      result.withError(ResultStatus.THIRD_ERROR);
     }
     return result;
   }
@@ -122,7 +122,7 @@ public class PayPortal {
             params.getString("md5securityKey"), params.getString("refundAmount"),
             params.getString("totalAmount"))) {
       log.error("[refundOrder] params invalid, params={}", JSONUtil.Bean2JSON(params));
-      return (ResultMap) result.withError(ResultStatus.THIRD_REFUND_PARAM_ERROR);
+      return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
     //验证金额是否大于0
     BigDecimal refundAmount = new BigDecimal(params.getString("refundAmount"));
@@ -131,7 +131,7 @@ public class PayPortal {
     int compareTotalAmount = totalAmount.compareTo(new BigDecimal(0));
     if (compareRefundAmount != 1 || compareTotalAmount != 1) {
       log.error("[refundOrder] params invalid, params={}", JSONUtil.Bean2JSON(params));
-      return (ResultMap) result.withError(ResultStatus.THIRD_REFUND_PARAM_ERROR);
+      return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
 
     //根据不同支付机构调用退款接口
@@ -145,7 +145,7 @@ public class PayPortal {
       return (ResultMap) result.withError(e.getStatus());
     } catch (Exception e) {
       log.error("[refundOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
-      return (ResultMap) result.withError(ResultStatus.THIRD_REFUND_ERROR);
+      return (ResultMap) result.withError(ResultStatus.THIRD_ERROR);
     }
     return result;
   }
@@ -157,7 +157,7 @@ public class PayPortal {
     //验证共同参数是否为空
     if (StringUtil.isEmpty(params.getString("agencyCode"), params.getString("md5securityKey"))) {
       log.error("[queryOrder] params invalid, params={}", JSONUtil.Bean2JSON(params));
-      return (ResultMap) result.withError(ResultStatus.THIRD_QUERY_PARAM_ERROR);
+      return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
 
     //根据不同支付机构调用退款接口
@@ -170,7 +170,7 @@ public class PayPortal {
       return result.build(e.getStatus());
     } catch (Exception e) {
       log.error("[queryOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
-      return result.build(ResultStatus.THIRD_QUERY_ERROR);
+      return result.build(ResultStatus.THIRD_ERROR);
     }
     return result;
   }
@@ -181,7 +181,7 @@ public class PayPortal {
     //验证共同参数是否为空
     if (StringUtil.isEmpty(params.getString("agencyCode"), params.getString("md5securityKey"))) {
       log.error("[queryRefund] params invalid, params={}", JSONUtil.Bean2JSON(params));
-      return (ResultMap) result.withError(ResultStatus.THIRD_QUERY_REFUND_PARAM_ERROR);
+      return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
 
     //根据不同支付机构调用退款接口
@@ -194,7 +194,7 @@ public class PayPortal {
       return result.build(e.getStatus());
     } catch (Exception e) {
       log.error("[queryRefund] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
-      return result.build(ResultStatus.THIRD_QUERY_REFUND_ERROR);
+      return result.build(ResultStatus.THIRD_ERROR);
     }
     return result;
   }
@@ -233,7 +233,7 @@ public class PayPortal {
       return result.build(e.getStatus());
     } catch (Exception e) {
       log.error("[getReqIDFromNotify] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
-      return result.build(ResultStatus.THIRD_NOTIFY_ERROR);
+      return result.build(ResultStatus.THIRD_ERROR);
     }
     return result;
 
@@ -273,7 +273,7 @@ public class PayPortal {
       return result.build(e.getStatus());
     } catch (Exception e) {
       log.error("[handleNotify] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
-      return result.build(ResultStatus.THIRD_NOTIFY_ERROR);
+      return result.build(ResultStatus.THIRD_ERROR);
     }
     return result;
   }

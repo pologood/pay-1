@@ -30,6 +30,7 @@ public enum UnionpayTxnType {
   CARD_BINDING("72"), //实名认证-建立绑定关系
   BILL_INQUIRY("73"), //账单查询
   BINDING_DISSOLUTION("74"), //解除绑定关系
+  DOWNLOAD("76"), //下载对账文件
   BINDING_INQUIRY("75"), //查询绑定关系
   VERIFICATION_CODE_SENDING("77"), //发送短信验证码交易
   TRADE_INQUIRY_OPEN("78"), //开通查询交易

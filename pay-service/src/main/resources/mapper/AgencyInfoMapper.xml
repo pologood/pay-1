@@ -30,7 +30,7 @@
     </select>
 
     <!--根据查询条件获取支付机构基本信息 -->
-    <select id="getAgencyInfoByCode" parameterType="String" resultMap="agencyInfo">
+    <select id="getAgencyInfoByCode" resultMap="agencyInfo">
 
       SELECT * FROM t_pay_agency_info
          WHERE agency_code = #{agencyCode} and (access_platform = #{accessPlatform} or access_platform=99)

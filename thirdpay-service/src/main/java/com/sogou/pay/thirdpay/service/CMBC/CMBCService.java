@@ -86,13 +86,13 @@ public class CMBCService implements ThirdpayService {
     Result httpResponse = HttpService.getInstance().doPost(params.getString("prepayUrl"), paramsStr, CMBCService.INPUT_CHARSET, null);
     if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
       log.error("[prepareTransferInfo] 招行代付HTTP请求失败, 参数: {}", JSONUtil.Bean2JSON(params));
-      result.withError(ResultStatus.THIRD_PAY_HTTP_ERROR);
+      result.withError(ResultStatus.THIRD_HTTP_ERROR);
       return result;
     }
     String resContent = (String) httpResponse.getReturnValue();
     String reqNbr = parseResult(resContent);
     if (reqNbr == null) {
-      result.withError(ResultStatus.THIRD_PAY_RESPONSE_PARAM_ERROR);
+      result.withError(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
       return result;
     }
     return result;
@@ -114,7 +114,7 @@ public class CMBCService implements ThirdpayService {
     Result httpResponse = HttpService.getInstance().doPost(params.getString("queryUrl"), paramsStr, CMBCService.INPUT_CHARSET, null);
     if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
       log.error("[queryTransfer] 招行代付查询HTTP请求失败, 参数: {}", JSONUtil.Bean2JSON(params));
-      result.withError(ResultStatus.THIRD_PAY_HTTP_ERROR);
+      result.withError(ResultStatus.THIRD_HTTP_ERROR);
       return result;
     }
     String resContent = (String) httpResponse.getReturnValue();
@@ -136,7 +136,7 @@ public class CMBCService implements ThirdpayService {
     Result httpResponse = HttpService.getInstance().doPost(params.getString("queryRefundUrl"), paramsStr, CMBCService.INPUT_CHARSET, null);
     if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
       log.error("[queryTransferRefund] 招行代付退票查询HTTP请求失败, 参数: {}", JSONUtil.Bean2JSON(params));
-      result.withError(ResultStatus.THIRD_PAY_HTTP_ERROR);
+      result.withError(ResultStatus.THIRD_HTTP_ERROR);
       return result;
     }
     String resContent = (String) httpResponse.getReturnValue();

@@ -49,9 +49,6 @@ public class PayNotifyController extends BaseController {
   private PayPortal payPortal;
 
   @Autowired
-  private RefundManager refundManager;
-
-  @Autowired
   private PayReqDetailService payReqDetailService;
 
   @Autowired
@@ -77,9 +74,9 @@ public class PayNotifyController extends BaseController {
 
     //提取payDetailId
     ResultMap result = payPortal.getReqIDFromNotify(requestPMap);
-    if (result.getStatus() != ResultStatus.SUCCESS) {
+    if (!Result.isSuccess(result)) {
       log.error("[parseNotifyParams] 从notify中获取payDetailId失败, 参数: {}", requestPMap);
-      return ResultMap.build(ResultStatus.PAY_ORDER_NOT_EXIST);
+      return result;
     }
     String reqId = (String) result.getItem("reqId");
     //String merchantNo = (String) result.getItem("merchantNo");
@@ -88,13 +85,13 @@ public class PayNotifyController extends BaseController {
     PayReqDetail payReqDetail = payReqDetailService.selectPayReqDetailById(reqId);
     if (null == payReqDetail) {
       log.error("[parseNotifyParams] 查询支付流水信息失败, reqId={}", reqId);
-      return ResultMap.build(ResultStatus.REQ_DETAIL_NOT_EXIST_ERROR);
+      return ResultMap.build(ResultStatus.REQ_DETAIL_NOT_EXIST);
     }
     String merchantNo = payReqDetail.getMerchantNo();
     PayAgencyMerchant payAgencyMerchant = payAgencyMerchantService.selectByAgencyAndMerchant(agencyCode, merchantNo);
     if (payAgencyMerchant == null) {
       log.error("[parseNotifyParams] 查询商户信息失败, agencyCode={}, merchantNo={}", agencyCode, merchantNo);
-      return ResultMap.build(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
+      return ResultMap.build(ResultStatus.THIRD_MERCHANT_NOT_EXIST);
     }
     //获取签名key
     String md5securityKey = payAgencyMerchant.getEncryptKey();
@@ -104,9 +101,9 @@ public class PayNotifyController extends BaseController {
 
     //验证签名，提取参数
     result = payPortal.handleNotify(requestPMap);
-    if (result.getStatus() != ResultStatus.SUCCESS) {
+    if (!Result.isSuccess(result)) {
       log.error("[parseNotifyParams] 验证签名、提取参数失败, 参数: {}", requestPMap);
-      return ResultMap.build(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
+      return result;
     }
     result.addItem("payFeeType", payReqDetail.getPayFeeType());
     return result;
@@ -127,10 +124,10 @@ public class PayNotifyController extends BaseController {
     }
 
     PMap resultPMap = result.getData();
-    String tradeStatus = resultPMap.getString("tradeStatus");
-    if (!tradeStatus.equals("SUCCESS")) {
+    String payStatus = resultPMap.getString("payStatus");
+    if (!payStatus.equals("SUCCESS")) {
       log.error("[handleNotifySync] 交易失败, 参数: {}", params);
-      return setErrorPage(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR, platform);
+      return setErrorPage(ResultStatus.ORDER_FAILED, platform);
     }
 
     String reqId = resultPMap.getString("reqId");
@@ -141,14 +138,14 @@ public class PayNotifyController extends BaseController {
     List<PayOrderRelation> relationList = payOrderRelationService.selectPayOrderRelation(paramRelation);
     if (null == relationList || relationList.size() == 0) {
       log.error("[handleNotifySync] 查询订单流水单关联表失败, reqId={}", reqId);
-      return setErrorPage(ResultStatus.PAY_ORDER_RELATION_NOT_EXIST, platform);
+      return setErrorPage(ResultStatus.ORDER_RELATION_NOT_EXIST, platform);
     }
     //2.根据payIdList查询payOrder信息
     List<PayOrderInfo> payOrderInfos = payOrderService.selectPayOrderByPayIdList(relationList);
     PayOrderInfo payOrderInfo = null;
     if (payOrderInfos == null) {
       log.error("[handleNotifySync] 查询订单表失败, reqId={}", reqId);
-      return setErrorPage(ResultStatus.PAY_ORDER_NOT_EXIST, platform);
+      return setErrorPage(ResultStatus.ORDER_NOT_EXIST, platform);
     }
     payOrderInfo = payOrderInfos.get(0);
 
@@ -185,18 +182,18 @@ public class PayNotifyController extends BaseController {
     }
 
     PMap resultPMap = result.getData();
-    String tradeStatus = resultPMap.getString("tradeStatus");
-    if (!tradeStatus.equals("SUCCESS")) {
+    String payStatus = resultPMap.getString("payStatus");
+    if (!payStatus.equals("SUCCESS")) {
       log.error("[handleNotifyAsync] 交易失败, 参数:" + params);
-      return ResultMap.build(ResultStatus.THIRD_NOTIFY_SYNC_PARAM_ERROR);
+      return ResultMap.build(ResultStatus.ORDER_FAILED);
     }
 
     PayNotifyModel payNotifyModel = new PayNotifyModel();
     payNotifyModel.setPayDetailId(resultPMap.getString("reqId"));
-    payNotifyModel.setAgencyOrderId(resultPMap.getString("agencyOrderId"));
+    payNotifyModel.setAgencyOrderId(resultPMap.getString("agencyPayId"));
     payNotifyModel.setChannelType(resultPMap.getString("channelType"));
     payNotifyModel.setAgencyPayTime(DateUtil.parse(resultPMap.getString("agencyPayTime")));
-    payNotifyModel.setTrueMoney(new BigDecimal(resultPMap.getString("trueMoney")));
+    payNotifyModel.setTrueMoney(new BigDecimal(resultPMap.getString("payMoney")));
 
     return payNotifyManager.handlePayNotify(payNotifyModel);
   }

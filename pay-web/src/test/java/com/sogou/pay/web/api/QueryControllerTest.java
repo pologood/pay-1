@@ -17,7 +17,7 @@ public class QueryControllerTest extends BaseTest {
     public void testOrderQueryPay() {
         String url = "/api/pay/query";
         RefundQueryForm params = new RefundQueryForm();
-        params.setOrderId("OD20160622195216784");
+        params.setOrderId("OD20160623153425990");
         params.setSignType("0");
         params.setAppId("1999");
         Map map = BeanUtil.Bean2Map(params);
@@ -29,7 +29,7 @@ public class QueryControllerTest extends BaseTest {
     public void testOrderQueryRefund() {
         String url = "/api/refund/query";
         RefundQueryForm params = new RefundQueryForm();
-        params.setOrderId("OD20160622195216784");
+        params.setOrderId("OD20160623151129116");
         params.setSignType("0");
         params.setAppId("1999");
         Map map = BeanUtil.Bean2Map(params);

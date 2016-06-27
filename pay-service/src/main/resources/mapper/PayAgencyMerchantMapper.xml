@@ -45,12 +45,12 @@
           AND agency_code=#{agencyCode}
         </if>
         <if test = "companyCode != null">
-          AND (company_code=#{companyCode} OR company_code=99)
+          AND (company_code=#{companyCode} OR company_code IS NULL )
         </if>
         <if test = "appId != null">
           AND (app_id=#{appId} OR app_id IS NULL)
         </if>
-        ORDER BY company_code ASC LIMIT 1
+        ORDER BY app_id DESC, company_code DESC LIMIT 1
     </select>
 
     <select id="selectPayAgencyMerchantById" parameterType="int" resultMap="payAgencyMerchantMap">

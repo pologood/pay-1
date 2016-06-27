@@ -133,11 +133,11 @@
             <version>1.0</version>
         </dependency>-->
         <!-- email -->
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.5.0-b01</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>javax.mail</groupId>-->
+            <!--<artifactId>mail</artifactId>-->
+            <!--<version>1.5.0-b01</version>-->
+        <!--</dependency>-->
 
         <!-- freemarker的jar -->
         <dependency>
@@ -152,8 +152,7 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>3.0-alpha-1</version>
+            <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.perf4j</groupId>

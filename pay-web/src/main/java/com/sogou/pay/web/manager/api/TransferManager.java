@@ -53,7 +53,7 @@ public class TransferManager {
       transferList = payTransferService.queryByOutRefAndAppId(recordList, appId);
       //查询有记录，重复代付单号
       if (transferList.size() > 0)
-        result.withError(ResultStatus.DB_REPEAT_ORDER_ERROR);
+        result.withError(ResultStatus.PAY_TRANSFER_ALREADY_EXIST);
     } catch (ServiceException e) {
       logger.error("[selectPayTransInfoByOutRef] failed, {}", e);
       result.withError(ResultStatus.SYSTEM_DB_ERROR);
@@ -99,14 +99,14 @@ public class TransferManager {
     transferList = payTransferService.queryByBatchNo(params.getString("appId"), params.getString("batchNo"));
     if (null != transferList && transferList.size() > 0) {
       logger.error("【代付请求】重复批次号提交失败！batchNo=" + params.getString("batchNo"));
-      result.withError(ResultStatus.DB_REPEAT_BATCHNO_ERROR);
+      result.withError(ResultStatus.PAY_TRANSFER_BATCH_ALREADY_EXIST);
       return result;
     }
     //2.校验是否有重复的代付单号
     transferList = payTransferService.queryByOutRefAndAppId(payIdList, params.getInt("appId"));
     if (null != transferList && transferList.size() > 0) {
       logger.error("【代付请求】重复代付单提交失败！orderIdList=" + payIdList.toString());
-      result.withError(ResultStatus.DB_REPEAT_ORDER_ERROR);
+      result.withError(ResultStatus.PAY_TRANSFER_ALREADY_EXIST);
     }
     return result;
   }
@@ -121,14 +121,14 @@ public class TransferManager {
       //验证代付批次是否存在
       if (payTransferBatch == null) {
         logger.error("payTransferBatch is not found,batchNo = " + batchNo);
-        result.withError(ResultStatus.PAY_TRANFER_BATCH_NOT_EXIST);
+        result.withError(ResultStatus.PAY_TRANSFER_BATCH_NOT_EXIST);
         return result;
       }
       //验证代发单是否存在
       List<PayTransfer> payTransferList = payTransferService.queryByBatchNo(appId, batchNo);
       if (CollectionUtils.isEmpty(payTransferList)) {
         logger.error("payTransfer is not found , batchNo = " + batchNo);
-        result.withError(ResultStatus.PAY_TRANFER_NOT_EXIST);
+        result.withError(ResultStatus.PAY_TRANSFER_NOT_EXIST);
         return result;
       }
       //组装结果数据

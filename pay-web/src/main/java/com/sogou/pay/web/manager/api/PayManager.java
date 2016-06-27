@@ -37,53 +37,6 @@ import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 public class PayManager {
 
   private static final Logger logger = LoggerFactory.getLogger(PayManager.class);
-
-  @Autowired
-  private AppService appService;
-
-  @Autowired
-  private ChannelService channelService;
-
-  @Autowired
-  private PayOrderService payOrderService;
-
-  @Autowired
-  private SequenceFactory sequencerGenerator;
-
-  @Autowired
-  private PayReqDetailService payReqDetailService;
-
-  @Autowired
-  private PayBankRouterService payBankRouterService;
-
-  @Autowired
-  private PayAgencyMerchantService payAgencyMerchantService;
-
-  @Autowired
-  private PayOrderRelationService payOrderRelationService;
-
-  @Autowired
-  private AgencyInfoService agencyInfoService;
-
-  @Autowired
-  private PayBankAliasService payBankAliasService;
-
-  @Autowired
-  private PayResIdService payResIdService;
-
-  @Autowired
-  private PayCheckWaitingService payCheckWaitingService;
-
-
-  @Autowired
-  private PayResDetailService payResDetailService;
-
-  @Autowired
-  private PayFeeService payFeeService;
-
-  @Autowired
-  private PayPortal payPortal;
-
   private static final PMap<String, Integer> thirdPayMap = new PMap<>();
 
   static {
@@ -101,8 +54,39 @@ public class PayManager {
     thirdPayMap.put("2_2", PayPortal.MOBILE_WAP);
   }
 
-  private static int getThirdPayChannel(String platForm, String payFeeType) {
-    String key = platForm + "_" + payFeeType;
+  @Autowired
+  private AppService appService;
+  @Autowired
+  private ChannelService channelService;
+  @Autowired
+  private PayOrderService payOrderService;
+  @Autowired
+  private SequenceFactory sequencerGenerator;
+  @Autowired
+  private PayReqDetailService payReqDetailService;
+  @Autowired
+  private PayBankRouterService payBankRouterService;
+  @Autowired
+  private PayAgencyMerchantService payAgencyMerchantService;
+  @Autowired
+  private PayOrderRelationService payOrderRelationService;
+  @Autowired
+  private AgencyInfoService agencyInfoService;
+  @Autowired
+  private PayBankAliasService payBankAliasService;
+  @Autowired
+  private PayResIdService payResIdService;
+  @Autowired
+  private PayCheckWaitingService payCheckWaitingService;
+  @Autowired
+  private PayResDetailService payResDetailService;
+  @Autowired
+  private PayFeeService payFeeService;
+  @Autowired
+  private PayPortal payPortal;
+
+  private static int getThirdPayChannel(int platForm, int payFeeType) {
+    String key = String.format("%d_%d", platForm, payFeeType);
     return thirdPayMap.get(key);
   }
 
@@ -123,7 +107,7 @@ public class PayManager {
       result.withReturn(info.getPayId());
     } catch (ServiceException e) {
       logger.error("[createOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
-      result.withError(ResultStatus.PAY_SYSTEM_ERROR);
+      result.withError(ResultStatus.SYSTEM_ERROR);
     }
     return result;
   }
@@ -160,7 +144,7 @@ public class PayManager {
       agencyCode = routeBank(params);
       if (agencyCode == null) {
         logger.error("[createAgencyOrder] bank router not exists, params={}", JSONUtil.Bean2JSON(params));
-        return (ResultMap) result.withError(ResultStatus.PAY_BANK_ROUTER_NOT_EXIST);
+        return (ResultMap) result.withError(ResultStatus.BANK_ROUTER_NOT_EXIST);
       }
     }
 
@@ -169,7 +153,7 @@ public class PayManager {
     if (app == null) {
       //业务线不存在
       logger.error("[createAgencyOrder] appid not exists, params={}", JSONUtil.Bean2JSON(params));
-      return (ResultMap) result.withError(ResultStatus.PAY_APP_NOT_EXIST);
+      return (ResultMap) result.withError(ResultStatus.APPID_NOT_EXIST);
     }
 
     //获取在第三方支付开通的商户信息
@@ -181,7 +165,7 @@ public class PayManager {
     if (merchant == null) {
       //第三方支付商户不存在
       logger.error("[createAgencyOrder] merchant not exists, params={}", JSONUtil.Bean2JSON(params));
-      return (ResultMap) result.withError(ResultStatus.PAY_MERCHANT_NOT_EXIST);
+      return (ResultMap) result.withError(ResultStatus.THIRD_MERCHANT_NOT_EXIST);
     }
 
     //生成支付流水单
@@ -322,12 +306,12 @@ public class PayManager {
       if (ret != 1) {
         //插入支付单失败
         logger.error("[insertPayOrder] insert pay order failed, params={}", JSONUtil.Bean2JSON(payOrderInfo));
-        result.withError(ResultStatus.PAY_INSERT_PAY_ORDER_ERROR);
+        result.withError(ResultStatus.SYSTEM_DB_ERROR);
       }
       result.withReturn(payId);
     } catch (Exception e) {
       logger.error("[insertPayOrder] insert pay order failed, {}", e);
-      result.withError(ResultStatus.PAY_SYSTEM_ERROR);
+      result.withError(ResultStatus.SYSTEM_ERROR);
     }
     return result;
   }
@@ -341,11 +325,11 @@ public class PayManager {
       String agencyCode = params.getString("agencyCode");
       String bankCode = params.getString("bankCode");
       int payFeeType = params.getInt("payFeeType");
-      String accessPlatfrom = params.getString("accessPlatform");
+      int accessPlatfrom = params.getInt("accessPlatform");
       AgencyInfo agencyInfo = agencyInfoService.getAgencyInfoByCode(agencyCode, accessPlatfrom);
       if (agencyInfo == null) {
         logger.error("[getThirdPayServiceParams] agency not exists, params={}", JSONUtil.Bean2JSON(params));
-        return (ResultMap) result.withError(ResultStatus.PAY_AGENCY_NOT_EXIST);
+        return (ResultMap) result.withError(ResultStatus.THIRD_AGENCY_NOT_EXIST);
       }
       if (ChannelType.CHANNELTYPE_BANK == payFeeType) {
         //网银支付 判断该支付机构的银行是否有别名
@@ -372,7 +356,7 @@ public class PayManager {
         payGateMap.put("bankCode", bankCode);
       }
       payGateMap.put("agencyCode", agencyCode);
-      payGateMap.put("payChannel", getThirdPayChannel(accessPlatfrom, String.valueOf(payFeeType)));
+      payGateMap.put("payChannel", getThirdPayChannel(accessPlatfrom, payFeeType));
       PayAgencyMerchant payAgencyMerchant = (PayAgencyMerchant) params.get("agencyMerchant");
       //第三方支付机构商户号
       payGateMap.put("merchantNo", payAgencyMerchant.getMerchantNo());
@@ -408,7 +392,7 @@ public class PayManager {
     } catch (Exception e) {
       e.printStackTrace();
       logger.error("[getThirdPayServiceParams] error, {}", e);
-      result.withError(ResultStatus.PAY_SYSTEM_ERROR);
+      result.withError(ResultStatus.SYSTEM_ERROR);
     }
     return result;
   }
@@ -427,7 +411,7 @@ public class PayManager {
       PayOrderInfo payOrderInfo = payOrderService.selectPayOrderInfoByOrderId(model.getOrderId(), app.getAppId());
       if (payOrderInfo == null) {
         logger.error("[queryPayOrder] PayOrderInfo not found, params={}", JSONUtil.Bean2JSON(model));
-        return (ResultMap) result.withError(ResultStatus.PAY_ORDER_NOT_EXIST);
+        return (ResultMap) result.withError(ResultStatus.ORDER_NOT_EXIST);
       }
       //检查支付单里的支付状态是否成功，成功则返回
       boolean orderSuccess = payOrderInfo.getPayOrderStatus() == OrderStatus.SUCCESS.getValue();
@@ -441,7 +425,7 @@ public class PayManager {
       List<PayOrderRelation> relationList = payOrderRelationService.selectPayOrderRelation(paramRelation);
       if (relationList == null || relationList.size() == 0) {
         logger.error("[queryPayOrder] PayOrderRelation not found, params={}", JSONUtil.Bean2JSON(paramRelation));
-        return (ResultMap) result.withError(ResultStatus.PAY_ORDER_RELATION_NOT_EXIST);
+        return (ResultMap) result.withError(ResultStatus.ORDER_RELATION_NOT_EXIST);
       }
       //如果是收银台请求，则可以返回
       if (orderSuccess && model.isFromCashier()) {
@@ -453,7 +437,7 @@ public class PayManager {
       payReqDetailList = payReqDetailService.selectPayReqByReqIdList(relationList);
       if (payReqDetailList == null) {
         logger.error("[queryPayOrder] PayReqDetail not found, params={}", JSONUtil.Bean2JSON(relationList));
-        return (ResultMap) result.withError(ResultStatus.PAY_ORDER_NOT_EXIST);
+        return (ResultMap) result.withError(ResultStatus.REQ_DETAIL_NOT_EXIST);
       }
       for (PayReqDetail payReqDetail : payReqDetailList) {
         payReqId = payReqDetail.getPayDetailId();
@@ -464,13 +448,13 @@ public class PayManager {
         PayAgencyMerchant merchantQuery = payAgencyMerchantService.selectPayAgencyMerchant(merchant);
         if (merchantQuery == null) {
           logger.error("[queryPayOrder] PayAgencyMerchant not found, params={}", JSONUtil.Bean2JSON(merchant));
-          return (ResultMap) result.withError(ResultStatus.PAY_MERCHANT_NOT_EXIST);
+          return (ResultMap) result.withError(ResultStatus.THIRD_MERCHANT_NOT_EXIST);
         }
         AgencyInfo agencyInfo = agencyInfoService.getAgencyInfoByCode(payReqDetail.getAgencyCode(),
-                payReqDetail.getAccessPlatform().toString());
+                payReqDetail.getAccessPlatform());
         if (agencyInfo == null) {
           logger.error("[queryPayOrder] AgencyInfo not found, params={}", JSONUtil.Bean2JSON(payReqDetail));
-          return (ResultMap) result.withError(ResultStatus.PAY_AGENCY_NOT_EXIST);
+          return (ResultMap) result.withError(ResultStatus.THIRD_AGENCY_NOT_EXIST);
         }
         //调用支付网关
         PMap queryPMap = new PMap();
@@ -487,9 +471,9 @@ public class PayManager {
         if (!Result.isSuccess(queryResult)) {
           logger.error("[queryPayOrder] queryOrder failed, params={}, result={}", JSONUtil.Bean2JSON(queryPMap),
                   JSONUtil.Bean2JSON(queryResult));
-          return (ResultMap) result.withError(queryResult.getStatus());
+          return queryResult;
         }
-        payStatus = queryResult.getData().get("order_state").toString();
+        payStatus = queryResult.getItem("payStatus").toString();
         if (Objects.equals(payStatus, OrderStatus.SUCCESS.name()))
           break;
       }
@@ -518,12 +502,12 @@ public class PayManager {
     //插入响应流水
     if (!insertResDetail(payNotifyModel, payReqDetail, payOrderInfo)) {
       logger.error("[handlePayNotify] 插入响应流水失败: {}", JSONUtil.Bean2JSON(payNotifyModel));
-      throw new RuntimeException(ResultStatus.INSERT_RES_DETAIL_ERROR.getMessage());
+      throw new RuntimeException(ResultStatus.SYSTEM_DB_ERROR.getMessage());
     }
     //插入对账单
     if (!insertPayCheckWaiting(payNotifyModel, payOrderInfo, payReqDetail)) {
       logger.error("[handlePayNotify] 插入对账单失败: {}", JSONUtil.Bean2JSON(payNotifyModel));
-      throw new RuntimeException(ResultStatus.INSERT_PAY_CHECK_WAITING_ERROR.getMessage());
+      throw new RuntimeException(ResultStatus.SYSTEM_DB_ERROR.getMessage());
     }
   }
 

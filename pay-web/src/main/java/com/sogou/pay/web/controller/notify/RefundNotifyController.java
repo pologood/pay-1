@@ -72,7 +72,7 @@ public class RefundNotifyController {
     requestPMap.put("publicCertFilePath", publicCertFilePath);
 
     ResultMap result = payPortal.handleNotify(requestPMap);
-    if (result.getStatus() != ResultStatus.SUCCESS) {
+    if (!Result.isSuccess(result)) {
       log.error("[handleNotifyAsync] 验证签名、提取参数失败, 参数: {}", requestPMap);
       return "success";
     }

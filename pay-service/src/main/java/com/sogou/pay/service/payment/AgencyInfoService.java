@@ -18,7 +18,7 @@ public interface AgencyInfoService {
      * @param accessPlatform 1：PC 2：移动 3：不区分 可空，默认为3
      * @return AgencyInfo
      */
-    public AgencyInfo getAgencyInfoByCode(String agencyCode,String accessPlatform);
+    public AgencyInfo getAgencyInfoByCode(String agencyCode,Integer accessPlatform);
 
 
     /**

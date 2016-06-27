@@ -3,7 +3,6 @@ package com.sogou.pay.web.controller.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sogou.pay.common.types.Result;
-import com.sogou.pay.common.types.ResultBean;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.types.PMap;
@@ -64,7 +62,7 @@ public class TransferController extends BaseController {
     List validateResult = ControllerUtil.validateParams(params);
     if (validateResult.size() > 0) {
       logger.error("[doPay][validateParams][Failed]{}", validateResult.toString().substring(1, validateResult.toString().length() - 1));
-      return (ResultMap) resultMap.withError(ResultStatus.PAY_PARAM_ERROR);
+      return (ResultMap) resultMap.withError(ResultStatus.PARAM_ERROR);
     }
     PMap paramsMap = BeanUtil.Bean2PMap(params);
     //查询业务线信息
@@ -72,7 +70,7 @@ public class TransferController extends BaseController {
     App app = appService.selectApp(appId);
     if (app == null) {
       logger.error("[commonCheck] appid not exists, params={}", JSONUtil.Bean2JSON(params));
-      return (ResultMap) resultMap.withError(ResultStatus.PAY_APP_NOT_EXIST);
+      return (ResultMap) resultMap.withError(ResultStatus.APPID_NOT_EXIST);
     }
     //验证签名
     String secret = app.getSignKey();
@@ -135,7 +133,7 @@ public class TransferController extends BaseController {
             || StringUtil.isBlank(payTransferQueryParams.getSign())
             || StringUtil.isBlank(payTransferQueryParams.getSignType())) {
       logger.error("【代付查询参数错误】");
-      result = ResultMap.build(ResultStatus.PAY_PARAM_ERROR);
+      result = ResultMap.build(ResultStatus.PARAM_ERROR);
       return result;
     }
     /**1.验证签名**/
@@ -143,7 +141,7 @@ public class TransferController extends BaseController {
     if (!Result.isSuccess(signResult)) {
       logger.error("【支付请求】验证签名错误！");
       //获取业务平台签名失败
-      result = ResultMap.build(ResultStatus.SIGNATURE_ERROR);
+      result = ResultMap.build(ResultStatus.VERIFY_SIGN_ERROR);
       return result;
     }
     result = transferManager.queryByBatchNo(payTransferQueryParams.getAppId(), payTransferQueryParams.getBatchNo());
@@ -164,7 +162,7 @@ public class TransferController extends BaseController {
             || StringUtil.isBlank(payTransferRefundQueryParams.getSign())
             || StringUtil.isBlank(payTransferRefundQueryParams.getSignType())) {
       logger.error("【代付退票查询参数错误】");
-      result = ResultMap.build(ResultStatus.PAY_PARAM_ERROR);
+      result = ResultMap.build(ResultStatus.PARAM_ERROR);
       return result;
     }
     /**1.验证签名**/
@@ -172,7 +170,7 @@ public class TransferController extends BaseController {
     if (!Result.isSuccess(signResult)) {
       logger.error("【支付请求】验证签名错误！");
       //获取业务平台签名失败,跳到错误页面
-      result = ResultMap.build(ResultStatus.SIGNATURE_ERROR);
+      result = ResultMap.build(ResultStatus.VERIFY_SIGN_ERROR);
       return result;
     }
     result = transferManager.queryRefund(payTransferRefundQueryParams.getStartTime(), payTransferRefundQueryParams.getEndTime(),
@@ -206,14 +204,14 @@ public class TransferController extends BaseController {
         if (!StringUtil.isEmpty(record.getBankFlg())) {
           if ((!"Y".equals(record.getBankFlg())) && (!"N".equals(record.getBankFlg()))) {
             logger.error("【支付请求】系统内表示字段只能是Y或N。代付单号为：" + record.getPayId());
-            returnResult.withError(ResultStatus.PAY_PARAM_ERROR);
+            returnResult.withError(ResultStatus.PARAM_ERROR);
             return returnResult;
           }
           //当BNKFLG=N时，他行开户行以及他行开户地必填
           if (("N".equals(record.getBankFlg())) &&
                   (StringUtil.isEmpty(record.getEacBank()) || StringUtil.isEmpty(record.getEacCity()))) {
             logger.error("【支付请求】当BNKFLG=N时，他行开户行以及他行开户地必填。代付单号为：" + record.getPayId());
-            returnResult.withError(ResultStatus.PAY_PARAM_ERROR);
+            returnResult.withError(ResultStatus.PARAM_ERROR);
             return returnResult;
           }
         }
@@ -221,7 +219,7 @@ public class TransferController extends BaseController {
         if (validateRecord.size() > 0) {
           //验证参数失败
           logger.error("【支付请求】" + validateRecord.toString().substring(1, validateRecord.toString().length() - 1));
-          returnResult.withError(ResultStatus.PAY_PARAM_ERROR);
+          returnResult.withError(ResultStatus.PARAM_ERROR);
           return returnResult;
         }
         //判断是否有重复的代付单号
@@ -236,7 +234,7 @@ public class TransferController extends BaseController {
         for (String payId : repeatPayIdList)
           payIds = payId + ",";
         logger.error("【代付请求】提交代付单中有相同的代付单号!重复的代付单号为：" + payIds.substring(0, payIds.length() - 1));
-        returnResult.withError(ResultStatus.REPEAT_ORDER_ERROR);
+        returnResult.withError(ResultStatus.ORDER_ALREADY_EXIST);
         return returnResult;
       }
     } catch (Exception e) {

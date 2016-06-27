@@ -29,10 +29,10 @@ public class SecureManager {
         return result;
       Map resultMap = (Map) result.getReturnValue();
       String ourSign = (String) resultMap.get("sign");
-      return Objects.equals(sign, ourSign) ? result : result.withError(ResultStatus.SIGNATURE_ERROR);
+      return Objects.equals(sign, ourSign) ? result : result.withError(ResultStatus.VERIFY_SIGN_ERROR);
     } catch (Exception e) {
       logger.error("[verifyAppSign] verify sign failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
-      return ResultMap.build(ResultStatus.SIGNATURE_ERROR);
+      return ResultMap.build(ResultStatus.VERIFY_SIGN_ERROR);
     }
   }
 
@@ -48,7 +48,7 @@ public class SecureManager {
       return ResultMap.build().withReturn(params);
     } catch (Exception e) {
       logger.error("[doAppSign] sign failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
-      return ResultMap.build(ResultStatus.PAY_SIGN_ERROR);
+      return ResultMap.build(ResultStatus.SIGN_ERROR);
     }
   }
 

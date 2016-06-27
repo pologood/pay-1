@@ -21,7 +21,7 @@ public class RefundControllerTest extends BaseTest {
         params.setAppId("1999");
         params.setBgUrl("http://center.pay.sogou.com/notify/testBgUrl");
         params.setSignType("0");
-        params.setOrderId("OD20160622195216784");
+        params.setOrderId("OD20160623153425990");
         Map map = BeanUtil.Bean2Map(params);
         map.put("sign", controller.signData(map).getItem("sign"));
         testPost(url, map);

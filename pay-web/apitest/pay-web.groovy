@@ -53,7 +53,7 @@ CONFIG(bdd, [
 //    PayRoutines.apiQueryRefund(bdd, ctx, orderId)
 //    println "[PayWeb]end query refund"
 //    println "[PayWeb]begin refund again, $orderId"
-//    PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_REFUND_ALREADY_DONE")
+//    PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_ALREADY_DONE")
 //    println "[PayWeb]end refund"
 }
 
@@ -82,7 +82,7 @@ println ""
     PayRoutines.apiQueryRefund(bdd, ctx, orderId)
     println "[PayWap]end query refund"
     println "[PayWap]begin refund again, $orderId"
-    PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_REFUND_ALREADY_DONE")
+    PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_ALREADY_DONE")
     println "[PayWap]end refund"
 }
 
@@ -110,7 +110,7 @@ println ""
     PayRoutines.apiQueryRefund(bdd, ctx, orderId)
     println "[PaySDK]end query refund"
     println "[PaySDK]begin refund again, $orderId"
-    PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_REFUND_ALREADY_DONE")
+    PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_ALREADY_DONE")
     println "[PaySDK]end refund"
 }
 
@@ -138,7 +138,7 @@ println ""
     PayRoutines.apiQueryRefund(bdd, ctx, orderId)
     println "[PayQRCode]end query refund"
     println "[PayQRCode]begin refund again, $orderId"
-    PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_REFUND_ALREADY_DONE")
+    PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_ALREADY_DONE")
     println "[PayQRCode]end refund"
 }
 
