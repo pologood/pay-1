@@ -24,7 +24,4 @@ public enum CheckType {
         return value;
     }
 
-    private void setValue(int value) {
-        this.value = value;
-    }
 }
