@@ -228,9 +228,9 @@ public class AlipayService implements ThirdpayService {
       log.error("[preparePayInfoSDK] get private key failed, params={}", privateCertFilePath);
       return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);
     }
-    StringBuilder requestString = new StringBuilder(SecretKeyUtil.buildSignSource(requestPMap, true));
+    StringBuilder requestString = new StringBuilder(SecretKeyUtil.buildSignSource(requestPMap));
     String sign =
-            SecretKeyUtil.aliRSASign(requestString.toString(), privateCertKey, INPUT_CHARSET);
+            SecretKeyUtil.aliRSASign(requestString.toString(), privateCertKey);
     if (sign == null) {
       log.error("[preparePayInfoSDK] sign failed, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_SIGN_ERROR);
@@ -834,7 +834,7 @@ public class AlipayService implements ThirdpayService {
 
   private ResultMap signMD5(PMap requestPMap, String secretKey) {
     String sign =
-            SecretKeyUtil.aliMD5Sign(requestPMap, secretKey, INPUT_CHARSET);
+            SecretKeyUtil.aliMD5Sign(requestPMap, secretKey);
     if (sign == null) {
       log.error("[signMD5] sign failed, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_SIGN_ERROR);
@@ -846,8 +846,7 @@ public class AlipayService implements ThirdpayService {
 
   private ResultMap verifySignMD5(PMap responsePMap, String secretKey, String sign) {
     boolean signOK = SecretKeyUtil
-            .aliMD5CheckSign(responsePMap, secretKey, sign,
-                    INPUT_CHARSET);
+            .aliMD5CheckSign(responsePMap, secretKey, sign);
     if (!signOK) {
       log.error("[verifySignMD5] verify sign failed, responsePMap={}, sign={}",
               responsePMap, sign);

@@ -431,7 +431,7 @@ public class TenpayService implements ThirdpayService {
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
     //签名
-    String sign = SecretKeyUtil.tenMD5Sign(sb.toString(), params.getString("md5securityKey"), INPUT_CHARSET);
+    String sign = SecretKeyUtil.tenMD5Sign(sb.toString(), params.getString("md5securityKey"));
     if (sign == null) {
       log.error("[downloadOrder] sign failed, params={}", params);
       return ResultMap.build(ResultStatus.THIRD_SIGN_ERROR);
@@ -738,7 +738,7 @@ public class TenpayService implements ThirdpayService {
 
   private ResultMap signMD5(PMap requestPMap, String secretKey) {
     String sign =
-            SecretKeyUtil.tenMD5Sign(requestPMap, secretKey, INPUT_CHARSET);
+            SecretKeyUtil.tenMD5Sign(requestPMap, secretKey);
     if (sign == null) {
       log.error("[signMD5] sign failed, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_SIGN_ERROR);
@@ -749,8 +749,7 @@ public class TenpayService implements ThirdpayService {
 
   private ResultMap verifySignMD5(PMap responsePMap, String secretKey, String sign) {
     boolean signOK = SecretKeyUtil
-            .tenMD5CheckSign(responsePMap, secretKey, sign,
-                    INPUT_CHARSET);
+            .tenMD5CheckSign(responsePMap, secretKey, sign);
     if (!signOK) {
       log.error("[verifySignMD5] verify sign failed, responsePMap={}, sign={}",
               responsePMap, sign);

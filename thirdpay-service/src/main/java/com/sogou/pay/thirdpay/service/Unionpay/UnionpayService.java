@@ -164,7 +164,7 @@ public class UnionpayService implements ThirdpayService {
       LOG.error("[sign] get private key failed: {}", params);
       return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);
     }
-    String sign = SecretKeyUtil.unionRSASign(signMap, privateCertKey, CHARSET);
+    String sign = SecretKeyUtil.unionRSASign(signMap, privateCertKey);
     if (sign == null) {
       LOG.error("[sign] sign failed: {}", signMap);
       return ResultMap.build(ResultStatus.THIRD_SIGN_ERROR);
@@ -179,7 +179,7 @@ public class UnionpayService implements ThirdpayService {
       LOG.error("[verifySign] get public key failed: {}", params);
       return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);
     }
-    if (!SecretKeyUtil.unionRSACheckSign(signMap, (String) signMap.remove("signature"), publicCertKey, CHARSET)) {
+    if (!SecretKeyUtil.unionRSACheckSign(signMap, (String) signMap.remove("signature"), publicCertKey)) {
       LOG.error("[verifySign] failed: {}", signMap);
       return ResultMap.build(ResultStatus.THIRD_VERIFY_SIGN_ERROR);
     }
