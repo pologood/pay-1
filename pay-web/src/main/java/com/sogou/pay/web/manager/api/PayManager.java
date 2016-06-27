@@ -101,7 +101,7 @@ public class PayManager {
         return insertPayOrder(params);
       } else if (info.getPayOrderStatus() == OrderStatus.SUCCESS.getValue()) {
         //该支付单已经支付成功，直接返回业务线
-        //result.withError(ResultStatus.PAY_ORDER_ALREADY_DONE);
+        result.withError(ResultStatus.ORDER_ALREADY_DONE);
       }
       //继续支付
       result.withReturn(info.getPayId());

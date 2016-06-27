@@ -31,7 +31,6 @@ CONFIG(bdd, [
         headers: [host: "$host"]
 ])
 
-/*
 //PC网页支付
 ["ALIPAY", "TENPAY"].each {
     def bankId = it
@@ -85,7 +84,6 @@ println ""
     PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_ALREADY_DONE")
     println "[PayWap]end refund"
 }
-*/
 
 println ""
 
@@ -116,7 +114,7 @@ println ""
 }
 
 println ""
-return
+
 //PC扫码支付
 ["ALIPAY", "WECHAT"].each {
     def bankId = it

@@ -49,8 +49,8 @@ class PayRoutines {
 
         //如果为重复支付，直接返回
         if (payAgain) {
-            //assert PayUtils.isEmpty(thirdPayUrl)
-            //return orderId
+            assert PayUtils.isEmpty(thirdPayUrl)
+            return orderId
         }
 
         //跳转到第三方支付
