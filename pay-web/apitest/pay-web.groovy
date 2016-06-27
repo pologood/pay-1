@@ -31,8 +31,9 @@ CONFIG(bdd, [
         headers: [host: "$host"]
 ])
 
+/*
 //PC网页支付
-["ALIPAY"/*, "TENPAY"*/].each {
+["ALIPAY", "TENPAY"].each {
     def bankId = it
     println "[PayWeb]begin pay"
     def orderId = PayRoutines.gwPayWeb(bdd, ctx, "$bankId", null)
@@ -43,21 +44,20 @@ CONFIG(bdd, [
     println "[PayWeb]begin pay again, $orderId"
     orderId = PayRoutines.gwPayWeb(bdd, ctx, "$bankId", orderId)
     println "[PayWeb]end pay, $orderId"
-//    println "[PayWeb]begin refund, $orderId"
-//    PayRoutines.apiRefund(bdd, ctx, orderId)
-//    println "[PayWeb]end refund"
-//    println "[PayWeb]begin query again, $orderId"
-//    PayRoutines.apiPayQuery(bdd, ctx, orderId)
-//    println "[PayWeb]end query"
-//    println "[PayWeb]begin query refund, $orderId"
-//    PayRoutines.apiQueryRefund(bdd, ctx, orderId)
-//    println "[PayWeb]end query refund"
-//    println "[PayWeb]begin refund again, $orderId"
-//    PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_ALREADY_DONE")
-//    println "[PayWeb]end refund"
+    println "[PayWeb]begin refund, $orderId"
+    PayRoutines.apiRefund(bdd, ctx, orderId)
+    println "[PayWeb]end refund"
+    println "[PayWeb]begin query again, $orderId"
+    PayRoutines.apiPayQuery(bdd, ctx, orderId)
+    println "[PayWeb]end query"
+    println "[PayWeb]begin query refund, $orderId"
+    PayRoutines.apiQueryRefund(bdd, ctx, orderId)
+    println "[PayWeb]end query refund"
+    println "[PayWeb]begin refund again, $orderId"
+    PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_ALREADY_DONE")
+    println "[PayWeb]end refund"
 }
 
-return
 println ""
 
 //手机网页支付
@@ -85,6 +85,7 @@ println ""
     PayRoutines.apiRefund(bdd, ctx, orderId, "REFUND_ALREADY_DONE")
     println "[PayWap]end refund"
 }
+*/
 
 println ""
 
@@ -98,7 +99,7 @@ println ""
     PayRoutines.apiPayQuery(bdd, ctx, orderId)
     println "[PaySDK]end query"
     println "[PaySDK]begin pay again, $orderId"
-    orderId = PayRoutines.apiPaySDK(bdd, ctx, "$bankId", orderId, "PAY_ORDER_ALREADY_DONE")
+    orderId = PayRoutines.apiPaySDK(bdd, ctx, "$bankId", orderId, "ORDER_ALREADY_DONE")
     println "[PaySDK]end pay, $orderId"
     println "[PaySDK]begin refund, $orderId"
     PayRoutines.apiRefund(bdd, ctx, orderId)
@@ -115,7 +116,7 @@ println ""
 }
 
 println ""
-
+return
 //PC扫码支付
 ["ALIPAY", "WECHAT"].each {
     def bankId = it
@@ -126,7 +127,7 @@ println ""
     PayRoutines.apiPayQuery(bdd, ctx, orderId)
     println "[PayQRCode]end query"
     println "[PayQRCode]begin pay again, $orderId"
-    orderId = PayRoutines.apiPayQRCode(bdd, ctx, "$bankId", orderId, "PAY_ORDER_ALREADY_DONE")
+    orderId = PayRoutines.apiPayQRCode(bdd, ctx, "$bankId", orderId, "ORDER_ALREADY_DONE")
     println "[PayQRCode]end pay, $orderId"
     println "[PayQRCode]begin refund, $orderId"
     PayRoutines.apiRefund(bdd, ctx, orderId)
