@@ -30,8 +30,6 @@ import java.util.*;
  */
 @Service
 public class TenpayService implements ThirdpayService {
-  private static final Logger log = LoggerFactory.getLogger(TenpayService.class);
-
   /**
    * 财付通账户支付参数
    */
@@ -39,11 +37,11 @@ public class TenpayService implements ThirdpayService {
   public static final String INPUT_CHARSET = "UTF-8";    // 字符编码格式
   public static final String ACCOUNT_BANK_TYPE = "DEFAULT";
   public static final String SIGN_TYPE = "MD5";  // 签名方式 不需修改
-  public static int TIME_OUT = 5;
   public static final String SALE_PLAT = "211";    //请求来源
   public static final String WAP_CHARSET = "1";    //字符编码格式:1 :UTF-8, 2 :GB2312, 默认为 1
   public static final String BANK_TYPE = "0";      //银行类型
-
+  private static final Logger log = LoggerFactory.getLogger(TenpayService.class);
+  public static int TIME_OUT = 5;
   private static HashMap<String, String> TRADE_STATUS = new HashMap<String, String>();
   private static HashMap<String, String> REFUND_STATUS = new HashMap<String, String>();
   private static HashMap<String, String[]> REFUND_OPUSER = new HashMap<String, String[]>();//退款用到
@@ -185,7 +183,7 @@ public class TenpayService implements ThirdpayService {
   public ResultMap preparePayInfoWap(PMap params) throws ServiceException {
     String callback_url = params.getString("pageNotifyUrl");
     ResultMap result = preparePayInfoMobile(params, callback_url);
-    if(!Result.isSuccess(result)) return result;
+    if (!Result.isSuccess(result)) return result;
     String token_id = (String) result.getItem("token_id");
     PMap requestPMap = new PMap();
     requestPMap.put("token_id", token_id);
@@ -304,8 +302,8 @@ public class TenpayService implements ThirdpayService {
 
     //发起请求
     TenpayHttpClient httpClient = new TenpayHttpClient();
-    httpClient.setCertFile("e:" + params.getString("privateCertFilePath"),
-            certPasswd, "e:" + params.getString("publicCertFilePath"));
+    httpClient.setCertFile(params.getString("privateCertFilePath"),
+            certPasswd, params.getString("publicCertFilePath"));
     Result httpResponse = httpClient.doGet(params.getString("refundUrl"), requestPMap);
     if (!Result.isSuccess(httpResponse)) {
       log.error("[refundOrder] http request failed, url={}, params={}", params.getString("refundUrl"), requestPMap);

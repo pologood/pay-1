@@ -131,10 +131,12 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("currencyCode", CURRENCYCODE);//交易币种
 
     /*选填*/
-    if (StringUtils.isNotBlank(params.getString("accountId"))) requestPMap.put("accNo", params.getString("accountId"));//账号 1后台类消费交易时上送全卡号或卡号后4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
+    if (StringUtils.isNotBlank(params.getString("accountId")))
+      requestPMap.put("accNo", params.getString("accountId"));//账号 1后台类消费交易时上送全卡号或卡号后4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
     //bankCode暂时不起作用，需要开通银联的网银前置
     String bankCode = params.getString("bankCode");
-    if (StringUtils.isNotBlank(bankCode)) requestPMap.put("issInsCode", bankCode);//1当账号类型为02-存折时需填写;2在前台类交易时填写默认银行代码,支持直接跳转到网银
+    if (StringUtils.isNotBlank(bankCode))
+      requestPMap.put("issInsCode", bankCode);//1当账号类型为02-存折时需填写;2在前台类交易时填写默认银行代码,支持直接跳转到网银
 
     return requestPMap;
   }
@@ -149,7 +151,7 @@ public class UnionpayService implements ThirdpayService {
     String resContent = (String) response.getReturnValue();
     ResultMap<?> responseMap;
     if (StringUtils.isBlank(resContent) || !ResultMap.isSuccess(responseMap = HttpUtil.extractParams(resContent))
-        || MapUtils.isEmpty(responseMap.getData())) {
+            || MapUtils.isEmpty(responseMap.getData())) {
       LOG.error("[sendRequest] http response error: params={}, response={}", requestMap, resContent);
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
@@ -190,7 +192,7 @@ public class UnionpayService implements ThirdpayService {
   }
 
   private String getCertFilePath(PMap<String, ?> params, boolean isPrivate) {
-    return "e:" + (isPrivate ? params.getString("privateCertFilePath") : params.getString("publicCertFilePath"));
+    return (isPrivate ? params.getString("privateCertFilePath") : params.getString("publicCertFilePath"));
   }
 
   private ResultMap<?> doRequest(String url, PMap<String, ?> params, PMap<String, String> requestPMap) throws ServiceException {
@@ -447,7 +449,7 @@ public class UnionpayService implements ThirdpayService {
   public ResultMap<?> handleNotifySDKAsync(PMap<String, ?> params) throws ServiceException {
     PMap<String, ?> notifyParams;
     ResultMap<?> resultMap = ResultMap.build(),
-        signCheckResult = verifySign(params, notifyParams = (PMap<String, ?>) params.getPMap("data"));
+            signCheckResult = verifySign(params, notifyParams = (PMap<String, ?>) params.getPMap("data"));
     if (!Result.isSuccess(signCheckResult)) return signCheckResult;
     //提取关键参数
     String orderId = notifyParams.getString("orderId");
@@ -470,7 +472,7 @@ public class UnionpayService implements ThirdpayService {
   public ResultMap<?> handleNotifyRefund(PMap<String, ?> params) throws ServiceException {
     PMap<String, ?> notifyParams;
     ResultMap<?> resultMap = ResultMap.build(),
-        signCheckResult = verifySign(params, notifyParams = (PMap<String, ?>) params.getPMap("data"));
+            signCheckResult = verifySign(params, notifyParams = (PMap<String, ?>) params.getPMap("data"));
     if (!Result.isSuccess(signCheckResult)) return signCheckResult;
 
     //提取关键参数

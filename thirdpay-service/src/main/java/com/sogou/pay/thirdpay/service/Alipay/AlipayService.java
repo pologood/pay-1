@@ -40,8 +40,6 @@ import java.util.List;
  */
 @Service
 public class AlipayService implements ThirdpayService {
-  private static final Logger log = LoggerFactory.getLogger(AlipayService.class);
-
   public static final String ALIPAY_SERVICE_DIRECTPAY = "create_direct_pay_by_user";
   public static final String ALIPAY_SERVICE_WAP_DIRECTPAY = "alipay.wap.create.direct.pay.by.user";
   public static final String ALIPAY_SERVICE_MOBILE_DIRECTPAY = "mobile.securitypay.pay";
@@ -60,6 +58,7 @@ public class AlipayService implements ThirdpayService {
   // m-分钟, h-小时, d-天, 1c-当天（无论交易何时创建, 都在0点关闭）。
   // 该参数数值不接受小数点, 如1.5h, 可转换为90m。
   public static final String IT_B_PAY = "30m";
+  private static final Logger log = LoggerFactory.getLogger(AlipayService.class);
   /**
    * 支付宝扫码支付参数
    */
@@ -222,7 +221,7 @@ public class AlipayService implements ThirdpayService {
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
     //签名
-    String privateCertFilePath = "e:" + params.getString("privateCertFilePath");
+    String privateCertFilePath = params.getString("privateCertFilePath");
     String privateCertKey = SecretKeyUtil.loadKeyFromFile(privateCertFilePath);
     if (StringUtil.isEmpty(privateCertKey)) {
       log.error("[preparePayInfoSDK] get private key failed, params={}", privateCertFilePath);
@@ -240,7 +239,7 @@ public class AlipayService implements ThirdpayService {
     requestString.append("&").append("sign_type").append("=").append(packit("RSA"));//签名方式
     String payInfo = requestString.toString();
     //获取客户端需要的支付宝公钥
-    String publicCertFilePath = "e:" + params.getString("publicCertFilePath");
+    String publicCertFilePath = params.getString("publicCertFilePath");
     String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
     if (StringUtil.isEmpty(publicCertKey)) {
       log.error("[preparePayInfoSDK] get public key failed, params={}", privateCertFilePath);
@@ -763,7 +762,7 @@ public class AlipayService implements ThirdpayService {
     ResultMap result;
     PMap notifyParams = params.getPMap("data");
     //验签
-    String publicCertFilePath = "e:" + params.getString("publicCertFilePath");
+    String publicCertFilePath = params.getString("publicCertFilePath");
     String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
     if (StringUtil.isEmpty(publicCertKey)) {
       log.error("[handleNotifySDKAsync] get public key failed, params={}", publicCertFilePath);
