@@ -439,14 +439,14 @@ public class AlipayService implements ThirdpayService {
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
     String[] refundStrArr = result_details.split("\\^");
-    String retunnRefundId = refundStrArr[0];
-    String retunnRefundMon = refundStrArr[2];
+    String returnRefundId = refundStrArr[0];
+    String returnRefundMon = refundStrArr[2];
     String refundIsSuccess = refundStrArr[3];
-    if (StringUtil.isEmpty(retunnRefundId, retunnRefundMon, refundIsSuccess)) {
+    if (StringUtil.isEmpty(returnRefundId, returnRefundMon, refundIsSuccess)) {
       log.error("[queryRefundOrder] response error, request={}, response={}", requestPMap, refundResult);
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
-    if (!retunnRefundId.equals(params.getString("out_refund_no"))) {
+    if (!returnRefundId.equals(params.getString("refundSerialNumber"))) {
       log.error("[queryRefundOrder] response error, request={}, response={}", requestPMap, refundResult);
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
