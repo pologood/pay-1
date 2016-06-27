@@ -27,7 +27,7 @@ public class SecretKeyUtil {
 
   private static final String RSA = "RSA", SHA1WITHRSA = "SHA1WithRSA", CHARSET = "UTF-8";
 
-  public static String buildSignSource(Map<String, String> map) {
+  public static String buildSignSource(Map<String, ?> map) {
     if (MapUtils.isEmpty(map)) return "";
     StringBuilder sb = new StringBuilder();
     map.keySet().stream().sorted().forEach(k -> sb.append(k).append('=').append(map.get(k)).append('&'));
@@ -43,7 +43,7 @@ public class SecretKeyUtil {
     }
   }
 
-  public static String aliRSASign(PMap<String, String> map, String privateKey) {
+  public static String aliRSASign(PMap<String, ?> map, String privateKey) {
     return aliRSASign(buildSignSource(filter(map, aliExcludedItems)), privateKey);
   }
 
@@ -51,7 +51,7 @@ public class SecretKeyUtil {
     return signSHA1WithRSA(content, privateKey);
   }
 
-  public static boolean aliRSACheckSign(PMap<String, String> contextMap, String sign, String publicKey) {
+  public static boolean aliRSACheckSign(PMap<String, ?> contextMap, String sign, String publicKey) {
     return aliRSACheckSign(buildSignSource(filter(contextMap, aliExcludedItems)), sign, publicKey);
   }
 
@@ -59,15 +59,15 @@ public class SecretKeyUtil {
     return checkRSASign(content, sign, publicKey);
   }
 
-  public static String aliMD5Sign(PMap<String, String> contextMap, String key) {
+  public static String aliMD5Sign(PMap<String, ?> contextMap, String key) {
     return signMD5(buildSignSource(filter(contextMap, aliExcludedItems)), key);
   }
 
-  public static boolean aliMD5CheckSign(PMap<String, String> map, String key, String sign) {
+  public static boolean aliMD5CheckSign(PMap<String, ?> map, String key, String sign) {
     return checkMD5Sign(sign, buildSignSource(filter(map, aliExcludedItems)), key);
   }
 
-  public static String tenMD5Sign(PMap<String, String> map, String key) {
+  public static String tenMD5Sign(PMap<String, ?> map, String key) {
     return tenMD5Sign(buildSignSource(filter(map, tenExcludedItems)), key);
   }
 
@@ -75,7 +75,7 @@ public class SecretKeyUtil {
     return signMD5(text, getTenpayKey(key), true);
   }
 
-  public static boolean tenMD5CheckSign(PMap<String, String> map, String key, String sign) {
+  public static boolean tenMD5CheckSign(PMap<String, ?> map, String key, String sign) {
     return checkMD5Sign(sign, buildSignSource(filter(map, tenExcludedItems)), getTenpayKey(key), true);
   }
 
@@ -83,7 +83,7 @@ public class SecretKeyUtil {
     return String.format("&key=%s", key);
   }
 
-  public static String unionRSASign(PMap<String, String> contextMap, String privateKey) {
+  public static String unionRSASign(PMap<String, ?> contextMap, String privateKey) {
     return unionRSASign(buildSignSource(filter(contextMap, unionExcludedItems)), privateKey);
   }
 
@@ -91,7 +91,7 @@ public class SecretKeyUtil {
     return signSHA1WithRSA(DigestUtil.SHAEncode(content, CHARSET), privateKey);
   }
 
-  public static boolean unionRSACheckSign(PMap<String, String> map, String sign, String key) {
+  public static boolean unionRSACheckSign(PMap<String, ?> map, String sign, String key) {
     return unionRSACheckSign(buildSignSource(filter(map, unionExcludedItems)), sign, key);
   }
 
@@ -159,9 +159,9 @@ public class SecretKeyUtil {
     return Objects.equals(sign, signMD5(text, key, isUpperCase));
   }
 
-  private static Map<String, String> filter(Map<String, String> map, List<String> excludedItems) {
+  private static Map<String, ?> filter(Map<String, ?> map, List<String> excludedItems) {
     return map.entrySet().stream()
-        .filter(e -> StringUtils.isNotEmpty(e.getValue()) && !isOmitted(e.getKey(), excludedItems))
+        .filter(e -> StringUtils.isNotEmpty(getString(e.getValue())) && !isOmitted(e.getKey(), excludedItems))
         .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
   }
 
@@ -173,5 +173,9 @@ public class SecretKeyUtil {
 
   private static List<String> aliExcludedItems = ImmutableList.of("sign", "sign_type"),
       tenExcludedItems = ImmutableList.of("sign"), unionExcludedItems = ImmutableList.of("signature");
+
+  private static String getString(Object o) {
+    return o == null ? null : o.toString();
+  }
 
 }
