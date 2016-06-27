@@ -33,7 +33,7 @@ public class SecretKeyUtil {
 
   public static String loadKeyFromFile(String keyFilePath) {
     try {
-      return new String(Files.readAllBytes(Paths.get(keyFilePath)));
+      return StringUtils.join(Files.readAllLines(Paths.get(keyFilePath)), null);
     } catch (Exception e) {
       LOGGER.error(String.format("read file error:path=%s", keyFilePath), e);
       return null;
