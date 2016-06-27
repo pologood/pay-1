@@ -1,20 +1,11 @@
 package com.sogou.pay.common.utils;
 
-import java.math.BigInteger;
 import java.util.Date;
 
 /**
  * Created by hujunfei Date: 15-1-9 Time: 上午10:57
  */
 public class ConvertUtil {
-
-  private static final BigInteger LONG_MAX = new BigInteger(String.valueOf(Long.MAX_VALUE));
-
-  private static final BigInteger LONG_MIN = new BigInteger(String.valueOf(Long.MIN_VALUE));
-
-  private static final BigInteger INTEGER_MAX = new BigInteger(String.valueOf(Integer.MAX_VALUE));
-
-  private static final BigInteger INTEGER_MIN = new BigInteger(String.valueOf(Integer.MIN_VALUE));
 
   /**
    * 转换对象为整型，若格式错误或超出Int的最大和最小值范围，则抛异常
@@ -79,13 +70,10 @@ public class ConvertUtil {
   // TODO: 检测BigDecimal的情形
   public static double toDouble(Object o) {
     try {
-      if (o instanceof Double) {
-        return (Double) o;
-      } else {
-        return Double.parseDouble(o.toString());
-      }
+      if (o instanceof Double) return (Double) o;
+      else return Double.parseDouble(o.toString());
     } catch (Exception e) {
-      throw new IllegalArgumentException("Convert Long Error: " + o, e);
+      throw new IllegalArgumentException(String.format("Convert Long Error:%s", o), e);
     }
   }
 
@@ -99,29 +87,11 @@ public class ConvertUtil {
    */
   public static Date toDate(Object o) {
     try {
-      if (o instanceof java.util.Date) {
-        return (Date) o;
-      } else {
-        return DateUtil.parse(o.toString());
-      }
+      if (o instanceof java.util.Date) return (Date) o;
+      else return DateUtil.parse(o.toString());
     } catch (Exception e) {
-      throw new IllegalArgumentException("Convert Long Error: " + o, e);
+      throw new IllegalArgumentException(String.format("Convert Long Error:%s", o), e);
     }
   }
 
-  private static boolean isLong(BigInteger bi) {
-    return bi.max(LONG_MAX).equals(LONG_MAX) && bi.min(LONG_MIN).equals(LONG_MIN);
-  }
-
-  private static boolean isLongNonNegative(BigInteger bi) {
-    return isLong(bi) && bi.longValue() >= 0;
-  }
-
-  private static boolean isInt(BigInteger bi) {
-    return bi.max(INTEGER_MAX).equals(INTEGER_MAX) && bi.min(INTEGER_MIN).equals(INTEGER_MIN);
-  }
-
-  private static boolean isIntNonNegative(BigInteger bi) {
-    return isInt(bi) && bi.intValue() >= 0;
-  }
 }
