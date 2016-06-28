@@ -1,5 +1,6 @@
 package com.sogou.pay.web.controller.api;
 
+import com.sogou.pay.common.Model.StdPayRequest;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultMap;
@@ -142,7 +143,7 @@ public class APIController extends BaseController {
       return (ResultMap) resultMap.withError(result2.getStatus());
     }
     //调用支付网关
-    PMap payGateParams = (PMap) result2.getReturnValue();
+    StdPayRequest payGateParams = (StdPayRequest) result2.getReturnValue();
     resultMap = payPortal.preparePay(payGateParams);
     if (!Result.isSuccess(resultMap)) {
       logger.error("[doPay][preparePay][Failed] params={}, result={}", JSONUtil.Bean2JSON(payGateParams),

@@ -2,10 +2,14 @@ package com.sogou.pay.web.manager.api;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import com.sogou.pay.common.Model.StdPayRequest;
+import com.sogou.pay.common.Model.StdPayRequest.Payment;
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.common.utils.JSONUtil;
@@ -37,21 +41,21 @@ import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 public class PayManager {
 
   private static final Logger logger = LoggerFactory.getLogger(PayManager.class);
-  private static final PMap<String, Integer> thirdPayMap = new PMap<>();
+  private static final PMap<String, Payment> thirdPayMap = new PMap<>();
 
   static {
     //PC网银支付
-    thirdPayMap.put("1_1", PayPortal.PC_GATEWAY);
+    thirdPayMap.put("1_1", Payment.PC_GATEWAY);
     //PC账户支付
-    thirdPayMap.put("1_2", PayPortal.PC_ACCOUNT);
+    thirdPayMap.put("1_2", Payment.PC_ACCOUNT);
     //PC企业网银支付
-    thirdPayMap.put("1_3", PayPortal.PC_GATEWAY);
+    thirdPayMap.put("1_3", Payment.PC_GATEWAY);
     //扫码支付
-    thirdPayMap.put("4_2", PayPortal.QRCODE);
+    thirdPayMap.put("4_2", Payment.QRCODE);
     //SDK账户支付
-    thirdPayMap.put("3_2", PayPortal.MOBILE_SDK);
+    thirdPayMap.put("3_2", Payment.MOBILE_SDK);
     //WAP账户支付
-    thirdPayMap.put("2_2", PayPortal.MOBILE_WAP);
+    thirdPayMap.put("2_2", Payment.MOBILE_WAP);
   }
 
   @Autowired
@@ -85,7 +89,7 @@ public class PayManager {
   @Autowired
   private PayPortal payPortal;
 
-  private static int getThirdPayChannel(int platForm, int payFeeType) {
+  private static Payment getThirdPayChannel(int platForm, int payFeeType) {
     String key = String.format("%d_%d", platForm, payFeeType);
     return thirdPayMap.get(key);
   }
@@ -318,8 +322,8 @@ public class PayManager {
 
   //组装调用支付网关所需的参数
   public ResultMap getThirdPayServiceParams(PMap params) {
-    ResultMap<PMap> result = ResultMap.build();
-    PMap payGateMap = new PMap();
+    ResultMap<StdPayRequest> result = ResultMap.build();
+    StdPayRequest request = new StdPayRequest();
     try {
       //获得第三方支付信息
       String agencyCode = params.getString("agencyCode");
@@ -333,7 +337,7 @@ public class PayManager {
       }
       if (ChannelType.CHANNELTYPE_BANK == payFeeType) {
         //网银支付 判断该支付机构的银行是否有别名
-        payGateMap.put("bankCode", bankCode);
+        request.setBankCode(bankCode);
         Integer bankCardType;
         Integer aliasFlag;
         if (StringUtils.isEmpty(params.getString("bankCardType"))) {
@@ -349,46 +353,46 @@ public class PayManager {
           //银行有别名，检索银行别名
           PayBankAlias payBankAlias = payBankAliasService.selectPayBankAlias(agencyCode, bankCode, bankCardType);
           if (null != payBankAlias) bankCode = payBankAlias.getAliasName();
-          payGateMap.put("bankCode", bankCode);
+          request.setBankCode(bankCode);
         }
       } else if (ChannelType.CHANNELTYPE_B2B == payFeeType) {
         //企业网银支付
-        payGateMap.put("bankCode", bankCode);
+        request.setBankCode(bankCode);
       }
-      payGateMap.put("agencyCode", agencyCode);
-      payGateMap.put("payChannel", getThirdPayChannel(accessPlatfrom, payFeeType));
+      request.setAgencyCode(agencyCode);
+      request.setPayment(getThirdPayChannel(accessPlatfrom, payFeeType));
       PayAgencyMerchant payAgencyMerchant = (PayAgencyMerchant) params.get("agencyMerchant");
       //第三方支付机构商户号
-      payGateMap.put("merchantNo", payAgencyMerchant.getMerchantNo());
+      request.setMerchantId(payAgencyMerchant.getMerchantNo());
       //收款账号对应邮箱
-      payGateMap.put("sellerEmail", payAgencyMerchant.getSellerEmail());
+      request.setPayee(payAgencyMerchant.getSellerEmail());
       //微信支付时使用
-      payGateMap.put("prepayUrl", agencyInfo.getPrepayUrl());
+      request.setPrepayUrl(agencyInfo.getPrepayUrl());
       //支付地址
-      payGateMap.put("payUrl", agencyInfo.getPayUrl());
+      request.setPayUrl(agencyInfo.getPayUrl());
       //异步回调地址
-      payGateMap.put("serverNotifyUrl", agencyInfo.getNotifyBackUrl());
+      request.setServerNotifyUrl(agencyInfo.getNotifyBackUrl());
       //同步页面回调地址
-      payGateMap.put("pageNotifyUrl", agencyInfo.getPageBackUrl());
+      request.setPageNotifyUrl(agencyInfo.getPageBackUrl());
       //商品名称
-      payGateMap.put("subject", params.getString("productName"));
+      request.setProductName(params.getString("productName"));
       //买家IP
-      payGateMap.put("buyerIp", params.getString("userIp"));
+      request.setPayerIp(params.getString("userIp"));
       //买家付款账号
-      payGateMap.put("accountId", params.getString("accountId"));
+      request.setAccountId(params.getString("accountId"));
       //MD5加密密钥
-      payGateMap.put("md5securityKey", payAgencyMerchant.getEncryptKey());
+      request.setMd5Key(payAgencyMerchant.getEncryptKey());
       //支付机构公钥证书路径
-      payGateMap.put("publicCertFilePath", payAgencyMerchant.getPubKeypath());
+      request.setPublicCertPath(payAgencyMerchant.getPubKeypath());
       //本地私钥证书路径
-      payGateMap.put("privateCertFilePath", payAgencyMerchant.getPrivateKeypath());
+      request.setPrivateCertPath(payAgencyMerchant.getPrivateKeypath());
       //支付请求时间
-      payGateMap.put("payTime", DateUtil.formatShortTime(params.getDate("payTime")));
+      request.setPayTime(LocalDateTime.ofInstant(params.getDate("payTime").toInstant(), ZoneId.systemDefault()));
       //订单金额
-      payGateMap.put("orderAmount", params.getString("orderAmount"));
+      request.setOrderAmount(new BigDecimal(params.getString("orderAmount")));
       //支付请求流水号
-      payGateMap.put("serialNumber", params.getString("payDetailId"));
-      result.withReturn(payGateMap);
+      request.setPayId(params.getString("payDetailId"));
+      result.withReturn(request);
     } catch (Exception e) {
       e.printStackTrace();
       logger.error("[getThirdPayServiceParams] error, {}", e);

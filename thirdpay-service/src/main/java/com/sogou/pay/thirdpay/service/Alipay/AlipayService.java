@@ -11,6 +11,7 @@ import com.sogou.pay.common.utils.MapUtil;
 import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.common.utils.XMLUtil;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
+import com.sogou.pay.common.Model.StdPayRequest;
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
 import com.sogou.pay.thirdpay.biz.model.TransferRecord;
@@ -99,85 +100,77 @@ public class AlipayService implements ThirdpayService {
   }
 
   @Override
-  public ResultMap preparePayInfoAccount(PMap params) throws ServiceException {
-    ResultMap result;
+  public ResultMap<?> preparePayInfoAccount(StdPayRequest params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("service", ALIPAY_SERVICE_DIRECTPAY);             //接口名称
-    requestPMap.put("partner", params.getString("merchantNo"));             //合作者身份ID
+    requestPMap.put("partner", params.getMerchantId());             //合作者身份ID
     requestPMap.put("_input_charset", INPUT_CHARSET);            //参数编码
-    requestPMap.put("notify_url", params.getString("serverNotifyUrl"));     //服务器异步通知页面路径
-    requestPMap.put("return_url", params.getString("pageNotifyUrl"));       //页面跳转同步通知页面路径（可空）
-    requestPMap.put("out_trade_no", params.getString("serialNumber"));      //商户网站唯一订单号
-    requestPMap.put("subject", params.getString("subject"));                //商品名称
+    requestPMap.put("notify_url", params.getServerNotifyUrl());     //服务器异步通知页面路径
+    requestPMap.put("return_url", params.getPageNotifyUrl());       //页面跳转同步通知页面路径（可空）
+    requestPMap.put("out_trade_no", params.getPayId());      //商户网站唯一订单号
+    requestPMap.put("subject", params.getProductName());                //商品名称
     requestPMap.put("payment_type", PAYMENT_TYPE);               //支付类型
-    requestPMap.put("seller_id", params.getString("merchantNo"));             //卖家支付宝账户号
-    BigDecimal oAmount = new BigDecimal(params.getString("orderAmount"));
-    String orderAmount = oAmount.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+    requestPMap.put("seller_id", params.getMerchantId());             //卖家支付宝账户号
+    String orderAmount = params.getOrderAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString();
     requestPMap.put("total_fee", orderAmount);                                    //交易金额
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[preparePayInfoAccount] request params error, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
     //签名
-    String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, params.getMd5Key());
     if (!Result.isSuccess(result)) return result;
 
     //生成支付URL
-    String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
+    String returnUrl = HttpUtil.packHttpGetUrl(params.getPayUrl(), requestPMap);
     return ResultMap.build().addItem("returnUrl", returnUrl);
   }
 
   @Override
-  public ResultMap preparePayInfoGatway(PMap params) throws ServiceException {
-    ResultMap result;
+  public ResultMap<?> preparePayInfoGatway(StdPayRequest params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("service", ALIPAY_SERVICE_DIRECTPAY);                   //接口名称
-    requestPMap.put("partner", params.getString("merchantNo"));                   //合作者身份ID
+    requestPMap.put("partner", params.getMerchantId());                   //合作者身份ID
     requestPMap.put("_input_charset", INPUT_CHARSET);                  //参数编码
-    requestPMap.put("notify_url", params.getString("serverNotifyUrl"));           //服务器异步通知页面路径
-    requestPMap.put("return_url", params.getString("pageNotifyUrl"));             //页面跳转同步通知页面路径（可空）
-    requestPMap.put("out_trade_no", params.getString("serialNumber"));            //商户网站唯一订单号
+    requestPMap.put("notify_url", params.getServerNotifyUrl());           //服务器异步通知页面路径
+    requestPMap.put("return_url", params.getPageNotifyUrl());             //页面跳转同步通知页面路径（可空）
+    requestPMap.put("out_trade_no", params.getPayId());            //商户网站唯一订单号
     requestPMap.put("paymethod", "bankPay");//默认支付方式
-    requestPMap.put("defaultbank", params.get("bankCode"));//默认银行
-    requestPMap.put("subject", params.getString("subject"));                      //商品名称
+    requestPMap.put("defaultbank", params.getBankCode());//默认银行
+    requestPMap.put("subject", params.getProductName());                      //商品名称
     requestPMap.put("payment_type", PAYMENT_TYPE);                     //支付类型
-    requestPMap.put("seller_id", params.getString("merchantNo"));             //卖家支付宝账户号
-    BigDecimal oAmount = new BigDecimal(params.getString("orderAmount"));
-    String orderAmount = oAmount.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+    requestPMap.put("seller_id", params.getMerchantId());             //卖家支付宝账户号
+    String orderAmount = params.getOrderAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString();
     requestPMap.put("total_fee", orderAmount);
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[preparePayInfoGatway] request params error, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
     //签名
-    String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, params.getMd5Key());
     if (!Result.isSuccess(result)) return result;
 
     //生成支付URL
-    String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
+    String returnUrl = HttpUtil.packHttpGetUrl(params.getPayUrl(), requestPMap);
     return ResultMap.build().addItem("returnUrl", returnUrl);
   }
 
   @Override
-  public ResultMap preparePayInfoQRCode(PMap params) throws ServiceException {
-    ResultMap result;
+  public ResultMap<?> preparePayInfoQRCode(StdPayRequest params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("service", ALIPAY_SERVICE_DIRECTPAY);             //接口名称
-    requestPMap.put("partner", params.getString("merchantNo"));             //合作者身份ID
+    requestPMap.put("partner", params.getMerchantId());             //合作者身份ID
     requestPMap.put("_input_charset", INPUT_CHARSET);            //参数编码
-    requestPMap.put("notify_url", params.getString("serverNotifyUrl"));     //服务器异步通知页面路径
-    requestPMap.put("return_url", params.getString("pageNotifyUrl"));       //页面跳转同步通知页面路径（可空）
-    requestPMap.put("out_trade_no", params.getString("serialNumber"));      //商户网站唯一订单号
-    requestPMap.put("subject", params.getString("subject"));                //商品名称
+    requestPMap.put("notify_url", params.getServerNotifyUrl());     //服务器异步通知页面路径
+    requestPMap.put("return_url", params.getPageNotifyUrl());       //页面跳转同步通知页面路径（可空）
+    requestPMap.put("out_trade_no", params.getPayId());      //商户网站唯一订单号
+    requestPMap.put("subject", params.getProductName());                //商品名称
     requestPMap.put("payment_type", PAYMENT_TYPE);               //支付类型
-    requestPMap.put("seller_id", params.getString("merchantNo"));             //卖家支付宝账户号
-    BigDecimal oAmount = new BigDecimal(params.getString("orderAmount"));
-    String orderAmount = oAmount.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+    requestPMap.put("seller_id", params.getMerchantId());             //卖家支付宝账户号
+    String orderAmount = params.getOrderAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString();
     requestPMap.put("total_fee", orderAmount);                                    //支付金额
     requestPMap.put("qr_pay_mode", QR_PAY_MODE);
     if (!MapUtil.checkAllExist(requestPMap)) {
@@ -185,12 +178,11 @@ public class AlipayService implements ThirdpayService {
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
     //签名
-    String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, params.getMd5Key());
     if (!Result.isSuccess(result)) return result;
 
     //生成支付URL
-    String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
+    String returnUrl = HttpUtil.packHttpGetUrl(params.getPayUrl(), requestPMap);
     return ResultMap.build().addItem("qrCode", returnUrl);
   }
 
@@ -199,21 +191,19 @@ public class AlipayService implements ThirdpayService {
   }
 
   @Override
-  public ResultMap preparePayInfoSDK(PMap params) throws ServiceException {
-    ResultMap result = ResultMap.build();
+  public ResultMap<?> preparePayInfoSDK(StdPayRequest params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("service", packit(ALIPAY_SERVICE_MOBILE_DIRECTPAY));             //接口名称
-    requestPMap.put("partner", packit(params.getString("merchantNo")));             //合作者身份ID
+    requestPMap.put("partner", packit(params.getMerchantId()));             //合作者身份ID
     requestPMap.put("_input_charset", packit(INPUT_CHARSET));            //参数编码
-    requestPMap.put("notify_url", packit(params.getString("serverNotifyUrl")));     //服务器异步通知页面路径
-    requestPMap.put("out_trade_no", packit(params.getString("serialNumber")));      //商户网站唯一订单号
-    requestPMap.put("subject", packit(params.getString("subject")));                //商品名称
-    requestPMap.put("body", packit(params.getString("subject")));                //商品名称
+    requestPMap.put("notify_url", packit(params.getServerNotifyUrl()));     //服务器异步通知页面路径
+    requestPMap.put("out_trade_no", packit(params.getPayId()));      //商户网站唯一订单号
+    requestPMap.put("subject", packit(params.getProductName()));                //商品名称
+    requestPMap.put("body", packit(params.getProductName()));                //商品名称
     requestPMap.put("payment_type", packit(PAYMENT_TYPE));               //支付类型
-    requestPMap.put("seller_id", packit(params.getString("merchantNo")));             //卖家支付宝账户号
-    BigDecimal oAmount = new BigDecimal(params.getString("orderAmount"));
-    String orderAmount = oAmount.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+    requestPMap.put("seller_id", packit(params.getMerchantId()));             //卖家支付宝账户号
+    String orderAmount = params.getOrderAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString();
     requestPMap.put("total_fee", packit(orderAmount));                                    //支付金额
     requestPMap.put("it_b_pay", packit(IT_B_PAY));//未付款交易的超时时间
     if (!MapUtil.checkAllExist(requestPMap)) {
@@ -221,7 +211,7 @@ public class AlipayService implements ThirdpayService {
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
     //签名
-    String privateCertFilePath = params.getString("privateCertFilePath");
+    String privateCertFilePath = params.getPrivateCertPath();
     String privateCertKey = SecretKeyUtil.loadKeyFromFile(privateCertFilePath);
     if (StringUtil.isEmpty(privateCertKey)) {
       log.error("[preparePayInfoSDK] get private key failed, params={}", privateCertFilePath);
@@ -239,33 +229,32 @@ public class AlipayService implements ThirdpayService {
     requestString.append("&").append("sign_type").append("=").append(packit("RSA"));//签名方式
     String payInfo = requestString.toString();
     //获取客户端需要的支付宝公钥
-    String publicCertFilePath = params.getString("publicCertFilePath");
+    String publicCertFilePath = params.getPublicCertPath();
     String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
     if (StringUtil.isEmpty(publicCertKey)) {
       log.error("[preparePayInfoSDK] get public key failed, params={}", privateCertFilePath);
       return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);
     }
+    ResultMap<?> result = ResultMap.build();
     result.addItem("orderInfo", payInfo);
     result.addItem("aliPublicKey", publicCertKey);
     return result;
   }
 
   @Override
-  public ResultMap preparePayInfoWap(PMap params) throws ServiceException {
-    ResultMap result;
+  public ResultMap<?> preparePayInfoWap(StdPayRequest params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("service", ALIPAY_SERVICE_WAP_DIRECTPAY);             //接口名称
-    requestPMap.put("partner", params.getString("merchantNo"));             //合作者身份ID
+    requestPMap.put("partner", params.getMerchantId());             //合作者身份ID
     requestPMap.put("_input_charset", INPUT_CHARSET);            //参数编码
-    requestPMap.put("notify_url", params.getString("serverNotifyUrl"));     //服务器异步通知页面路径
-    requestPMap.put("return_url", params.getString("pageNotifyUrl"));       //页面跳转同步通知页面路径（可空）
-    requestPMap.put("out_trade_no", params.getString("serialNumber"));      //商户网站唯一订单号
-    requestPMap.put("subject", params.getString("subject"));                //商品名称
+    requestPMap.put("notify_url", params.getServerNotifyUrl());     //服务器异步通知页面路径
+    requestPMap.put("return_url", params.getPageNotifyUrl());       //页面跳转同步通知页面路径（可空）
+    requestPMap.put("out_trade_no", params.getPayId());      //商户网站唯一订单号
+    requestPMap.put("subject", params.getProductName());                //商品名称
     requestPMap.put("payment_type", PAYMENT_TYPE);               //支付类型
-    requestPMap.put("seller_id", params.getString("merchantNo"));             //卖家支付宝账户号
-    BigDecimal oAmount = new BigDecimal(params.getString("orderAmount"));
-    String orderAmount = oAmount.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+    requestPMap.put("seller_id", params.getMerchantId());             //卖家支付宝账户号
+    String orderAmount = params.getOrderAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString();
     requestPMap.put("total_fee", orderAmount);                                    //交易金额
     requestPMap.put("it_b_pay", IT_B_PAY);
     if (!MapUtil.checkAllExist(requestPMap)) {
@@ -273,12 +262,11 @@ public class AlipayService implements ThirdpayService {
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
     //签名
-    String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, params.getMd5Key());
     if (!Result.isSuccess(result)) return result;
 
     //生成支付URL
-    String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
+    String returnUrl = HttpUtil.packHttpGetUrl(params.getPayUrl(), requestPMap);
     return ResultMap.build().addItem("returnUrl", returnUrl);
   }
 

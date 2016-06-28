@@ -1,5 +1,6 @@
 package com.sogou.pay.web.controller.api;
 
+import com.sogou.pay.common.Model.StdPayRequest;
 import com.sogou.pay.common.types.*;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.common.utils.JSONUtil;
@@ -197,7 +198,7 @@ public class GWController extends BaseController {
         return setErrorPage(payResult.getStatus(), platform);
       }
       //调用支付网关
-      PMap payGateParams = (PMap) payResult.getReturnValue();
+      StdPayRequest payGateParams = (StdPayRequest) payResult.getReturnValue();
       ResultMap<String> payGateResult = payPortal.preparePay(payGateParams);
       if (!Result.isSuccess(payGateResult)) {
         logger.error("[doPay][preparePay][Failed] params={}, result={}", JSONUtil.Bean2JSON(payGateParams),
