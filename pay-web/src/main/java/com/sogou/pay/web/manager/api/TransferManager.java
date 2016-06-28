@@ -45,10 +45,10 @@ public class TransferManager {
   @Autowired
   private SequenceFactory sequencerGenerator;
 
-  public Result selectPayTransInfoByOutRef(List<String> recordList,
+  public ResultMap selectPayTransInfoByOutRef(List<String> recordList,
                                            int appId) {
-    Result<List<PayTransfer>> result = ResultMap.build();
-    List<PayTransfer> transferList = new ArrayList<PayTransfer>();
+    ResultMap<List<PayTransfer>> result = ResultMap.build();
+    List<PayTransfer> transferList;
     try {
       transferList = payTransferService.queryByOutRefAndAppId(recordList, appId);
       //查询有记录，重复代付单号
@@ -67,12 +67,12 @@ public class TransferManager {
    */
   @Profiled(el = true, logger = "dbTimingLogger", tag = "PayTransManager_doProcess",
           timeThreshold = 100, normalAndSlowSuffixesEnabled = true)
-  public Result doProcess(PMap<String, String> params, List<String> payIdList) {
-    Result result = ResultBean.build();
+  public ResultMap doProcess(PMap<String, String> params, List<String> payIdList) {
+    ResultMap result = ResultMap.build();
     TransactionStatus txStatus = null;
     try {
       //业务校验，是否重复的批次单以及代付单
-      Result checkResult = bizCheck(params, payIdList);
+      ResultMap checkResult = bizCheck(params, payIdList);
       if (!Result.isSuccess(checkResult))
         return checkResult;
       txStatus = transactionManager.getTransaction(txDefinition);
@@ -92,9 +92,9 @@ public class TransferManager {
   /**
    * 校验是否有重复的单号
    */
-  private Result bizCheck(PMap<String, String> params, List<String> payIdList) throws ServiceException {
-    Result result = ResultBean.build();
-    List<PayTransfer> transferList = new ArrayList<PayTransfer>();
+  private ResultMap bizCheck(PMap<String, String> params, List<String> payIdList) throws ServiceException {
+    ResultMap result = ResultMap.build();
+    List<PayTransfer> transferList;
     //1.检验是否有重复的批次号
     transferList = payTransferService.queryByBatchNo(params.getString("appId"), params.getString("batchNo"));
     if (null != transferList && transferList.size() > 0) {
