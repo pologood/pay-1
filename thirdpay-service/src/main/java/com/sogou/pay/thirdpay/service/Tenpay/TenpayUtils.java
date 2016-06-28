@@ -51,9 +51,11 @@ public class TenpayUtils {
      * 以元为单位的字符串金额到以分为单位金额字符串类型转换,精确到分,之后四舍五入.
      */
     public static String fenParseFromYuan(String amount) {
-        BigDecimal amountBigDecimal = new BigDecimal(amount);
-        return amountBigDecimal.multiply(new BigDecimal("100"))
-                .setScale(0, BigDecimal.ROUND_HALF_UP).toString();
+        return fenParseFromYuan(new BigDecimal(amount));
+    }
+    
+    public static String fenParseFromYuan(BigDecimal amount) {
+        return amount.multiply(new BigDecimal("100")).setScale(0, BigDecimal.ROUND_HALF_UP).toString();
     }
 
 

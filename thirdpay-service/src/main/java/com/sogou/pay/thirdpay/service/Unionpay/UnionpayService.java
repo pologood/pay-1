@@ -1,5 +1,6 @@
 package com.sogou.pay.thirdpay.service.Unionpay;
 
+import com.sogou.pay.common.Model.StdPayRequest;
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.common.http.utils.HttpUtil;
@@ -64,29 +65,30 @@ public class UnionpayService implements ThirdpayService {
   }
 
   @Override
-  public ResultMap<?> preparePayInfoAccount(PMap<String, ?> params) throws ServiceException {
+  public ResultMap<?> preparePayInfoAccount(StdPayRequest params) throws ServiceException {
     return preparePayInfoGatway(params);
   }
 
   @Override
-  public ResultMap<?> preparePayInfoGatway(PMap<String, ?> params) throws ServiceException {
+  public ResultMap<?> preparePayInfoGatway(StdPayRequest params) throws ServiceException {
     PMap<String, String> requestPMap = getPrepayParams(params, ChannelType.INTERNET.getValue());
     if (!MapUtil.checkAllExist(requestPMap)) {
       LOG.error("[preparePayInfoGatway] empty requestMap={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
-    ResultMap<?> signResult = sign(params, requestPMap);
+    ResultMap<?> signResult = sign(getKey(getCertFilePath(params, true)), requestPMap);
     if (!Result.isSuccess(signResult)) return signResult;
-    String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
+    String returnUrl = HttpUtil.packHttpGetUrl(params.getPayUrl(), requestPMap);
     ResultMap<?> resultMap = ResultMap.build();
     return resultMap.addItem("returnUrl", returnUrl);
   }
 
   @Override
-  public ResultMap<?> preparePayInfoSDK(PMap<String, ?> params) throws ServiceException {
+  public ResultMap<?> preparePayInfoSDK(StdPayRequest params) throws ServiceException {
     PMap<String, String> requestPMap = getPrepayParams(params, ChannelType.MOBILE.getValue());
 
-    ResultMap<?> result = doRequest(params.getString("payUrl"), params, requestPMap);
+    ResultMap<?> result = doRequest(params.getPayUrl(), getKey(getCertFilePath(params, true)),
+        getKey(getCertFilePath(params, false)), requestPMap);
     if (!Result.isSuccess(result)) {
       LOG.error("[preparePayInfoSDK] failed, params={}", params);
       return result;
@@ -96,47 +98,45 @@ public class UnionpayService implements ThirdpayService {
   }
 
   @Override
-  public ResultMap<?> preparePayInfoWap(PMap<String, ?> params) throws ServiceException {
+  public ResultMap<?> preparePayInfoWap(StdPayRequest params) throws ServiceException {
     PMap<String, String> requestPMap = getPrepayParams(params, ChannelType.MOBILE.getValue());
     if (!MapUtil.checkAllExist(requestPMap)) {
       LOG.error("[preparePayInfoWap] empty requestMap={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
-    ResultMap<?> signResult = sign(params, requestPMap);
+    ResultMap<?> signResult = sign(getKey(getCertFilePath(params, true)), requestPMap);
     if (!Result.isSuccess(signResult)) return signResult;
-    String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
+    String returnUrl = HttpUtil.packHttpGetUrl(params.getPayUrl(), requestPMap);
     ResultMap<?> resultMap = ResultMap.build();
     return resultMap.addItem("returnUrl", returnUrl);
   }
 
-  private PMap<String, String> getPrepayParams(PMap<String, ?> params, String channelType) {
+  private PMap<String, String> getPrepayParams(StdPayRequest params, String channelType) {
     PMap<String, String> requestPMap = new PMap<>();
 
     /*必填*/
     requestPMap.put("version", VERSION);//版本号
     requestPMap.put("encoding", CHARSET);//编码方式
-    requestPMap.put("certId", params.getString("md5securityKey"));//证书ID
+    requestPMap.put("certId", params.getMd5Key());//证书ID
     requestPMap.put("signMethod", SIGNMETHOD);//签名方法
     requestPMap.put("txnType", UnionpayTxnType.CONSUMPTION.getValue());//交易类型
     requestPMap.put("txnSubType", UnionpaySubTxnType.SELF_SERVICE_CONSUMPTION.getValue());//交易子类
     requestPMap.put("bizType", UnionpayBizType.B2C_GATEWAY_PAYMENT.getValue());//产品类型
     requestPMap.put("channelType", channelType);//渠道类型
-    requestPMap.put("frontUrl", params.getString("pageNotifyUrl"));//前台返回商户结果时使用，前台类交易需上送
-    requestPMap.put("backUrl", params.getString("serverNotifyUrl"));//后台通知地址
+    requestPMap.put("frontUrl", params.getPageNotifyUrl());//前台返回商户结果时使用，前台类交易需上送
+    requestPMap.put("backUrl", params.getServerNotifyUrl());//后台通知地址
     requestPMap.put("accessType", ACCESSTYPE);//接入类型
-    requestPMap.put("merId", params.getString("merchantNo"));//商户代码
-    requestPMap.put("orderId", params.getString("serialNumber"));//商户订单号
-    requestPMap.put("txnTime", params.getString("payTime"));//订单发送时间
-    requestPMap.put("txnAmt", TenpayUtils.fenParseFromYuan(params.getString("orderAmount")));//交易金额
+    requestPMap.put("merId", params.getMerchantId());//商户代码
+    requestPMap.put("orderId", params.getPayId());//商户订单号
+    requestPMap.put("txnTime", params.getPayTimeString());//订单发送时间
+    requestPMap.put("txnAmt", TenpayUtils.fenParseFromYuan(params.getOrderAmount()));//交易金额
     requestPMap.put("currencyCode", CURRENCYCODE);//交易币种
 
     /*选填*/
-    if (StringUtils.isNotBlank(params.getString("accountId")))
-      requestPMap.put("accNo", params.getString("accountId"));//账号 1后台类消费交易时上送全卡号或卡号后4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
+    if (StringUtils.isNotBlank(params.getAccountId())) requestPMap.put("accNo", params.getAccountId());//账号 1后台类消费交易时上送全卡号或卡号后4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
     //bankCode暂时不起作用，需要开通银联的网银前置
-    String bankCode = params.getString("bankCode");
-    if (StringUtils.isNotBlank(bankCode))
-      requestPMap.put("issInsCode", bankCode);//1当账号类型为02-存折时需填写;2在前台类交易时填写默认银行代码,支持直接跳转到网银
+    String bankCode = params.getBankCode();
+    if (StringUtils.isNotBlank(bankCode)) requestPMap.put("issInsCode", bankCode);//1当账号类型为02-存折时需填写;2在前台类交易时填写默认银行代码,支持直接跳转到网银
 
     return requestPMap;
   }
@@ -151,19 +151,15 @@ public class UnionpayService implements ThirdpayService {
     String resContent = (String) response.getReturnValue();
     ResultMap<?> responseMap;
     if (StringUtils.isBlank(resContent) || !ResultMap.isSuccess(responseMap = HttpUtil.extractParams(resContent))
-            || MapUtils.isEmpty(responseMap.getData())) {
+        || MapUtils.isEmpty(responseMap.getData())) {
       LOG.error("[sendRequest] http response error: params={}, response={}", requestMap, resContent);
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
     return responseMap;
   }
 
-  private ResultMap<?> sign(PMap<String, ?> params, PMap<String, String> signMap) {
-    String privateCertKey = getKey(params, true);
-    if (privateCertKey.length() == 0) {
-      LOG.error("[sign] get private key failed: {}", params);
-      return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);
-    }
+  private ResultMap<?> sign(String privateCertKey, PMap<String, String> signMap) {
+    if (StringUtils.isEmpty(privateCertKey)) return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);
     String sign = SecretKeyUtil.unionRSASign(signMap, privateCertKey);
     if (sign == null) {
       LOG.error("[sign] sign failed: {}", signMap);
@@ -173,12 +169,8 @@ public class UnionpayService implements ThirdpayService {
     return ResultMap.build();
   }
 
-  private ResultMap<?> verifySign(PMap<String, ?> params, PMap<String, ?> signMap) {
-    String publicCertKey = getKey(params, false);
-    if (publicCertKey.length() == 0) {
-      LOG.error("[verifySign] get public key failed: {}", params);
-      return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);
-    }
+  private ResultMap<?> verifySign(String publicCertKey, PMap<String, ?> signMap) {
+    if (StringUtils.isEmpty(publicCertKey)) return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);
     if (!SecretKeyUtil.unionRSACheckSign(signMap, (String) signMap.remove("signature"), publicCertKey)) {
       LOG.error("[verifySign] failed: {}", signMap);
       return ResultMap.build(ResultStatus.THIRD_VERIFY_SIGN_ERROR);
@@ -186,16 +178,22 @@ public class UnionpayService implements ThirdpayService {
     return ResultMap.build();
   }
 
-  private String getKey(PMap<String, ?> params, boolean isPrivate) {
-    String certFilePath = getCertFilePath(params, isPrivate);
-    return SecretKeyUtil.loadKeyFromFile(certFilePath);
+  private String getCertFilePath(StdPayRequest request, boolean isPrivate) {
+    return "d:" + (isPrivate ? request.getPrivateCertPath() : request.getPublicCertPath());
   }
 
-  private String getCertFilePath(PMap<String, ?> params, boolean isPrivate) {
-    return (isPrivate ? params.getString("privateCertFilePath") : params.getString("publicCertFilePath"));
+  private String getCertFilePath(PMap<String, ?> map, boolean isPrivate) {
+    return "d:" + (isPrivate ? map.getString("privateCertFilePath") : map.getString("publicCertFilePath"));
   }
 
-  private ResultMap<?> doRequest(String url, PMap<String, ?> params, PMap<String, String> requestPMap) throws ServiceException {
+  private String getKey(String path) {
+    String key = SecretKeyUtil.loadKeyFromFile(path);
+    if (StringUtils.isEmpty(key)) LOG.error("[getKey]error:{}", path);
+    return key;
+  }
+
+  private ResultMap<?> doRequest(String url, String privateKey, String publicKey, PMap<String, String> requestPMap)
+      throws ServiceException {
 
     ResultMap<?> result;
 
@@ -205,7 +203,7 @@ public class UnionpayService implements ThirdpayService {
     }
 
     //签名
-    result = sign(params, requestPMap);
+    result = sign(privateKey, requestPMap);
     if (!Result.isSuccess(result)) return result;
 
     //请求第三方
@@ -214,7 +212,7 @@ public class UnionpayService implements ThirdpayService {
     PMap<String, Object> responsePMap = result.getData();
 
     //验签
-    result = verifySign(params, responsePMap);
+    result = verifySign(publicKey, responsePMap);
     if (!Result.isSuccess(result)) return result;
 
     //请求是否成功
@@ -245,7 +243,8 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("orderId", params.getString("serialNumber")); //我方订单号
     requestPMap.put("txnTime", params.getString("payTime"));//订单发送时间
 
-    ResultMap<?> result = doRequest(params.getString("queryUrl"), params, requestPMap);
+    ResultMap<?> result = doRequest(params.getString("queryUrl"), getKey(getCertFilePath(params, true)),
+        getKey(getCertFilePath(params, false)), requestPMap);
     if (!Result.isSuccess(result)) {
       LOG.error("[queryOrder] failed, params={}", params);
       return result;
@@ -277,7 +276,8 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("backUrl", params.getString("refundNotifyUrl")); //后台通知地址
     requestPMap.put("origQryId", params.getString("agencySerialNumber")); //原消费交易返回的的queryId
 
-    ResultMap<?> result = doRequest(params.getString("refundUrl"), params, requestPMap);
+    ResultMap<?> result = doRequest(params.getString("refundUrl"), getKey(getCertFilePath(params, true)),
+        getKey(getCertFilePath(params, false)), requestPMap);
     if (!Result.isSuccess(result)) {
       LOG.error("[refundOrder] failed, params={}", params);
       return result;
@@ -303,7 +303,8 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("merId", params.getString("merchantNo")); //商户号
     requestPMap.put("queryId", params.getString("agencySerialNumber")); //原消费交易返回的的queryId
 
-    ResultMap<?> result = doRequest(params.getString("queryRefundUrl"), params, requestPMap);
+    ResultMap<?> result = doRequest(params.getString("queryRefundUrl"), getKey(getCertFilePath(params, true)),
+        getKey(getCertFilePath(params, false)), requestPMap);
     if (!Result.isSuccess(result)) {
       LOG.error("[queryRefundOrder] failed, params={}", params);
       return result;
@@ -334,7 +335,8 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("txnTime", DateUtil.formatShortTime(new Date())); //订单发送时间，格式为YYYYMMDDhhmmss，必须取当前时间，否则会报txnTime无效
     requestPMap.put("fileType", "00"); //对账文件类型 00-zip
 
-    ResultMap<?> result = doRequest(params.getString("downloadUrl"), params, requestPMap);
+    ResultMap<?> result = doRequest(params.getString("downloadUrl"), getKey(getCertFilePath(params, true)),
+        getKey(getCertFilePath(params, false)), requestPMap);
     if (!Result.isSuccess(result)) {
       LOG.error("[downloadOrder] failed, params={}", params);
       return result;
@@ -448,8 +450,8 @@ public class UnionpayService implements ThirdpayService {
   @Override
   public ResultMap<?> handleNotifySDKAsync(PMap<String, ?> params) throws ServiceException {
     PMap<String, ?> notifyParams;
-    ResultMap<?> resultMap = ResultMap.build(),
-            signCheckResult = verifySign(params, notifyParams = (PMap<String, ?>) params.getPMap("data"));
+    ResultMap<?> resultMap = ResultMap.build(), signCheckResult = verifySign(getKey(getCertFilePath(params, false)),
+        notifyParams = (PMap<String, ?>) params.getPMap("data"));
     if (!Result.isSuccess(signCheckResult)) return signCheckResult;
     //提取关键参数
     String orderId = notifyParams.getString("orderId");
@@ -471,8 +473,8 @@ public class UnionpayService implements ThirdpayService {
   @Override
   public ResultMap<?> handleNotifyRefund(PMap<String, ?> params) throws ServiceException {
     PMap<String, ?> notifyParams;
-    ResultMap<?> resultMap = ResultMap.build(),
-            signCheckResult = verifySign(params, notifyParams = (PMap<String, ?>) params.getPMap("data"));
+    ResultMap<?> resultMap = ResultMap.build(), signCheckResult = verifySign(getKey(getCertFilePath(params, false)),
+        notifyParams = (PMap<String, ?>) params.getPMap("data"));
     if (!Result.isSuccess(signCheckResult)) return signCheckResult;
 
     //提取关键参数
@@ -503,7 +505,7 @@ public class UnionpayService implements ThirdpayService {
       return value;
     }
   }
-  
+
   /*
       全渠道平台网银支付银行前置模式——支持的标准网关银行列表     
   ICBC 工商银行

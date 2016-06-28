@@ -1,5 +1,6 @@
 package com.sogou.pay.thirdpay.service;
 
+import com.sogou.pay.common.Model.StdPayRequest;
 import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
@@ -13,35 +14,35 @@ public interface ThirdpayService {
   /**
    * (支付宝等)账户支付
    */
-  default public ResultMap<?> preparePayInfoAccount(PMap<String, ?> params) throws ServiceException {
+  default public ResultMap<?> preparePayInfoAccount(StdPayRequest params) throws ServiceException {
     throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   /**
    * (支付宝等)网关支付
    */
-  default public ResultMap<?> preparePayInfoGatway(PMap<String, ?> params) throws ServiceException {
+  default public ResultMap<?> preparePayInfoGatway(StdPayRequest params) throws ServiceException {
     throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   /**
    * (支付宝等)扫码支付
    */
-  default public ResultMap<?> preparePayInfoQRCode(PMap<String, ?> params) throws ServiceException {
+  default public ResultMap<?> preparePayInfoQRCode(StdPayRequest params) throws ServiceException {
     throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   /**
    * (支付宝等)客户端支付
    */
-  default public ResultMap<?> preparePayInfoSDK(PMap<String, ?> params) throws ServiceException {
+  default public ResultMap<?> preparePayInfoSDK(StdPayRequest params) throws ServiceException {
     throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   /**
    * (支付宝等)WAP支付
    */
-  default public ResultMap<?> preparePayInfoWap(PMap<String, ?> params) throws ServiceException {
+  default public ResultMap<?> preparePayInfoWap(StdPayRequest params) throws ServiceException {
     throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
