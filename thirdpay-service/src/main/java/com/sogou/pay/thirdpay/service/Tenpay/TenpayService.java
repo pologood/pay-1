@@ -8,6 +8,7 @@ import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.*;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
+import com.sogou.pay.common.Model.StdPayRequest;
 import com.sogou.pay.common.enums.OrderRefundStatus;
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
@@ -73,85 +74,75 @@ public class TenpayService implements ThirdpayService {
     REFUND_OPUSER.put("1234639901", new String[]{"1234639901123", "1234567809ted", "145404"});//搜狗科技商户账号、操作员账号、密码、证书导入密码
   }
 
-  private ResultMap preparePayInfo(PMap params, String bankCode) throws ServiceException {
-    ResultMap result;
-    PMap requestPMap = new PMap();
+  private ResultMap<?> preparePayInfo(StdPayRequest params, String bankCode) throws ServiceException {
+    PMap<String, Object> requestPMap = new PMap<>();
     //组装参数
     requestPMap.put("fee_type", FEE_TYPE);                    // 币种:1-人民币
     requestPMap.put("input_charset", INPUT_CHARSET);          //编码格式
-    requestPMap.put("notify_url", params.getString("serverNotifyUrl"));  //异步回调地址
-    requestPMap.put("return_url", params.getString("pageNotifyUrl"));    //页面回调地址
-    requestPMap.put("partner", params.getString("merchantNo"));          //商户号
+    requestPMap.put("notify_url", params.getServerNotifyUrl());  //异步回调地址
+    requestPMap.put("return_url", params.getPageNotifyUrl());    //页面回调地址
+    requestPMap.put("partner", params.getMerchantId());          //商户号
     requestPMap.put("bank_type", bankCode);//财付通账户支付银行类型值
-    requestPMap.put("spbill_create_ip", params.getString("buyerIp"));    // 买家浏览器IP
-    String orderAmount = TenpayUtils.fenParseFromYuan(params.getString("orderAmount"));
+    requestPMap.put("spbill_create_ip", params.getPayerIp());    // 买家浏览器IP
+    String orderAmount = TenpayUtils.fenParseFromYuan(params.getOrderAmount());
     requestPMap.put("total_fee", orderAmount);                           // 订单总金额, 以分为单位, 整数
-    requestPMap.put("out_trade_no", params.getString("serialNumber"));   //订单id
-    requestPMap.put("body", params.getString("subject"));                //商品描述
+    requestPMap.put("out_trade_no", params.getPayId());   //订单id
+    requestPMap.put("body", params.getProductName());                //商品描述
     requestPMap.put("sign_type", SIGN_TYPE);              //加密方法
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[preparePayInfo] request params error, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
     //签名
-    String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, params.getMd5Key());
     if (!Result.isSuccess(result)) return result;
 
     //生成支付URL
-    String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
+    String returnUrl = HttpUtil.packHttpGetUrl(params.getPayUrl(), requestPMap);
     return ResultMap.build().addItem("returnUrl", returnUrl);
   }
 
   @Override
-  public ResultMap preparePayInfoAccount(PMap params) throws ServiceException {
+  public ResultMap<?> preparePayInfoAccount(StdPayRequest params) throws ServiceException {
     String bankcode = ACCOUNT_BANK_TYPE;//财付通账户支付银行类型字段为固定值:DEFAULT
     return preparePayInfo(params, bankcode);
   }
 
   @Override
-  public ResultMap preparePayInfoGatway(PMap params) throws ServiceException {
-    String bankcode = (String) params.get("bankCode");//财付通网关支付银行类型值
-    return preparePayInfo(params, bankcode);
+  public ResultMap<?> preparePayInfoGatway(StdPayRequest params) throws ServiceException {
+    return preparePayInfo(params, params.getBankCode());//财付通网关支付银行类型值
   }
 
-  @Override
-  public ResultMap preparePayInfoQRCode(PMap params) throws ServiceException {
-    return null;
-  }
-
-  private ResultMap preparePayInfoMobile(PMap params, String callback_url) throws ServiceException {
-    ResultMap result;
+  private ResultMap<?> preparePayInfoMobile(StdPayRequest params, String callback_url) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("ver", "2.0");                           //接口版本
     requestPMap.put("charset", WAP_CHARSET);               //编码
     requestPMap.put("bank_type", BANK_TYPE);               //银行类型
-    requestPMap.put("desc", params.getString("subject"));             //商品描述
-    requestPMap.put("bargainor_id", params.getString("merchantNo"));
-    requestPMap.put("sp_billno", params.getString("serialNumber"));
-    String orderAmount = TenpayUtils.fenParseFromYuan(params.getString("orderAmount"));
+    requestPMap.put("desc", params.getProductName());             //商品描述
+    requestPMap.put("bargainor_id", params.getMerchantId());
+    requestPMap.put("sp_billno", params.getPayId());
+    String orderAmount = TenpayUtils.fenParseFromYuan(params.getOrderAmount());
     requestPMap.put("total_fee", orderAmount);                        // 订单总金额, 以分为单位, 整数
     requestPMap.put("fee_type", FEE_TYPE);                 //币种
-    requestPMap.put("notify_url", params.getString("serverNotifyUrl"));
+    requestPMap.put("notify_url", params.getServerNotifyUrl());
     if (callback_url != null)
       requestPMap.put("callback_url", callback_url);
-    requestPMap.put("attach", params.getString("subject"));
+    requestPMap.put("attach", params.getProductName());
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[preparePayInfoMobile] request params error, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
     //签名
-    String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, params.getMd5Key());
     if (!Result.isSuccess(result)) return result;
 
     //发起请求，获取预支付ID
     TenpayHttpClient httpClient = new TenpayHttpClient();
 
-    Result httpResponse = httpClient.doGet(params.getString("prepayUrl"), requestPMap);
+    Result<?> httpResponse = httpClient.doGet(params.getPrepayUrl(), requestPMap);
     if (!Result.isSuccess(httpResponse)) {
-      log.error("[preparePayInfoMobile] http request failed, url={}, params={}", params.getString("prepayUrl"), requestPMap);
+      log.error("[preparePayInfoMobile] http request failed, url={}, params={}", params.getPrepayUrl(), requestPMap);
       return ResultMap.build(ResultStatus.THIRD_HTTP_ERROR);
     }
     String resContent = (String) httpResponse.getReturnValue();
@@ -172,7 +163,7 @@ public class TenpayService implements ThirdpayService {
   }
 
   @Override
-  public ResultMap preparePayInfoSDK(PMap params) throws ServiceException {
+  public ResultMap<?> preparePayInfoSDK(StdPayRequest params) throws ServiceException {
     return preparePayInfoMobile(params, null);
   }
 
@@ -180,14 +171,14 @@ public class TenpayService implements ThirdpayService {
   //https://www.tenpay.com/app/mpay/wappay_init.cgi
   //https://www.tenpay.com/app/mpay/mp_gate.cgi
   @Override
-  public ResultMap preparePayInfoWap(PMap params) throws ServiceException {
-    String callback_url = params.getString("pageNotifyUrl");
+  public ResultMap preparePayInfoWap(StdPayRequest params) throws ServiceException {
+    String callback_url = params.getPageNotifyUrl();
     ResultMap result = preparePayInfoMobile(params, callback_url);
     if (!Result.isSuccess(result)) return result;
     String token_id = (String) result.getItem("token_id");
     PMap requestPMap = new PMap();
     requestPMap.put("token_id", token_id);
-    String returnUrl = HttpUtil.packHttpGetUrl(params.getString("payUrl"), requestPMap);
+    String returnUrl = HttpUtil.packHttpGetUrl(params.getPayUrl(), requestPMap);
     result.addItem("returnUrl", returnUrl);
     return result;
   }

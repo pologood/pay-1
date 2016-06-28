@@ -32,31 +32,6 @@ public class CMBCService implements ThirdpayService {
   public static final String INPUT_CHARSET = "UTF-8";    // 字符编码格式
 
   @Override
-  public ResultMap preparePayInfoAccount(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  @Override
-  public ResultMap preparePayInfoGatway(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  @Override
-  public ResultMap preparePayInfoQRCode(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  @Override
-  public ResultMap preparePayInfoSDK(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  @Override
-  public ResultMap preparePayInfoWap(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  @Override
   public ResultMap queryOrder(PMap params) throws ServiceException {
     throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
