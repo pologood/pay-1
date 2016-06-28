@@ -9,7 +9,7 @@ public class JSONUtil {
 
   private static ObjectMapper objectMapper = new ObjectMapper();
 
-  public static Map JSON2Map(String json) {
+  public static Map<?, ?> JSON2Map(String json) {
     try {
       return objectMapper.readValue(json, Map.class);
     } catch (Exception ex) {
@@ -17,7 +17,7 @@ public class JSONUtil {
     }
   }
 
-  public static PMap JSON2PMap(String json) {
+  public static PMap<?, ?> JSON2PMap(String json) {
     try {
       return objectMapper.readValue(json, PMap.class);
     } catch (Exception ex) {
@@ -25,7 +25,7 @@ public class JSONUtil {
     }
   }
 
-  public static String Map2JSON(Map map) {
+  public static String Map2JSON(Map<?, ?> map) {
     try {
       return objectMapper.writeValueAsString(map);
     } catch (Exception ex) {

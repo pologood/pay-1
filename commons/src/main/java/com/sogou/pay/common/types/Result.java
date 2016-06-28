@@ -3,9 +3,6 @@ package com.sogou.pay.common.types;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogou.pay.common.utils.JSONUtil;
 
-/**
- * Created by hjf on 15-2-28.
- */
 public abstract class Result<T> {
     private ResultStatus status;
     private String message;
@@ -16,10 +13,7 @@ public abstract class Result<T> {
 
     protected Result(ResultStatus status, String message) {
         this.status = status;
-        if (message == null)
-            this.message = status.getMessage();
-        else
-            this.message = message;
+        this.message = message == null ? status.getMessage() : message;
     }
 
     /**
@@ -28,7 +22,7 @@ public abstract class Result<T> {
      * @param result
      * @return 是否成功状态
      */
-    public static boolean isSuccess(Result result) {
+    public static boolean isSuccess(Result<?> result) {
         return result != null && result.status == ResultStatus.SUCCESS;
     }
 
@@ -78,12 +72,7 @@ public abstract class Result<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public String toString() {
-        /*Map newMap = Maps.newHashMap(data);
-        newMap.put("error_code", status.getOutputName());
-        return JSONUtil.Bean2JSON(newMap);*/
-
         return JSONUtil.Bean2JSON(this);
     }
 
@@ -102,15 +91,4 @@ public abstract class Result<T> {
         return message == null ? status.getMessage() : message;
     }
 
-    private void setReturnValue(T returnValue) {
-        this.returnValue = returnValue;
-    }
-
-    private void setMessage(String message) {
-        this.message = message;
-    }
-
-    private void setStatus(ResultStatus status) {
-        this.status = status;
-    }
 }
