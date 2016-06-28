@@ -47,18 +47,18 @@ public interface PayCheckDao {
      * @param bizCode
      * @return
      * @Author qibaichao
-     * @MethodName getByInstructIdAndBizCode
+     * @MethodName getByInstructIdAndCheckType
      * @Date 2015年2月16日
      * @Description:根据支付指令ID和业务码查询PayCheckPo
      */
-    public PayCheck getByInstructIdAndBizCode(
+    public PayCheck getByInstructIdAndCheckType(
             @Param("instructId") String instructId,
-            @Param("bizCode") int bizCode);
+            @Param("checkType") int checkType);
 
-    public List<Map<String, Object>> queryByMerAndDateAndBizCode(
+    public List<Map<String, Object>> queryByMerAndDateAndCheckType(
             @Param("checkDate") String checkDate,
             @Param("agencyCode") String agencyCode,
-            @Param("bizCode") int bizCode, @Param("startRow") int startRow,
+            @Param("checkType") int checkType, @Param("startRow") int startRow,
             @Param("batchSize") int batchSize);
 
 

@@ -12,7 +12,7 @@ import com.sogou.pay.manager.model.PayNotifyModel;
 import com.sogou.pay.service.entity.*;
 import com.sogou.pay.service.enums.AgencyCode;
 import com.sogou.pay.service.enums.CheckStatus;
-import com.sogou.pay.service.enums.OperationLogStatus;
+import com.sogou.pay.service.enums.CheckLogStatus;
 import com.sogou.pay.service.enums.OrderType;
 import com.sogou.pay.service.payment.*;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
@@ -27,30 +27,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 
-
-/**
- * @Author qibaichao
- * @ClassName PayCheckManagerImpl
- * @Date 2015年2月16日
- * @Description:
- */
 @Component
 public class CheckManager {
 
-  private static final Logger logger = LoggerFactory.getLogger(CheckManager.class);
-
-
+  private static final Logger log = LoggerFactory.getLogger(CheckManager.class);
   /**
-   * 对账业务编码
+   * 每批次处理500条.
    */
-  private List<Integer> checkBizCodeList = new ArrayList<Integer>();
-
-  {
-    checkBizCodeList.add(CheckType.PAID.getValue());
-    checkBizCodeList.add(CheckType.REFUND.getValue());
-    checkBizCodeList.add(CheckType.WITHDRAW.getValue());
-  }
-
+  private static final int BATCH_SIZE = 500;
+  /**
+   * 对账类型
+   */
+  private List<Integer> checkList = new ArrayList<>();
   @Autowired
   private PayCheckDayLogService payCheckDayLogService;
 
@@ -74,15 +62,6 @@ public class CheckManager {
 
   @Autowired
   private PayCheckFeeDiffService payCheckFeeDiffService;
-//
-//  @Autowired
-//  private PayNotifyManager payNotifyManager;
-//
-//  @Autowired
-//  private RefundNotifyManager refundNotifyManager;
-//
-//  @Autowired
-//  private WithdrawNotifyManager withdrawNotifyManager;
 
   @Autowired
   private PayPortal checkPortal;
@@ -90,67 +69,66 @@ public class CheckManager {
   @Autowired
   private AgencyInfoService agencyInfoService;
 
-  /**
-   * 每批次处理500条.
-   */
-  private static final int BATCH_SIZE = 500;
+  {
+    checkList.add(CheckType.PAID.getValue());
+    checkList.add(CheckType.REFUND.getValue());
+    checkList.add(CheckType.WITHDRAW.getValue());
+  }
 
   /**
    * 1. 根据checkDate、agencyCode、merchantNo查询对账日志
    * 2. 不存在对账日志，创建新日志记录
    * 3. 根据各渠道分别下载支付、退款对账数据，批量入库
    * 4. 更新对账日志状态为DOWNLOADSUCCESS
-   *
-   * @param checkDate
-   * @param agencyCode
    */
-  public void downloadOrderData(Date checkDate, String agencyCode) {
+  public void downloadOrder(Date checkDate, String agencyCode) {
 
-    logger.info("[downloadOrderData] begin, checkDate={}, agencyCode={}", checkDate, agencyCode);
+    log.info("[downloadOrder] begin, checkDate={}, agencyCode={}", checkDate, agencyCode);
 
     PayCheckDayLog payCheckDayLog = null;
     try {
 
-      //验证商户是否存在
+      //查询商户
       List<PayAgencyMerchant> payAgencyMerchants = payAgencyMerchantService.selectPayAgencyMerchants(agencyCode);
       if (payAgencyMerchants == null || payAgencyMerchants.size() == 0) {
-        logger.warn("[downloadOrderData] PayAgencyMerchant not exists, agencyCode={}", agencyCode);
+        log.warn("[downloadOrder] PayAgencyMerchant not exists, agencyCode={}", agencyCode);
         return;
       }
+      //查询支付机构
       AgencyInfo agencyInfo = agencyInfoService.getAgencyInfoByCode(agencyCode, AccessPlatform.ACCESSPLATFORM_PC);
 
       String checkDateStr = DateUtil.formatCompactDate(checkDate);
       payCheckDayLog = payCheckDayLogService.getByCheckDateAndAgency(checkDateStr, agencyCode);
-      // 如果没有日志，插入一条新记录
+      // 如果没有日志，插入一条新日志
       if (payCheckDayLog == null) {
         payCheckDayLog = new PayCheckDayLog();
         payCheckDayLog.setAgencyCode(agencyCode);
-        payCheckDayLog.setStatus(OperationLogStatus.INIT.value());
+        payCheckDayLog.setStatus(CheckLogStatus.INIT.value());
         payCheckDayLog.setCheckDate(checkDateStr);
         payCheckDayLogService.insert(payCheckDayLog);
         payCheckDayLog = payCheckDayLogService.getByCheckDateAndAgency(checkDateStr, agencyCode);
       }
 
       for (PayAgencyMerchant payAgencyMerchant : payAgencyMerchants) {
-
         //删除已下载数据
         payCheckService.deleteInfo(checkDateStr, agencyCode, payAgencyMerchant.getMerchantNo());
-        //支付宝、财付通、微信
-        downloadOrderData(checkDate, payAgencyMerchant, agencyInfo);
-
+        //开始下载
+        downloadOrder(checkDate, payAgencyMerchant, agencyInfo);
       }
 
-      logger.info("[downloadOrderData] finish, checkDate={}, agencyCode={}", checkDate, agencyCode);
+      log.info("[downloadOrder] finish, checkDate={}, agencyCode={}", checkDate, agencyCode);
 
-      payCheckDayLogService.updateStatus(payCheckDayLog.getId(), OperationLogStatus.DOWNLOADSUCCESS.value(),
-              payCheckDayLog.getVersion(), OperationLogStatus.DOWNLOADSUCCESS.name());
+      //修改日志状态为下载成功
+      payCheckDayLogService.updateStatus(payCheckDayLog.getId(), CheckLogStatus.DOWNLOADSUCCESS.value(),
+              payCheckDayLog.getVersion(), CheckLogStatus.DOWNLOADSUCCESS.name());
 
     } catch (Exception e) {
-      logger.info("[downloadOrderData] failed, {}", e);
+      log.info("[downloadOrder] failed, {}", e);
       try {
-        payCheckDayLogService.updateStatus(payCheckDayLog.getId(), OperationLogStatus.FAIL.value(), payCheckDayLog.getVersion(), OperationLogStatus.FAIL.name());
+        payCheckDayLogService.updateStatus(payCheckDayLog.getId(), CheckLogStatus.FAIL.value(),
+                payCheckDayLog.getVersion(), CheckLogStatus.FAIL.name());
       } catch (ServiceException se) {
-        logger.info("[downloadOrderData] failed, {}", se);
+        log.info("[downloadOrder] failed, {}", se);
       }
     }
   }
@@ -158,13 +136,10 @@ public class CheckManager {
   /**
    * 1.对账并更新相关的对账状态
    * 2.更新对账日志状态为SUCCESS
-   *
-   * @param checkDate
-   * @param agencyCode
    */
-  public void checkOrderData(Date checkDate, String agencyCode) {
+  public void checkOrder(Date checkDate, String agencyCode) {
 
-    logger.info("[checkOrderData] begin, checkDate={}, agencyCode={}", checkDate, agencyCode);
+    log.info("[checkOrder] begin, checkDate={}, agencyCode={}", checkDate, agencyCode);
 
     PayCheckDayLog payCheckDayLog = null;
     try {
@@ -172,9 +147,9 @@ public class CheckManager {
 
       payCheckDayLog = payCheckDayLogService.getByCheckDateAndAgency(checkDateStr, agencyCode);
 
-      // 对账文件下载验证
-      if (payCheckDayLog == null || payCheckDayLog.getStatus() != OperationLogStatus.DOWNLOADSUCCESS.value()) {
-        logger.warn("[checkOrderData] PayCheckDayLog not exists, checkDate={}, agencyCode={}", checkDate, agencyCode);
+      //验证对账文件下载
+      if (payCheckDayLog == null || payCheckDayLog.getStatus() != CheckLogStatus.DOWNLOADSUCCESS.value()) {
+        log.warn("[checkOrder] PayCheckDayLog not exists, checkDate={}, agencyCode={}", checkDate, agencyCode);
         return;
       }
       /**
@@ -183,33 +158,28 @@ public class CheckManager {
        * 2. 退款
        */
       int total = 0;
-      for (int bizCode : checkBizCodeList) {
+      for (int checkType : checkList) {
 
         int page = 0;
-        boolean hasNext = true;
-
-        while (hasNext) {
+        int size = 0;
+        do {
           // 查询指定渠道、日期范围内，未对账成功的记录，每次查500条
-          List<Map<String, Object>> list = payCheckService.queryByMerAndDateAndBizCode(checkDateStr, agencyCode, bizCode,
+          List<Map<String, Object>> list = payCheckService.queryByMerAndDateAndCheckType(checkDateStr, agencyCode, checkType,
                   page * BATCH_SIZE, BATCH_SIZE);
-          int size = list.size();
+          size = list.size();
           if (size > 0) {
             doBatchUpdate(list);
             total += size;
           }
-          // 查询结果数量小于每批次的数量，说明已经是最后一页了
-          if (size < BATCH_SIZE) {
-            hasNext = false;
-          }
           page++;
-        }
+        } while (size >= BATCH_SIZE);// 查询结果数量小于每批次的数量，说明已经是最后一页了
       }
 
       // 刷新统计数据
       if (total > 0) {
         //自动勾稽处理
         updatePayCheckDiff();
-        // 刷新对账结果数据
+        //刷新对账结果数据
         updatePayCheckResult(checkDate, agencyCode);
         //财付通不对手续费
         if (!AgencyCode.TENPAY.name().equals(agencyCode)) {
@@ -219,38 +189,36 @@ public class CheckManager {
       }
 
       //修改对账日志为对账成功
-      payCheckDayLogService.updateStatus(payCheckDayLog.getId(), OperationLogStatus.SUCCESS.value(),
-              payCheckDayLog.getVersion(), OperationLogStatus.SUCCESS.name());
+      payCheckDayLogService.updateStatus(payCheckDayLog.getId(), CheckLogStatus.SUCCESS.value(),
+              payCheckDayLog.getVersion(), CheckLogStatus.SUCCESS.name());
 
-      logger.info("[checkOrderData] finish, checkDate={}, agencyCode={}, total={}", checkDate, agencyCode, total);
+      log.info("[checkOrder] finish, checkDate={}, agencyCode={}, total={}", checkDate, agencyCode, total);
     } catch (Exception ex) {
-      logger.info("[checkOrderData] failed, {}", ex);
+      log.info("[checkOrder] failed, {}", ex);
       try {
-        payCheckDayLogService.updateStatus(payCheckDayLog.getId(), OperationLogStatus.FAIL.value(), payCheckDayLog.getVersion(), OperationLogStatus.FAIL.name());
+        payCheckDayLogService.updateStatus(payCheckDayLog.getId(), CheckLogStatus.FAIL.value(), payCheckDayLog.getVersion(), CheckLogStatus.FAIL.name());
       } catch (ServiceException se) {
-        logger.info("[checkOrderData] failed, {}", se);
+        log.info("[checkOrder] failed, {}", se);
       }
     }
   }
 
   /**
    * 对账业务处理
-   *
-   * @param list
    */
   @Transactional(value = "transactionManager")
   public void doBatchUpdate(List<Map<String, Object>> list) throws Exception {
 
-    List<PayCheckUpdateModel> payCheckUpdates = new ArrayList<PayCheckUpdateModel>();
+    List<PayCheckUpdateModel> payCheckUpdates = new ArrayList<>();
 
-    List<PayCheckUpdateModel> payCheckWaitingUpdates = new ArrayList<PayCheckUpdateModel>();
+    List<PayCheckUpdateModel> payCheckWaitingUpdates = new ArrayList<>();
 
     for (Map<String, Object> item : list) {
 
-      PayCheckUpdateModel payCheckUppdateModle = new PayCheckUpdateModel();
+      PayCheckUpdateModel payCheckUpdateModel = new PayCheckUpdateModel();
 
       String instructId = (String) item.get("instruct_id");
-      payCheckUppdateModle.setInstructId(instructId);
+      payCheckUpdateModel.setInstructId(instructId);
 
       // 对账金额
       BigDecimal pcAmt = BigDecimal.valueOf(Double.parseDouble(item.get("pc_amt").toString()));
@@ -260,16 +228,16 @@ public class CheckManager {
 
       // 对账ID
       long payCheckId = Long.valueOf(item.get("pay_check_id").toString());
-      payCheckUppdateModle.setPayCheckId(payCheckId);
+      payCheckUpdateModel.setPayCheckId(payCheckId);
 
-      int bizCode = Integer.valueOf(item.get("biz_code").toString());
+      int checkType = Integer.valueOf(item.get("check_type").toString());
 
       /**
        * 在t_pay_check_waiting表中缺失记录，检查是否是丢单
        */
       if (pcwAmt == null) {
 
-        PayCheck payCheck = payCheckService.getByInstructIdAndBizCode(instructId, bizCode);
+        PayCheck payCheck = payCheckService.getByInstructIdAndCheckType(instructId, checkType);
         try {
           //补单
           Result result = repairNotify(payCheck);
@@ -279,10 +247,10 @@ public class CheckManager {
               pcwAmt = payCheckWaiting.getBizAmt();
             }
           } else {
-            logger.warn("repair process error! instructId=" + instructId);
+            log.warn("repair process error! instructId=" + instructId);
           }
         } catch (Exception e) {
-          logger.warn("repair process  error! instructId=" + instructId, e);
+          log.warn("repair process  error! instructId=" + instructId, e);
         }
       }
       /**
@@ -292,21 +260,21 @@ public class CheckManager {
 
         // 金额匹配
         if (pcAmt.compareTo(pcwAmt) == 0) {
-          payCheckUppdateModle.setPayCheckStatus(CheckStatus.SUCCESS.value());
-          payCheckUppdateModle.setPayCheckWaitingStatus(CheckStatus.SUCCESS.value());
+          payCheckUpdateModel.setPayCheckStatus(CheckStatus.SUCCESS.value());
+          payCheckUpdateModel.setPayCheckWaitingStatus(CheckStatus.SUCCESS.value());
         }
         // 金额不匹配
         else {
-          payCheckUppdateModle.setPayCheckStatus(CheckStatus.UNBALANCE.value());
-          payCheckUppdateModle.setPayCheckWaitingStatus(CheckStatus.UNBALANCE.value());
+          payCheckUpdateModel.setPayCheckStatus(CheckStatus.UNBALANCE.value());
+          payCheckUpdateModel.setPayCheckWaitingStatus(CheckStatus.UNBALANCE.value());
         }
-        payCheckUpdates.add(payCheckUppdateModle);
-        payCheckWaitingUpdates.add(payCheckUppdateModle);
+        payCheckUpdates.add(payCheckUpdateModel);
+        payCheckWaitingUpdates.add(payCheckUpdateModel);
       }
       // 对方多账
       else {
-        payCheckUppdateModle.setPayCheckStatus(CheckStatus.LOST.value());
-        payCheckUpdates.add(payCheckUppdateModle);
+        payCheckUpdateModel.setPayCheckStatus(CheckStatus.LOST.value());
+        payCheckUpdates.add(payCheckUpdateModel);
       }
     }
 
@@ -320,13 +288,11 @@ public class CheckManager {
 
   /**
    * 补单
-   *
-   * @param payCheck
-   */
+   **/
   private Result repairNotify(PayCheck payCheck) {
 
     Result result = ResultMap.build();
-    if (payCheck.getBizCode() == OrderType.PAYCASH.getValue()) {
+    if (payCheck.getCheckType() == OrderType.PAY.getValue()) {
       //支付补单
       PayNotifyModel payNotifyModel = new PayNotifyModel();
       payNotifyModel.setPayDetailId(payCheck.getInstructId());
@@ -336,10 +302,10 @@ public class CheckManager {
       payNotifyModel.setAgencyPayTime(payCheck.getOutTransTime());
       payNotifyModel.setTrueMoney(payCheck.getBizAmt());
       //result = payNotifyManager.doProcess(payNotifyModel);
-    } else if (payCheck.getBizCode() == OrderType.REFUND.getValue()) {
+    } else if (payCheck.getCheckType() == OrderType.REFUND.getValue()) {
       //退款补单
       // result = refundNotifyManager.repairRefundOrder(payCheck.getInstructId(), payCheck.getOutOrderId());
-    } else if (payCheck.getBizCode() == OrderType.WITHDRAW.getValue()) {
+    } else if (payCheck.getCheckType() == OrderType.WITHDRAW.getValue()) {
       //提现补单
       PMap params = new PMap<String, Object>();
       params.put("instructId", payCheck.getInstructId());
@@ -361,7 +327,6 @@ public class CheckManager {
    * 1.查询未处理的差异信息
    * 2.自动处理
    *
-   * @throws Exception
    */
   @Transactional(value = "transactionManager")
   public void updatePayCheckDiff() throws Exception {
@@ -370,7 +335,7 @@ public class CheckManager {
     if (count > 0) {
       List<PayCheckDiff> diffList = payCheckDiffService.selectUnResolvedList();
       for (PayCheckDiff payCheckDiff : diffList) {
-        PayCheck payCheck = payCheckService.getByInstructIdAndBizCode(payCheckDiff.getInstructId(), payCheckDiff.getBizCode());
+        PayCheck payCheck = payCheckService.getByInstructIdAndCheckType(payCheckDiff.getInstructId(), payCheckDiff.getCheckType());
         if (payCheck != null && payCheck.getStatus() == CheckStatus.SUCCESS.value()) {
           payCheckDiffService.updateStatus(payCheckDiff.getId(), 1, "auto handle success");
         }
@@ -419,10 +384,6 @@ public class CheckManager {
 
   /**
    * 修改手续费对账结果
-   *
-   * @param checkDate
-   * @param agencyCode
-   * @throws Exception
    */
   @Transactional(value = "transactionManager")
   private void updatePayCheckFeeResult(Date checkDate, String agencyCode) throws Exception {
@@ -459,12 +420,9 @@ public class CheckManager {
 
 
   /**
-   * 支付宝对账数据插入
-   *
-   * @param checkDate
-   * @param payAgencyMerchant
+   * 下载并保存对账数据
    */
-  private void downloadOrderData(Date checkDate, PayAgencyMerchant payAgencyMerchant, AgencyInfo agencyInfo)
+  private void downloadOrder(Date checkDate, PayAgencyMerchant payAgencyMerchant, AgencyInfo agencyInfo)
           throws Exception {
 
     HashMap<String, CheckType> checkTypes = new HashMap<>();
@@ -497,8 +455,8 @@ public class CheckManager {
 
       ResultMap result = checkPortal.downloadOrder(params);
       if (!Result.isSuccess(result)) {
-        logger.error(String.format("[downloadOrderData] 下载对账单失败, 参数: checkDate=%s, agencyCode=%s, merchantNo=%s",
-                checkDate, agencyCode, merchantNo));
+        log.error("[downloadOrder] 下载对账单失败, 参数: checkDate={}, agencyCode={}, merchantNo={}",
+                checkDate, agencyCode, merchantNo);
         throw new Exception(result.getStatus().getMessage());
       }
 
@@ -516,40 +474,33 @@ public class CheckManager {
         }
       }
       //是否有下一页
-      hasNext = (boolean) result.getData().get("hasNextPage");
+      hasNext = (boolean) result.getItem("hasNextPage");
       pageNo++;
     }
   }
 
 
   /**
-   * 批量插入
-   *
-   * @param checkDate
-   * @param agencyCode
-   * @param merchantNo
-   * @param bizCode
-   * @param outClearRecords
-   * @throws Exception
+   * 批量插入数据库
    */
-  private void doBatchInsert(String checkDate, String agencyCode, String merchantNo, int bizCode, List<OutCheckRecord> outClearRecords)
+  private void doBatchInsert(String checkDate, String agencyCode, String merchantNo, int checkType, List<OutCheckRecord> outRecords)
           throws Exception {
     int i = 0;
-    List<PayCheck> payCheckList = new ArrayList<PayCheck>();
+    List<PayCheck> payCheckList = new ArrayList<>();
     // 解析成功，批量插入数据库
     PayCheck payCheck = null;
-    for (OutCheckRecord outClearRecord : outClearRecords) {
+    for (OutCheckRecord outRecord : outRecords) {
       payCheck = new PayCheck();
-      payCheck.setInstructId(outClearRecord.getPayNo());
-      payCheck.setOutOrderId((outClearRecord.getOutPayNo()));
-      payCheck.setBizCode(bizCode);
-      payCheck.setOutTransTime(outClearRecord.getOutTransTime());
-      payCheck.setBizAmt(outClearRecord.getMoney());
-      payCheck.setCommissionFeeAmt(outClearRecord.getCommssionFee());
+      payCheck.setInstructId(outRecord.getPayNo());
+      payCheck.setOutOrderId((outRecord.getOutPayNo()));
+      payCheck.setCheckType(checkType);
+      payCheck.setOutTransTime(outRecord.getOutTransTime());
+      payCheck.setBizAmt(outRecord.getMoney());
+      payCheck.setCommissionFeeAmt(outRecord.getCommssionFee());
       payCheck.setCheckDate(checkDate);
       payCheck.setAgencyCode(agencyCode);
       payCheck.setMerchantNo(merchantNo);
-      payCheck.setBalance(outClearRecord.getBalance());
+      payCheck.setBalance(outRecord.getBalance());
       payCheckList.add(payCheck);
       i++;
       if (i % BATCH_SIZE == 0) {

@@ -22,7 +22,7 @@ public class CheckManagerTest extends BaseTest {
     Date checkDate = DateUtil.parse("20160619");
     String agencyCode = AgencyCode.WECHAT.name();
     try {
-      checkManager.downloadOrderData(checkDate, agencyCode);
+      checkManager.downloadOrder(checkDate, agencyCode);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -40,8 +40,8 @@ public class CheckManagerTest extends BaseTest {
     Date checkDate = DateUtil.parse("20150413");
     String agencyCode = AgencyCode.ALIPAY.name();
     try {
-      checkManager.downloadOrderData(checkDate, agencyCode);
-      checkManager.checkOrderData(checkDate, agencyCode);
+      checkManager.downloadOrder(checkDate, agencyCode);
+      checkManager.checkOrder(checkDate, agencyCode);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -52,8 +52,8 @@ public class CheckManagerTest extends BaseTest {
     Date checkDate = DateUtil.parse("20150421");
     String agencyCode = AgencyCode.TENPAY.name();
     try {
-      checkManager.downloadOrderData(checkDate, agencyCode);
-      checkManager.checkOrderData(checkDate, agencyCode);
+      checkManager.downloadOrder(checkDate, agencyCode);
+      checkManager.checkOrder(checkDate, agencyCode);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -64,8 +64,8 @@ public class CheckManagerTest extends BaseTest {
     Date checkDate = DateUtil.parse("20160622");
     String agencyCode = AgencyCode.WECHAT.name();
     try {
-      checkManager.downloadOrderData(checkDate, agencyCode);
-      checkManager.checkOrderData(checkDate, agencyCode);
+      checkManager.downloadOrder(checkDate, agencyCode);
+      checkManager.checkOrder(checkDate, agencyCode);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -76,8 +76,8 @@ public class CheckManagerTest extends BaseTest {
     Date checkDate = DateUtil.parse("20160623");
     String agencyCode = AgencyCode.UNIONPAY.name();
     try {
-      checkManager.downloadOrderData(checkDate, agencyCode);
-      //checkManager.checkOrderData(checkDate, agencyCode);
+      checkManager.downloadOrder(checkDate, agencyCode);
+      //checkManager.checkOrder(checkDate, agencyCode);
     } catch (Exception e) {
       e.printStackTrace();
     }

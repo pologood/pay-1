@@ -296,7 +296,7 @@ public class RefundManager {
     payCheckWaiting.setModifyTime(sucDate);                                                //修改时间
     payCheckWaiting.setVersion((short) 0);                                                 //版本号
     payCheckWaiting.setInstructId(refundId);                                               //我方流水号
-    payCheckWaiting.setBizCode(CheckType.REFUND.getValue());                               //流水类型
+    payCheckWaiting.setCheckType(CheckType.REFUND.getValue());                               //流水类型
     payCheckWaiting.setOutTransTime(sucDate);                                              //对方交易时间
     payCheckWaiting.setOutOrderId(thirdRefundId); //对方流水号
     payCheckWaiting.setBizAmt(model.getRefundAmount());                                    //对帐金额-退款金额

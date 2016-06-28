@@ -3,7 +3,7 @@ package com.sogou.pay.service.dao;
 import java.util.Date;
 
 import com.sogou.pay.service.enums.AgencyCode;
-import com.sogou.pay.service.enums.OperationLogStatus;
+import com.sogou.pay.service.enums.CheckLogStatus;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -59,7 +59,7 @@ public class PayCheckDayLogDaoTest extends BaseTest {
 
         try {
             long id = 9;
-            int status = OperationLogStatus.SUCCESS.value();
+            int status = CheckLogStatus.SUCCESS.value();
             int version = 0;
             String remark = "aaa";
             int num = payCheckDayLogDao.updateStatus(id, status, version,

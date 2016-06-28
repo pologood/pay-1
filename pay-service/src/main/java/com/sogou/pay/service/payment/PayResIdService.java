@@ -1,20 +1,18 @@
 package com.sogou.pay.service.payment;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-/**
- * User: Liwei
- * Date: 15/3/5
- * Time: 上午10:25
- * Description:
- */
-public interface PayResIdService {
+import com.sogou.pay.service.dao.PayResIdDao;
 
-    /**
-     * 插入响应流水信息
-     *
-     * @param String
-     * @return 返回值
-     */
-    public int insertPayResId(String payDetailId) throws Exception;
+@Service
+public class PayResIdService {
 
+    @Autowired
+    private PayResIdDao payResIdDao;
+
+    
+    public int insertPayResId(String payDetailId) throws Exception {
+        return payResIdDao.insertPayResId(payDetailId);
+    }
 }

@@ -1,20 +1,20 @@
 package com.sogou.pay.service.payment;
 
+import com.sogou.pay.service.dao.PayBankRouterDao;
+import com.sogou.pay.service.entity.PayBankRouter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-import com.sogou.pay.service.entity.PayBankRouter;
 
-/**
- * @User: huangguoqing
- * @Date: 2015/03/02
- * @Description: 银行路由服务
- */
-public interface PayBankRouterService {
+@Service
+public class PayBankRouterService {
 
-    /**
-     * 根据规则ID查询银行路由第三方机构List
-     * @param *路由规则
-     * @return 银行路由List
-     */
-    public List<PayBankRouter> selectPayBankRouterList(PayBankRouter payBankRouter);
+  @Autowired
+  private PayBankRouterDao payBankRouterDao;
+
+  public List<PayBankRouter> selectPayBankRouterList(PayBankRouter payBankRouter) {
+    return payBankRouterDao.selectPayBankRouterList(payBankRouter);
+  }
 }

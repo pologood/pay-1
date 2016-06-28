@@ -1,61 +1,53 @@
 package com.sogou.pay.service.payment;
 
 import com.sogou.pay.common.exception.ServiceException;
+import com.sogou.pay.service.dao.PayCheckDiffDao;
 import com.sogou.pay.service.entity.PayCheckDiff;
-import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by qibaichao on 2015/3/23.
- */
-public interface PayCheckDiffService {
 
-    /**
-     * 插入金额差异
-     *
-     * @param checkDate
-     * @param agencyCode
-     */
-    public void insertAmtDiff(String checkDate,  String agencyCode)throws ServiceException;
+@Service
+public class PayCheckDiffService {
 
-    /**
-     *插入对方多单差异
-     *
-     * @param checkDate
-     * @param agencyCode
-     */
-    public void insertOutMoreDiff( String checkDate,  String agencyCode)throws ServiceException;
-
-    /**
-     * 插入对方漏单单差异
-     *
-     * @param checkDate
-     * @param agencyCode
-     */
-    public void insertOutLessDiff( String checkDate,  String agencyCode)throws ServiceException;
-
-    /**
-     * 清除
-     *
-     * @param checkDate
-     * @param agencyCode
-     * @return
-     */
-    public void delete( String checkDate,  String agencyCode)throws ServiceException;
+  @Autowired
+  private PayCheckDiffDao payCheckDiffDao;
 
 
-    public int selectUnResolvedCount( )throws ServiceException;
+  public void insertAmtDiff(String checkDate, String agencyCode) throws ServiceException {
+    payCheckDiffDao.insertAmtDiff(checkDate, agencyCode);
+  }
 
 
-    public List<PayCheckDiff> selectUnResolvedList( )throws ServiceException;
+  public void insertOutMoreDiff(String checkDate, String agencyCode) throws ServiceException {
+    payCheckDiffDao.insertOutMoreDiff(checkDate, agencyCode);
 
-    /**
-     *
-     * @param id
-     * @param status
-     * @param remark
-     * @throws ServiceException
-     */
-    public void updateStatus(Long id,int status ,String remark)throws ServiceException;
+  }
+
+
+  public void insertOutLessDiff(String checkDate, String agencyCode) throws ServiceException {
+    payCheckDiffDao.insertOutLessDiff(checkDate, agencyCode);
+  }
+
+
+  public void delete(String checkDate, String agencyCode) throws ServiceException {
+    payCheckDiffDao.delete(checkDate, agencyCode);
+  }
+
+
+  public int selectUnResolvedCount() throws ServiceException {
+    return payCheckDiffDao.selectUnResolvedCount();
+  }
+
+
+  public List<PayCheckDiff> selectUnResolvedList() throws ServiceException {
+    return payCheckDiffDao.selectUnResolvedList();
+  }
+
+
+  public void updateStatus(Long id, int status, String remark) throws ServiceException {
+    payCheckDiffDao.updateStatus(id, status, remark);
+  }
 }

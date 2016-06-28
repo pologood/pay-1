@@ -14,7 +14,7 @@
         <result column="biz_amt" property="bizAmt"/>
         <result column="out_order_id" property="outOrderId"/>
         <result column="out_biz_amt" property="outBizAmt"/>
-        <result column="biz_code" property="bizCode"/>
+        <result column="check_type" property="checkType"/>
         <result column="out_trans_time" property="outTransTime"/>
         <result column="diff_type" property="diffType"/>
         <result column="check_date" property="checkDate"/>
@@ -26,7 +26,7 @@
 
 
     <sql id="tableColumns">
-        id,create_time,modify_time,version, instruct_id,biz_amt, out_order_id, out_biz_amt, biz_code,
+        id,create_time,modify_time,version, instruct_id,biz_amt, out_order_id, out_biz_amt, check_type,
         out_trans_time,diff_type,check_date,agency_code,merchant_no,handle_status,remark
     </sql>
 
@@ -43,7 +43,7 @@
             biz_amt,
             out_order_id,
             out_biz_amt,
-            biz_code,
+            check_type,
             out_trans_time,
             diff_type,
             check_date,
@@ -59,7 +59,7 @@
             t2.biz_amt,
             t1.out_order_id,
             t1.biz_amt,
-            t1.biz_code,
+            t1.check_type,
             t1.out_trans_time,
             t1.status as diff_type,
             t1.check_date,
@@ -85,7 +85,7 @@
         biz_amt,
         out_order_id,
         out_biz_amt,
-        biz_code,
+        check_type,
         out_trans_time,
         diff_type,
         check_date,
@@ -101,7 +101,7 @@
         0,
         t.out_order_id,
         t.biz_amt,
-        t.biz_code,
+        t.check_type,
         t.out_trans_time,
         t.status as diff_type,
         t.check_date,
@@ -127,7 +127,7 @@
         biz_amt,
         out_order_id,
         out_biz_amt,
-        biz_code,
+        check_type,
         out_trans_time,
         diff_type,
         check_date,
@@ -143,7 +143,7 @@
         t.biz_amt,
         t.out_order_id,
         0,
-        t.biz_code,
+        t.check_type,
         t.out_trans_time,
         4,
         t.check_date,
@@ -168,7 +168,7 @@
 
     <select id="selectUnResolvedList" resultMap="payCheckDiffMap">
         SELECT
-          id,create_time,modify_time,version, instruct_id,biz_amt, out_order_id, out_biz_amt, biz_code,
+          id,create_time,modify_time,version, instruct_id,biz_amt, out_order_id, out_biz_amt, check_type,
         out_trans_time,diff_type,check_date,agency_code,merchant_no,handle_status,remark
         from t_pay_check_diff
          WHERE handle_status = 0

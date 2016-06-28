@@ -1,26 +1,24 @@
 package com.sogou.pay.service.payment;
 
 import com.sogou.pay.common.exception.ServiceException;
-import org.apache.ibatis.annotations.Param;
+import com.sogou.pay.service.dao.PayCheckFeeDiffDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-/**
- * Created by qibaichao on 2015/3/23.
- */
-public interface PayCheckFeeDiffService {
 
-    /**
-     *
-     * @param checkDate
-     * @param agencyCode
-     */
-    public void insertFeeDiff( String checkDate,  String agencyCode)throws ServiceException;
+@Service
+public class PayCheckFeeDiffService {
 
-    /**
-     * 清除
-     *
-     * @param checkDate
-     * @param agencyCode
-     * @return
-     */
-    public void delete( String checkDate,  String agencyCode)throws ServiceException;
+  @Autowired
+  private PayCheckFeeDiffDao payCheckFeeDiffDao;
+
+
+  public void insertFeeDiff(String checkDate, String agencyCode) throws ServiceException {
+    payCheckFeeDiffDao.insertFeeDiff(checkDate, agencyCode);
+  }
+
+
+  public void delete(String checkDate, String agencyCode) throws ServiceException {
+    payCheckFeeDiffDao.delete(checkDate, agencyCode);
+  }
 }

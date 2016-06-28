@@ -50,7 +50,7 @@ public class PayCheckDaoTest extends BaseTest {
                 String instructId = sequencerGenerator.getPayDetailId();
                 payCheck.setInstructId(instructId);
                 payCheck.setOutOrderId(instructId);
-                payCheck.setBizCode(OrderType.PAYCASH.getValue());
+                payCheck.setCheckType(OrderType.PAY.getValue());
                 payCheck.setOutTransTime(new Date());
                 float f = rand.nextFloat() * 1000;
                 payCheck.setBizAmt(new BigDecimal(dcmFmt.format(f)));
@@ -112,7 +112,7 @@ public class PayCheckDaoTest extends BaseTest {
         try {
             String instructId = "ZF20150317160007997002";
             int bizCode = 1;
-            PayCheck payCheck =payCheckDao.getByInstructIdAndBizCode(instructId, bizCode);
+            PayCheck payCheck =payCheckDao.getByInstructIdAndCheckType(instructId, bizCode);
             System.out.println(JSONUtil.Bean2JSON(payCheck));
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,7 +127,7 @@ public class PayCheckDaoTest extends BaseTest {
             String merchantNo = "sogoucaipiao";
             String checkDate = "20150303";
             String agencyCode = AgencyCode.ALIPAY.name();
-            int bizCode = OrderType.PAYCASH.getValue();
+            int bizCode = OrderType.PAY.getValue();
 
             int BATCH_SIZE = 500;
             int page = 1;
@@ -137,7 +137,7 @@ public class PayCheckDaoTest extends BaseTest {
             while (hasNext) {
                 // 查询指定渠道、日期范围内，未对账成功的记录，每次查500条
                 List<Map<String, Object>> list = payCheckDao
-                        .queryByMerAndDateAndBizCode(checkDate, agencyCode,
+                        .queryByMerAndDateAndCheckType(checkDate, agencyCode,
                                  bizCode,
                                 (page - 1) * BATCH_SIZE, BATCH_SIZE);
 
