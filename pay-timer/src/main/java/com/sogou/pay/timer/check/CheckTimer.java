@@ -43,8 +43,8 @@ public class CheckTimer {
     Date checkDate = getYesterday();
     logger.info("[doAlipayJob] start, checkDate={}", checkDate);
     String agencyCode = AgencyCode.ALIPAY.name();
-    checkManager.downloadOrderData(checkDate, agencyCode);
-    checkManager.checkOrderData(checkDate, agencyCode);
+    checkManager.downloadOrder(checkDate, agencyCode);
+    checkManager.checkOrder(checkDate, agencyCode);
     logger.info("[doAlipayJob] end, checkDate={}", checkDate);
   }
 
@@ -59,8 +59,8 @@ public class CheckTimer {
     Date checkDate = getYesterday();
     logger.info("[doTenpayJob] start, checkDate={}", checkDate);
     String agencyCode = AgencyCode.TENPAY.name();
-    checkManager.downloadOrderData(checkDate, agencyCode);
-    checkManager.checkOrderData(checkDate, agencyCode);
+    checkManager.downloadOrder(checkDate, agencyCode);
+    checkManager.checkOrder(checkDate, agencyCode);
     logger.info("[doTenpayJob] end, checkDate={}", checkDate);
   }
 
@@ -74,8 +74,8 @@ public class CheckTimer {
     Date checkDate = getYesterday();
     logger.info("[doWechatJob] start, checkDate={}", checkDate);
     String agencyCode = AgencyCode.WECHAT.name();
-    checkManager.downloadOrderData(checkDate, agencyCode);
-    checkManager.checkOrderData(checkDate, agencyCode);
+    checkManager.downloadOrder(checkDate, agencyCode);
+    checkManager.checkOrder(checkDate, agencyCode);
     logger.info("[doWechatJob] end, checkDate={}", checkDate);
   }
 
@@ -93,8 +93,8 @@ public class CheckTimer {
         int count = payCheckResultService.queryCountByDateAndAgency(checkDateStr, agencyCode);
         //对账结果数据为0，重新比对
         if (count == 0) {
-          checkManager.downloadOrderData(checkDate, agencyCode);
-          checkManager.checkOrderData(checkDate, agencyCode);
+          checkManager.downloadOrder(checkDate, agencyCode);
+          checkManager.checkOrder(checkDate, agencyCode);
         }
       }
     }

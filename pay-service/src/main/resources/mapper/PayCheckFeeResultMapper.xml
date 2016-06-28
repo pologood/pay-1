@@ -11,7 +11,7 @@
         <result column="total_fee" property="totalFee"/>
         <result column="out_total_num" property="outTotalNum"/>
         <result column="out_total_fee" property="outTotalFee"/>
-        <result column="biz_code" property="bizCode"/>
+        <result column="check_type" property="checkType"/>
         <result column="status" property="status"/>
         <result column="check_date" property="checkDate"/>
         <result column="agency_code" property="agencyCode"/>
@@ -20,7 +20,7 @@
 
     <sql id="tableColumns">
         id,create_time,total_num,total_fee,out_total_num,
-        out_total_fee,biz_code,status,check_date,agency_code
+        out_total_fee,check_type,status,check_date,agency_code
     </sql>
 
     <insert id="insert">
@@ -30,7 +30,7 @@
         total_fee,
         out_total_num,
         out_total_fee,
-        biz_code,
+        check_type,
         status,
         check_date,
         agency_code
@@ -41,13 +41,13 @@
         IFNULL(SUM(t2.commission_fee_amt), 0) as total_fee,
         count(t1.instruct_id) AS out_total_num,
         IFNULL(SUM(t1.commission_fee_amt), 0) as out_total_fee,
-        t1.biz_code,
+        t1.check_type,
         0,
         t1.check_date,
         t1.agency_code
         FROM t_pay_check t1 left join t_pay_check_waiting t2 on t1.instruct_id=t2.instruct_id
        WHERE t1.check_date =  #{checkDate} and t1.agency_code=#{agencyCode} and t1.status= 1
-        GROUP by t1.check_date,t1.agency_code,t1.biz_code
+        GROUP by t1.check_date,t1.agency_code,t1.check_type
 
     </insert>
 

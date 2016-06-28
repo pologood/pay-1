@@ -5,8 +5,7 @@ import org.springframework.stereotype.Service;
 
 
 /**
- * @Author hgq
- * @Description:支付单流水号
+ * 退款单流水号
  */
 @Service
 public class RefundPayDetailNo extends SequenceGenerator {

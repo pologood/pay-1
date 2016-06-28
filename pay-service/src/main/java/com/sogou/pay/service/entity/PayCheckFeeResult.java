@@ -35,7 +35,7 @@ public class PayCheckFeeResult {
     /**
      * 1：支付 3：退款
      */
-    private int bizCode;
+    private int checkType;
     /**
      * 1：对账成功
      * 2：金额不等
@@ -98,12 +98,12 @@ public class PayCheckFeeResult {
         this.outTotalFee = outTotalFee;
     }
 
-    public int getBizCode() {
-        return bizCode;
+    public int getCheckType() {
+        return checkType;
     }
 
-    public void setBizCode(int bizCode) {
-        this.bizCode = bizCode;
+    public void setCheckType(int checkType) {
+        this.checkType = checkType;
     }
 
     public int getStatus() {

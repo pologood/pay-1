@@ -48,7 +48,7 @@ public class PayCheckWaitingDaoTest extends BaseTest {
             String instructId = sequencerGenerator.getPayDetailId();
             payCheckWaiting.setInstructId(instructId);
             payCheckWaiting.setOutOrderId(instructId);
-            payCheckWaiting.setBizCode(OrderType.PAYCASH.getValue());
+            payCheckWaiting.setCheckType(OrderType.PAY.getValue());
             payCheckWaiting.setOutTransTime(new Date());
             float f = rand.nextFloat() * 1000;
             payCheckWaiting.setBizAmt(new BigDecimal(dcmFmt.format(f)));
@@ -82,7 +82,7 @@ public class PayCheckWaitingDaoTest extends BaseTest {
                 String instructId = sequencerGenerator.getPayDetailId();
                 payCheckWaiting.setInstructId(instructId);
                 payCheckWaiting.setOutOrderId(instructId);
-                payCheckWaiting.setBizCode(OrderType.PAYCASH.getValue());
+                payCheckWaiting.setCheckType(OrderType.PAY.getValue());
                 payCheckWaiting.setOutTransTime(new Date());
                 float f = rand.nextFloat() * 1000;
                 payCheckWaiting.setBizAmt(new BigDecimal(dcmFmt.format(f)));

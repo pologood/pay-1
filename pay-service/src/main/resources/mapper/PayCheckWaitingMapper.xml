@@ -11,7 +11,7 @@
         <result column="version" property="version"/>
         <result column="instruct_id" property="instructId"/>
         <result column="out_order_id" property="outOrderId"/>
-        <result column="biz_code" property="bizCode"/>
+        <result column="check_type" property="checkType"/>
         <result column="out_trans_time" property="outTransTime"/>
         <result column="biz_amt" property="bizAmt"/>
         <result column="fee_rate" property="feeRate"/>
@@ -27,7 +27,7 @@
     </resultMap>
 
     <sql id="tableColumns">
-        id,create_time,modify_time,version,instruct_id,out_order_id,biz_code,out_trans_time,biz_amt,fee_rate,
+        id,create_time,modify_time,version,instruct_id,out_order_id,check_type,out_trans_time,biz_amt,fee_rate,
         commission_fee_amt,status,access_platform,app_id,pay_type,bank_code,check_date,agency_code,merchant_no
     </sql>
 
@@ -38,7 +38,7 @@
         version,
         instruct_id,
         out_order_id,
-        biz_code,
+        check_type,
         out_trans_time,
         biz_amt,
         fee_rate,
@@ -59,7 +59,7 @@
         0,
         #{instructId},
         #{outOrderId},
-        #{bizCode},
+        #{checkType},
         #{outTransTime},
         #{bizAmt},
         #{feeRate},
@@ -83,7 +83,7 @@
         version,
         instruct_id,
         out_order_id,
-        biz_code,
+        check_type,
         out_trans_time,
         biz_amt,
         fee_rate,
@@ -105,7 +105,7 @@
             0,
             #{obj.instructId},
             #{obj.outOrderId},
-            #{obj.bizCode},
+            #{obj.checkType},
             #{obj.outTransTime},
             #{obj.bizAmt},
             #{obj.feeRate},
@@ -160,7 +160,7 @@
         SUM(biz_amt) AS total_amt,
         COUNT(*) AS total_num
         FROM t_pay_check_waiting
-        WHERE check_date = #{checkDate} and agency_code =#{agencyCode} and biz_code = #{bizCode}
+        WHERE check_date = #{checkDate} and agency_code =#{agencyCode} and check_type = #{checkType}
     </select>
 
     <select id="sumFeeAmtAndNum" resultType="Map">
@@ -168,7 +168,7 @@
         SUM(commission_fee_amt) AS total_fee,
         COUNT(*) AS total_num
         FROM t_pay_check_waiting
-        WHERE check_date = #{checkDate} and agency_code =#{agencyCode} and biz_code = #{bizCode} and status = 1
+        WHERE check_date = #{checkDate} and agency_code =#{agencyCode} and check_type = #{checkType} and status = 1
     </select>
 
 

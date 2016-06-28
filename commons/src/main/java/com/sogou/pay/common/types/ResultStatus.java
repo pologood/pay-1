@@ -40,9 +40,9 @@ public enum ResultStatus {
     THIRD_GET_KEY_ERROR(2020, "获取第三方密钥异常"),
 
     PARTIAL_REFUND_NOT_ALLOWED(4004, "不支持部分退款"),
-    REFUND_NOT_EXIST(4005, "不存在此订单信息或订单状态有误"),
+    REFUND_NOT_EXIST(4005, "退款单不存在"),
     REFUND_PROCESSING(4007, "已有退款单在执行中"),
-    REFUND_ALREADY_DONE(4008, "此订单已经退款成功"),
+    REFUND_ALREADY_DONE(4008, "退款单已退款成功"),
     REFUND_FAILED(4007, "退款单退款失败"),
 
     SAVE_BILL_FAILED(5001, "保存支付流水对帐单错误"),

@@ -37,7 +37,7 @@ public class PayCheckResult {
     /**
      * 业务编码
      */
-    private int bizCode;
+    private int checkType;
     /**
      * 状态
      */
@@ -100,12 +100,12 @@ public class PayCheckResult {
         this.outTotalAmt = outTotalAmt;
     }
 
-    public int getBizCode() {
-        return bizCode;
+    public int getCheckType() {
+        return checkType;
     }
 
-    public void setBizCode(int bizCode) {
-        this.bizCode = bizCode;
+    public void setCheckType(int checkType) {
+        this.checkType = checkType;
     }
 
     public int getStatus() {

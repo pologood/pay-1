@@ -35,7 +35,7 @@ public class WithdrawNotifyManager {
         try {
             payCheckWaiting.setInstructId((String)params.get("instructId"));//请求流水号
             payCheckWaiting.setOutOrderId((String)params.get("outOrderId"));//第三方流水号
-            payCheckWaiting.setBizCode(CheckType.WITHDRAW.getValue());//业务代码；提现
+            payCheckWaiting.setCheckType(CheckType.WITHDRAW.getValue());//业务代码；提现
             payCheckWaiting.setOutTransTime((Date) params.get("outTransTime"));//交易时间
             payCheckWaiting.setBizAmt((BigDecimal) params.get("bizAmt"));//交易金额
             payCheckWaiting.setFeeRate(BigDecimal.valueOf(0.0));//费率

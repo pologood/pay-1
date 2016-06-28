@@ -5,8 +5,7 @@ import org.springframework.stereotype.Service;
 
 
 /**
- * @Author hgq
- * @Description:支付单流水号
+ * 支付单流水号
  */
 @Service
 public class PayDetailNo extends SequenceGenerator {

@@ -37,7 +37,7 @@ public class PayCheckWaiting {
     /**
      * 业务代码
      */
-    private int bizCode;
+    private int checkType;
     /**
      * 交易时间
      */
@@ -135,12 +135,12 @@ public class PayCheckWaiting {
         this.outOrderId = outOrderId;
     }
 
-    public int getBizCode() {
-        return bizCode;
+    public int getCheckType() {
+        return checkType;
     }
 
-    public void setBizCode(int bizCode) {
-        this.bizCode = bizCode;
+    public void setCheckType(int checkType) {
+        this.checkType = checkType;
     }
 
 

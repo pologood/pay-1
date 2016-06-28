@@ -2,69 +2,52 @@ package com.sogou.pay.service.payment;
 
 import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.manager.model.PayCheckUpdateModel;
+import com.sogou.pay.service.dao.PayCheckDao;
 import com.sogou.pay.service.entity.PayCheck;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
-public interface PayCheckService {
 
-    /**
-     * 批量插入
-     *
-     * @param payCheckList
-     * @throws ServiceException
-     */
-    public void batchInsert(List<PayCheck> payCheckList) throws ServiceException;
+@Service
+public class PayCheckService {
 
-    /**
-     * 批量更新状态
-     *
-     * @param list
-     * @throws ServiceException
-     */
-    public void batchUpdateStatus(List<PayCheckUpdateModel> list) throws ServiceException;
+  @Autowired
+  private PayCheckDao payCheckDao;
 
-    /**
-     * 删除
-     *
-     * @param checkDate
-     * @param agencyCode
-     * @param merchantNo
-     * @throws ServiceException
-     */
-    public void deleteInfo(String checkDate, String agencyCode, String merchantNo) throws ServiceException;
+  public void batchInsert(List<PayCheck> payCheckList) throws ServiceException {
 
-    /**
-     * 根据支付指令ID和业务码查询PayCheckPo
-     *
-     * @param instructId
-     * @param bizCode
-     * @return
-     * @throws ServiceException
-     */
-    public PayCheck getByInstructIdAndBizCode(String instructId, int bizCode) throws ServiceException;
+    payCheckDao.batchInsert(payCheckList);
+  }
 
-    /**
-     * @param checkDate
-     * @param agencyCode
-     * @param bizCode
-     * @param startRow
-     * @param batchSize
-     * @return
-     * @throws ServiceException
-     */
-    public List<Map<String, Object>> queryByMerAndDateAndBizCode(
-            String checkDate, String agencyCode,
-            int bizCode, int startRow, int batchSize) throws ServiceException;
+  public void batchUpdateStatus(List<PayCheckUpdateModel> list) throws ServiceException {
 
-    /**
-     * 批量修改手续费
-     *
-     * @param list
-     * @throws ServiceException
-     */
-    public void batchUpdateFee(List<OutCheckRecord> list) throws ServiceException;
+    payCheckDao.batchUpdateStatus(list);
+  }
+
+  public void deleteInfo(String checkDate, String agencyCode, String merchantNo) throws ServiceException {
+
+    payCheckDao.deleteInfo(checkDate, agencyCode, merchantNo);
+  }
+
+  public PayCheck getByInstructIdAndCheckType(String instructId, int checkType) throws ServiceException {
+
+    return payCheckDao.getByInstructIdAndCheckType(instructId, checkType);
+  }
+
+  public List<Map<String, Object>> queryByMerAndDateAndCheckType(
+          String checkDate, String agencyCode,
+          int checkType, int startRow, int batchSize) throws ServiceException {
+
+    return payCheckDao.queryByMerAndDateAndCheckType(checkDate, agencyCode, checkType, startRow, batchSize);
+  }
+
+  public void batchUpdateFee(List<OutCheckRecord> list) throws ServiceException {
+
+    payCheckDao.batchUpdateFee(list);
+  }
 
 }

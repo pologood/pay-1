@@ -1,74 +1,103 @@
 package com.sogou.pay.service.payment;
 
+import com.sogou.pay.common.exception.ServiceException;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.service.dao.PayOrderDao;
+import com.sogou.pay.service.entity.PayOrderInfo;
+import com.sogou.pay.service.entity.PayOrderRelation;
+
+import org.perf4j.aop.Profiled;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.service.entity.PayOrderInfo;
-import com.sogou.pay.service.entity.PayOrderRelation;
 
-/**
- * @User: huangguoqing
- * @Date: 2015/03/03
- * @Description: 支付单服务
- */
-public interface PayOrderService {
-    /**
-     * 插入支付单信息
-     * @param payOrderInfo 支付单实体
-     * @return 返回值
-     */
-    public int insertPayOrder(PayOrderInfo payOrderInfo) throws ServiceException;
+@Service
+public class PayOrderService {
 
-    /**
-     * 根据ID查询支付单信息
-     * @param payId 支付单ID
-     * @return 支付单信息
-     */
-    public PayOrderInfo selectPayOrderById(String payId) throws ServiceException;
+  @Autowired
+  private PayOrderDao payOrderDao;
 
-    /**
-     * 根据支付单流水号查询支付单信息
-     * @param reqId 支付单流水号
-     * @return 支付单List
-     */
-    public List<PayOrderInfo> selectPayOrderByPayIdList(List<PayOrderRelation> relationList) throws ServiceException;
+  /**
+   * 插入支付单信息
+   *
+   * @param payOrderInfo 支付单实体
+   * @return 是否成功标识
+   */
 
-    /**
-     * 根据ID增加退款金额
-     * @param payId 支付单ID
-     * @param refundAmount 退款金额
-     * @return 修改成功记录数
-     */
-    public int updateAddRefundMoney(String payId, BigDecimal refundAmount, int refundFlag) throws ServiceException;
+  public int insertPayOrder(PayOrderInfo payOrderInfo) {
+    return payOrderDao.insertPayOrder(payOrderInfo);
+  }
 
-    /**
-     * 根据ID查询支付单信息
-     * @param payOrderInfo 支付单信息
-     * @return 支付单信息
-     */
-    public void updatePayOrder(PayOrderInfo payOrderInfo) throws ServiceException;
+  /**
+   * 根据ID查询支付单信息
+   *
+   * @param payId 支付单ID
+   * @return 支付单信息
+   */
 
-    /**
-     * 根据支付流水单批量更新支付单状态
-     * @param payId 支付单ID
-     * @param bankCode 银行编码
-     * @param status 更新的状态
-     * @param successTime 成功时间
-     * @return 是否成功
-     */
-    public void updatePayOrderByPayId(String payId,String bankCode,int status,Date successTime) throws ServiceException;
+  public PayOrderInfo selectPayOrderById(String payId) {
+    return payOrderDao.selectPayOrderById(payId);
+  }
 
-    /**
-     * @Author	huangguoqing 
-     * @MethodName	selectPayOrderInfoByOrderId 
-     * @param orderId
-     * @param appId
-     * @return 支付单信息
-     * @Date	2015年3月17日
-     * @Description:根据订单ID查询支付单信息
-     */
-    public PayOrderInfo selectPayOrderInfoByOrderId(String orderId,Integer appId) throws ServiceException;
-    
+  /**
+   * 根据支付单流水号查询支付单信息
+   *
+   * @param reqId 支付单流水号
+   * @return 支付单List
+   */
+
+  public List<PayOrderInfo> selectPayOrderByPayIdList(List<PayOrderRelation> relationList) {
+    return payOrderDao.selectPayOrderByPayIdList(relationList);
+  }
+
+
+  public int updateAddRefundMoney(String payId, BigDecimal refundAmount, int refundFlag) throws ServiceException {
+    try {
+      return payOrderDao.updateAddRefundMoney(payId, refundAmount, refundFlag);
+    } catch (Exception e) {
+      throw new ServiceException(e, ResultStatus.SYSTEM_DB_ERROR);
+    }
+  }
+
+  /**
+   * 根据ID查询支付单信息
+   *
+   * @param payOrderInfo 支付单信息
+   * @return 支付单信息
+   */
+
+  public void updatePayOrder(PayOrderInfo payOrderInfo) {
+    payOrderDao.updatePayOrder(payOrderInfo);
+  }
+
+  /**
+   * 根据支付流水单更新支付单状态
+   *
+   * @param payId          支付单ID
+   * @param payOrderStatus 更新的状态
+   * @param successTime    成功时间
+   * @return 是否成功
+   */
+
+  public void updatePayOrderByPayId(String payId, String bankCode, int payOrderStatus, Date successTime) {
+    payOrderDao.updatePayOrderByPayId(payId, bankCode, payOrderStatus, successTime);
+  }
+
+  /**
+   * @param orderId
+   * @return 支付单信息
+   * @Author huangguoqing
+   * @MethodName selectPayOrderInfoByOrderId
+   * @Date 2015年3月17日
+   * @Description:根据订单ID查询支付单信息
+   */
+  @Profiled(el = true, logger = "dbTimingLogger", tag = "PayOrderService_selectPayOrderInfoByOrderId",
+          timeThreshold = 100, normalAndSlowSuffixesEnabled = true)
+  public PayOrderInfo selectPayOrderInfoByOrderId(String orderId, Integer appId) {
+    return payOrderDao.selectPayOrderByOrderId(orderId, appId);
+  }
 }

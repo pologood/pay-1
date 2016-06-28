@@ -15,7 +15,7 @@
         <result column="out_order_id" property="outOrderId"/>
         <result column="out_biz_amt" property="outBizAmt"/>
         <result column="out_fee_amt" property="outFeeAmt"/>
-        <result column="biz_code" property="bizCode"/>
+        <result column="check_type" property="checkType"/>
         <result column="out_trans_time" property="outTransTime"/>
         <result column="check_date" property="checkDate"/>
         <result column="agency_code" property="agencyCode"/>
@@ -26,7 +26,7 @@
 
 
     <sql id="tableColumns">
-        id,create_time,modify_time,version, instruct_id,biz_amt, fee_amt,out_order_id, out_biz_amt,out_fee_amt, biz_code,
+        id,create_time,modify_time,version, instruct_id,biz_amt, fee_amt,out_order_id, out_biz_amt,out_fee_amt, check_type,
         out_trans_time,diff_type,check_date,agency_code,merchant_no,handle_status,remark
     </sql>
 
@@ -41,7 +41,7 @@
         out_order_id,
         out_biz_amt,
         out_fee_amt,
-        biz_code,
+        check_type,
         out_trans_time,
         check_date,
         agency_code,
@@ -58,7 +58,7 @@
         t1.out_order_id,
         t1.biz_amt as out_biz_amt,
         t1.commission_fee_amt as out_fee_amt,
-        t1.biz_code,
+        t1.check_type,
         t1.out_trans_time,
         t1.check_date,
         t1.agency_code,

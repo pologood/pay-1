@@ -4,7 +4,6 @@ import com.sogou.pay.common.utils.SequenceGenerator;
 import org.springframework.stereotype.Service;
 
 /**
- * Created by qibaichao on 2015/6/2.
  * 代付单批次号
  */
 @Service

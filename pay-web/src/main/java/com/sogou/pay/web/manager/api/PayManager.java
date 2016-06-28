@@ -109,7 +109,7 @@ public class PayManager {
       }
       //继续支付
       result.withReturn(info.getPayId());
-    } catch (ServiceException e) {
+    } catch (Exception e) {
       logger.error("[createOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
       result.withError(ResultStatus.SYSTEM_ERROR);
     }
@@ -561,7 +561,7 @@ public class PayManager {
       PayResDetail payResDetail = payResDetailService.selectPayResById(payReqDetail.getPayDetailId());
       payCheckWaiting.setOutOrderId(payResDetail.getAgencyOrderId());//第三方流水号
       payCheckWaiting.setInstructId(payResDetail.getPayDetailId());//请求流水号
-      payCheckWaiting.setBizCode(CheckType.PAID.getValue());//业务代码 1.支付、2.充值、3.退款
+      payCheckWaiting.setCheckType(CheckType.PAID.getValue());//业务代码 1.支付、2.充值、3.退款
       payCheckWaiting.setOutTransTime(payResDetail.getAgencyPayTime());//交易时间
       payCheckWaiting.setBizAmt(payResDetail.getTrueMoney());//交易金额
       payCheckWaiting.setFeeRate(payResDetail.getFeeRate());//费率

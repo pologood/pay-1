@@ -2,47 +2,54 @@ package com.sogou.pay.service.payment;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.sogou.pay.common.exception.ServiceException;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.service.dao.PayOrderRelationDao;
 import com.sogou.pay.service.entity.PayOrderRelation;
 
-/**
- * @User: huangguoqing
- * @Date: 2015/03/03
- * @Description: 支付单与支付流水关联业务
- */
-public interface PayOrderRelationService {
-    /**
-     * 插入支付单与支付流水关联实体信息
-     *
-     * @param payOrderRelation 支付单与支付流水关联实体
-     * @return 返回值
-     */
-    public int insertPayOrderRelation(PayOrderRelation payOrderRelation) throws ServiceException;
 
-    /**
-     * 查询支付单与支付流水关联信息
-     *
-     * @param payOrderRelation 条件
-     * @return 关联信息List
-     */
-    public List<PayOrderRelation> selectPayOrderRelation(PayOrderRelation payOrderRelation);
+@Service
+public class PayOrderRelationService {
 
-    /**
-     * 根据支付流水号查询支付单号
-     *
-     * @param payDetailId
-     * @return
-     */
-    public String selectPayOrderId(String payDetailId);
-    
-    /**
-     * @Author	huangguoqing 
-     * @MethodName	updatePayOrderRelationByReqId
-     * @param status 
-     * @param payDetailId
-     * @return 更新条数
-     * @Date	2015年4月20日
-     * @Description:根据支付单流水更新关联表
-     */
-    public int updatePayOrderRelation(int status,String payDetailId) throws ServiceException;
+  @Autowired
+  private PayOrderRelationDao payOrderRelationDao;
+
+  /**
+   * 插入支付单与支付流水关联信息
+   *
+   * @param payOrderRelation 支付单与支付流水关联实体
+   * @return 返回值
+   */
+
+  public int insertPayOrderRelation(PayOrderRelation payOrderRelation) throws ServiceException {
+    try {
+      return payOrderRelationDao.insertPayOrderRelation(payOrderRelation);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new ServiceException(e, ResultStatus.SYSTEM_DB_ERROR);
+    }
+  }
+
+  /**
+   * 查询支付单与支付流水关联信息
+   *
+   * @param payOrderRelation 条件
+   * @return 关联信息List
+   */
+  public List<PayOrderRelation> selectPayOrderRelation(PayOrderRelation payOrderRelation) {
+    return payOrderRelationDao.selectPayOrderRelation(payOrderRelation);
+  }
+
+
+  public String selectPayOrderId(String payDetailId) {
+    return payOrderRelationDao.selectPayOrderId(payDetailId);
+  }
+
+
+  public int updatePayOrderRelation(int status, String payDetailId) {
+    return payOrderRelationDao.updatePayOrderRelation(status, payDetailId);
+  }
 }
