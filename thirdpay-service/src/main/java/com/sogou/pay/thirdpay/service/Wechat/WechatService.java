@@ -200,7 +200,7 @@ public class WechatService implements ThirdpayService {
     requestPMap.put("nonce_str", TenpayUtils.getNonceStr());                  // 随机字符串，不长于32位
     requestPMap.put("out_trade_no", params.getString("serialNumber"));  //商户订单号
 
-    ResultMap result = doRequest(params.getString("queryUrl"), params.getString(""), requestPMap);
+    ResultMap result = doRequest(params.getString("queryUrl"), params.getString("md5securityKey"), requestPMap);
     if (!Result.isSuccess(result)) {
       log.error("[queryOrder] failed, params={}", params);
       return result;
