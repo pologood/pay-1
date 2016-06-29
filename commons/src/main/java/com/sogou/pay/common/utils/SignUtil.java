@@ -3,7 +3,7 @@ package com.sogou.pay.common.utils;
 import com.google.common.collect.Maps;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,10 +53,10 @@ public class SignUtil {
         if (params == null || params.size() == 0) {
             throw new IllegalArgumentException("params is null or empty");
         }
-        if (StringUtil.isBlank(sign)) {
+        if (StringUtils.isBlank(sign)) {
             throw new IllegalArgumentException("sign is blank");
         }
-        if (StringUtil.isBlank(secret)) {
+        if (StringUtils.isBlank(secret)) {
             throw new IllegalArgumentException("secret is blank");
         }
 
@@ -78,7 +78,7 @@ public class SignUtil {
      * @return 签名结果
      */
     public static String signMD5(Map params, String secret, String charset) {
-        if (StringUtil.isBlank(secret)) {
+        if (StringUtils.isBlank(secret)) {
             throw new IllegalArgumentException("secret key is null or empty");
         }
         return encodeMD5(packParams(params, secret), charset);
@@ -86,7 +86,7 @@ public class SignUtil {
 
     @Deprecated
     public static String calculateSig(String sigName, Map params, String secret, String charset) {
-        if (StringUtil.isBlank(secret)) {
+        if (StringUtils.isBlank(secret)) {
             throw new IllegalArgumentException("secret key is null or empty");
         }
         return encodeMD5(packParams(params, secret), charset);

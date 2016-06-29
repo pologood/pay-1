@@ -7,6 +7,7 @@ import com.sogou.pay.common.annotation.MapField;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.MapIterator;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -66,7 +67,7 @@ public final class MapUtil {
             return false;
         }
         for (Object value : map.values()) {
-            if (StringUtil.isEmpty((String)value))
+            if (StringUtils.isEmpty((String)value))
                 return false;
         }
         return true;

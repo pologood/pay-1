@@ -3,6 +3,7 @@ package com.sogou.pay.common.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sogou.pay.common.types.PMap;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +69,7 @@ public class BeanUtil {
     if (map != null) {
       List<String> keys = new ArrayList<>(map.keySet());
       for (String key : keys) {
-        if (StringUtil.isBlank(map.get(key).toString())) {
+        if (StringUtils.isBlank(map.get(key).toString())) {
           map.remove(key);
         }
       }
