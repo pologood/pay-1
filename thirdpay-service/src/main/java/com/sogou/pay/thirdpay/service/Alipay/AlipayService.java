@@ -287,10 +287,9 @@ public class AlipayService implements ThirdpayService {
   }
 
   @Override
-  public ResultMap queryOrder(PMap params) throws ServiceException {
-    ResultMap result;
+  public ResultMap<?> queryOrder(PMap<String, ?> params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("service", ALIPAY_SERVICE_QUERY); //查询订单接口名
     requestPMap.put("partner", params.getString("merchantNo")); //商户号
     requestPMap.put("_input_charset", INPUT_CHARSET); //编码
@@ -301,11 +300,11 @@ public class AlipayService implements ThirdpayService {
     }
     //签名
     String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, md5securityKey);
     if (!Result.isSuccess(result)) return result;
 
     //发起请求
-    Result httpResponse = HttpService.getInstance().doPost(params.getString("queryUrl"), requestPMap, INPUT_CHARSET,
+    Result<?> httpResponse = HttpService.getInstance().doPost(params.getString("queryUrl"), requestPMap, INPUT_CHARSET,
         null);
     if (!Result.isSuccess(httpResponse)) {
       log.error("[queryOrder] http request failed, url={}, params={}", params.getString("queryUrl"), requestPMap);
@@ -313,7 +312,7 @@ public class AlipayService implements ThirdpayService {
     }
     String resContent = (String) httpResponse.getReturnValue();
     //解析响应
-    PMap alipayMap;
+    PMap<String, ?> alipayMap;
     try {
       alipayMap = XMLUtil.XML2PMap(resContent);
     } catch (Exception e) {
@@ -325,7 +324,7 @@ public class AlipayService implements ThirdpayService {
       log.error("[queryOrder] response error, request={}, response={}", requestPMap, resContent);
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
-    PMap responsePMap = alipayMap.getPMap("response").getPMap("trade");
+    PMap<String, ?> responsePMap = alipayMap.getPMap("response").getPMap("trade");
     //验签
     result = verifySignMD5(responsePMap, md5securityKey, alipayMap.getString("sign"));
     if (!Result.isSuccess(result)) return result;
@@ -343,10 +342,9 @@ public class AlipayService implements ThirdpayService {
   }
 
   @Override
-  public ResultMap refundOrder(PMap params) throws ServiceException {
-    ResultMap result;
+  public ResultMap<?> refundOrder(PMap<String, ?> params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("service", ALIPAY_SERVICE_REFUND); //接口名
     requestPMap.put("partner", params.getString("merchantNo")); //商户号
     requestPMap.put("_input_charset", INPUT_CHARSET); //编码
@@ -365,11 +363,11 @@ public class AlipayService implements ThirdpayService {
     }
     //签名
     String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, md5securityKey);
     if (!Result.isSuccess(result)) return result;
 
     //发起请求
-    Result httpResponse = HttpService.getInstance().doPost(params.getString("refundUrl"), requestPMap, INPUT_CHARSET,
+    Result<?> httpResponse = HttpService.getInstance().doPost(params.getString("refundUrl"), requestPMap, INPUT_CHARSET,
         null);
     if (!Result.isSuccess(httpResponse)) {
       log.error("[refundOrder] http request failed, url={}, params={}", params.getString("refundUrl"), requestPMap);
@@ -377,7 +375,7 @@ public class AlipayService implements ThirdpayService {
     }
     String resContent = (String) httpResponse.getReturnValue();
     //解析响应
-    PMap alipayMap;
+    PMap<String, ?> alipayMap;
     try {
       alipayMap = XMLUtil.XML2PMap(resContent);
     } catch (Exception e) {
@@ -391,16 +389,15 @@ public class AlipayService implements ThirdpayService {
       result = ResultMap.build();
       result.addItem("errorCode", is_success);
       result.addItem("errorMsg", alipayMap.getString("error"));
-      return (ResultMap) result.withError(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
+      return (ResultMap<?>) result.withError(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
     return ResultMap.build().addItem("agencyRefundId", params.getString("refundSerialNumber"));
   }
 
   @Override
-  public ResultMap queryRefundOrder(PMap params) throws ServiceException {
-    ResultMap result;
+  public ResultMap<?> queryRefundOrder(PMap<String, ?> params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("service", ALIPAY_SERVICE_QUERY_REFUND); //查询订单接口名
     requestPMap.put("partner", params.getString("merchantNo")); //商户号
     requestPMap.put("_input_charset", INPUT_CHARSET); //编码
@@ -411,11 +408,11 @@ public class AlipayService implements ThirdpayService {
     }
     //签名
     String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, md5securityKey);
     if (!Result.isSuccess(result)) return result;
 
     //发起请求
-    Result httpResponse = HttpService.getInstance().doPost(params.getString("queryRefundUrl"), requestPMap,
+    Result<?> httpResponse = HttpService.getInstance().doPost(params.getString("queryRefundUrl"), requestPMap,
         INPUT_CHARSET, null);
     if (!Result.isSuccess(httpResponse)) {
       log.error("[queryRefundOrder] http request failed, url={}, params={}", params.getString("queryRefundUrl"),
@@ -424,7 +421,7 @@ public class AlipayService implements ThirdpayService {
     }
     String resContent = (String) httpResponse.getReturnValue();
     //解析响应
-    ResultMap refundResult;
+    ResultMap<?> refundResult;
     try {
       refundResult = HttpUtil.extractParams(resContent);
     } catch (Exception e) {
@@ -462,10 +459,9 @@ public class AlipayService implements ThirdpayService {
   }
 
   @Override
-  public ResultMap downloadOrder(PMap params) throws ServiceException {
-    ResultMap result;
+  public ResultMap<?> downloadOrder(PMap<String, ?> params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("service", ALIPAY_SERVICE_PAGE_QUERY);//接口名称
     requestPMap.put("partner", params.getString("merchantNo"));//商户号
     requestPMap.put("_input_charset", INPUT_CHARSET);//编码字符集
@@ -491,11 +487,11 @@ public class AlipayService implements ThirdpayService {
 
     //签名
     String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, md5securityKey);
     if (!Result.isSuccess(result)) return result;
 
     //发起请求
-    Result httpResponse = HttpService.getInstance().doPost(params.getString("downloadUrl"), requestPMap, INPUT_CHARSET,
+    Result<?> httpResponse = HttpService.getInstance().doPost(params.getString("downloadUrl"), requestPMap, INPUT_CHARSET,
         null);
     if (!Result.isSuccess(httpResponse)) {
       log.error("[downloadOrder] http request failed, url={}, params={}", params.getString("downloadUrl"), requestPMap);
@@ -506,8 +502,9 @@ public class AlipayService implements ThirdpayService {
     return validateAndParseMessage(resContent);
   }
 
-  private ResultMap validateAndParseMessage(String message) {
-    ResultMap result = ResultMap.build();
+  @SuppressWarnings("unchecked")
+  private ResultMap<?> validateAndParseMessage(String message) {
+    ResultMap<?> result = ResultMap.build();
     SAXReader reader = new SAXReader();
     reader.setEncoding(INPUT_CHARSET);
     Document doc = null;
@@ -586,10 +583,10 @@ public class AlipayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap prepareTransferInfo(PMap params) throws ServiceException {
-    ResultMap result;
+  @SuppressWarnings("unchecked")
+  public ResultMap<?> prepareTransferInfo(PMap<String, ?> params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("service", ALIPAY_SERVICE_BATCH_TRANS);//接口名称
     requestPMap.put("partner", params.getString("merchantNo"));//商户号
     requestPMap.put("_input_charset", INPUT_CHARSET);//编码字符集
@@ -618,7 +615,7 @@ public class AlipayService implements ThirdpayService {
     }
     //签名
     String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, md5securityKey);
     if (!Result.isSuccess(result)) return result;
 
     //生成支付URL
@@ -626,18 +623,8 @@ public class AlipayService implements ThirdpayService {
     return ResultMap.build().addItem("returnUrl", returnUrl);
   }
 
-  @Override
-  public ResultMap queryTransfer(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  @Override
-  public ResultMap queryTransferRefund(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  public ResultMap getReqIDFromNotifyWebSync(PMap params) throws ServiceException {
-    ResultMap result = ResultMap.build();
+  public ResultMap<?> getReqIDFromNotifyWebSync(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result = ResultMap.build();
     String is_success = params.getString("is_success");//接口是否调用成功
     String out_trade_no = params.getString("out_trade_no");
     if (!"T".equals(is_success) || out_trade_no == null) {
@@ -651,8 +638,8 @@ public class AlipayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap getReqIDFromNotifyWebAsync(PMap params) throws ServiceException {
-    ResultMap result = ResultMap.build();
+  public ResultMap<?> getReqIDFromNotifyWebAsync(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result = ResultMap.build();
     String out_trade_no = params.getString("out_trade_no");
     if (out_trade_no == null) {
       log.error("[getReqIDFromNotifyWebAsync] out_trade_no not exists, params={}", params);
@@ -665,20 +652,20 @@ public class AlipayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap getReqIDFromNotifyWapSync(PMap params) throws ServiceException {
+  public ResultMap<?> getReqIDFromNotifyWapSync(PMap<String, ?> params) throws ServiceException {
     return getReqIDFromNotifyWebSync(params);
   }
 
-  public ResultMap getReqIDFromNotifyWapAsync(PMap params) throws ServiceException {
+  public ResultMap<?> getReqIDFromNotifyWapAsync(PMap<String, ?> params) throws ServiceException {
     return getReqIDFromNotifyWebAsync(params);
   }
 
-  public ResultMap getReqIDFromNotifySDKAsync(PMap params) throws ServiceException {
+  public ResultMap<?> getReqIDFromNotifySDKAsync(PMap<String, ?> params) throws ServiceException {
     return getReqIDFromNotifyWebAsync(params);
   }
 
-  public ResultMap getReqIDFromNotifyRefund(PMap params) throws ServiceException {
-    ResultMap result = ResultMap.build();
+  public ResultMap<?> getReqIDFromNotifyRefund(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result = ResultMap.build();
     String batch_no = params.getString("batch_no");
     if (batch_no == null) {
       log.error("[getReqIDFromNotifyRefund] batch_no not exists, params={}", params);
@@ -689,8 +676,8 @@ public class AlipayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap getReqIDFromNotifyTransfer(PMap params) throws ServiceException {
-    ResultMap result = ResultMap.build();
+  public ResultMap<?> getReqIDFromNotifyTransfer(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result = ResultMap.build();
     String batch_no = params.getString("batch_no");
     if (batch_no == null) {
       log.error("[getReqIDFromNotifyTransfer] batch_no not exists, params={}", params);
@@ -703,9 +690,9 @@ public class AlipayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyWebSync(PMap params) throws ServiceException {
-    ResultMap result;
-    PMap notifyParams = params.getPMap("data");
+  public ResultMap<?> handleNotifyWebSync(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result;
+    PMap<String, ?> notifyParams = params.getPMap("data");
     String md5securityKey = params.getString("md5securityKey");
     //验签
     result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
@@ -722,9 +709,9 @@ public class AlipayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyWebAsync(PMap params) throws ServiceException {
-    ResultMap result;
-    PMap notifyParams = params.getPMap("data");
+  public ResultMap<?> handleNotifyWebAsync(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result;
+    PMap<String, ?> notifyParams = params.getPMap("data");
     String md5securityKey = params.getString("md5securityKey");
     //验签
     result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
@@ -749,17 +736,17 @@ public class AlipayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyWapSync(PMap params) throws ServiceException {
+  public ResultMap<?> handleNotifyWapSync(PMap<String, ?> params) throws ServiceException {
     return handleNotifyWebSync(params);
   }
 
-  public ResultMap handleNotifyWapAsync(PMap params) throws ServiceException {
+  public ResultMap<?> handleNotifyWapAsync(PMap<String, ?> params) throws ServiceException {
     return handleNotifyWebAsync(params);
   }
 
-  public ResultMap handleNotifySDKAsync(PMap params) throws ServiceException {
-    ResultMap result;
-    PMap notifyParams = params.getPMap("data");
+  public ResultMap<?> handleNotifySDKAsync(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result;
+    PMap<String, ?> notifyParams = params.getPMap("data");
     //验签
     String publicCertFilePath = params.getString("publicCertFilePath");
     String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
@@ -790,9 +777,9 @@ public class AlipayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyRefund(PMap params) throws ServiceException {
-    ResultMap result;
-    PMap notifyParams = params.getPMap("data");
+  public ResultMap<?> handleNotifyRefund(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result;
+    PMap<String, ?> notifyParams = params.getPMap("data");
     String md5securityKey = params.getString("md5securityKey");
     //验签
     result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
@@ -826,11 +813,7 @@ public class AlipayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyTransfer(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  private ResultMap signMD5(PMap requestPMap, String secretKey) {
+  private ResultMap<?> signMD5(PMap<String, Object> requestPMap, String secretKey) {
     String sign = SecretKeyUtil.aliMD5Sign(requestPMap, secretKey);
     if (sign == null) {
       log.error("[signMD5] sign failed, params={}", requestPMap);
@@ -841,7 +824,7 @@ public class AlipayService implements ThirdpayService {
     return ResultMap.build();
   }
 
-  private ResultMap verifySignMD5(PMap responsePMap, String secretKey, String sign) {
+  private ResultMap<?> verifySignMD5(PMap<String, ?> responsePMap, String secretKey, String sign) {
     boolean signOK = SecretKeyUtil.aliMD5CheckSign(responsePMap, secretKey, sign);
     if (!signOK) {
       log.error("[verifySignMD5] verify sign failed, responsePMap={}, sign={}", responsePMap, sign);

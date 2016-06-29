@@ -94,7 +94,7 @@ public class UnionpayService implements ThirdpayService {
       return result;
     }
 
-    return ResultMap.build().addItem("orderInfo", result.getItem("responsePMap"));
+    return ResultMap.build().addItem("orderInfo", result.getData());
   }
 
   @Override
@@ -179,7 +179,7 @@ public class UnionpayService implements ThirdpayService {
   }
 
   private String getCertFilePath(StdPayRequest request, boolean isPrivate) {
-    return isPrivate ? request.getPrivateCertPath() : request.getPublicCertPath();
+    return "d:"+(isPrivate ? request.getPrivateCertPath() : request.getPublicCertPath());
   }
 
   private String getCertFilePath(PMap<String, ?> map, boolean isPrivate) {
@@ -194,16 +194,13 @@ public class UnionpayService implements ThirdpayService {
 
   private ResultMap<?> doRequest(String url, String privateKey, String publicKey, PMap<String, String> requestPMap)
       throws ServiceException {
-
-    ResultMap<?> result;
-
     if (!MapUtil.checkAllExist(requestPMap)) {
       LOG.error("[doRequest] empty requestMap={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
 
     //签名
-    result = sign(privateKey, requestPMap);
+    ResultMap<?> result = sign(privateKey, requestPMap);
     if (!Result.isSuccess(result)) return result;
 
     //请求第三方
@@ -224,7 +221,7 @@ public class UnionpayService implements ThirdpayService {
       result.withError(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
       return result;
     }
-    return result.addItem("responsePMap", responsePMap);
+    return result.addItems(responsePMap);
   }
 
   @Override
@@ -250,7 +247,7 @@ public class UnionpayService implements ThirdpayService {
       return result;
     }
 
-    PMap<String, ?> responsePMap = (PMap<String, ?>) result.getItem("responsePMap");
+    PMap<String, ?> responsePMap = result.getData();
     return result.addItem("payStatus", getTradeStatus(responsePMap.getString("origRespCode")));
   }
 
@@ -283,7 +280,7 @@ public class UnionpayService implements ThirdpayService {
       return result;
     }
 
-    PMap<String, ?> responsePMap = (PMap<String, ?>) result.getItem("responsePMap");
+    PMap<String, ?> responsePMap = result.getData();
     return result.addItem("agencyRefundId", responsePMap.getString("queryId"));
   }
 
@@ -310,7 +307,7 @@ public class UnionpayService implements ThirdpayService {
       return result;
     }
 
-    PMap<String, ?> responsePMap = (PMap<String, ?>) result.getItem("responsePMap");
+    PMap<String, ?> responsePMap = result.getData();
     return result.addItem("refundStatus", getTradeStatus(responsePMap.getString("origRespCode")));
   }
 
@@ -342,7 +339,7 @@ public class UnionpayService implements ThirdpayService {
       return result;
     }
 
-    PMap<String, ?> responsePMap = (PMap<String, ?>) result.getItem("responsePMap");
+    PMap<String, ?> responsePMap = result.getData();
     String fileType = responsePMap.getString("fileType");
     String fileName = responsePMap.getString("fileName");
     String fileContent = responsePMap.getString("fileContent");
@@ -450,8 +447,8 @@ public class UnionpayService implements ThirdpayService {
   @Override
   public ResultMap<?> handleNotifySDKAsync(PMap<String, ?> params) throws ServiceException {
     PMap<String, ?> notifyParams;
-    ResultMap<?> resultMap = ResultMap.build(), signCheckResult = verifySign(getKey(getCertFilePath(params, false)),
-        notifyParams = (PMap<String, ?>) params.getPMap("data"));
+    ResultMap<?> resultMap = ResultMap.build(),
+        signCheckResult = verifySign(getKey(getCertFilePath(params, false)), notifyParams = params.getPMap("data"));
     if (!Result.isSuccess(signCheckResult)) return signCheckResult;
     //提取关键参数
     String orderId = notifyParams.getString("orderId");
@@ -473,8 +470,8 @@ public class UnionpayService implements ThirdpayService {
   @Override
   public ResultMap<?> handleNotifyRefund(PMap<String, ?> params) throws ServiceException {
     PMap<String, ?> notifyParams;
-    ResultMap<?> resultMap = ResultMap.build(), signCheckResult = verifySign(getKey(getCertFilePath(params, false)),
-        notifyParams = (PMap<String, ?>) params.getPMap("data"));
+    ResultMap<?> resultMap = ResultMap.build(),
+        signCheckResult = verifySign(getKey(getCertFilePath(params, false)), notifyParams = params.getPMap("data"));
     if (!Result.isSuccess(signCheckResult)) return signCheckResult;
 
     //提取关键参数

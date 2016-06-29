@@ -35,6 +35,6 @@ public class ServiceException extends Exception {
     }
 
     public String getErrorName() {
-        return status.getName();
+        return status.name();
     }
 }

@@ -18,7 +18,7 @@ public class ResultMap<T> extends Result<T> {
         return new ResultMap<>(resultStatus, null);
     }
 
-    public ResultMap<T> addItems(Map<String, Object> data) {
+    public ResultMap<T> addItems(Map<String, ?> data) {
         this.data.putAll(data);
         return this;
     }
