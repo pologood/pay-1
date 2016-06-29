@@ -179,11 +179,11 @@ public class UnionpayService implements ThirdpayService {
   }
 
   private String getCertFilePath(StdPayRequest request, boolean isPrivate) {
-    return "d:" + (isPrivate ? request.getPrivateCertPath() : request.getPublicCertPath());
+    return isPrivate ? request.getPrivateCertPath() : request.getPublicCertPath();
   }
 
   private String getCertFilePath(PMap<String, ?> map, boolean isPrivate) {
-    return "d:" + (isPrivate ? map.getString("privateCertFilePath") : map.getString("publicCertFilePath"));
+    return isPrivate ? map.getString("privateCertFilePath") : map.getString("publicCertFilePath");
   }
 
   private String getKey(String path) {
