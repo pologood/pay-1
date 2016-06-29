@@ -7,6 +7,9 @@ import com.sogou.pay.web.controller.BaseController;
 import com.sogou.pay.web.manager.notify.PayNotifyManager;
 import com.sogou.pay.web.manager.notify.RefundNotifyManager;
 import com.sogou.pay.web.manager.notify.WithdrawNotifyManager;
+
+import java.util.Map;
+
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +59,8 @@ public class RepairController extends BaseController {
   @RequestMapping(value = {"/repair/refund"}, method = RequestMethod.POST,
           produces = "application/json; charset=utf-8")
   @ResponseBody
-  public ResultMap repairRefund(@RequestParam PMap<String, Object> params) {
-    return refundNotifyManager.handleRefundNotify(params);
+  public ResultMap repairRefund(@RequestParam Map params) {
+    return refundNotifyManager.handleRefundNotify(new PMap<>(params));
   }
 
   //提现补单
@@ -66,8 +69,9 @@ public class RepairController extends BaseController {
   @RequestMapping(value = {"/repair/withdraw"}, method = RequestMethod.POST,
           produces = "application/json; charset=utf-8")
   @ResponseBody
-  public ResultMap repairWithdraw(@RequestParam PMap<String, Object> params) {
-    return withdrawNotifyManager.handleWithdrawNotify(params);
+
+  public ResultMap repairWithdraw(@RequestParam Map params) {
+    return withdrawNotifyManager.handleWithdrawNotify(new PMap<>(params));
   }
 
 }

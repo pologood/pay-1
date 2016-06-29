@@ -41,13 +41,13 @@ public class WithdrawNotifyManager {
             payCheckWaiting.setBizAmt((BigDecimal) params.get("bizAmt"));//交易金额
             payCheckWaiting.setFeeRate(BigDecimal.valueOf(0.0));//费率
             payCheckWaiting.setCommissionFeeAmt(BigDecimal.valueOf(0.0));//交易手续费
-            payCheckWaiting.setAccessPlatform((int)params.get("accessPlatform"));//接入平台
-            payCheckWaiting.setAppId((int)params.get("appId"));//应用id
+            payCheckWaiting.setAccessPlatform(Integer.parseInt(params.get("accessPlatform").toString()));//接入平台
+            payCheckWaiting.setAppId(Integer.parseInt(params.get("appId").toString()));//应用id
             String date = DateUtil.formatCompactDate(new Date());
             payCheckWaiting.setCheckDate(date);//对账日期
             payCheckWaiting.setAgencyCode((String)params.get("agencyCode"));//机构编码
             payCheckWaiting.setMerchantNo((String)params.get("merchantNo"));//商户号
-            payCheckWaiting.setPayType((int)params.get("payType"));//付款方式
+            payCheckWaiting.setPayType(Integer.parseInt(params.get("payType").toString()));//付款方式
             payCheckWaiting.setBankCode((String)params.get("bankCode"));//支付渠道
 
             payCheckWaitingService.insert(payCheckWaiting);

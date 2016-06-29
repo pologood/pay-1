@@ -137,7 +137,7 @@ public class PayNotifyManager {
     map.put("payId", payOrderInfo.getPayId());
     map.put("orderMoney", payOrderInfo.getOrderMoney().toString());
     map.put("tradeStatus", "SUCCESS");
-    map.put("successTime", DateUtil.format(patyNotifyModel.getAgencyPayTime(), DateUtil.DATE_FORMAT_SECOND_SHORT));
+    map.put("successTime", DateUtil.formatShortTime(patyNotifyModel.getAgencyPayTime()));
     ResultMap result = (ResultMap) secureManager.doAppSign(map, null, app.getSignKey());
     Map resultMap = (Map) result.getReturnValue();
     resultMap.put("appBgUrl", payOrderInfo.getAppBgUrl());
