@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+
 
 /**
  * @Author xiepeidong
@@ -56,8 +59,8 @@ public class RepairController extends BaseController {
   @RequestMapping(value = {"/repair/refund"}, method = RequestMethod.POST,
           produces = "application/json; charset=utf-8")
   @ResponseBody
-  public ResultMap repairRefund(@RequestParam PMap<String,?> params) {
-    return refundNotifyManager.handleRefundNotify(params);
+  public ResultMap repairRefund(@RequestParam Map params) {
+    return refundNotifyManager.handleRefundNotify(new PMap<>(params));
   }
 
   //提现补单
@@ -66,8 +69,8 @@ public class RepairController extends BaseController {
   @RequestMapping(value = {"/repair/withdraw"}, method = RequestMethod.POST,
           produces = "application/json; charset=utf-8")
   @ResponseBody
-  public ResultMap repairWithdraw(@RequestParam PMap<String,?> params) {
-    return withdrawNotifyManager.handleWithdrawNotify(params);
+  public ResultMap repairWithdraw(@RequestParam Map params) {
+    return withdrawNotifyManager.handleWithdrawNotify(new PMap<>(params));
   }
 
 }

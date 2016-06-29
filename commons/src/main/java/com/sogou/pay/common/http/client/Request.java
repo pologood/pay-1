@@ -12,116 +12,119 @@ import java.util.Map;
  * HTTP请求信息包装类
  */
 public class Request {
-    public static int GET = 0;
-    public static int POST = 1;
+  public static int GET = 0;
+  public static int POST = 1;
+  public SSLContext sslContext = null;
+  private String charset = "UTF-8";
+  /**
+   * url,将忽略scheme、host、path的设置
+   */
+  private String url = null;
+  private String scheme = "http";
+  private String host = null;
+  private String path = "";
+  private boolean excludeEmptyValue = false;
+  private List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+  private String requestBody = null;
+  private int method = Request.GET;
+  private int connectionTimeout = 0;
 
-    private String charset = "UTF-8";
-    /**
-     * url,将忽略scheme、host、path的设置
-     */
-    private String url = null;
+  public String getUrl() {
+    return url;
+  }
 
-    private String scheme = "http";
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-    private String host = null;
+  public String getScheme() {
+    return scheme;
+  }
 
-    private String path = "";
+  public void setScheme(String scheme) {
+    this.scheme = scheme;
+  }
 
-    private boolean excludeEmptyValue = false;
+  public String getHost() {
+    return host;
+  }
 
-    private List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+  public void setHost(String host) {
+    this.host = host;
+  }
 
-    private String requestBody = null;
+  public String getPath() {
+    return path;
+  }
 
-    private int method = Request.GET;
+  public void setPath(String path) {
+    this.path = path;
+  }
 
-    private int connectionTimeout = 0;
+  public int getMethod() {
+    return method;
+  }
 
-    public SSLContext sslContext = null;
+  public void setMethod(int method) {
+    this.method = method;
+  }
 
-    public String getUrl() { return url; }
+  public int getConnectionTimeout() {
+    return connectionTimeout;
+  }
 
-    public void setUrl(String url) { this.url = url; }
+  public void setConnectionTimeout(int connectionTimeout) {
+    this.connectionTimeout = connectionTimeout;
+  }
 
-    public String getScheme() {
-        return scheme;
+  public String getCharset() {
+    return charset;
+  }
+
+  public void setCharset(String charset) {
+    this.charset = charset;
+  }
+
+  public void addParam(String key, String value) {
+    if (key != null) {
+      parameters.add(new BasicNameValuePair(key, value));
     }
+  }
 
-    public void setScheme(String scheme) {
-        this.scheme = scheme;
+  public void addParam(Map<String, ?> paramMap) {
+
+    for (String key : paramMap.keySet()) {
+      if (paramMap.get(key) != null)
+        parameters.add(new BasicNameValuePair(key, paramMap.get(key).toString()));
     }
+  }
 
-    public String getHost() {
-        return host;
-    }
+  public List<NameValuePair> getNameValuePairList() {
+    return parameters;
+  }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
+  public String getRequestBody() {
+    return requestBody;
+  }
 
-    public String getPath() {
-        return path;
-    }
+  public void setRequestBody(String requestBody) {
+    this.requestBody = requestBody;
+  }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
+  public boolean isExcludeEmptyValue() {
+    return excludeEmptyValue;
+  }
 
-    public int getMethod() {
-        return method;
-    }
+  public void setExcludeEmptyValue(boolean excludeEmptyValue) {
+    this.excludeEmptyValue = excludeEmptyValue;
+  }
 
-    public void setMethod(int method) {
-        this.method = method;
-    }
+  public SSLContext getSslContext() {
+    return sslContext;
+  }
 
-    public int getConnectionTimeout() {
-        return connectionTimeout;
-    }
-
-    public void setConnectionTimeout(int connectionTimeout) {
-        this.connectionTimeout = connectionTimeout;
-    }
-
-    public String getCharset() {
-        return charset;
-    }
-
-    public void setCharset(String charset) {
-        this.charset = charset;
-    }
-
-    public void addParam(String key, String value) {
-        if (key != null) {
-            parameters.add(new BasicNameValuePair(key, value));
-        }
-    }
-
-    public void addParam(Map<String, ?> paramMap) {
-
-        for (String key : paramMap.keySet()) {
-            parameters.add(new BasicNameValuePair(key, paramMap.get(key).toString()));
-        }
-    }
-
-    public List<NameValuePair> getNameValuePairList() {
-        return parameters;
-    }
-
-    public void setRequestBody(String requestBody){ this.requestBody = requestBody; }
-
-    public String getRequestBody() { return requestBody; }
-
-    public boolean isExcludeEmptyValue() {
-        return excludeEmptyValue;
-    }
-
-    public void setExcludeEmptyValue(boolean excludeEmptyValue) {
-        this.excludeEmptyValue = excludeEmptyValue;
-    }
-
-    public SSLContext getSslContext() { return sslContext; }
-
-    public void setSslContext(SSLContext sslContext) { this.sslContext = sslContext; }
+  public void setSslContext(SSLContext sslContext) {
+    this.sslContext = sslContext;
+  }
 
 }
