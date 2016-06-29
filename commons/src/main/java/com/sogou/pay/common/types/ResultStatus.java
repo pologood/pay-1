@@ -69,31 +69,11 @@ public enum ResultStatus {
         return code;
     }
 
-    public void setCode(int code) {
-        this.code = code;
-    }
-
     /**
      * 状态信息
      */
     public String getMessage() {
         return message;
-    }
+    } 
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    /**
-     * 状态代码字符串
-     */
-    public String getName() {
-        return this.name();
-    }
-
-
-    @Override
-    public String toString() {
-        return getName();
-    }
 }
