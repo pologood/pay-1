@@ -172,6 +172,7 @@ public class WechatService implements ThirdpayService {
     if (!Result.isSuccess(result)) return result;
 
     PMap prepayPMap = (PMap) result.getData();
+
     //组装参数
     PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("appid", params.getPayee());
