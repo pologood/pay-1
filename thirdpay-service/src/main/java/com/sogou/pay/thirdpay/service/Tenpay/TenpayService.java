@@ -157,7 +157,7 @@ public class TenpayService implements ThirdpayService {
       return ResultMap.build(ResultStatus.THIRD_HTTP_ERROR);
     }
     String resContent = (String) httpResponse.getReturnValue();
-    PMap tenpayMap;
+    PMap<String, ?> tenpayMap;
     try {
       tenpayMap = XMLUtil.XML2PMap(resContent);
     } catch (Exception e) {
@@ -181,12 +181,12 @@ public class TenpayService implements ThirdpayService {
   //https://www.tenpay.com/app/mpay/wappay_init.cgi
   //https://www.tenpay.com/app/mpay/mp_gate.cgi
   @Override
-  public ResultMap preparePayInfoWap(StdPayRequest params) throws ServiceException {
+  public ResultMap<?> preparePayInfoWap(StdPayRequest params) throws ServiceException {
     String callback_url = params.getPageNotifyUrl();
-    ResultMap result = preparePayInfoMobile(params, callback_url);
+    ResultMap<?> result = preparePayInfoMobile(params, callback_url);
     if (!Result.isSuccess(result)) return result;
     String token_id = (String) result.getItem("token_id");
-    PMap requestPMap = new PMap<>();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("token_id", token_id);
     String returnUrl = HttpUtil.packHttpGetUrl(params.getPayUrl(), requestPMap);
     result.addItem("returnUrl", returnUrl);
@@ -198,9 +198,8 @@ public class TenpayService implements ThirdpayService {
    */
   @Override
   public ResultMap<?> queryOrder(PMap<String, ?> params) throws ServiceException {
-    ResultMap result;
     //组装参数
-    PMap requestPMap = new PMap<>();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("input_charset", INPUT_CHARSET);
     requestPMap.put("partner", params.getString("merchantNo"));
     requestPMap.put("out_trade_no", params.getString("serialNumber"));
@@ -211,20 +210,20 @@ public class TenpayService implements ThirdpayService {
     }
     //签名
     String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, md5securityKey);
     if (!Result.isSuccess(result)) return result;
 
     //发起请求
     TenpayHttpClient httpClient = new TenpayHttpClient();
 
-    Result httpResponse = httpClient.doGet(params.getString("queryUrl"), requestPMap);
+    Result<?> httpResponse = httpClient.doGet(params.getString("queryUrl"), requestPMap);
     if (!Result.isSuccess(httpResponse)) {
       log.error("[queryOrder] http request failed, url={}, params={}", params.getString("queryUrl"), requestPMap);
       return ResultMap.build(ResultStatus.THIRD_HTTP_ERROR);
     }
     String resContent = (String) httpResponse.getReturnValue();
     //解析响应
-    PMap responsePMap;
+    PMap<String, ?> responsePMap;
     try {
       responsePMap = XMLUtil.XML2PMap(resContent);
     } catch (Exception e) {
@@ -264,8 +263,7 @@ public class TenpayService implements ThirdpayService {
    */
   @Override
   public ResultMap<?> refundOrder(PMap<String, ?> params) throws ServiceException {
-    ResultMap result;
-    PMap requestPMap = new PMap<>();
+    PMap<String, Object> requestPMap = new PMap<>();
     //组装参数
     requestPMap.put("input_charset", INPUT_CHARSET); //编码
     requestPMap.put("partner", params.getString("merchantNo")); // 商户号
@@ -296,13 +294,13 @@ public class TenpayService implements ThirdpayService {
 
     //签名
     String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, md5securityKey);
     if (!Result.isSuccess(result)) return result;
 
     //发起请求
     TenpayHttpClient httpClient = new TenpayHttpClient();
     httpClient.setCertFile(params.getString("privateCertFilePath"), certPasswd, params.getString("publicCertFilePath"));
-    Result httpResponse = httpClient.doGet(params.getString("refundUrl"), requestPMap);
+    Result<?> httpResponse = httpClient.doGet(params.getString("refundUrl"), requestPMap);
     if (!Result.isSuccess(httpResponse)) {
       log.error("[refundOrder] http request failed, url={}, params={}", params.getString("refundUrl"), requestPMap);
       return ResultMap.build(ResultStatus.THIRD_HTTP_ERROR);
@@ -310,7 +308,7 @@ public class TenpayService implements ThirdpayService {
     String resContent = (String) httpResponse.getReturnValue();
 
     //解析响应
-    PMap responsePMap;
+    PMap<String, ?> responsePMap;
     try {
       responsePMap = XMLUtil.XML2PMap(resContent);
     } catch (Exception e) {
@@ -450,7 +448,7 @@ public class TenpayService implements ThirdpayService {
 
   private ResultMap<?> validateAndParseMessage(String message) {
 
-    ResultMap result = ResultMap.build();
+    ResultMap<?> result = ResultMap.build();
     String line = null;
     BufferedReader reader = null;
     List<OutCheckRecord> payRecords = new LinkedList<>();
@@ -461,7 +459,7 @@ public class TenpayService implements ThirdpayService {
 
       if (message.startsWith("<html>")) {
         log.error("[validateAndParseMessage] response error, message={}", message);
-        PMap pMap = XMLUtil.XML2PMap(message);
+        PMap<String, ?> pMap = XMLUtil.XML2PMap(message);
         String errorText = pMap.getString("body").trim();
         //03020003:该日期对帐单还没有生成
         //03020123:没有生成对账单文件，或没有符合条件的交易记录
@@ -529,8 +527,8 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap getReqIDFromNotifyWebSync(PMap params) throws ServiceException {
-    ResultMap result = ResultMap.build();
+  public ResultMap<?> getReqIDFromNotifyWebSync(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result = ResultMap.build();
     String out_trade_no = params.getString("out_trade_no");
     if (out_trade_no == null) {
       log.error("[getReqIDFromNotifyWebSync] out_trade_no not exists, params={}", params);
@@ -543,12 +541,12 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap getReqIDFromNotifyWebAsync(PMap params) throws ServiceException {
+  public ResultMap<?> getReqIDFromNotifyWebAsync(PMap<String, ?> params) throws ServiceException {
     return getReqIDFromNotifyWebSync(params);
   }
 
-  public ResultMap getReqIDFromNotifyWapSync(PMap params) throws ServiceException {
-    ResultMap result = ResultMap.build();
+  public ResultMap<?> getReqIDFromNotifyWapSync(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result = ResultMap.build();
     String sp_billno = params.getString("sp_billno");
     if (sp_billno == null) {
       log.error("[getReqIDFromNotifyWapSync] sp_billno not exists, params={}", params);
@@ -561,12 +559,12 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap getReqIDFromNotifyWapAsync(PMap params) throws ServiceException {
+  public ResultMap<?> getReqIDFromNotifyWapAsync(PMap<String, ?> params) throws ServiceException {
     return getReqIDFromNotifyWapSync(params);
   }
 
-  public ResultMap getReqIDFromNotifyRefund(PMap params) throws ServiceException {
-    ResultMap result = ResultMap.build();
+  public ResultMap<?> getReqIDFromNotifyRefund(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result = ResultMap.build();
     String out_refund_no = params.getString("out_refund_no");
     if (out_refund_no == null) {
       log.error("[getReqIDFromNotifyWapSync] out_refund_no not exists, params={}", params);
@@ -579,12 +577,11 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyWebSync(PMap params) throws ServiceException {
-    ResultMap result;
-    PMap notifyParams = params.getPMap("data");
+  public ResultMap<?> handleNotifyWebSync(PMap<String, ?> params) throws ServiceException {
+    PMap<String, ?> notifyParams = params.getPMap("data");
     String md5securityKey = params.getString("md5securityKey");
     //验签
-    result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
+    ResultMap<?> result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
     if (!Result.isSuccess(result)) return result;
 
     //提取关键信息
@@ -598,12 +595,11 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyWebAsync(PMap params) throws ServiceException {
-    ResultMap result;
-    PMap notifyParams = params.getPMap("data");
+  public ResultMap<?> handleNotifyWebAsync(PMap<String, ?> params) throws ServiceException {
+    PMap<String, ?> notifyParams = params.getPMap("data");
     String md5securityKey = params.getString("md5securityKey");
     //验签
-    result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
+    ResultMap<?> result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
     if (!Result.isSuccess(result)) return result;
 
     //提取关键信息
@@ -624,12 +620,11 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyWapSync(PMap params) throws ServiceException {
-    ResultMap result;
-    PMap notifyParams = params.getPMap("data");
+  public ResultMap<?> handleNotifyWapSync(PMap<String, ?> params) throws ServiceException {
+    PMap<String, ?> notifyParams = params.getPMap("data");
     String md5securityKey = params.getString("md5securityKey");
     //验签
-    result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
+    ResultMap<?> result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
     if (!Result.isSuccess(result)) return result;
 
     //提取关键信息
@@ -643,12 +638,11 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyWapAsync(PMap params) throws ServiceException {
-    ResultMap result;
-    PMap notifyParams = params.getPMap("data");
+  public ResultMap<?> handleNotifyWapAsync(PMap<String, ?> params) throws ServiceException {
+    PMap<String, ?> notifyParams = params.getPMap("data");
     String md5securityKey = params.getString("md5securityKey");
     //验签
-    result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
+    ResultMap<?> result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
     if (!Result.isSuccess(result)) return result;
 
     //提取关键信息
@@ -669,9 +663,9 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyRefund(PMap params) throws ServiceException {
-    ResultMap result;
-    PMap notifyParams = params.getPMap("data");
+  public ResultMap<?> handleNotifyRefund(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result;
+    PMap<String, ?> notifyParams = params.getPMap("data");
     String md5securityKey = params.getString("md5securityKey");
     //验签
     result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
@@ -693,7 +687,7 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-  private ResultMap signMD5(PMap requestPMap, String secretKey) {
+  private ResultMap<?> signMD5(PMap<String, Object> requestPMap, String secretKey) {
     String sign = SecretKeyUtil.tenMD5Sign(requestPMap, secretKey);
     if (sign == null) {
       log.error("[signMD5] sign failed, params={}", requestPMap);
@@ -703,7 +697,7 @@ public class TenpayService implements ThirdpayService {
     return ResultMap.build();
   }
 
-  private ResultMap verifySignMD5(PMap responsePMap, String secretKey, String sign) {
+  private ResultMap<?> verifySignMD5(PMap<String, ?> responsePMap, String secretKey, String sign) {
     boolean signOK = SecretKeyUtil.tenMD5CheckSign(responsePMap, secretKey, sign);
     if (!signOK) {
       log.error("[verifySignMD5] verify sign failed, responsePMap={}, sign={}", responsePMap, sign);

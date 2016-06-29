@@ -29,7 +29,7 @@ public class WithdrawNotifyManager {
     @Autowired
     private PayCheckWaitingService payCheckWaitingService;
 
-    public ResultMap handleWithdrawNotify(PMap<String,?> params){
+    public ResultMap handleWithdrawNotify(PMap<String, Object> params){
         ResultMap result = ResultMap.build();
         PayCheckWaiting payCheckWaiting = new PayCheckWaiting();
 
