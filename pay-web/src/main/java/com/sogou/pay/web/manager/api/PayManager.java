@@ -95,8 +95,8 @@ public class PayManager {
   }
 
   //创建支付订单
-  public Result createOrder(PMap params) {
-    ResultMap result = ResultMap.build();
+  public Result<String> createOrder(PMap<String, ?> params) {
+    ResultMap<String> result = ResultMap.build();
     try {
       String orderId = params.getString("orderId");
       Integer appId = params.getInt("appId");
@@ -274,8 +274,8 @@ public class PayManager {
   }
 
   //插入支付单信息
-  public ResultMap insertPayOrder(PMap params) {
-    ResultMap result = ResultMap.build();
+  public ResultMap<String> insertPayOrder(PMap<String, ?> params) {
+    ResultMap<String> result = ResultMap.build();
     try {
       StringBuilder productInfo = new StringBuilder()
               .append("商品名称:").append(params.get("productName"))
