@@ -5,29 +5,24 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.http.client.HttpService;
-import com.sogou.pay.common.types.Result;
-import com.sogou.pay.common.types.ResultMap;
-import com.sogou.pay.common.types.ResultStatus;
-import com.sogou.pay.common.types.PMap;
-import com.sogou.pay.common.utils.DateUtil;
-import com.sogou.pay.common.utils.MapUtil;
-import com.sogou.pay.common.utils.StringUtil;
-import com.sogou.pay.common.utils.XMLUtil;
-import com.sogou.pay.thirdpay.biz.enums.CheckType;
 import com.sogou.pay.common.Model.StdPayRequest;
 import com.sogou.pay.common.enums.OrderRefundStatus;
 import com.sogou.pay.common.enums.OrderStatus;
+import com.sogou.pay.common.exception.ServiceException;
+import com.sogou.pay.common.http.client.HttpService;
+import com.sogou.pay.common.types.PMap;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
+import com.sogou.pay.common.utils.DateUtil;
+import com.sogou.pay.common.utils.MapUtil;
+import com.sogou.pay.common.utils.XMLUtil;
+import com.sogou.pay.thirdpay.biz.enums.CheckType;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
-import com.sogou.pay.thirdpay.service.Tenpay.TenpayUtils;
 import com.sogou.pay.thirdpay.service.ThirdpayService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import com.sogou.pay.thirdpay.service.Tenpay.TenpayUtils;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -35,24 +30,38 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * Created by xiepeidong on 2016/1/27.
  */
 @Service
 public class WechatService implements ThirdpayService {
-  /**
-   * 微信支付参数
-   */
-  //币种类别
-  public static final String FEE_TYPE = "CNY";       //币种
-  public static final String INPUT_CHARSET = "UTF-8";    // 字符编码格式
+
+  /*微信支付参数*/
+  public static final String FEE_TYPE = "CNY"; //币种
+
+  public static final String INPUT_CHARSET = "UTF-8"; // 字符编码格式
+
   public static final String QR_TRADE_TYPE = "NATIVE";//扫码交易类型
+
   public static final String SDK_TRADE_TYPE = "APP";//SDK交易类型
-  private static final Logger log = LoggerFactory.getLogger(WechatService.class);
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(WechatService.class);
+
   private static HashMap<String, String> TRADE_STATUS = new HashMap<String, String>();
+
   private static HashMap<String, String> REFUND_STATUS = new HashMap<String, String>();
 
   static {
@@ -73,39 +82,38 @@ public class WechatService implements ThirdpayService {
     REFUND_STATUS.put("DEFAULT", OrderRefundStatus.UNKNOWN.name());//默认
   }
 
-  private ResultMap doRequest(String url, String md5Key, PMap requestPMap) throws ServiceException {
-    ResultMap result;
-
+  private ResultMap<?> doRequest(String url, String md5Key, PMap<String, String> requestPMap) throws ServiceException {
     if (!MapUtil.checkAllExist(requestPMap)) {
-      log.error("[doRequest] request params error, params={}", requestPMap);
+      LOGGER.error("[doRequest]request params error, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
     //签名
-    result = signMD5(requestPMap, md5Key);
+    ResultMap<?> result = signMD5(requestPMap, md5Key);
     if (!Result.isSuccess(result)) return result;
 
     //发起请求
     String paramsStr = XMLUtil.Map2XML("xml", requestPMap);
-    Result httpResponse = HttpService.getInstance().doPost(url, paramsStr, INPUT_CHARSET, null);
+    Result<?> httpResponse = HttpService.getInstance().doPost(url, paramsStr, INPUT_CHARSET, null);
     if (!Result.isSuccess(httpResponse)) {
-      log.error("[prepay] http request failed, url={}, params={}", url, paramsStr);
+      LOGGER.error("[prepay]http request failed, url={}, params={}", url, paramsStr);
       return ResultMap.build(ResultStatus.THIRD_HTTP_ERROR);
     }
     String resContent = (String) httpResponse.getReturnValue();
 
     //解析响应
-    PMap responsePMap = null;
+    PMap<String, ?> responsePMap = null;
     try {
       responsePMap = XMLUtil.XML2PMap(resContent);
     } catch (Exception e) {
-      log.error("[prepay] response error, request={}, response={}", requestPMap, resContent);
+      LOGGER.error("[prepay]response error, request={}, response={}", requestPMap, resContent);
       throw new ServiceException(e, ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
 
     //检查返回参数
-    if (StringUtil.isEmpty(responsePMap.getString("return_code"), responsePMap.getString("result_code"),
-            responsePMap.getString("sign"))) {
-      log.error("[prepay] response error, request={}, response={}", requestPMap, responsePMap);
+    if (StringUtils.isEmpty(responsePMap.getString("return_code"))
+        || StringUtils.isEmpty(responsePMap.getString("result_code"))
+        || StringUtils.isEmpty(responsePMap.getString("sign"))) {
+      LOGGER.error("[prepay] response error, request={}, response={}", requestPMap, responsePMap);
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
 
@@ -116,68 +124,64 @@ public class WechatService implements ThirdpayService {
     return result.addItem("responsePMap", responsePMap);
   }
 
-
-  private ResultMap prepay(StdPayRequest params, String trade_type) throws ServiceException {
+  private ResultMap<?> prepay(StdPayRequest params, String trade_type) throws ServiceException {
     //组装参数
-    PMap<String, Object> requestPMap = new PMap<>();
-    requestPMap.put("appid", params.getPayee());          // 公众账号ID
-    requestPMap.put("mch_id", params.getMerchantId());          // 商户号
-    requestPMap.put("nonce_str", TenpayUtils.getNonceStr());                  // 随机字符串，不长于32位
-    requestPMap.put("body", params.getProductName());               // 商品描述
-    requestPMap.put("out_trade_no", params.getPayId());  //订单号
-    requestPMap.put("fee_type", FEE_TYPE);                //支付币种
+    PMap<String, String> requestPMap = new PMap<>();
+    requestPMap.put("appid", params.getPayee()); // 公众账号ID
+    requestPMap.put("mch_id", params.getMerchantId()); // 商户号
+    requestPMap.put("nonce_str", TenpayUtils.getNonceStr()); // 随机字符串，不长于32位
+    requestPMap.put("body", params.getProductName()); // 商品描述
+    requestPMap.put("out_trade_no", params.getPayId()); //订单号
+    requestPMap.put("fee_type", FEE_TYPE); //支付币种
     String orderAmount = TenpayUtils.fenParseFromYuan(params.getOrderAmount());
-    requestPMap.put("total_fee", orderAmount);                          //总金额
-    requestPMap.put("spbill_create_ip", "127.0.0.1");   //买家IP
-//      requestPMap.put("spbill_create_ip", params.getString("buyerIp"));   //买家IP
+    requestPMap.put("total_fee", orderAmount); //总金额
+    requestPMap.put("spbill_create_ip", "127.0.0.1"); //买家IP
     requestPMap.put("notify_url", params.getServerNotifyUrl()); //异步回调地址
-    requestPMap.put("trade_type", trade_type);            //交易类型
-    if (trade_type.equals(QR_TRADE_TYPE))
-      requestPMap.put("product_id", params.getPayId());
+    requestPMap.put("trade_type", trade_type); //交易类型
+    if (trade_type.equals(QR_TRADE_TYPE)) requestPMap.put("product_id", params.getPayId());
 
-    ResultMap result = doRequest(params.getPrepayUrl(), params.getMd5Key(), requestPMap);
+    ResultMap<?> result = doRequest(params.getPrepayUrl(), params.getMd5Key(), requestPMap);
     if (!Result.isSuccess(result)) {
-      log.error("[prepay] failed, params={}", params);
+      LOGGER.error("[prepay] failed, params={}", params);
       return result;
     }
 
-    PMap responsePMap = (PMap) result.getItem("responsePMap");
+    PMap<String, Object> responsePMap = (PMap) result.getItem("responsePMap");
 
     String return_trade_type = responsePMap.getString("trade_type");
     if (!return_trade_type.equals(trade_type)) {
-      log.error("[prepay] response error, request={}, response={}", requestPMap, responsePMap);
+      LOGGER.error("[prepay] response error, request={}, response={}", requestPMap, responsePMap);
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
-    result.withReturn(responsePMap);
-    return result;
+    return ResultMap.build().addItems(responsePMap);
   }
 
   @Override
-  public ResultMap preparePayInfoQRCode(StdPayRequest params) throws ServiceException {
-    ResultMap result = prepay(params, QR_TRADE_TYPE);
+  public ResultMap<?> preparePayInfoQRCode(StdPayRequest params) throws ServiceException {
+    ResultMap<?> result = prepay(params, QR_TRADE_TYPE);
     if (!Result.isSuccess(result)) return result;
 
-    PMap prepayPMap = (PMap) result.getReturnValue();
+    PMap<String, ?> prepayPMap = (PMap) result.getReturnValue();
     //返回二维码图片数据
     return ResultMap.build().addItem("qrCode", text2QRCode(prepayPMap.getString("code_url")));
   }
 
   @Override
-  public ResultMap preparePayInfoSDK(StdPayRequest params) throws ServiceException {
-    ResultMap result = prepay(params, SDK_TRADE_TYPE);
+  public ResultMap<?> preparePayInfoSDK(StdPayRequest params) throws ServiceException {
+    ResultMap<?> result = prepay(params, SDK_TRADE_TYPE);
     if (!Result.isSuccess(result)) return result;
 
-    PMap prepayPMap = (PMap) result.getReturnValue();
+    PMap<String, ?> prepayPMap = (PMap) result.getReturnValue();
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, String> requestPMap = new PMap<>();
     requestPMap.put("appid", params.getPayee());
     requestPMap.put("partnerid", params.getMerchantId());
-    requestPMap.put("prepayid", prepayPMap.get("prepay_id"));
+    requestPMap.put("prepayid", prepayPMap.getString("prepay_id"));
     requestPMap.put("package", "Sign=WXPay");
     requestPMap.put("noncestr", TenpayUtils.getNonceStr());
     requestPMap.put("timestamp", TenpayUtils.getTimeStamp());
     if (!MapUtil.checkAllExist(requestPMap)) {
-      log.error("[preparePayInfoSDK] request params error, params={}", requestPMap);
+      LOGGER.error("[preparePayInfoSDK] request params error, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
     //签名
@@ -188,25 +192,24 @@ public class WechatService implements ThirdpayService {
   }
 
   /**
-   * 微信查询订单信息
-   * 只能查询半年内的订单, 超过半年的订单调用此查询接口会报“88221009交易单不存在”
+   * 微信查询订单信息 只能查询半年内的订单, 超过半年的订单调用此查询接口会报“88221009交易单不存在”
    */
   @Override
-  public ResultMap queryOrder(PMap params) throws ServiceException {
+  public ResultMap<?> queryOrder(PMap<String, ?> params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
-    requestPMap.put("appid", params.getString("sellerEmail"));          // 公众账号ID
-    requestPMap.put("mch_id", params.getString("merchantNo"));          // 商户号
-    requestPMap.put("nonce_str", TenpayUtils.getNonceStr());                  // 随机字符串，不长于32位
-    requestPMap.put("out_trade_no", params.getString("serialNumber"));  //商户订单号
+    PMap<String, String> requestPMap = new PMap<>();
+    requestPMap.put("appid", params.getString("sellerEmail")); // 公众账号ID
+    requestPMap.put("mch_id", params.getString("merchantNo")); // 商户号
+    requestPMap.put("nonce_str", TenpayUtils.getNonceStr()); // 随机字符串，不长于32位
+    requestPMap.put("out_trade_no", params.getString("serialNumber")); //商户订单号
 
-    ResultMap result = doRequest(params.getString("queryUrl"), params.getString("md5securityKey"), requestPMap);
+    ResultMap<?> result = doRequest(params.getString("queryUrl"), params.getString("md5securityKey"), requestPMap);
     if (!Result.isSuccess(result)) {
-      log.error("[queryOrder] failed, params={}", params);
+      LOGGER.error("[queryOrder] failed, params={}", params);
       return result;
     }
 
-    PMap responsePMap = (PMap) result.getItem("responsePMap");
+    PMap<String, ?> responsePMap = (PMap) result.getItem("responsePMap");
 
     //返回交易状态
     return ResultMap.build().addItem("payStatus", getTradeStatus(responsePMap.getString("trade_state").toUpperCase()));
@@ -227,40 +230,39 @@ public class WechatService implements ThirdpayService {
   }
 
   /**
-   * 微信订单退款
-   * 只能退半年内的订单, 超过半年的订单调用此退款接口会报“88221009交易单不存在”
+   * 微信订单退款 只能退半年内的订单, 超过半年的订单调用此退款接口会报“88221009交易单不存在”
    */
   @Override
-  public ResultMap refundOrder(PMap params) throws ServiceException {
+  public ResultMap<?> refundOrder(PMap<String, ?> params) throws ServiceException {
 
     //组装参数
-    PMap requestPMap = new PMap();
-    requestPMap.put("appid", params.getString("sellerEmail"));          // 公众账号ID
-    requestPMap.put("mch_id", params.getString("merchantNo"));          // 商户号
-    requestPMap.put("nonce_str", TenpayUtils.getNonceStr());                  // 随机字符串，不长于32位
+    PMap<String, String> requestPMap = new PMap<>();
+    requestPMap.put("appid", params.getString("sellerEmail")); // 公众账号ID
+    requestPMap.put("mch_id", params.getString("merchantNo")); // 商户号
+    requestPMap.put("nonce_str", TenpayUtils.getNonceStr()); // 随机字符串，不长于32位
     requestPMap.put("transaction_id", params.getString("agencySerialNumber")); //微信订单号
-    requestPMap.put("out_trade_no", params.getString("serialNumber"));  //订单号
-    requestPMap.put("out_refund_no", params.getString("refundSerialNumber"));  //商户退款号
+    requestPMap.put("out_trade_no", params.getString("serialNumber")); //订单号
+    requestPMap.put("out_refund_no", params.getString("refundSerialNumber")); //商户退款号
     String total_fee = TenpayUtils.fenParseFromYuan(params.getString("totalAmount"));
-    requestPMap.put("total_fee", total_fee);                          //总金额
+    requestPMap.put("total_fee", total_fee); //总金额
     String refundAmount = TenpayUtils.fenParseFromYuan(params.getString("refundAmount"));
-    requestPMap.put("refund_fee", refundAmount);                          //退款金额
-    requestPMap.put("refund_fee_type", FEE_TYPE);   //货币种类
-    requestPMap.put("op_user_id", params.getString("merchantNo"));   //操作员
+    requestPMap.put("refund_fee", refundAmount); //退款金额
+    requestPMap.put("refund_fee_type", FEE_TYPE); //货币种类
+    requestPMap.put("op_user_id", params.getString("merchantNo")); //操作员
 
-    ResultMap result = doRequest(params.getString("refundUrl"), params.getString("md5securityKey"), requestPMap);
+    ResultMap<?> result = doRequest(params.getString("refundUrl"), params.getString("md5securityKey"), requestPMap);
     if (!Result.isSuccess(result)) {
-      log.error("[refundOrder] failed, params={}", params);
+      LOGGER.error("[refundOrder] failed, params={}", params);
       return result;
     }
 
-    PMap responsePMap = (PMap) result.getItem("responsePMap");
+    PMap<String, ?> responsePMap = (PMap) result.getItem("responsePMap");
 
     result = ResultMap.build().addItem("agencyRefundId", responsePMap.getString("refund_id"));
 
     String result_code = responsePMap.getString("result_code");
     if (!"SUCCESS".equals(result_code)) {
-      log.error("[refundOrder] response error, request={}, response={}", requestPMap, responsePMap);
+      LOGGER.error("[refundOrder] response error, request={}, response={}", requestPMap, responsePMap);
       result.withError(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
       result.addItem("errorCode", responsePMap.getString("err_code"));
       result.addItem("errorMsg", responsePMap.getString("err_code_des"));
@@ -270,27 +272,26 @@ public class WechatService implements ThirdpayService {
     return result;
   }
 
-
   /**
-   * 微信查询订单退款信息
-   * 只能查询半年内的订单, 超过半年的订单调用此查询接口会报“88221009交易单不存在”
+   * 微信查询订单退款信息 只能查询半年内的订单, 超过半年的订单调用此查询接口会报“88221009交易单不存在”
    */
   @Override
-  public ResultMap queryRefundOrder(PMap params) throws ServiceException {
+  public ResultMap<?> queryRefundOrder(PMap<String, ?> params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
-    requestPMap.put("appid", params.getString("sellerEmail"));          // 公众账号ID
-    requestPMap.put("mch_id", params.getString("merchantNo"));          // 商户号
-    requestPMap.put("nonce_str", TenpayUtils.getNonceStr());                  // 随机字符串，不长于32位
-    requestPMap.put("out_refund_no", params.getString("refundSerialNumber"));  //商户退款号
+    PMap<String, String> requestPMap = new PMap<>();
+    requestPMap.put("appid", params.getString("sellerEmail")); // 公众账号ID
+    requestPMap.put("mch_id", params.getString("merchantNo")); // 商户号
+    requestPMap.put("nonce_str", TenpayUtils.getNonceStr()); // 随机字符串，不长于32位
+    requestPMap.put("out_refund_no", params.getString("refundSerialNumber")); //商户退款号
 
-    ResultMap result = doRequest(params.getString("queryRefundUrl"), params.getString("md5securityKey"), requestPMap);
+    ResultMap<?> result = doRequest(params.getString("queryRefundUrl"), params.getString("md5securityKey"),
+        requestPMap);
     if (!Result.isSuccess(result)) {
-      log.error("[queryRefundOrder] failed, params={}", params);
+      LOGGER.error("[queryRefundOrder] failed, params={}", params);
       return result;
     }
 
-    PMap responsePMap = (PMap) result.getItem("responsePMap");
+    PMap<String, ?> responsePMap = (PMap) result.getItem("responsePMap");
 
     //返回交易状态
     ResultMap.build().addItem("refundStatus", getRefundStatus(responsePMap.getString("refund_status_0").toUpperCase()));
@@ -298,21 +299,18 @@ public class WechatService implements ThirdpayService {
   }
 
   @Override
-  public ResultMap downloadOrder(PMap params) throws ServiceException {
-
-    ResultMap result;
-
+  public ResultMap<?> downloadOrder(PMap<String, ?> params) throws ServiceException {
     //组装参数
     Date checkDate = (Date) params.get("checkDate");
     String wechatCheckDate = DateUtil.format(checkDate, DateUtil.DATE_FORMAT_DAY_SHORT);
 
-    PMap requestPMap = new PMap();
+    PMap<String, String> requestPMap = new PMap<>();
     requestPMap.put("appid", params.getString("sellerEmail"));//公众账号ID
     requestPMap.put("mch_id", params.getString("merchantNo"));//商户号
     requestPMap.put("nonce_str", TenpayUtils.getNonceStr()); //随机32位字符串
     requestPMap.put("bill_date", wechatCheckDate);//对账单日起
     if (!MapUtil.checkAllExist(requestPMap)) {
-      log.error("[downloadOrder] request params error, params={}", params);
+      LOGGER.error("[downloadOrder] request params error, params={}", params);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
     CheckType checkType = (CheckType) params.get("checkType");
@@ -326,20 +324,21 @@ public class WechatService implements ThirdpayService {
             // 退款订单
             requestPMap.put("bill_type", "REFUND");
         }*/ else {
-      log.error("[downloadOrder] request params error, params={}", params);
+      LOGGER.error("[downloadOrder] request params error, params={}", params);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
     }
 
     //签名
     String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, md5securityKey);
     if (!Result.isSuccess(result)) return result;
 
     //发起请求
     String paramsStr = XMLUtil.Map2XML("xml", requestPMap);
-    Result httpResponse = HttpService.getInstance().doPost(params.getString("downloadUrl"), paramsStr, INPUT_CHARSET, null);
+    Result<?> httpResponse = HttpService.getInstance().doPost(params.getString("downloadUrl"), paramsStr, INPUT_CHARSET,
+        null);
     if (!Result.isSuccess(httpResponse)) {
-      log.error("[downloadOrder] http request failed, url={}, params={}", params.getString("downloadUrl"), paramsStr);
+      LOGGER.error("[downloadOrder] http request failed, url={}, params={}", params.getString("downloadUrl"), paramsStr);
       return ResultMap.build(ResultStatus.THIRD_HTTP_ERROR);
     }
 
@@ -348,9 +347,8 @@ public class WechatService implements ThirdpayService {
     return validateAndParseMessage(resContent);
   }
 
-
-  private ResultMap validateAndParseMessage(String message) {
-    ResultMap result = ResultMap.build();
+  private ResultMap<?> validateAndParseMessage(String message) {
+    ResultMap<?> result = ResultMap.build();
     String line = null;
     BufferedReader reader = null;
     List<OutCheckRecord> payRecords = new LinkedList<>();
@@ -363,7 +361,7 @@ public class WechatService implements ThirdpayService {
       if (message.startsWith("<xml>")) {
         PMap pMap = XMLUtil.XML2PMap(message);
         String errorText = String.valueOf(pMap.get("return_msg"));
-        log.error("[validateAndParseMessage] response error, message={}", message);
+        LOGGER.error("[validateAndParseMessage] response error, message={}", message);
         //没有对账单数据
         if ("No Bill Exist".equals(errorText)) {
           return result;
@@ -376,7 +374,7 @@ public class WechatService implements ThirdpayService {
       reader = new BufferedReader(new StringReader(message));
       line = reader.readLine();// 第一行是表头，忽略
       if (line == null) {
-        log.error("[validateAndParseMessage] response error, message={}", message);
+        LOGGER.error("[validateAndParseMessage] response error, message={}", message);
         result.withError(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
         return result;
       }
@@ -417,33 +415,18 @@ public class WechatService implements ThirdpayService {
       result.addItem("refRecords", refRecords);
     } catch (Exception e) {
       e.printStackTrace();
-      log.error("[validateAndParseMessage] response error, message={}", message);
+      LOGGER.error("[validateAndParseMessage] response error, message={}", message);
       result.withError(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
     return result;
   }
 
-  @Override
-  public ResultMap prepareTransferInfo(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  @Override
-  public ResultMap queryTransfer(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  @Override
-  public ResultMap queryTransferRefund(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
   //实际上，微信扫码支付并没有同步通知，是由搜狗支付中心页面模拟发起的同步通知
-  public ResultMap getReqIDFromNotifyWebSync(PMap params) throws ServiceException {
-    ResultMap result = ResultMap.build();
+  public ResultMap<?> getReqIDFromNotifyWebSync(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result = ResultMap.build();
     String out_trade_no = params.getString("out_trade_no");
     if (out_trade_no == null) {
-      log.error("[getReqIDFromNotifyWebSync] out_trade_no not exists, params={}", params);
+      LOGGER.error("[getReqIDFromNotifyWebSync] out_trade_no not exists, params={}", params);
       result.withError(ResultStatus.THIRD_NOTIFY_PARAM_ERROR);
       return result;
     }
@@ -451,52 +434,32 @@ public class WechatService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap getReqIDFromNotifyWebAsync(PMap params) throws ServiceException {
-    ResultMap result = ResultMap.build();
+  public ResultMap<?> getReqIDFromNotifyWebAsync(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result = ResultMap.build();
     String return_code = params.getString("return_code");
     String out_trade_no = params.getString("out_trade_no");
-    if (!return_code.equals("SUCCESS") || StringUtil.isEmpty(out_trade_no)) {
-      log.error("[getReqIDFromNotifyWebAsync] out_trade_no not exists, params={}", params);
+    if (!return_code.equals("SUCCESS") || StringUtils.isEmpty(out_trade_no)) {
+      LOGGER.error("[getReqIDFromNotifyWebAsync] out_trade_no not exists, params={}", params);
       result.withError(ResultStatus.THIRD_NOTIFY_PARAM_ERROR);
       return result;
     }
-//        String mch_id = params.getString("mch_id");
+    //        String mch_id = params.getString("mch_id");
     result.addItem("reqId", out_trade_no);//商户网站唯一订单号
-//        result.addItem("merchantNo", mch_id);//商户号
+    //        result.addItem("merchantNo", mch_id);//商户号
     return result;
-  }
-
-  public ResultMap getReqIDFromNotifyWapSync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  public ResultMap getReqIDFromNotifyWapAsync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  public ResultMap getReqIDFromNotifySDKAsync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  public ResultMap getReqIDFromNotifyRefund(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  public ResultMap getReqIDFromNotifyTransfer(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   //实际上，微信扫码支付并没有同步通知，是由搜狗支付中心页面模拟发起的同步通知
-  public ResultMap handleNotifyWebSync(PMap params) throws ServiceException {
-    ResultMap result = ResultMap.build();
-    PMap notifyParams = params.getPMap("data");
+  public ResultMap<?> handleNotifyWebSync(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result = ResultMap.build();
+    PMap<String, ?> notifyParams = (PMap<String, ?>) params.getPMap("data");
     //校验签名
-//        String md5securityKey = params.getString("md5securityKey");
-//        String out_sign = notifyParams.getString("sign");
-//        if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, INPUT_CHARSET)) {
-//            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
-//            return result;
-//        }
+    //        String md5securityKey = params.getString("md5securityKey");
+    //        String out_sign = notifyParams.getString("sign");
+    //        if (!SecretKeyUtil.tenMD5CheckSign(notifyParams, md5securityKey, out_sign, INPUT_CHARSET)) {
+    //            result.withError(ResultStatus.THIRD_NOTIFY_SYNC_SIGN_ERROR);
+    //            return result;
+    //        }
     //提取关键参数
     String out_trade_no = notifyParams.getString("out_trade_no");
     String result_code = getTradeStatus(notifyParams.getString("result_code"));
@@ -507,9 +470,9 @@ public class WechatService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyWebAsync(PMap params) throws ServiceException {
-    ResultMap result;
-    PMap notifyParams = params.getPMap("data");
+  public ResultMap<?> handleNotifyWebAsync(PMap<String, ?> params) throws ServiceException {
+    ResultMap<?> result;
+    PMap<String, ?> notifyParams = (PMap<String, ?>) params.getPMap("data");
     String md5securityKey = params.getString("md5securityKey");
     //验签
     result = verifySignMD5(notifyParams, md5securityKey, notifyParams.getString("sign"));
@@ -533,24 +496,8 @@ public class WechatService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyWapSync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  public ResultMap handleNotifyWapAsync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  public ResultMap handleNotifySDKAsync(PMap params) throws ServiceException {
+  public ResultMap<?> handleNotifySDKAsync(PMap<String, ?> params) throws ServiceException {
     return handleNotifyWebAsync(params);
-  }
-
-  public ResultMap handleNotifyRefund(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  public ResultMap handleNotifyTransfer(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   private String text2QRCode(String content) throws ServiceException {
@@ -558,9 +505,7 @@ public class WechatService implements ThirdpayService {
       Map<EncodeHintType, String> hints = new HashMap<>();
       hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
       BitMatrix bitMatrix = new QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, 300, 300, hints);
-      BufferedImage
-              qrcodeImg =
-              MatrixToImageWriter.toBufferedImage(bitMatrix);
+      BufferedImage qrcodeImg = MatrixToImageWriter.toBufferedImage(bitMatrix);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       ImageIO.write(qrcodeImg, "PNG", baos);
       baos.close();
@@ -568,28 +513,24 @@ public class WechatService implements ThirdpayService {
       base64 = URLEncoder.encode(base64, "UTF-8");
       return String.format("data:image/png;base64,%s", base64);
     } catch (Exception e) {
-      log.error("[text2QRCode] failed, params={}, {}", content, e.getStackTrace());
+      LOGGER.error("[text2QRCode] failed, params={}, {}", content, e.getStackTrace());
       throw new ServiceException(ResultStatus.THIRD_ERROR);
     }
   }
 
-  private ResultMap signMD5(PMap requestPMap, String secretKey) {
-    String sign =
-            SecretKeyUtil.tenMD5Sign(requestPMap, secretKey);
+  private ResultMap<?> signMD5(PMap<String, String> requestPMap, String secretKey) {
+    String sign = SecretKeyUtil.tenMD5Sign(requestPMap, secretKey);
     if (sign == null) {
-      log.error("[signMD5] sign failed, params={}", requestPMap);
+      LOGGER.error("[signMD5] sign failed, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_SIGN_ERROR);
     }
     requestPMap.put("sign", sign);//签名
     return ResultMap.build();
   }
 
-  private ResultMap verifySignMD5(PMap responsePMap, String secretKey, String sign) {
-    boolean signOK = SecretKeyUtil
-            .tenMD5CheckSign(responsePMap, secretKey, sign);
-    if (!signOK) {
-      log.error("[verifySignMD5] verify sign failed, responsePMap={}, sign={}",
-              responsePMap, sign);
+  private ResultMap<?> verifySignMD5(PMap<String, ?> responsePMap, String secretKey, String sign) {
+    if (!SecretKeyUtil.tenMD5CheckSign(responsePMap, secretKey, sign)) {
+      LOGGER.error("[verifySignMD5]failed responsePMap={}, sign={}", responsePMap, sign);
       return ResultMap.build(ResultStatus.THIRD_VERIFY_SIGN_ERROR);
     }
     return ResultMap.build();
