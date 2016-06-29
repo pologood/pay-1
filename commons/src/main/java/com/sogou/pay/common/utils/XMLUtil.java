@@ -188,7 +188,7 @@ public class XMLUtil {
     return XML2Map(xml, HashMap.class);
   }
 
-  public static PMap XML2PMap(String xml) {
+  public static PMap<String, ?> XML2PMap(String xml) {
     return XML2Map(xml, PMap.class);
   }
 

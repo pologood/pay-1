@@ -57,9 +57,9 @@ public class PMap<K, V> extends HashMap<K, V> {
     return ConvertUtil.toDate(this.get(key));
   }
 
-  public PMap<?, ?> getPMap(K key) {
+  public PMap<String, ?> getPMap(K key) {
     try {
-      return (PMap<?, ?>) this.get(key);
+      return (PMap<String, ?>) this.get(key);
     } catch (Exception e) {
       throw new IllegalArgumentException(String.format("Get PMap Error:%s", key));
     }

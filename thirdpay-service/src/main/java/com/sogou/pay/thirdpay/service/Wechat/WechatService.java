@@ -121,7 +121,7 @@ public class WechatService implements ThirdpayService {
     result = verifySignMD5(responsePMap, md5Key, responsePMap.getString("sign"));
     if (!Result.isSuccess(result)) return result;
 
-    return result.addItem("responsePMap", responsePMap);
+    return result.addItems(responsePMap);
   }
 
   private ResultMap<?> prepay(StdPayRequest params, String trade_type) throws ServiceException {
@@ -146,7 +146,7 @@ public class WechatService implements ThirdpayService {
       return result;
     }
 
-    PMap<String, Object> responsePMap = (PMap) result.getItem("responsePMap");
+    PMap<String, Object> responsePMap = result.getData();
 
     String return_trade_type = responsePMap.getString("trade_type");
     if (!return_trade_type.equals(trade_type)) {
@@ -161,7 +161,7 @@ public class WechatService implements ThirdpayService {
     ResultMap<?> result = prepay(params, QR_TRADE_TYPE);
     if (!Result.isSuccess(result)) return result;
 
-    PMap<String, ?> prepayPMap = (PMap) result.getData();
+    PMap<String, ?> prepayPMap = result.getData();
     //返回二维码图片数据
     return ResultMap.build().addItem("qrCode", text2QRCode(prepayPMap.getString("code_url")));
   }
@@ -171,7 +171,7 @@ public class WechatService implements ThirdpayService {
     ResultMap<?> result = prepay(params, SDK_TRADE_TYPE);
     if (!Result.isSuccess(result)) return result;
 
-    PMap prepayPMap = (PMap) result.getData();
+    PMap<String, ?> prepayPMap = result.getData();
 
     //组装参数
     PMap<String, Object> requestPMap = new PMap<>();
@@ -210,7 +210,7 @@ public class WechatService implements ThirdpayService {
       return result;
     }
 
-    PMap<String, ?> responsePMap = (PMap) result.getItem("responsePMap");
+    PMap<String, ?> responsePMap = result.getData();
 
     //返回交易状态
     return ResultMap.build().addItem("payStatus", getTradeStatus(responsePMap.getString("trade_state").toUpperCase()));
@@ -257,7 +257,7 @@ public class WechatService implements ThirdpayService {
       return result;
     }
 
-    PMap<String, ?> responsePMap = (PMap) result.getItem("responsePMap");
+    PMap<String, ?> responsePMap = result.getData();
 
     result = ResultMap.build().addItem("agencyRefundId", responsePMap.getString("refund_id"));
 
@@ -292,7 +292,7 @@ public class WechatService implements ThirdpayService {
       return result;
     }
 
-    PMap<String, ?> responsePMap = (PMap) result.getItem("responsePMap");
+    PMap<String, ?> responsePMap = result.getData();
 
     //返回交易状态
     ResultMap.build().addItem("refundStatus", getRefundStatus(responsePMap.getString("refund_status_0").toUpperCase()));
@@ -360,7 +360,7 @@ public class WechatService implements ThirdpayService {
       result.addItem("hasNextPage", false);
 
       if (message.startsWith("<xml>")) {
-        PMap pMap = XMLUtil.XML2PMap(message);
+        PMap<String, ?> pMap = XMLUtil.XML2PMap(message);
         String errorText = String.valueOf(pMap.get("return_msg"));
         LOGGER.error("[validateAndParseMessage] response error, message={}", message);
         //没有对账单数据
