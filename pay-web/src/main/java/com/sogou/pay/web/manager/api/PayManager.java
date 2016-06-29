@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.sogou.pay.common.Model.StdPayRequest;
-import com.sogou.pay.common.Model.StdPayRequest.Payment;
+import com.sogou.pay.common.Model.StdPayRequest.PayType;
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.common.utils.JSONUtil;
@@ -41,21 +41,21 @@ import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
 public class PayManager {
 
   private static final Logger logger = LoggerFactory.getLogger(PayManager.class);
-  private static final PMap<String, Payment> thirdPayMap = new PMap<>();
+  private static final PMap<String, PayType> thirdPayMap = new PMap<>();
 
   static {
     //PC网银支付
-    thirdPayMap.put("1_1", Payment.PC_GATEWAY);
+    thirdPayMap.put("1_1", PayType.PC_GATEWAY);
     //PC账户支付
-    thirdPayMap.put("1_2", Payment.PC_ACCOUNT);
+    thirdPayMap.put("1_2", PayType.PC_ACCOUNT);
     //PC企业网银支付
-    thirdPayMap.put("1_3", Payment.PC_GATEWAY);
+    thirdPayMap.put("1_3", PayType.PC_GATEWAY);
     //扫码支付
-    thirdPayMap.put("4_2", Payment.QRCODE);
+    thirdPayMap.put("4_2", PayType.QRCODE);
     //SDK账户支付
-    thirdPayMap.put("3_2", Payment.MOBILE_SDK);
+    thirdPayMap.put("3_2", PayType.MOBILE_SDK);
     //WAP账户支付
-    thirdPayMap.put("2_2", Payment.MOBILE_WAP);
+    thirdPayMap.put("2_2", PayType.MOBILE_WAP);
   }
 
   @Autowired
@@ -89,14 +89,14 @@ public class PayManager {
   @Autowired
   private PayPortal payPortal;
 
-  private static Payment getThirdPayChannel(int platForm, int payFeeType) {
+  private static PayType getThirdPayChannel(int platForm, int payFeeType) {
     String key = String.format("%d_%d", platForm, payFeeType);
     return thirdPayMap.get(key);
   }
 
   //创建支付订单
-  public Result createOrder(PMap params) {
-    ResultMap result = ResultMap.build();
+  public Result<String> createOrder(PMap<String, ?> params) {
+    ResultMap<String> result = ResultMap.build();
     try {
       String orderId = params.getString("orderId");
       Integer appId = params.getInt("appId");
@@ -274,8 +274,8 @@ public class PayManager {
   }
 
   //插入支付单信息
-  public ResultMap insertPayOrder(PMap params) {
-    ResultMap result = ResultMap.build();
+  public ResultMap<String> insertPayOrder(PMap<String, ?> params) {
+    ResultMap<String> result = ResultMap.build();
     try {
       StringBuilder productInfo = new StringBuilder()
               .append("商品名称:").append(params.get("productName"))
@@ -360,7 +360,7 @@ public class PayManager {
         request.setBankCode(bankCode);
       }
       request.setAgencyCode(agencyCode);
-      request.setPayment(getThirdPayChannel(accessPlatfrom, payFeeType));
+      request.setPayType(getThirdPayChannel(accessPlatfrom, payFeeType));
       PayAgencyMerchant payAgencyMerchant = (PayAgencyMerchant) params.get("agencyMerchant");
       //第三方支付机构商户号
       request.setMerchantId(payAgencyMerchant.getMerchantNo());

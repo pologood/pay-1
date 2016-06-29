@@ -12,9 +12,10 @@ import com.sogou.pay.common.Model.StdPayRequest;
 import com.sogou.pay.common.enums.OrderRefundStatus;
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
-//import com.sogou.pay.thirdpay.biz.model.TenpayCheckResponse;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
 import com.sogou.pay.thirdpay.service.ThirdpayService;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,26 +26,37 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-
 /**
  * Created by xiepeidong on 2016/1/19.
  */
 @Service
 public class TenpayService implements ThirdpayService {
+
   /**
    * 财付通账户支付参数
    */
-  public static final String FEE_TYPE = "1";       //币种
-  public static final String INPUT_CHARSET = "UTF-8";    // 字符编码格式
+  public static final String FEE_TYPE = "1"; //币种
+
+  public static final String INPUT_CHARSET = "UTF-8"; // 字符编码格式
+
   public static final String ACCOUNT_BANK_TYPE = "DEFAULT";
-  public static final String SIGN_TYPE = "MD5";  // 签名方式 不需修改
-  public static final String SALE_PLAT = "211";    //请求来源
-  public static final String WAP_CHARSET = "1";    //字符编码格式:1 :UTF-8, 2 :GB2312, 默认为 1
-  public static final String BANK_TYPE = "0";      //银行类型
+
+  public static final String SIGN_TYPE = "MD5"; // 签名方式 不需修改
+
+  public static final String SALE_PLAT = "211"; //请求来源
+
+  public static final String WAP_CHARSET = "1"; //字符编码格式:1 :UTF-8, 2 :GB2312, 默认为 1
+
+  public static final String BANK_TYPE = "0"; //银行类型
+
   private static final Logger log = LoggerFactory.getLogger(TenpayService.class);
+
   public static int TIME_OUT = 5;
+
   private static HashMap<String, String> TRADE_STATUS = new HashMap<String, String>();
+
   private static HashMap<String, String> REFUND_STATUS = new HashMap<String, String>();
+
   private static HashMap<String, String[]> REFUND_OPUSER = new HashMap<String, String[]>();//退款用到
 
   static {
@@ -70,25 +82,25 @@ public class TenpayService implements ThirdpayService {
     // 资金回流到商户的现金帐号, 需要商户人工干预, 通过线下或者财付通转账的方式进行退款。
     REFUND_STATUS.put("7", OrderRefundStatus.OFFLINE.name());
     REFUND_STATUS.put("DEFAULT", OrderRefundStatus.UNKNOWN.name());//默认
-    REFUND_OPUSER.put("1234274801", new String[]{"1234274801123", "1234567809ted", "813368"});//搜狗网络商户账号、操作员账号、密码、证书导入密码
-    REFUND_OPUSER.put("1234639901", new String[]{"1234639901123", "1234567809ted", "145404"});//搜狗科技商户账号、操作员账号、密码、证书导入密码
+    REFUND_OPUSER.put("1234274801", new String[] { "1234274801123", "1234567809ted", "813368" });//搜狗网络商户账号、操作员账号、密码、证书导入密码
+    REFUND_OPUSER.put("1234639901", new String[] { "1234639901123", "1234567809ted", "145404" });//搜狗科技商户账号、操作员账号、密码、证书导入密码
   }
 
   private ResultMap<?> preparePayInfo(StdPayRequest params, String bankCode) throws ServiceException {
     PMap<String, Object> requestPMap = new PMap<>();
     //组装参数
-    requestPMap.put("fee_type", FEE_TYPE);                    // 币种:1-人民币
-    requestPMap.put("input_charset", INPUT_CHARSET);          //编码格式
-    requestPMap.put("notify_url", params.getServerNotifyUrl());  //异步回调地址
-    requestPMap.put("return_url", params.getPageNotifyUrl());    //页面回调地址
-    requestPMap.put("partner", params.getMerchantId());          //商户号
+    requestPMap.put("fee_type", FEE_TYPE); // 币种:1-人民币
+    requestPMap.put("input_charset", INPUT_CHARSET); //编码格式
+    requestPMap.put("notify_url", params.getServerNotifyUrl()); //异步回调地址
+    requestPMap.put("return_url", params.getPageNotifyUrl()); //页面回调地址
+    requestPMap.put("partner", params.getMerchantId()); //商户号
     requestPMap.put("bank_type", bankCode);//财付通账户支付银行类型值
-    requestPMap.put("spbill_create_ip", params.getPayerIp());    // 买家浏览器IP
+    requestPMap.put("spbill_create_ip", params.getPayerIp()); // 买家浏览器IP
     String orderAmount = TenpayUtils.fenParseFromYuan(params.getOrderAmount());
-    requestPMap.put("total_fee", orderAmount);                           // 订单总金额, 以分为单位, 整数
-    requestPMap.put("out_trade_no", params.getPayId());   //订单id
-    requestPMap.put("body", params.getProductName());                //商品描述
-    requestPMap.put("sign_type", SIGN_TYPE);              //加密方法
+    requestPMap.put("total_fee", orderAmount); // 订单总金额, 以分为单位, 整数
+    requestPMap.put("out_trade_no", params.getPayId()); //订单id
+    requestPMap.put("body", params.getProductName()); //商品描述
+    requestPMap.put("sign_type", SIGN_TYPE); //加密方法
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[preparePayInfo] request params error, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
@@ -116,18 +128,17 @@ public class TenpayService implements ThirdpayService {
   private ResultMap<?> preparePayInfoMobile(StdPayRequest params, String callback_url) throws ServiceException {
     //组装参数
     PMap<String, Object> requestPMap = new PMap<>();
-    requestPMap.put("ver", "2.0");                           //接口版本
-    requestPMap.put("charset", WAP_CHARSET);               //编码
-    requestPMap.put("bank_type", BANK_TYPE);               //银行类型
-    requestPMap.put("desc", params.getProductName());             //商品描述
+    requestPMap.put("ver", "2.0"); //接口版本
+    requestPMap.put("charset", WAP_CHARSET); //编码
+    requestPMap.put("bank_type", BANK_TYPE); //银行类型
+    requestPMap.put("desc", params.getProductName()); //商品描述
     requestPMap.put("bargainor_id", params.getMerchantId());
     requestPMap.put("sp_billno", params.getPayId());
     String orderAmount = TenpayUtils.fenParseFromYuan(params.getOrderAmount());
-    requestPMap.put("total_fee", orderAmount);                        // 订单总金额, 以分为单位, 整数
-    requestPMap.put("fee_type", FEE_TYPE);                 //币种
+    requestPMap.put("total_fee", orderAmount); // 订单总金额, 以分为单位, 整数
+    requestPMap.put("fee_type", FEE_TYPE); //币种
     requestPMap.put("notify_url", params.getServerNotifyUrl());
-    if (callback_url != null)
-      requestPMap.put("callback_url", callback_url);
+    if (callback_url != null) requestPMap.put("callback_url", callback_url);
     requestPMap.put("attach", params.getProductName());
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[preparePayInfoMobile] request params error, params={}", requestPMap);
@@ -155,7 +166,7 @@ public class TenpayService implements ThirdpayService {
     }
 
     String token_id = (String) tenpayMap.get("token_id");
-    if (StringUtil.isEmpty(token_id)) {
+    if (StringUtils.isEmpty(token_id)) {
       log.error("[preparePayInfoMobile] response error, request={}, response={}", requestPMap, tenpayMap);
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
@@ -167,7 +178,6 @@ public class TenpayService implements ThirdpayService {
     return preparePayInfoMobile(params, null);
   }
 
-
   //https://www.tenpay.com/app/mpay/wappay_init.cgi
   //https://www.tenpay.com/app/mpay/mp_gate.cgi
   @Override
@@ -176,7 +186,7 @@ public class TenpayService implements ThirdpayService {
     ResultMap result = preparePayInfoMobile(params, callback_url);
     if (!Result.isSuccess(result)) return result;
     String token_id = (String) result.getItem("token_id");
-    PMap requestPMap = new PMap();
+    PMap requestPMap = new PMap<>();
     requestPMap.put("token_id", token_id);
     String returnUrl = HttpUtil.packHttpGetUrl(params.getPayUrl(), requestPMap);
     result.addItem("returnUrl", returnUrl);
@@ -184,14 +194,13 @@ public class TenpayService implements ThirdpayService {
   }
 
   /**
-   * 财付通查询订单
-   * 只能查询半年内的订单, 超过半年的订单调用此查询接口会报“88221009交易单不存在”
+   * 财付通查询订单 只能查询半年内的订单, 超过半年的订单调用此查询接口会报“88221009交易单不存在”
    */
   @Override
-  public ResultMap queryOrder(PMap params) throws ServiceException {
+  public ResultMap<?> queryOrder(PMap<String, ?> params) throws ServiceException {
     ResultMap result;
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap requestPMap = new PMap<>();
     requestPMap.put("input_charset", INPUT_CHARSET);
     requestPMap.put("partner", params.getString("merchantNo"));
     requestPMap.put("out_trade_no", params.getString("serialNumber"));
@@ -251,24 +260,23 @@ public class TenpayService implements ThirdpayService {
   }
 
   /**
-   * 财付通订单退款
-   * 只能退半年内的订单, 超过半年的订单调用此退款接口会报“88221009交易单不存在”
+   * 财付通订单退款 只能退半年内的订单, 超过半年的订单调用此退款接口会报“88221009交易单不存在”
    */
   @Override
-  public ResultMap refundOrder(PMap params) throws ServiceException {
+  public ResultMap<?> refundOrder(PMap<String, ?> params) throws ServiceException {
     ResultMap result;
-    PMap requestPMap = new PMap();
+    PMap requestPMap = new PMap<>();
     //组装参数
-    requestPMap.put("input_charset", INPUT_CHARSET);         //编码
-    requestPMap.put("partner", params.getString("merchantNo"));         // 商户号
+    requestPMap.put("input_charset", INPUT_CHARSET); //编码
+    requestPMap.put("partner", params.getString("merchantNo")); // 商户号
     requestPMap.put("service_version", "1.1");
-    requestPMap.put("out_trade_no", params.getString("serialNumber"));  // 商户订单号
-    requestPMap.put("out_refund_no", params.getString("refundSerialNumber"));            // 商户退款单号
+    requestPMap.put("out_trade_no", params.getString("serialNumber")); // 商户订单号
+    requestPMap.put("out_refund_no", params.getString("refundSerialNumber")); // 商户退款单号
     String totalAmount = TenpayUtils.fenParseFromYuan(params.getString("totalAmount"));
-    requestPMap.put("total_fee", totalAmount);                          // 总金额,调用端添加
+    requestPMap.put("total_fee", totalAmount); // 总金额,调用端添加
     String refundAmount = TenpayUtils.fenParseFromYuan(params.getString("refundAmount"));
-    requestPMap.put("refund_fee", refundAmount);                        // 退款金额
-    requestPMap.put("notify_url", params.getString("refundNotifyUrl"));         //异步回调地址
+    requestPMap.put("refund_fee", refundAmount); // 退款金额
+    requestPMap.put("notify_url", params.getString("refundNotifyUrl")); //异步回调地址
     if (!MapUtil.checkAllExist(requestPMap)) {
       log.error("[refundOrder] request params error, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
@@ -283,7 +291,7 @@ public class TenpayService implements ThirdpayService {
     String certPasswd = op_user_pwds[2];//证书导入密码
     //操作员密码md5加密
     String op_user_passwd_md5 = DigestUtil.MD5Encode(opUserPasswd, INPUT_CHARSET).toUpperCase();
-    requestPMap.put("op_user_id", op_user_id);               // 商户账号
+    requestPMap.put("op_user_id", op_user_id); // 商户账号
     requestPMap.put("op_user_passwd", op_user_passwd_md5); // 商户账号密码密钥md5加密之后
 
     //签名
@@ -293,8 +301,7 @@ public class TenpayService implements ThirdpayService {
 
     //发起请求
     TenpayHttpClient httpClient = new TenpayHttpClient();
-    httpClient.setCertFile(params.getString("privateCertFilePath"),
-            certPasswd, params.getString("publicCertFilePath"));
+    httpClient.setCertFile(params.getString("privateCertFilePath"), certPasswd, params.getString("publicCertFilePath"));
     Result httpResponse = httpClient.doGet(params.getString("refundUrl"), requestPMap);
     if (!Result.isSuccess(httpResponse)) {
       log.error("[refundOrder] http request failed, url={}, params={}", params.getString("refundUrl"), requestPMap);
@@ -333,16 +340,13 @@ public class TenpayService implements ThirdpayService {
     return ResultMap.build().addItem("agencyRefundId", responsePMap.getString("refund_id"));
   }
 
-
   /**
-   * 财付通查询订单退款信息
-   * 只能查询半年内的订单, 超过半年的订单调用此查询接口会报“88221009交易单不存在”
+   * 财付通查询订单退款信息 只能查询半年内的订单, 超过半年的订单调用此查询接口会报“88221009交易单不存在”
    */
   @Override
-  public ResultMap queryRefundOrder(PMap params) throws ServiceException {
-    ResultMap result;
+  public ResultMap<?> queryRefundOrder(PMap<String, ?> params) throws ServiceException {
     //组装参数
-    PMap requestPMap = new PMap();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("input_charset", INPUT_CHARSET);
     requestPMap.put("partner", params.getString("merchantNo"));
     requestPMap.put("out_refund_no", params.getString("refundSerialNumber"));
@@ -353,20 +357,21 @@ public class TenpayService implements ThirdpayService {
     }
     //签名
     String md5securityKey = params.getString("md5securityKey");
-    result = signMD5(requestPMap, md5securityKey);
+    ResultMap<?> result = signMD5(requestPMap, md5securityKey);
     if (!Result.isSuccess(result)) return result;
 
     //发起请求
     TenpayHttpClient httpClient = new TenpayHttpClient();
-    Result httpResponse = httpClient.doGet(params.getString("queryRefundUrl"), requestPMap);
+    Result<?> httpResponse = httpClient.doGet(params.getString("queryRefundUrl"), requestPMap);
     if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
-      log.error("[queryRefundOrder] http request failed, url={}, params={}", params.getString("queryRefundUrl"), requestPMap);
+      log.error("[queryRefundOrder] http request failed, url={}, params={}", params.getString("queryRefundUrl"),
+          requestPMap);
       return ResultMap.build(ResultStatus.THIRD_HTTP_ERROR);
     }
     String resContent = (String) httpResponse.getReturnValue();
 
     //解析响应
-    PMap responsePMap;
+    PMap<String, ?> responsePMap;
     try {
       responsePMap = XMLUtil.XML2PMap(resContent);
     } catch (Exception e) {
@@ -388,11 +393,8 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-
   @Override
-  public ResultMap downloadOrder(PMap params) throws ServiceException {
-
-    ResultMap result;
+  public ResultMap<?> downloadOrder(PMap<String, ?> params) throws ServiceException {
     //组装参数
     // yyyyMMdd -> yyyy-MM-dd
     Date checkDate = (Date) params.get("checkDate");
@@ -404,9 +406,7 @@ public class TenpayService implements ThirdpayService {
     sb.append("trans_time=").append(tenpayCheckDate).append("&");
     sb.append("stamp=").append(String.valueOf(System.currentTimeMillis())).append("&");
     /**
-     * 0:返回当日成功的订单
-     * 1：返回当日成功支付的订单
-     * 2：返回当日退款的订单
+     * 0:返回当日成功的订单 1：返回当日成功支付的订单 2：返回当日退款的订单
      */
     CheckType checkType = (CheckType) params.get("checkType");
     if (checkType == CheckType.ALL) {
@@ -437,9 +437,8 @@ public class TenpayService implements ThirdpayService {
     //发起请求
     TenpayHttpClient httpClient = new TenpayHttpClient();
     httpClient.setCharset("GBK");
-    httpClient.setCertFile(params.getString("privateCertFilePath"),
-            certPasswd, params.getString("publicCertFilePath"));
-    Result httpResponse = httpClient.doGet(params.getString("downloadUrl"), paramString);
+    httpClient.setCertFile(params.getString("privateCertFilePath"), certPasswd, params.getString("publicCertFilePath"));
+    Result<?> httpResponse = httpClient.doGet(params.getString("downloadUrl"), paramString);
     if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
       log.error("[downloadOrder] http request failed, url={}, params={}", params.getString("downloadUrl"), paramString);
       return ResultMap.build(ResultStatus.THIRD_HTTP_ERROR);
@@ -449,7 +448,7 @@ public class TenpayService implements ThirdpayService {
     return validateAndParseMessage(resContent);
   }
 
-  private ResultMap validateAndParseMessage(String message) {
+  private ResultMap<?> validateAndParseMessage(String message) {
 
     ResultMap result = ResultMap.build();
     String line = null;
@@ -530,21 +529,6 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-  @Override
-  public ResultMap prepareTransferInfo(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  @Override
-  public ResultMap queryTransfer(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
-  @Override
-  public ResultMap queryTransferRefund(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
   public ResultMap getReqIDFromNotifyWebSync(PMap params) throws ServiceException {
     ResultMap result = ResultMap.build();
     String out_trade_no = params.getString("out_trade_no");
@@ -553,9 +537,9 @@ public class TenpayService implements ThirdpayService {
       result.withError(ResultStatus.THIRD_NOTIFY_PARAM_ERROR);
       return result;
     }
-//        String partner = params.getString("partner");
+    //        String partner = params.getString("partner");
     result.addItem("reqId", out_trade_no);//商户网站唯一订单号
-//        result.addItem("merchantNo", partner);//商户号
+    //        result.addItem("merchantNo", partner);//商户号
     return result;
   }
 
@@ -571,18 +555,14 @@ public class TenpayService implements ThirdpayService {
       result.withError(ResultStatus.THIRD_NOTIFY_PARAM_ERROR);
       return result;
     }
-//        String bargainor_id = params.getString("bargainor_id");
+    //        String bargainor_id = params.getString("bargainor_id");
     result.addItem("reqId", sp_billno);//商户网站唯一订单号
-//        result.addItem("merchantNo", bargainor_id);//商户号
+    //        result.addItem("merchantNo", bargainor_id);//商户号
     return result;
   }
 
   public ResultMap getReqIDFromNotifyWapAsync(PMap params) throws ServiceException {
     return getReqIDFromNotifyWapSync(params);
-  }
-
-  public ResultMap getReqIDFromNotifySDKAsync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   public ResultMap getReqIDFromNotifyRefund(PMap params) throws ServiceException {
@@ -593,14 +573,10 @@ public class TenpayService implements ThirdpayService {
       result.withError(ResultStatus.THIRD_NOTIFY_PARAM_ERROR);
       return result;
     }
-//        String partner = params.getString("partner");
+    //        String partner = params.getString("partner");
     result.addItem("reqId", out_refund_no);//商户网站唯一订单号
-//        result.addItem("merchantNo", partner);//商户号
+    //        result.addItem("merchantNo", partner);//商户号
     return result;
-  }
-
-  public ResultMap getReqIDFromNotifyTransfer(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
   public ResultMap handleNotifyWebSync(PMap params) throws ServiceException {
@@ -693,10 +669,6 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifySDKAsync(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
   public ResultMap handleNotifyRefund(PMap params) throws ServiceException {
     ResultMap result;
     PMap notifyParams = params.getPMap("data");
@@ -721,13 +693,8 @@ public class TenpayService implements ThirdpayService {
     return result;
   }
 
-  public ResultMap handleNotifyTransfer(PMap params) throws ServiceException {
-    throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
-  }
-
   private ResultMap signMD5(PMap requestPMap, String secretKey) {
-    String sign =
-            SecretKeyUtil.tenMD5Sign(requestPMap, secretKey);
+    String sign = SecretKeyUtil.tenMD5Sign(requestPMap, secretKey);
     if (sign == null) {
       log.error("[signMD5] sign failed, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_SIGN_ERROR);
@@ -737,11 +704,9 @@ public class TenpayService implements ThirdpayService {
   }
 
   private ResultMap verifySignMD5(PMap responsePMap, String secretKey, String sign) {
-    boolean signOK = SecretKeyUtil
-            .tenMD5CheckSign(responsePMap, secretKey, sign);
+    boolean signOK = SecretKeyUtil.tenMD5CheckSign(responsePMap, secretKey, sign);
     if (!signOK) {
-      log.error("[verifySignMD5] verify sign failed, responsePMap={}, sign={}",
-              responsePMap, sign);
+      log.error("[verifySignMD5] verify sign failed, responsePMap={}, sign={}", responsePMap, sign);
       return ResultMap.build(ResultStatus.THIRD_VERIFY_SIGN_ERROR);
     }
     return ResultMap.build();

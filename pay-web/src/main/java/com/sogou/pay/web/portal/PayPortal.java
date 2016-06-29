@@ -2,21 +2,21 @@ package com.sogou.pay.web.portal;
 
 import com.google.common.collect.ImmutableMap;
 import com.sogou.pay.common.Model.StdPayRequest;
-import com.sogou.pay.common.Model.StdPayRequest.Payment;
+import com.sogou.pay.common.Model.StdPayRequest.PayType;
 import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.JSONUtil;
-import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.service.enums.AgencyCode;
 import com.sogou.pay.thirdpay.service.Alipay.AlipayService;
 import com.sogou.pay.thirdpay.service.Tenpay.TenpayService;
 import com.sogou.pay.thirdpay.service.ThirdpayService;
 import com.sogou.pay.thirdpay.service.Unionpay.UnionpayService;
 import com.sogou.pay.thirdpay.service.Wechat.WechatService;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by xiepeidong on 2016/1/19.
@@ -65,8 +66,8 @@ public class PayPortal {
     ResultMap result = ResultMap.build();
 
     //验证共同参数是否为空
-    if (StringUtil.isEmpty(params.getAgencyCode(), params.getPayment().name(), params.getOrderAmountString(),
-        params.getMd5Key())) {
+    if (Objects.isNull(params.getPayType()) || Objects.isNull(params.getOrderAmount())
+        || StringUtils.isEmpty(params.getAgencyCode()) || StringUtils.isEmpty(params.getMd5Key())) {
       log.error("[preparePay] params invalid, params={}", JSONUtil.Bean2JSON(params));
       return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
@@ -78,7 +79,7 @@ public class PayPortal {
     }
     ThirdpayService thirdpayService = serviceHashMap.get(params.getAgencyCode());
     try {
-      Pay payment = PAYMENTMAP.get(params.getPayment());
+      Pay payment = PAYMENTMAP.get(params.getPayType());
       if (payment == null) {
         log.error("[preparePay] payChannel not exists, params={}", JSONUtil.Bean2JSON(params));
         result.withError(ResultStatus.THIRD_PAY_CHANNEL_NOT_EXIST);
@@ -97,8 +98,9 @@ public class PayPortal {
     ResultMap result = ResultMap.build();
 
     //验证共同参数是否为空
-    if (StringUtil.isEmpty(params.getString("agencyCode"), params.getString("md5securityKey"),
-        params.getString("refundAmount"), params.getString("totalAmount"))) {
+    if (StringUtils.isEmpty(params.getString("agencyCode")) || StringUtils.isEmpty(params.getString("md5securityKey"))
+        || StringUtils.isEmpty(params.getString("refundAmount"))
+        || StringUtils.isEmpty(params.getString("totalAmount"))) {
       log.error("[refundOrder] params invalid, params={}", JSONUtil.Bean2JSON(params));
       return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
@@ -132,7 +134,8 @@ public class PayPortal {
     ResultMap result = ResultMap.build();
 
     //验证共同参数是否为空
-    if (StringUtil.isEmpty(params.getString("agencyCode"), params.getString("md5securityKey"))) {
+    if (StringUtils.isEmpty(params.getString("agencyCode"))
+        || StringUtils.isEmpty(params.getString("md5securityKey"))) {
       log.error("[queryOrder] params invalid, params={}", JSONUtil.Bean2JSON(params));
       return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
@@ -156,7 +159,8 @@ public class PayPortal {
     ResultMap result = ResultMap.build();
 
     //验证共同参数是否为空
-    if (StringUtil.isEmpty(params.getString("agencyCode"), params.getString("md5securityKey"))) {
+    if (StringUtils.isEmpty(params.getString("agencyCode"))
+        || StringUtils.isEmpty(params.getString("md5securityKey"))) {
       log.error("[queryRefund] params invalid, params={}", JSONUtil.Bean2JSON(params));
       return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
@@ -262,11 +266,11 @@ public class PayPortal {
 
   }
 
-  private static final Map<Payment, Pay> PAYMENTMAP = ImmutableMap.of(Payment.PC_ACCOUNT,
-      (service, request) -> service.preparePayInfoAccount(request), Payment.PC_GATEWAY,
-      (service, request) -> service.preparePayInfoGatway(request), Payment.QRCODE,
-      (service, request) -> service.preparePayInfoQRCode(request), Payment.MOBILE_SDK,
-      (service, request) -> service.preparePayInfoSDK(request), Payment.MOBILE_WAP,
+  private static final Map<PayType, Pay> PAYMENTMAP = ImmutableMap.of(PayType.PC_ACCOUNT,
+      (service, request) -> service.preparePayInfoAccount(request), PayType.PC_GATEWAY,
+      (service, request) -> service.preparePayInfoGatway(request), PayType.QRCODE,
+      (service, request) -> service.preparePayInfoQRCode(request), PayType.MOBILE_SDK,
+      (service, request) -> service.preparePayInfoSDK(request), PayType.MOBILE_WAP,
       (service, request) -> service.preparePayInfoWap(request));
 
 }

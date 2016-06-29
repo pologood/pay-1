@@ -4,8 +4,8 @@ package com.sogou.pay.common.http.utils;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.MapUtil;
-import com.sogou.pay.common.utils.StringUtil;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,7 @@ public final class HttpUtil {
             for (Map.Entry<String, Object> entry : (Set<Map.Entry<String, Object>>) params.entrySet()) {
                 String key = entry.getKey();
                 Object value = entry.getValue();
-                if (StringUtil.isBlank(key) || value == null) {
+                if (StringUtils.isBlank(key) || value == null) {
                     continue;
                 }
                 sb.append(urlEncode(key));

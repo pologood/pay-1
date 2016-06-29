@@ -4,7 +4,6 @@ import com.sogou.pay.common.Model.StdPayRequest;
 import com.sogou.pay.common.types.*;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.common.utils.JSONUtil;
-import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.manager.model.PayChannelAdapts;
 import com.sogou.pay.manager.model.PayChannelAdapt;
 import com.sogou.pay.web.manager.ChannelAdaptManager;
@@ -17,6 +16,8 @@ import com.sogou.pay.web.controller.BaseController;
 import com.sogou.pay.web.form.PayForm;
 import com.sogou.pay.web.utils.ControllerUtil;
 import com.sogou.pay.web.utils.ServletUtil;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,7 +155,7 @@ public class GWController extends BaseController {
       return setErrorPage(result.getStatus(), platform);
     }
 
-    if (StringUtil.isBlank(payForm.getBankId())) {
+    if (StringUtils.isBlank(payForm.getBankId())) {
       //未指定支付渠道，返回收银台页面
       //组装重新支付参数
       payParamsMap.put("fromCashier", "true");

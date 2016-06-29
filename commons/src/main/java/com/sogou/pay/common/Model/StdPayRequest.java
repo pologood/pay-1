@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 //-------------------------------------------------------
 public class StdPayRequest {
 
-  public enum Payment {
+  public enum PayType {
     PC_ACCOUNT(0), //账户支付
     PC_GATEWAY(1), //网关(网银)支付
     QRCODE(2), //扫码支付
@@ -23,7 +23,7 @@ public class StdPayRequest {
 
     private int value;
 
-    private Payment(int value) {
+    private PayType(int value) {
       this.value = value;
     }
 
@@ -37,7 +37,7 @@ public class StdPayRequest {
   /*channel*/
   private String agencyCode;//支付服务提供方代码:如支付宝-alipay
 
-  private Payment payment;//支付方式代码:如扫码支付
+  private PayType payType;//支付方式代码:如扫码支付
 
   private String bankCode;//银行代码:如招商银行CMB
 
@@ -88,12 +88,12 @@ public class StdPayRequest {
     this.agencyCode = agencyCode;
   }
 
-  public Payment getPayment() {
-    return payment;
+  public PayType getPayType() {
+    return payType;
   }
 
-  public void setPayment(Payment payment) {
-    this.payment = payment;
+  public void setPayType(PayType payType) {
+    this.payType = payType;
   }
 
   public String getBankCode() {

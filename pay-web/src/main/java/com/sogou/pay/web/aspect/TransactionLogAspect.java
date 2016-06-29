@@ -1,7 +1,8 @@
 package com.sogou.pay.web.aspect;
 
 import com.sogou.pay.common.utils.JSONUtil;
-import com.sogou.pay.common.utils.StringUtil;
+
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -190,10 +191,10 @@ public class TransactionLogAspect {
     }
 
     private static String getLocalIp(HttpServletRequest request) {
-        if (StringUtil.isEmpty(LOCALIP)) {
+        if (StringUtils.isEmpty(LOCALIP)) {
             synchronized (TransactionLogAspect.class) {
                 try {
-                    if (StringUtil.isEmpty(LOCALIP)) {
+                    if (StringUtils.isEmpty(LOCALIP)) {
                         LOCALIP = InetAddress.getLocalHost().getHostAddress();
                     }
                 } catch (Exception e) {

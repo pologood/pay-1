@@ -2,6 +2,8 @@ package com.sogou.pay.common.utils;
 
 import com.sogou.pay.common.types.PMap;
 import com.thoughtworks.xstream.XStream;
+
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -41,7 +43,7 @@ public class XMLUtil {
   }
 
   private static boolean List2XML(Element rootElement, String name, List list) {
-    if (rootElement == null || StringUtil.isEmpty(name) || list == null) {
+    if (rootElement == null || StringUtils.isEmpty(name) || list == null) {
       return false;
     }
     Element element;
@@ -49,7 +51,7 @@ public class XMLUtil {
       Object value = list.get(i);
       if (value == null) {
         element = rootElement.addElement(name);
-        element.setText(StringUtil.EMPTY_STRING);
+        element.setText(StringUtils.EMPTY);
       } else if (value instanceof Map) {
         element = rootElement.addElement(name);
         Map2XML(element, (Map<String, Object>) value);
@@ -72,7 +74,7 @@ public class XMLUtil {
       Object value = entry.getValue();
       if (value == null) {
         element = rootElement.addElement(entry.getKey());
-        element.setText(StringUtil.EMPTY_STRING);
+        element.setText(StringUtils.EMPTY);
       } else if (value instanceof Map) {
         element = rootElement.addElement(entry.getKey());
         Map2XML(element, (Map<String, Object>) value);

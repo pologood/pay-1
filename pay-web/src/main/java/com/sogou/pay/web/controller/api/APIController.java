@@ -121,13 +121,13 @@ public class APIController extends BaseController {
       return resultMap;
     }
 
-    PMap paramsMap = (PMap) resultMap.getReturnValue();
+    PMap<String, Object> paramsMap = (PMap) resultMap.getReturnValue();
 
     paramsMap.put("userIp", ServletUtil.getRealIp(request));
     paramsMap.put("channelCode", params.getBankId());
 
     //创建支付订单
-    Result result = payManager.createOrder(paramsMap);
+    Result<String> result = payManager.createOrder(paramsMap);
     if (!Result.isSuccess(result)) {
       logger.error("[doPay][createOrder][Failed] params={}, result={}", JSONUtil.Bean2JSON(paramsMap),
               JSONUtil.Bean2JSON(result));
