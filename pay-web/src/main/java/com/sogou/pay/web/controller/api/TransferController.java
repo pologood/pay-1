@@ -12,6 +12,8 @@ import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.service.entity.App;
 import com.sogou.pay.service.payment.AppService;
 import com.sogou.pay.web.form.TransferForm;
+
+import org.apache.commons.lang3.StringUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +26,6 @@ import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.types.PMap;
-import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.web.manager.api.TransferManager;
 import com.sogou.pay.web.manager.SecureManager;
 import com.sogou.pay.web.controller.BaseController;
@@ -128,10 +129,10 @@ public class TransferController extends BaseController {
     //AppXmlPacket appXmlPacket = new AppXmlPacket();
     ResultMap result;
     /**2.验证参数**/
-    if (StringUtil.isBlank(payTransferQueryParams.getAppId())
-            || StringUtil.isBlank(payTransferQueryParams.getBatchNo())
-            || StringUtil.isBlank(payTransferQueryParams.getSign())
-            || StringUtil.isBlank(payTransferQueryParams.getSignType())) {
+    if (StringUtils.isBlank(payTransferQueryParams.getAppId())
+            || StringUtils.isBlank(payTransferQueryParams.getBatchNo())
+            || StringUtils.isBlank(payTransferQueryParams.getSign())
+            || StringUtils.isBlank(payTransferQueryParams.getSignType())) {
       logger.error("【代付查询参数错误】");
       result = ResultMap.build(ResultStatus.PARAM_ERROR);
       return result;
@@ -156,11 +157,11 @@ public class TransferController extends BaseController {
     //AppXmlPacket appXmlPacket = new AppXmlPacket();
     ResultMap result;
     /**2.验证参数**/
-    if (StringUtil.isBlank(payTransferRefundQueryParams.getAppId())
-            || StringUtil.isBlank(payTransferRefundQueryParams.getStartTime())
-            || StringUtil.isBlank(payTransferRefundQueryParams.getEndTime())
-            || StringUtil.isBlank(payTransferRefundQueryParams.getSign())
-            || StringUtil.isBlank(payTransferRefundQueryParams.getSignType())) {
+    if (StringUtils.isBlank(payTransferRefundQueryParams.getAppId())
+            || StringUtils.isBlank(payTransferRefundQueryParams.getStartTime())
+            || StringUtils.isBlank(payTransferRefundQueryParams.getEndTime())
+            || StringUtils.isBlank(payTransferRefundQueryParams.getSign())
+            || StringUtils.isBlank(payTransferRefundQueryParams.getSignType())) {
       logger.error("【代付退票查询参数错误】");
       result = ResultMap.build(ResultStatus.PARAM_ERROR);
       return result;
@@ -201,7 +202,7 @@ public class TransferController extends BaseController {
       for (Map map : recordListParam) {
         TransferRecord record = BeanUtil.Map2Bean(map, TransferRecord.class);
         //系统内表示只能是Y或N
-        if (!StringUtil.isEmpty(record.getBankFlg())) {
+        if (!StringUtils.isEmpty(record.getBankFlg())) {
           if ((!"Y".equals(record.getBankFlg())) && (!"N".equals(record.getBankFlg()))) {
             logger.error("【支付请求】系统内表示字段只能是Y或N。代付单号为：" + record.getPayId());
             returnResult.withError(ResultStatus.PARAM_ERROR);
@@ -209,7 +210,7 @@ public class TransferController extends BaseController {
           }
           //当BNKFLG=N时，他行开户行以及他行开户地必填
           if (("N".equals(record.getBankFlg())) &&
-                  (StringUtil.isEmpty(record.getEacBank()) || StringUtil.isEmpty(record.getEacCity()))) {
+                  (StringUtils.isEmpty(record.getEacBank()) || StringUtils.isEmpty(record.getEacCity()))) {
             logger.error("【支付请求】当BNKFLG=N时，他行开户行以及他行开户地必填。代付单号为：" + record.getPayId());
             returnResult.withError(ResultStatus.PARAM_ERROR);
             return returnResult;

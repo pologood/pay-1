@@ -4,7 +4,6 @@ import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.JSONUtil;
-import com.sogou.pay.common.utils.StringUtil;
 import com.sogou.pay.service.utils.DataSignUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,7 +38,7 @@ public class SecureManager {
   public Result doAppSign(Map params, Map excludes, String secret) {
     try {
       String signType = (String) params.get("signType");
-      if (StringUtil.isBlank(signType)) {
+      if (StringUtils.isBlank(signType)) {
         signType = DEFAULT_SIGN_TYPE;
         params.put("signType", signType);
       }
