@@ -1,5 +1,6 @@
 package com.sogou.pay.web.manager.notify;
 
+import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
@@ -28,7 +29,7 @@ public class WithdrawNotifyManager {
     @Autowired
     private PayCheckWaitingService payCheckWaitingService;
 
-    public ResultMap doProcess(HashMap<String,Object> params){
+    public ResultMap handleWithdrawNotify(PMap<String,?> params){
         ResultMap result = ResultMap.build();
         PayCheckWaiting payCheckWaiting = new PayCheckWaiting();
 

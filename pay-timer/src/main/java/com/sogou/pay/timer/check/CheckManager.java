@@ -1,5 +1,8 @@
 package com.sogou.pay.timer.check;
 
+import com.sogou.pay.common.http.client.HttpService;
+import com.sogou.pay.common.utils.BeanUtil;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.enums.AccessPlatform;
 import com.sogou.pay.timer.PayPortal;
 import com.sogou.pay.common.exception.ServiceException;
@@ -21,6 +24,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,6 +78,15 @@ public class CheckManager {
     checkList.add(CheckType.REFUND.getValue());
     checkList.add(CheckType.WITHDRAW.getValue());
   }
+
+  @Value(value = "${repair.pay.url}")
+  private String REPAIR_PAY_URL;
+
+  @Value(value = "${repair.refund.url}")
+  private String REPAIR_REFUND_URL;
+
+  @Value(value = "${repair.withdraw.url}")
+  private String REPAIR_WITHDRAW_URL;
 
   /**
    * 1. 根据checkDate、agencyCode、merchantNo查询对账日志
@@ -164,11 +177,11 @@ public class CheckManager {
         int size = 0;
         do {
           // 查询指定渠道、日期范围内，未对账成功的记录，每次查500条
-          List<Map<String, Object>> list = payCheckService.queryByMerAndDateAndCheckType(checkDateStr, agencyCode, checkType,
+          List<Map<String, Object>> bills = payCheckService.queryByMerAndDateAndCheckType(checkDateStr, agencyCode, checkType,
                   page * BATCH_SIZE, BATCH_SIZE);
-          size = list.size();
+          size = bills.size();
           if (size > 0) {
-            doBatchUpdate(list);
+            doBatchUpdate(bills);
             total += size;
           }
           page++;
@@ -207,74 +220,62 @@ public class CheckManager {
    * 对账业务处理
    */
   @Transactional(value = "transactionManager")
-  public void doBatchUpdate(List<Map<String, Object>> list) throws Exception {
+  public void doBatchUpdate(List<Map<String, Object>> bills) throws Exception {
 
     List<PayCheckUpdateModel> payCheckUpdates = new ArrayList<>();
 
     List<PayCheckUpdateModel> payCheckWaitingUpdates = new ArrayList<>();
 
-    for (Map<String, Object> item : list) {
+    for (Map<String, Object> bill : bills) {
 
       PayCheckUpdateModel payCheckUpdateModel = new PayCheckUpdateModel();
 
-      String instructId = (String) item.get("instruct_id");
+      String instructId = (String) bill.get("instruct_id");
       payCheckUpdateModel.setInstructId(instructId);
 
       // 对账金额
-      BigDecimal pcAmt = BigDecimal.valueOf(Double.parseDouble(item.get("pc_amt").toString()));
+      BigDecimal pcAmt = new BigDecimal(bill.get("pc_amt").toString());
 
       // 待对账算金额
-      BigDecimal pcwAmt = item.get("pcw_amt") == null ? null : BigDecimal.valueOf(Double.parseDouble(item.get("pcw_amt").toString()));
+      BigDecimal pcwAmt = bill.get("pcw_amt") == null ? null : new BigDecimal(bill.get("pcw_amt").toString());
 
       // 对账ID
-      long payCheckId = Long.valueOf(item.get("pay_check_id").toString());
+      long payCheckId = Long.valueOf(bill.get("pay_check_id").toString());
       payCheckUpdateModel.setPayCheckId(payCheckId);
 
-      int checkType = Integer.valueOf(item.get("check_type").toString());
+      int checkType = Integer.valueOf(bill.get("check_type").toString());
 
-      /**
-       * 在t_pay_check_waiting表中缺失记录，检查是否是丢单
-       */
+      //在t_pay_check_waiting表中缺失记录，检查是否丢单
       if (pcwAmt == null) {
-
         PayCheck payCheck = payCheckService.getByInstructIdAndCheckType(instructId, checkType);
-        try {
-          //补单
-          Result result = repairNotify(payCheck);
-          if (Result.isSuccess(result)) {
-            PayCheckWaiting payCheckWaiting = payCheckWaitingService.getByInstructId(instructId);
-            if (payCheckWaiting != null) {
-              pcwAmt = payCheckWaiting.getBizAmt();
-            }
-          } else {
-            log.warn("repair process error! instructId=" + instructId);
+        //补单
+        Result result = repairBill(payCheck);
+        if (Result.isSuccess(result)) {
+          PayCheckWaiting payCheckWaiting = payCheckWaitingService.getByInstructId(instructId);
+          if (payCheckWaiting != null) {
+            pcwAmt = payCheckWaiting.getBizAmt();
           }
-        } catch (Exception e) {
-          log.warn("repair process  error! instructId=" + instructId, e);
         }
       }
-      /**
-       * 对账与待对账记录匹配，比较金额
-       */
-      if (pcwAmt != null) {
 
-        // 金额匹配
+      if (pcwAmt == null) {
+        //补单失败
+        log.warn("[doBatchUpdate] repair process error! instructId=" + instructId);
+        payCheckUpdateModel.setPayCheckStatus(CheckStatus.LOST.getValue());
+        payCheckUpdates.add(payCheckUpdateModel);
+      } else {
+        //对账与待对账记录匹配，比较金额
         if (pcAmt.compareTo(pcwAmt) == 0) {
-          payCheckUpdateModel.setPayCheckStatus(CheckStatus.SUCCESS.value());
-          payCheckUpdateModel.setPayCheckWaitingStatus(CheckStatus.SUCCESS.value());
-        }
-        // 金额不匹配
-        else {
-          payCheckUpdateModel.setPayCheckStatus(CheckStatus.UNBALANCE.value());
-          payCheckUpdateModel.setPayCheckWaitingStatus(CheckStatus.UNBALANCE.value());
+          // 金额匹配
+          payCheckUpdateModel.setPayCheckStatus(CheckStatus.SUCCESS.getValue());
+          payCheckUpdateModel.setPayCheckWaitingStatus(CheckStatus.SUCCESS.getValue());
+        } else {
+          // 金额不匹配
+          payCheckUpdateModel.setPayCheckStatus(CheckStatus.UNBALANCE.getValue());
+          payCheckUpdateModel.setPayCheckWaitingStatus(CheckStatus.UNBALANCE.getValue());
         }
         payCheckUpdates.add(payCheckUpdateModel);
         payCheckWaitingUpdates.add(payCheckUpdateModel);
-      }
-      // 对方多账
-      else {
-        payCheckUpdateModel.setPayCheckStatus(CheckStatus.LOST.value());
-        payCheckUpdates.add(payCheckUpdateModel);
       }
     }
 
@@ -289,25 +290,29 @@ public class CheckManager {
   /**
    * 补单
    **/
-  private Result repairNotify(PayCheck payCheck) {
-
-    Result result = ResultMap.build();
+  private Result repairBill(PayCheck payCheck) {
+    PMap params=null;
+    String url=null;
     if (payCheck.getCheckType() == OrderType.PAY.getValue()) {
       //支付补单
       PayNotifyModel payNotifyModel = new PayNotifyModel();
       payNotifyModel.setPayDetailId(payCheck.getInstructId());
       payNotifyModel.setAgencyOrderId(payCheck.getOutOrderId());
-      payNotifyModel.setBankOrderId(null);
-      //payNotifyModel.setPayStatus(1);
       payNotifyModel.setAgencyPayTime(payCheck.getOutTransTime());
       payNotifyModel.setTrueMoney(payCheck.getBizAmt());
-      //result = payNotifyManager.doProcess(payNotifyModel);
+      params = BeanUtil.Bean2PMap(payNotifyModel);
+      url = REPAIR_PAY_URL;
     } else if (payCheck.getCheckType() == OrderType.REFUND.getValue()) {
       //退款补单
-      // result = refundNotifyManager.repairRefundOrder(payCheck.getInstructId(), payCheck.getOutOrderId());
+      params = new PMap<String, Object>();
+      params.put("reqId", payCheck.getInstructId());
+      params.put("agencyRefundId", payCheck.getOutOrderId());
+      params.put("refundMoney", payCheck.getBizAmt().toString());
+      params.put("refundStatus", "SUCCESS");
+      url = REPAIR_REFUND_URL;
     } else if (payCheck.getCheckType() == OrderType.WITHDRAW.getValue()) {
       //提现补单
-      PMap params = new PMap<String, Object>();
+      params = new PMap<String, Object>();
       params.put("instructId", payCheck.getInstructId());
       params.put("outOrderId", payCheck.getOutOrderId());
       params.put("outTransTime", payCheck.getOutTransTime());
@@ -318,7 +323,11 @@ public class CheckManager {
       params.put("merchantNo", payCheck.getMerchantNo());
       params.put("payType", 99);
       params.put("bankCode", payCheck.getAgencyCode());
-      // result = withdrawNotifyManager.doProcess(params);
+      url = REPAIR_WITHDRAW_URL;
+    }
+    Result result = HttpService.getInstance().doPost(url, params, null, null);
+    if(!Result.isSuccess(result)){
+      log.error("[repairBill] http request failed, url={}, params={}", url, JSONUtil.Bean2JSON(params));
     }
     return result;
   }
@@ -326,7 +335,6 @@ public class CheckManager {
   /**
    * 1.查询未处理的差异信息
    * 2.自动处理
-   *
    */
   @Transactional(value = "transactionManager")
   public void updatePayCheckDiff() throws Exception {
@@ -336,7 +344,7 @@ public class CheckManager {
       List<PayCheckDiff> diffList = payCheckDiffService.selectUnResolvedList();
       for (PayCheckDiff payCheckDiff : diffList) {
         PayCheck payCheck = payCheckService.getByInstructIdAndCheckType(payCheckDiff.getInstructId(), payCheckDiff.getCheckType());
-        if (payCheck != null && payCheck.getStatus() == CheckStatus.SUCCESS.value()) {
+        if (payCheck != null && payCheck.getStatus() == CheckStatus.SUCCESS.getValue()) {
           payCheckDiffService.updateStatus(payCheckDiff.getId(), 1, "auto handle success");
         }
       }
@@ -345,8 +353,6 @@ public class CheckManager {
 
   /**
    * 生成对账结果数据
-   *
-   * @param checkDate
    */
   @Transactional(value = "transactionManager")
   public void updatePayCheckResult(Date checkDate, String agencyCode) throws Exception {
@@ -368,10 +374,10 @@ public class CheckManager {
       int status = 0;
       if (outTotalNum == totalNum && outTotalAmt.compareTo(totalAmt) == 0) {
         //对账成功
-        status = 1;
+        status = CheckStatus.SUCCESS.getValue();
       } else {
         //对账失败
-        status = 2;
+        status = CheckStatus.UNBALANCE.getValue();
       }
       payCheckResultService.updateStatus(payCheckResult.getId(), status);
     }
@@ -405,10 +411,10 @@ public class CheckManager {
       int status = 0;
       if (outTotalNum == totalNum && outTotalFee.compareTo(totalFee) == 0) {
         //对账成功
-        status = 1;
+        status = CheckStatus.SUCCESS.getValue();
       } else {
         //对账失败
-        status = 2;
+        status = CheckStatus.UNBALANCE.getValue();
       }
       payCheckFeeResultService.updateFeeStatus(payCheckFeeResult.getId(), status);
     }

@@ -300,7 +300,7 @@ public class RefundManager {
     payCheckWaiting.setOutTransTime(sucDate);                                              //对方交易时间
     payCheckWaiting.setOutOrderId(thirdRefundId); //对方流水号
     payCheckWaiting.setBizAmt(model.getRefundAmount());                                    //对帐金额-退款金额
-    payCheckWaiting.setStatus(CheckStatus.INIT.value());                                   //对账状态
+    payCheckWaiting.setStatus(CheckStatus.INIT.getValue());                                   //对账状态
     payCheckWaiting.setAccessPlatform(payResDetail.getAccessPlatform());                   //接入平台
     payCheckWaiting.setAppId(model.getApp().getAppId());                                   //业务线ID
     payCheckWaiting.setCheckDate(DateUtil.format(sucDate, DateUtil.DATE_FORMAT_DAY_SHORT));//对账日期

@@ -51,7 +51,7 @@ public class RefundNotifyManager {
   @Autowired
   private PayOrderService payOrderService;
 
-  public ResultMap handleRefundNotify(PMap<String, Object> params) {
+  public ResultMap handleRefundNotify(PMap<String, ?> params) {
     logger.info("[handleRefundNotify] 处理退款通知开始: {}", JSONUtil.Bean2JSON(params));
     try {
       String refundId = params.getString("reqId");
