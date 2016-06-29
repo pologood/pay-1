@@ -82,7 +82,7 @@ public class WechatService implements ThirdpayService {
     REFUND_STATUS.put("DEFAULT", OrderRefundStatus.UNKNOWN.name());//默认
   }
 
-  private ResultMap<?> doRequest(String url, String md5Key, PMap<String, String> requestPMap) throws ServiceException {
+  private ResultMap<?> doRequest(String url, String md5Key, PMap<String, Object> requestPMap) throws ServiceException {
     if (!MapUtil.checkAllExist(requestPMap)) {
       LOGGER.error("[doRequest]request params error, params={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
@@ -126,7 +126,7 @@ public class WechatService implements ThirdpayService {
 
   private ResultMap<?> prepay(StdPayRequest params, String trade_type) throws ServiceException {
     //组装参数
-    PMap<String, String> requestPMap = new PMap<>();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("appid", params.getPayee()); // 公众账号ID
     requestPMap.put("mch_id", params.getMerchantId()); // 商户号
     requestPMap.put("nonce_str", TenpayUtils.getNonceStr()); // 随机字符串，不长于32位
@@ -161,7 +161,7 @@ public class WechatService implements ThirdpayService {
     ResultMap<?> result = prepay(params, QR_TRADE_TYPE);
     if (!Result.isSuccess(result)) return result;
 
-    PMap<String, ?> prepayPMap = (PMap) result.getReturnValue();
+    PMap<String, ?> prepayPMap = (PMap) result.getData();
     //返回二维码图片数据
     return ResultMap.build().addItem("qrCode", text2QRCode(prepayPMap.getString("code_url")));
   }
@@ -171,12 +171,12 @@ public class WechatService implements ThirdpayService {
     ResultMap<?> result = prepay(params, SDK_TRADE_TYPE);
     if (!Result.isSuccess(result)) return result;
 
-    PMap<String, ?> prepayPMap = (PMap) result.getReturnValue();
+    PMap prepayPMap = (PMap) result.getData();
     //组装参数
-    PMap<String, String> requestPMap = new PMap<>();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("appid", params.getPayee());
     requestPMap.put("partnerid", params.getMerchantId());
-    requestPMap.put("prepayid", prepayPMap.getString("prepay_id"));
+    requestPMap.put("prepayid", prepayPMap.get("prepay_id"));
     requestPMap.put("package", "Sign=WXPay");
     requestPMap.put("noncestr", TenpayUtils.getNonceStr());
     requestPMap.put("timestamp", TenpayUtils.getTimeStamp());
@@ -197,7 +197,7 @@ public class WechatService implements ThirdpayService {
   @Override
   public ResultMap<?> queryOrder(PMap<String, ?> params) throws ServiceException {
     //组装参数
-    PMap<String, String> requestPMap = new PMap<>();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("appid", params.getString("sellerEmail")); // 公众账号ID
     requestPMap.put("mch_id", params.getString("merchantNo")); // 商户号
     requestPMap.put("nonce_str", TenpayUtils.getNonceStr()); // 随机字符串，不长于32位
@@ -236,7 +236,7 @@ public class WechatService implements ThirdpayService {
   public ResultMap<?> refundOrder(PMap<String, ?> params) throws ServiceException {
 
     //组装参数
-    PMap<String, String> requestPMap = new PMap<>();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("appid", params.getString("sellerEmail")); // 公众账号ID
     requestPMap.put("mch_id", params.getString("merchantNo")); // 商户号
     requestPMap.put("nonce_str", TenpayUtils.getNonceStr()); // 随机字符串，不长于32位
@@ -278,7 +278,7 @@ public class WechatService implements ThirdpayService {
   @Override
   public ResultMap<?> queryRefundOrder(PMap<String, ?> params) throws ServiceException {
     //组装参数
-    PMap<String, String> requestPMap = new PMap<>();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("appid", params.getString("sellerEmail")); // 公众账号ID
     requestPMap.put("mch_id", params.getString("merchantNo")); // 商户号
     requestPMap.put("nonce_str", TenpayUtils.getNonceStr()); // 随机字符串，不长于32位
@@ -304,7 +304,7 @@ public class WechatService implements ThirdpayService {
     Date checkDate = (Date) params.get("checkDate");
     String wechatCheckDate = DateUtil.format(checkDate, DateUtil.DATE_FORMAT_DAY_SHORT);
 
-    PMap<String, String> requestPMap = new PMap<>();
+    PMap<String, Object> requestPMap = new PMap<>();
     requestPMap.put("appid", params.getString("sellerEmail"));//公众账号ID
     requestPMap.put("mch_id", params.getString("merchantNo"));//商户号
     requestPMap.put("nonce_str", TenpayUtils.getNonceStr()); //随机32位字符串
@@ -518,7 +518,7 @@ public class WechatService implements ThirdpayService {
     }
   }
 
-  private ResultMap<?> signMD5(PMap<String, String> requestPMap, String secretKey) {
+  private ResultMap<?> signMD5(PMap<String, Object> requestPMap, String secretKey) {
     String sign = SecretKeyUtil.tenMD5Sign(requestPMap, secretKey);
     if (sign == null) {
       LOGGER.error("[signMD5] sign failed, params={}", requestPMap);
