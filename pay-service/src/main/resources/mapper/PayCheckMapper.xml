@@ -88,7 +88,7 @@
     </delete>
 
 
-    <select id="getByInstructIdAndBizCode" resultMap="payCheckMap">
+    <select id="getByInstructIdAndCheckType" resultMap="payCheckMap">
         SELECT
         <include refid="tableColumns"/>
         FROM t_pay_check
@@ -96,7 +96,7 @@
     </select>
 
 
-    <select id="queryByMerAndDateAndBizCode" resultType="Map">
+    <select id="queryByMerAndDateAndCheckType" resultType="Map">
         <![CDATA[
             SELECT 
 		   		   t1.id AS pay_check_id,

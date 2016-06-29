@@ -61,7 +61,7 @@ public class CheckManagerTest extends BaseTest {
 
   @Test
   public void checkWechat() {
-    Date checkDate = DateUtil.parse("20160622");
+    Date checkDate = DateUtil.parse("20160623");
     String agencyCode = AgencyCode.WECHAT.name();
     try {
       checkManager.downloadOrder(checkDate, agencyCode);
