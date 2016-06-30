@@ -39,11 +39,6 @@ public class WechatHttpClient {
      */
     private String myCertFile;
 
-    /**
-     * 证书密码
-     */
-    private String certPasswd;
-
     private String charset = "UTF-8";
 
     private SSLContext sslContext;
@@ -54,7 +49,6 @@ public class WechatHttpClient {
 
     public void setCertFile(String myCertFile, String certPasswd, String caCertFile) {
         this.myCertFile = myCertFile;
-        this.certPasswd = certPasswd;
         this.caCertFile = caCertFile;
         this.sslContext = createSslContext(this.myCertFile, certPasswd, this.caCertFile);
     }
@@ -98,7 +92,7 @@ public class WechatHttpClient {
         return null;
     }
 
-    public Result doGet(String url, Map<String, Object> paramMap) {
+    public Result<?> doGet(String url, Map<String, Object> paramMap) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doGet(url, paramMap, this.charset, this.sslContext);
         } else {
@@ -106,7 +100,7 @@ public class WechatHttpClient {
         }
     }
 
-    public Result doPost(String url, Map<String, Object> paramMap) {
+    public Result<?> doPost(String url, Map<String, Object> paramMap) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doPost(url, paramMap, this.charset, this.sslContext);
         } else {
@@ -114,7 +108,7 @@ public class WechatHttpClient {
         }
     }
 
-    public Result doPost(String url, String paramMap) {
+    public Result<?> doPost(String url, String paramMap) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doPost(url, paramMap, this.charset, this.sslContext);
         } else {

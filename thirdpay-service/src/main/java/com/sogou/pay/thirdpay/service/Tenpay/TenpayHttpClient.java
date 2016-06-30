@@ -34,11 +34,6 @@ public class TenpayHttpClient {
      */
     private String myCertFile;
 
-    /**
-     * 证书密码
-     */
-    private String certPasswd;
-
     private String charset = "UTF-8";
 
     private SSLContext sslContext;
@@ -49,7 +44,6 @@ public class TenpayHttpClient {
 
     public void setCertFile(String myCertFile, String certPasswd, String caCertFile) {
         this.myCertFile = myCertFile;
-        this.certPasswd = certPasswd;
         this.caCertFile = caCertFile;
         this.sslContext = createSslContext(this.myCertFile, certPasswd, this.caCertFile);
     }
@@ -93,7 +87,7 @@ public class TenpayHttpClient {
         return null;
     }
 
-    public Result doGet(String url, Map<String, Object> paramMap) {
+    public Result<?> doGet(String url, Map<String, Object> paramMap) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doGet(url, paramMap, this.charset, this.sslContext);
         } else {
@@ -101,7 +95,7 @@ public class TenpayHttpClient {
         }
     }
 
-    public Result doGet(String url, String paramString) {
+    public Result<?> doGet(String url, String paramString) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doGet(url, paramString, this.charset, this.sslContext);
         } else {
@@ -109,7 +103,7 @@ public class TenpayHttpClient {
         }
     }
 
-    public Result doPost(String url, Map<String, Object> paramMap) {
+    public Result<?> doPost(String url, Map<String, Object> paramMap) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doPost(url, paramMap, this.charset, this.sslContext);
         } else {
@@ -117,7 +111,7 @@ public class TenpayHttpClient {
         }
     }
 
-    public Result doPost(String url, String paramString) {
+    public Result<?> doPost(String url, String paramString) {
         if (url.startsWith("https:")) {
             return HttpService.getInstance().doPost(url, paramString, this.charset, this.sslContext);
         } else {

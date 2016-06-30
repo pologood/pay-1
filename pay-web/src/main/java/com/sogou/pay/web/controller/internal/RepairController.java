@@ -7,6 +7,9 @@ import com.sogou.pay.web.controller.BaseController;
 import com.sogou.pay.web.manager.notify.PayNotifyManager;
 import com.sogou.pay.web.manager.notify.RefundNotifyManager;
 import com.sogou.pay.web.manager.notify.WithdrawNotifyManager;
+
+import java.util.Map;
+
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +71,7 @@ public class RepairController extends BaseController {
   @RequestMapping(value = {"/repair/withdraw"}, method = RequestMethod.POST,
           produces = "application/json; charset=utf-8")
   @ResponseBody
+
   public ResultMap repairWithdraw(@RequestParam Map params) {
     return withdrawNotifyManager.handleWithdrawNotify(new PMap<>(params));
   }
