@@ -14,14 +14,15 @@ import com.sogou.pay.common.utils.MapUtil;
 import com.sogou.pay.thirdpay.biz.enums.UnionpayBizType;
 import com.sogou.pay.thirdpay.biz.enums.UnionpaySubTxnType;
 import com.sogou.pay.thirdpay.biz.enums.UnionpayTxnType;
+import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
 import com.sogou.pay.thirdpay.service.Tenpay.TenpayUtils;
 import com.sogou.pay.thirdpay.service.ThirdpayService;
 
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,11 +30,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
+import java.util.zip.Inflater;
 
 //--------------------- Change Logs----------------------
 //@author wangwenlong Initial Created at 2016年6月15日;
@@ -44,7 +44,7 @@ public class UnionpayService implements ThirdpayService {
   private static final Logger LOG = LoggerFactory.getLogger(UnionpayService.class);
 
   @Value(value = "${unionpay.bill.tmpdir}")
-  public static String tmpdir;
+  public static String tmpdir = "e:";
 
   private static HashMap<String, String> TRADE_STATUS = new HashMap<>();
 
@@ -88,7 +88,7 @@ public class UnionpayService implements ThirdpayService {
     PMap<String, String> requestPMap = getPrepayParams(params, ChannelType.MOBILE.getValue());
 
     ResultMap<?> result = doRequest(params.getPayUrl(), getKey(getCertFilePath(params, true)),
-        getKey(getCertFilePath(params, false)), requestPMap);
+            getKey(getCertFilePath(params, false)), requestPMap);
     if (!Result.isSuccess(result)) {
       LOG.error("[preparePayInfoSDK] failed, params={}", params);
       return result;
@@ -133,10 +133,12 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("currencyCode", CURRENCYCODE);//交易币种
 
     /*选填*/
-    if (StringUtils.isNotBlank(params.getAccountId())) requestPMap.put("accNo", params.getAccountId());//账号 1后台类消费交易时上送全卡号或卡号后4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
+    if (StringUtils.isNotBlank(params.getAccountId()))
+      requestPMap.put("accNo", params.getAccountId());//账号 1后台类消费交易时上送全卡号或卡号后4位;2跨行收单且收单机构收集银行卡信息时上送;3前台类交易可通过配置后返回,卡号可选上送
     //bankCode暂时不起作用，需要开通银联的网银前置
     String bankCode = params.getBankCode();
-    if (StringUtils.isNotBlank(bankCode)) requestPMap.put("issInsCode", bankCode);//1当账号类型为02-存折时需填写;2在前台类交易时填写默认银行代码,支持直接跳转到网银
+    if (StringUtils.isNotBlank(bankCode))
+      requestPMap.put("issInsCode", bankCode);//1当账号类型为02-存折时需填写;2在前台类交易时填写默认银行代码,支持直接跳转到网银
 
     return requestPMap;
   }
@@ -151,7 +153,7 @@ public class UnionpayService implements ThirdpayService {
     String resContent = (String) response.getReturnValue();
     ResultMap<?> responseMap;
     if (StringUtils.isBlank(resContent) || !ResultMap.isSuccess(responseMap = HttpUtil.extractParams(resContent))
-        || MapUtils.isEmpty(responseMap.getData())) {
+            || MapUtils.isEmpty(responseMap.getData())) {
       LOG.error("[sendRequest] http response error: params={}, response={}", requestMap, resContent);
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
@@ -179,7 +181,7 @@ public class UnionpayService implements ThirdpayService {
   }
 
   private String getCertFilePath(StdPayRequest request, boolean isPrivate) {
-    return "d:"+(isPrivate ? request.getPrivateCertPath() : request.getPublicCertPath());
+    return (isPrivate ? request.getPrivateCertPath() : request.getPublicCertPath());
   }
 
   private String getCertFilePath(PMap<String, ?> map, boolean isPrivate) {
@@ -193,7 +195,7 @@ public class UnionpayService implements ThirdpayService {
   }
 
   private ResultMap<?> doRequest(String url, String privateKey, String publicKey, PMap<String, String> requestPMap)
-      throws ServiceException {
+          throws ServiceException {
     if (!MapUtil.checkAllExist(requestPMap)) {
       LOG.error("[doRequest] empty requestMap={}", requestPMap);
       return ResultMap.build(ResultStatus.THIRD_PARAM_ERROR);
@@ -241,7 +243,7 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("txnTime", params.getString("payTime"));//订单发送时间
 
     ResultMap<?> result = doRequest(params.getString("queryUrl"), getKey(getCertFilePath(params, true)),
-        getKey(getCertFilePath(params, false)), requestPMap);
+            getKey(getCertFilePath(params, false)), requestPMap);
     if (!Result.isSuccess(result)) {
       LOG.error("[queryOrder] failed, params={}", params);
       return result;
@@ -274,7 +276,7 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("origQryId", params.getString("agencySerialNumber")); //原消费交易返回的的queryId
 
     ResultMap<?> result = doRequest(params.getString("refundUrl"), getKey(getCertFilePath(params, true)),
-        getKey(getCertFilePath(params, false)), requestPMap);
+            getKey(getCertFilePath(params, false)), requestPMap);
     if (!Result.isSuccess(result)) {
       LOG.error("[refundOrder] failed, params={}", params);
       return result;
@@ -301,7 +303,7 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("queryId", params.getString("agencySerialNumber")); //原消费交易返回的的queryId
 
     ResultMap<?> result = doRequest(params.getString("queryRefundUrl"), getKey(getCertFilePath(params, true)),
-        getKey(getCertFilePath(params, false)), requestPMap);
+            getKey(getCertFilePath(params, false)), requestPMap);
     if (!Result.isSuccess(result)) {
       LOG.error("[queryRefundOrder] failed, params={}", params);
       return result;
@@ -333,49 +335,131 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("fileType", "00"); //对账文件类型 00-zip
 
     ResultMap<?> result = doRequest(params.getString("downloadUrl"), getKey(getCertFilePath(params, true)),
-        getKey(getCertFilePath(params, false)), requestPMap);
+            getKey(getCertFilePath(params, false)), requestPMap);
     if (!Result.isSuccess(result)) {
       LOG.error("[downloadOrder] failed, params={}", params);
       return result;
     }
 
     PMap<String, ?> responsePMap = result.getData();
-    String fileType = responsePMap.getString("fileType");
     String fileName = responsePMap.getString("fileName");
     String fileContent = responsePMap.getString("fileContent");
 
     try {
       //保存对账文件
-      File compressedfile = new File(new File(tmpdir), fileName + "." + fileType);
-      OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(compressedfile), UnionpayService.CHARSET);
-      BufferedWriter bw = new BufferedWriter(osw);
-      bw.write(fileContent);
-      bw.flush();
-      bw.close();
-      osw.close();
-      //解压对账文件
-      byte[] buffer = new byte[1024];
-      ZipFile zipFile = new ZipFile(compressedfile);
-      Enumeration<ZipArchiveEntry> enums = zipFile.getEntries();
-      while (enums.hasMoreElements()) {
-        ZipArchiveEntry entry = enums.nextElement();
-        File billFile = new File(new File(tmpdir), entry.getName());
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(billFile));
-        BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(entry));
-        int len = 0;
-        while ((len = bis.read(buffer)) >= 0) {
-          bos.write(buffer, 0, len);
-        }
-        bos.flush();
-        bos.close();
-        bis.close();
-        zipFile.close();
-      }
+      File zippedFile = saveZippedFile(fileContent, fileName);
+      //解压对账文件，提取对账单
+      String bills = unzipFile(zippedFile, "INN.*ZM_" + params.getString("merchantNo"));
+      //解析对账单
+      return validateAndParseMessage(bills);
     } catch (Exception ex) {
       LOG.error("[downloadOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), ex);
       return ResultMap.build(ResultStatus.SAVE_BILL_FAILED);
     }
-    return ResultMap.build();
+  }
+
+  private File saveZippedFile(String fileContent, String fileName) throws Exception {
+    File zippedFile = new File(new File(tmpdir), fileName);
+    if (zippedFile.exists())
+      zippedFile.delete();
+    zippedFile.createNewFile();
+    FileOutputStream fos = new FileOutputStream(zippedFile);
+    BufferedOutputStream bos = new BufferedOutputStream(fos);
+    bos.write(inflaterData(Base64.getDecoder().decode(fileContent.getBytes(CHARSET))));
+    bos.flush();
+    bos.close();
+    fos.close();
+    return zippedFile;
+  }
+
+  private byte[] inflaterData(final byte[] data) throws Exception {
+    Inflater decompresser = new Inflater(false);
+    decompresser.setInput(data, 0, data.length);
+    ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length);
+    byte[] result = new byte[1024];
+    int length = 0;
+    while (!decompresser.finished()) {
+      length = decompresser.inflate(result);
+      if (length == 0) {
+        break;
+      }
+      bos.write(result, 0, length);
+    }
+    bos.close();
+    decompresser.end();
+    return bos.toByteArray();
+  }
+
+  private String unzipFile(File zippedFile, String billFileName) throws Exception {
+
+    //解压对账文件
+    byte[] buffer = new byte[1024];
+    ZipFile zipFile = new ZipFile(zippedFile);
+    Enumeration<ZipArchiveEntry> enums = zipFile.getEntries();
+    ZipArchiveEntry entry = null;
+    while (enums.hasMoreElements()) {
+      entry = enums.nextElement();
+      if (entry.getName().matches(billFileName))
+        break;
+      entry = null;
+    }
+    if (entry == null)
+      throw new RuntimeException("bill file not exists");
+    ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+    BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(entry));
+    int len = 0;
+    while ((len = bis.read(buffer)) >= 0) {
+      baos.write(buffer, 0, len);
+    }
+    baos.close();
+    bis.close();
+    zipFile.close();
+    return baos.toString(CHARSET);
+  }
+
+  private ResultMap<?> validateAndParseMessage(String message) {
+    ResultMap<?> result = ResultMap.build();
+    String line = null;
+    BufferedReader reader = null;
+    List<OutCheckRecord> payRecords = new LinkedList<>();
+    List<OutCheckRecord> refRecords = new LinkedList<>();
+    System.out.println(message);
+
+    try {
+      result.addItem("hasNextPage", false);
+      SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+      reader = new BufferedReader(new StringReader(message));
+      while ((line = reader.readLine()) != null) {
+        OutCheckRecord record = new OutCheckRecord();
+        //第三方交易时间
+        String transTime = String.format("%s%s", LocalDate.now().getYear(), line.substring(35, 45));
+        record.setOutTransTime(df.parse(transTime));
+        //第三方订单/退款单号
+        record.setOutPayNo(line.substring(87, 108));
+        //我方订单号/退款单号
+        record.setPayNo(line.substring(112, 144));
+        //交易/退款金额
+        BigDecimal money = BigDecimal.valueOf(Double.parseDouble(line.substring(66, 78)));
+        record.setMoney(money);
+        //手续费
+        BigDecimal commssionFee = BigDecimal.valueOf(Double.parseDouble(line.substring(167, 179)));
+        record.setCommssionFee(commssionFee);
+        //交易类型
+        String txnType = line.substring(215, 217);
+        if (txnType.equals(UnionpayTxnType.CONSUMPTION.getValue())) {
+          payRecords.add(record);
+        } else if (txnType.equals(UnionpayTxnType.REFUND.getValue())) {
+          refRecords.add(record);
+        }
+      }
+      result.addItem("payRecords", payRecords);
+      result.addItem("refRecords", refRecords);
+    } catch (Exception e) {
+      e.printStackTrace();
+      LOG.error("[validateAndParseMessage] response error, message={}", message);
+      result.withError(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
+    }
+    return result;
   }
 
   private String getTradeStatus(String unionpayTradeStatus) {
@@ -448,7 +532,7 @@ public class UnionpayService implements ThirdpayService {
   public ResultMap<?> handleNotifySDKAsync(PMap<String, ?> params) throws ServiceException {
     PMap<String, ?> notifyParams;
     ResultMap<?> resultMap = ResultMap.build(),
-        signCheckResult = verifySign(getKey(getCertFilePath(params, false)), notifyParams = params.getPMap("data"));
+            signCheckResult = verifySign(getKey(getCertFilePath(params, false)), notifyParams = params.getPMap("data"));
     if (!Result.isSuccess(signCheckResult)) return signCheckResult;
     //提取关键参数
     String orderId = notifyParams.getString("orderId");
@@ -471,7 +555,7 @@ public class UnionpayService implements ThirdpayService {
   public ResultMap<?> handleNotifyRefund(PMap<String, ?> params) throws ServiceException {
     PMap<String, ?> notifyParams;
     ResultMap<?> resultMap = ResultMap.build(),
-        signCheckResult = verifySign(getKey(getCertFilePath(params, false)), notifyParams = params.getPMap("data"));
+            signCheckResult = verifySign(getKey(getCertFilePath(params, false)), notifyParams = params.getPMap("data"));
     if (!Result.isSuccess(signCheckResult)) return signCheckResult;
 
     //提取关键参数

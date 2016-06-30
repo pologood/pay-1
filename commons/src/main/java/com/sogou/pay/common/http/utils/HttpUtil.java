@@ -111,7 +111,7 @@ public final class HttpUtil {
         try {
             String[] pairs = params.split("&");
             for (String pair : pairs) {
-                String[] param = pair.split("=");
+                String[] param = pair.split("=", 2);
                 result.addItem(param[0], param[1]);
             }
         } catch (Exception ex) {
@@ -125,7 +125,7 @@ public final class HttpUtil {
         try {
             String[] pairs = params.split("&");
             for (String pair : pairs) {
-                String[] param = pair.split("=");
+                String[] param = pair.split("=", 2);
                 result.addItem(urlDecode(param[0]), urlDecode(param[1]));
             }
         } catch (Exception ex) {

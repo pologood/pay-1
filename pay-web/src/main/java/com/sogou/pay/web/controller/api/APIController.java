@@ -82,7 +82,7 @@ public class APIController extends BaseController {
     //验证参数
     List validateResult = ControllerUtil.validateParams(params);
     if (validateResult.size() > 0) {
-      logger.error("[doPay][validateParams][Failed]{}", validateResult.toString().substring(1, validateResult.toString().length() - 1));
+      logger.error("[commonCheck][validateParams][Failed]{}", validateResult.toString().substring(1, validateResult.toString().length() - 1));
       return (ResultMap) resultMap.withError(ResultStatus.PARAM_ERROR);
     }
     PMap paramsMap = BeanUtil.Bean2PMap(params);
@@ -99,7 +99,7 @@ public class APIController extends BaseController {
     String secret = app.getSignKey();
     Result result = secureManager.verifyAppSign(paramsMap, fromCashier ? cashierSignExcludes : signExcludes, secret);
     if (!Result.isSuccess(result)) {
-      logger.info("[doPay][verifyAppSign][Failed]{}", result.getStatus());
+      logger.info("[commonCheck][verifyAppSign][Failed] paramsMap={}", JSONUtil.Bean2JSON(paramsMap));
       return (ResultMap) resultMap.withError(result.getStatus());
     }
     paramsMap.put("app", app);
