@@ -245,7 +245,7 @@ public class StdPayRequest {
   }
 
   public String getOrderAmountString() {
-    return orderAmount.toString();
+    return orderAmount == null ? null : orderAmount.toString();
   }
 
 }
