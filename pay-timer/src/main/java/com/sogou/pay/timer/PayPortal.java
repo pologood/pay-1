@@ -10,6 +10,7 @@ import com.sogou.pay.thirdpay.service.Alipay.AlipayService;
 import com.sogou.pay.thirdpay.service.CMBC.CMBCService;
 import com.sogou.pay.thirdpay.service.Tenpay.TenpayService;
 import com.sogou.pay.thirdpay.service.ThirdpayService;
+import com.sogou.pay.thirdpay.service.Unionpay.ApplepayService;
 import com.sogou.pay.thirdpay.service.Unionpay.UnionpayService;
 import com.sogou.pay.thirdpay.service.Wechat.WechatService;
 import org.slf4j.Logger;
@@ -39,6 +40,9 @@ public class PayPortal {
     @Autowired
     private UnionpayService unionpayService;
 
+    @Autowired
+    private ApplepayService applepayService;
+
     private HashMap<String, ThirdpayService> serviceHashMap;
 
     @Autowired
@@ -50,6 +54,8 @@ public class PayPortal {
         serviceHashMap.put(AgencyCode.CMBC.name(), cmbcService);
         serviceHashMap.put(AgencyCode.UNIONPAY.name(), unionpayService);
         serviceHashMap.put(AgencyCode.TEST_UNIONPAY.name(), unionpayService);
+        serviceHashMap.put(AgencyCode.APPLEPAY.name(), applepayService);
+        serviceHashMap.put(AgencyCode.TEST_APPLEPAY.name(), applepayService);
     }
 
     public ResultMap downloadOrder(PMap params) {

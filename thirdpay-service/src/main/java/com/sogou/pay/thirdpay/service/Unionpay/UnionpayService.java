@@ -45,18 +45,12 @@ public class UnionpayService implements ThirdpayService {
 
   @Value(value = "${unionpay.bill.tmpdir}")
   public static String tmpdir = "e:";
-
+  protected static String VERSION = "5.0.0";
+  protected static String CHARSET = "UTF-8";
+  protected static String ACCESSTYPE = "0";//0普通商户; 1首单机构; 2平台商户
+  protected static String CURRENCYCODE = "156";//rmb
+  protected static String SIGNMETHOD = "01";//rsa
   private static HashMap<String, String> TRADE_STATUS = new HashMap<>();
-
-  private static String VERSION = "5.0.0";
-
-  private static String CHARSET = "UTF-8";
-
-  private static String ACCESSTYPE = "0";//0普通商户; 1首单机构; 2平台商户
-
-  private static String CURRENCYCODE = "156";//rmb
-
-  private static String SIGNMETHOD = "01";//rsa
 
   static {
     TRADE_STATUS.put("00", OrderStatus.SUCCESS.name());//交易成功结束
@@ -90,7 +84,7 @@ public class UnionpayService implements ThirdpayService {
     ResultMap<?> result = doRequest(params.getPayUrl(), getKey(getCertFilePath(params, true)),
             getKey(getCertFilePath(params, false)), requestPMap);
     if (!Result.isSuccess(result)) {
-      LOG.error("[preparePayInfoSDK] failed, params={}", params);
+      LOG.error("[preparePayInfoSDK] failed, params={}", requestPMap);
       return result;
     }
 
@@ -111,7 +105,7 @@ public class UnionpayService implements ThirdpayService {
     return resultMap.addItem("returnUrl", returnUrl);
   }
 
-  private PMap<String, String> getPrepayParams(StdPayRequest params, String channelType) {
+  protected PMap<String, String> getPrepayParams(StdPayRequest params, String channelType) {
     PMap<String, String> requestPMap = new PMap<>();
 
     /*必填*/
@@ -439,19 +433,23 @@ public class UnionpayService implements ThirdpayService {
         //我方订单号/退款单号
         record.setPayNo(line.substring(112, 144));
         //交易/退款金额
-        BigDecimal money = BigDecimal.valueOf(Double.parseDouble(line.substring(66, 78)));
+        BigDecimal money = BigDecimal.valueOf(Double.parseDouble(line.substring(66, 78))).
+                divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP);
         record.setMoney(money);
         //手续费
-        BigDecimal commssionFee = BigDecimal.valueOf(Double.parseDouble(line.substring(167, 179)));
-        record.setCommssionFee(commssionFee);
+        BigDecimal commssionFee = BigDecimal.valueOf(Double.parseDouble(line.substring(167, 179))).
+                divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP);
         //交易类型
         String txnType = line.substring(215, 217);
         if (txnType.equals(UnionpayTxnType.CONSUMPTION.getValue())) {
           payRecords.add(record);
+          record.setCommssionFee(commssionFee);
         } else if (txnType.equals(UnionpayTxnType.REFUND.getValue())) {
           refRecords.add(record);
+          record.setCommssionFee(commssionFee.negate());
         }
       }
+      reader.close();
       result.addItem("payRecords", payRecords);
       result.addItem("refRecords", refRecords);
     } catch (Exception e) {

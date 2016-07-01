@@ -5,6 +5,9 @@
  */
 package com.sogou.pay.common.Model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.sogou.pay.common.utils.LocalDateTimeJsonSerializer;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,6 +53,7 @@ public class StdPayRequest {
 
   private BigDecimal orderAmount;//订单金额
 
+  @JsonSerialize(using = LocalDateTimeJsonSerializer.class)
   private LocalDateTime payTime;//支付发起时间
 
   /*product*/

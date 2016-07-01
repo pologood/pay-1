@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class SequenceFactory {
 
   private final static String OD = "OD";// 订单
+  private final static String TK = "TK";// 订单
   private final static String ZZ = "ZZ";// 转账
   private final static String ZF = "ZF";// 支付流水
   private final static String ZFD = "ZFD";// 支付单
@@ -48,7 +49,7 @@ public class SequenceFactory {
   public String getRefundDetailId() {
     String no = null;
     try {
-      no = refundPayDetailNo.getNo();
+      no = TK + refundPayDetailNo.getNo();
     } catch (Exception e) {
     }
     return no;

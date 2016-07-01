@@ -7,7 +7,11 @@ import com.sogou.pay.thirdpay.service.Alipay.AlipayService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.FileInputStream;
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -45,5 +49,26 @@ public class AlipayServiceTest extends BaseTest {
             ex.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void testGetCertId(){
+        try{
+            FileInputStream fis = new FileInputStream("e:\\pay_key\\700000000000001_acp.pfx");
+            KeyStore trustKeyStore = KeyStore.getInstance("PKCS12");
+            trustKeyStore.load(fis, "000000".toCharArray());
+            Enumeration<String> aliasenum = trustKeyStore.aliases();
+            String keyAlias = null;
+            if (aliasenum.hasMoreElements()) {
+                keyAlias = aliasenum.nextElement();
+            }
+            X509Certificate cert = (X509Certificate) trustKeyStore
+                    .getCertificate(keyAlias);
+            String certId= cert.getSerialNumber().toString();
+
+            System.out.println(certId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

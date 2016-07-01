@@ -19,6 +19,7 @@ public enum UnionpayBizType {
   COLLECTION("000501"), //代收
   BILL_PAYMENT("000601"), //账单支付
   INTERBANK_PAYMENT("000801"), //跨行支付
+  APPLEPAY_PAYMENT("000802"), //ApplePay
   BINDING_PAYMENT("000901"), //绑定支付
   ORDER("001001"), //订购
   B2B("000202"); //B2B

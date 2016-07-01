@@ -11,10 +11,12 @@ public enum AgencyCode {
     WECHAT(3000),
     CMBC(4000),
     UNIONPAY(5000),
+    APPLEPAY(6000),
     TEST_ALIPAY(1001),
     TEST_TENPAY(2001),
     TEST_WECHAT(3001),
     TEST_UNIONPAY(5001),
+    TEST_APPLEPAY(6001),
     ;
 
     private int value;
@@ -31,10 +33,12 @@ public enum AgencyCode {
         mappings.put(WECHAT.name().toUpperCase(), WECHAT);
         mappings.put(CMBC.name().toUpperCase(), CMBC);
         mappings.put(UNIONPAY.name().toUpperCase(), UNIONPAY);
+        mappings.put(APPLEPAY.name().toUpperCase(), APPLEPAY);
         mappings.put(TEST_ALIPAY.name().toUpperCase(), TEST_ALIPAY);
         mappings.put(TEST_TENPAY.name().toUpperCase(), TEST_TENPAY);
         mappings.put(TEST_WECHAT.name().toUpperCase(), TEST_WECHAT);
         mappings.put(TEST_UNIONPAY.name().toUpperCase(), TEST_UNIONPAY);
+        mappings.put(TEST_APPLEPAY.name().toUpperCase(), TEST_APPLEPAY);
     }
 
     public static AgencyCode getValue(String party) {

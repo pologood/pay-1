@@ -412,6 +412,7 @@ public class WechatService implements ThirdpayService {
           refRecords.add(record);
         }
       }
+      reader.close();
       result.addItem("payRecords", payRecords);
       result.addItem("refRecords", refRecords);
     } catch (Exception e) {

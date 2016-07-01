@@ -306,14 +306,14 @@ public class RefundManager {
     payCheckWaiting.setCheckDate(DateUtil.format(sucDate, DateUtil.DATE_FORMAT_DAY_SHORT));//对账日期
     payCheckWaiting.setAgencyCode(payResDetail.getAgencyCode());                                             //机构编码
     payCheckWaiting.setMerchantNo(payResDetail.getMerchantNo());                                             //商户号
-    if (payResDetail.getAgencyCode().equals(AgencyCode.ALIPAY.name())) {
-      //支付宝退款手续费为0
-      payCheckWaiting.setFeeRate(BigDecimal.ZERO);//费率
-      payCheckWaiting.setCommissionFeeAmt(BigDecimal.ZERO);//手续费
-    } else {
-      payCheckWaiting.setFeeRate(payResDetail.getFeeRate());//费率
-      payCheckWaiting.setCommissionFeeAmt(payResDetail.getPayFee().multiply(new BigDecimal(-1)));//手续费
-    }
+//    if (payResDetail.getAgencyCode().equals(AgencyCode.ALIPAY.name())) {
+//      //支付宝不退手续费?
+//      payCheckWaiting.setFeeRate(BigDecimal.ZERO);//费率
+//      payCheckWaiting.setCommissionFeeAmt(BigDecimal.ZERO);//手续费
+//    } else {
+    payCheckWaiting.setFeeRate(payResDetail.getFeeRate());//费率
+    payCheckWaiting.setCommissionFeeAmt(payResDetail.getPayFee().negate());//手续费
+//    }
     payCheckWaiting.setBankCode(payResDetail.getBankCode());                                   //银行编码
     payCheckWaiting.setPayType(payResDetail.getPayFeeType());                                  //付款方式
     return payCheckWaitingService.insert(payCheckWaiting) == 1;
