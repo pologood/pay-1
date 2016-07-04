@@ -38,17 +38,11 @@ public final class MapUtil {
     return buildSignSource(map, true);
   }
   
-  public static Map<String, ?> filter(Map<String, ?> map, List<String> excludedItems) {
-    return map.entrySet().stream().filter(e -> Objects.nonNull(e.getValue()) && !isOmitted(e.getKey(), excludedItems))
+  public static Map<String, ?> filter(Map<String, ?> map, Set<String> excludedItems) {
+    return map.entrySet().stream().filter(e -> Objects.nonNull(e.getValue()) && !excludedItems.contains(e.getKey()))
         .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
   }
   
-  private static boolean isOmitted(String item, List<String> excludedItems) {
-    for (String s : excludedItems)
-      if (s.equalsIgnoreCase(item)) return true;
-    return false;
-  }
-
     public static boolean isEmpty(Map map) {
         return (map == null || map.isEmpty());
     }

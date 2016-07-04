@@ -18,7 +18,7 @@ public class SecureManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SecureManager.class);
 
-  public Result<?> verifyAppSign(Map<String, String> params, List<String> excludes, String key) {
+  public Result<?> verifyAppSign(Map<String, String> params, Set<String> excludes, String key) {
     try {
       String sign = params.remove("sign");
       Result<?> result = doAppSign(params, excludes, key);
@@ -30,7 +30,7 @@ public class SecureManager {
     return ResultMap.build(ResultStatus.VERIFY_SIGN_ERROR);
   }
 
-  public Result<?> doAppSign(Map<String, String> params, List<String> excludes, String key) {
+  public Result<?> doAppSign(Map<String, String> params, Set<String> excludes, String key) {
     try {
       String text = MapUtil.buildSignSource(MapUtil.filter(params, excludes)) + key;
       String sign = SignType.MD5 == getSignType(params) ? SignUtil.md5Hex(text) : SignUtil.shaHex(text);

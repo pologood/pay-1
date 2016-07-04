@@ -1,9 +1,9 @@
 package com.sogou.pay.web.controller;
 
+import com.google.common.collect.Sets;
 import com.sogou.pay.common.types.ResultStatus;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
@@ -11,9 +11,9 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class BaseController {
 
-  protected static List<String> cashierSignExcludes = Arrays.asList("sign", "bankId", "accessPlatform");
+  protected static Set<String> cashierSignExcludes = Sets.newHashSet("sign", "bankId", "accessPlatform");
 
-  protected static List<String> signExcludes = Arrays.asList("sign");
+  protected static Set<String> signExcludes = Sets.newHashSet("sign");
 
   protected ModelAndView setErrorPage(String message, int errorCode, String platform) {
     String viewName = String.format("common/%sError", platform);
