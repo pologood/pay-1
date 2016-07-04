@@ -11,6 +11,7 @@ import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.common.utils.MapUtil;
+import com.sogou.pay.common.utils.SignUtil;
 import com.sogou.pay.thirdpay.biz.enums.UnionpayBizType;
 import com.sogou.pay.thirdpay.biz.enums.UnionpaySubTxnType;
 import com.sogou.pay.thirdpay.biz.enums.UnionpayTxnType;
@@ -183,7 +184,7 @@ public class UnionpayService implements ThirdpayService {
   }
 
   private String getKey(String path) {
-    String key = SecretKeyUtil.loadKeyFromFile(path);
+    String key = SignUtil.loadKeyFromFile(path);
     if (StringUtils.isEmpty(key)) LOG.error("[getKey]error:{}", path);
     return key;
   }

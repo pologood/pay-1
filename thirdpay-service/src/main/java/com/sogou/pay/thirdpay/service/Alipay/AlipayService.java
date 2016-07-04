@@ -8,6 +8,7 @@ import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.MapUtil;
+import com.sogou.pay.common.utils.SignUtil;
 import com.sogou.pay.common.utils.XMLUtil;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
 import com.sogou.pay.common.Model.StdPayRequest;
@@ -229,12 +230,12 @@ public class AlipayService implements ThirdpayService {
     }
     //签名
     String privateCertFilePath = params.getPrivateCertPath();
-    String privateCertKey = SecretKeyUtil.loadKeyFromFile(privateCertFilePath);
+    String privateCertKey = SignUtil.loadKeyFromFile(privateCertFilePath);
     if (StringUtils.isEmpty(privateCertKey)) {
       log.error("[preparePayInfoSDK] get private key failed, params={}", privateCertFilePath);
       return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);
     }
-    StringBuilder requestString = new StringBuilder(SecretKeyUtil.buildSignSource(requestPMap));
+    StringBuilder requestString = new StringBuilder(MapUtil.buildSignSource(requestPMap));
     String sign = SecretKeyUtil.aliRSASign(requestString.toString(), privateCertKey);
     if (sign == null) {
       log.error("[preparePayInfoSDK] sign failed, params={}", requestPMap);
@@ -246,7 +247,7 @@ public class AlipayService implements ThirdpayService {
     String payInfo = requestString.toString();
     //获取客户端需要的支付宝公钥
     String publicCertFilePath = params.getPublicCertPath();
-    String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
+    String publicCertKey = SignUtil.loadKeyFromFile(publicCertFilePath);
     if (StringUtils.isEmpty(publicCertKey)) {
       log.error("[preparePayInfoSDK] get public key failed, params={}", privateCertFilePath);
       return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);
@@ -749,7 +750,7 @@ public class AlipayService implements ThirdpayService {
     PMap<String, ?> notifyParams = params.getPMap("data");
     //验签
     String publicCertFilePath = params.getString("publicCertFilePath");
-    String publicCertKey = SecretKeyUtil.loadKeyFromFile(publicCertFilePath);
+    String publicCertKey = SignUtil.loadKeyFromFile(publicCertFilePath);
     if (StringUtils.isEmpty(publicCertKey)) {
       log.error("[handleNotifySDKAsync] get public key failed, params={}", publicCertFilePath);
       return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);

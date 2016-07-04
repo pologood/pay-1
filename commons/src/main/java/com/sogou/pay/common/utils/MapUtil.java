@@ -7,6 +7,7 @@ import com.sogou.pay.common.annotation.MapField;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.MapIterator;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
@@ -14,12 +15,39 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by hujunfei Date: 15-1-7 Time: 下午12:32
  */
 public final class MapUtil {
+  
+  public static String buildSignSource(Map<String, ?> map, boolean needSorting) {
+    if (MapUtils.isEmpty(map)) return StringUtils.EMPTY;
+    StringBuilder sb = new StringBuilder();
+    Stream<String> stream = map.keySet().stream();
+    if (needSorting) stream = stream.sorted();
+    stream.forEach(k -> sb.append(k).append('=').append(map.get(k)).append('&'));
+    return sb.substring(0, sb.length() - 1);
+  }
+
+  public static String buildSignSource(Map<String, ?> map) {
+    return buildSignSource(map, true);
+  }
+  
+  public static Map<String, ?> filter(Map<String, ?> map, List<String> excludedItems) {
+    return map.entrySet().stream().filter(e -> Objects.nonNull(e.getValue()) && !isOmitted(e.getKey(), excludedItems))
+        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+  }
+  
+  private static boolean isOmitted(String item, List<String> excludedItems) {
+    for (String s : excludedItems)
+      if (s.equalsIgnoreCase(item)) return true;
+    return false;
+  }
 
     public static boolean isEmpty(Map map) {
         return (map == null || map.isEmpty());
