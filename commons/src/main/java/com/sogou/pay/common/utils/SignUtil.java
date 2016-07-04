@@ -5,8 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -14,9 +12,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Objects;
 
-/**
- * Created by hujunfei Date: 15-1-4 Time: 下午2:22
- */
 public class SignUtil {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SignUtil.class);
@@ -47,15 +42,6 @@ public class SignUtil {
 
   public static String shaHex(String origin) {
     return shaHex(origin, CHARSET);
-  }
-
-  public static String loadKeyFromFile(String keyFilePath) {
-    try {
-      return StringUtils.join(Files.readAllLines(Paths.get(keyFilePath)), null);
-    } catch (Exception e) {
-      LOGGER.error(String.format("[loadKeyFromFile]path=%s", keyFilePath), e);
-      return null;
-    }
   }
 
   public static String signSHA1WithRSA(String text, String privateKey, String charset) {

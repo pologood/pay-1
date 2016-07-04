@@ -1,8 +1,8 @@
 package com.sogou.pay.thirdpay.biz.utils;
 
-import java.util.List;
+import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.sogou.pay.common.utils.MapUtil;
 import com.sogou.pay.common.utils.SignUtil;
 import com.sogou.pay.common.types.PMap;
@@ -66,7 +66,7 @@ public class SecretKeyUtil {
     return SignUtil.checkRSASign(SignUtil.shaHex(content), sign, key);
   }
 
-  private static List<String> aliExcludedItems = ImmutableList.of("sign", "sign_type"),
-      tenExcludedItems = ImmutableList.of("sign"), unionExcludedItems = ImmutableList.of("signature");
+  private static Set<String> aliExcludedItems = ImmutableSet.of("sign", "sign_type"),
+      tenExcludedItems = ImmutableSet.of("sign"), unionExcludedItems = ImmutableSet.of("signature");
 
 }

@@ -6,9 +6,9 @@ import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
+import com.sogou.pay.common.utils.FileUtil;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.MapUtil;
-import com.sogou.pay.common.utils.SignUtil;
 import com.sogou.pay.common.utils.XMLUtil;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
 import com.sogou.pay.common.Model.StdPayRequest;
@@ -230,7 +230,7 @@ public class AlipayService implements ThirdpayService {
     }
     //签名
     String privateCertFilePath = params.getPrivateCertPath();
-    String privateCertKey = SignUtil.loadKeyFromFile(privateCertFilePath);
+    String privateCertKey = FileUtil.getStringFromFile(privateCertFilePath);
     if (StringUtils.isEmpty(privateCertKey)) {
       log.error("[preparePayInfoSDK] get private key failed, params={}", privateCertFilePath);
       return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);
@@ -247,7 +247,7 @@ public class AlipayService implements ThirdpayService {
     String payInfo = requestString.toString();
     //获取客户端需要的支付宝公钥
     String publicCertFilePath = params.getPublicCertPath();
-    String publicCertKey = SignUtil.loadKeyFromFile(publicCertFilePath);
+    String publicCertKey = FileUtil.getStringFromFile(publicCertFilePath);
     if (StringUtils.isEmpty(publicCertKey)) {
       log.error("[preparePayInfoSDK] get public key failed, params={}", privateCertFilePath);
       return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);
@@ -750,7 +750,7 @@ public class AlipayService implements ThirdpayService {
     PMap<String, ?> notifyParams = params.getPMap("data");
     //验签
     String publicCertFilePath = params.getString("publicCertFilePath");
-    String publicCertKey = SignUtil.loadKeyFromFile(publicCertFilePath);
+    String publicCertKey = FileUtil.getStringFromFile(publicCertFilePath);
     if (StringUtils.isEmpty(publicCertKey)) {
       log.error("[handleNotifySDKAsync] get public key failed, params={}", publicCertFilePath);
       return ResultMap.build(ResultStatus.THIRD_GET_KEY_ERROR);

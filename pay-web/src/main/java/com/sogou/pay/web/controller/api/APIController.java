@@ -66,23 +66,13 @@ public class APIController extends BaseController {
   @Autowired
   private RefundManager refundManager;
 
-  private static PMap cashierSignExcludes = new PMap();
-  private static PMap signExcludes = new PMap();
-
-  static {
-    signExcludes.put("sign", true);
-    cashierSignExcludes.put("sign", true);
-    cashierSignExcludes.put("bankId", true);
-    cashierSignExcludes.put("accessPlatform", true);
-  }
-
-
   private ResultMap commonCheck(Object params) {
     ResultMap resultMap = ResultMap.build();
     //验证参数
     List validateResult = ControllerUtil.validateParams(params);
     if (validateResult.size() > 0) {
-      logger.error("[commonCheck][validateParams][Failed]{}", validateResult.toString().substring(1, validateResult.toString().length() - 1));
+      logger.error("[commonCheck][validateParams][Failed]{}",
+          validateResult.toString().substring(1, validateResult.toString().length() - 1));
       return (ResultMap) resultMap.withError(ResultStatus.PARAM_ERROR);
     }
     PMap paramsMap = BeanUtil.Bean2PMap(params);
@@ -106,12 +96,10 @@ public class APIController extends BaseController {
     return (ResultMap) resultMap.withReturn(paramsMap);
   }
 
-
   //sdk支付、扫码支付
-  @Profiled(el = true, logger = "webTimingLogger", tag = "/api/pay",
-          timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-  @RequestMapping(value = {"/pay/sdk", "/pay/qrcode"}, method = RequestMethod.POST,
-          produces = "application/json; charset=utf-8")
+  @Profiled(el = true, logger = "webTimingLogger", tag = "/api/pay", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+  @RequestMapping(value = { "/pay/sdk",
+      "/pay/qrcode" }, method = RequestMethod.POST, produces = "application/json; charset=utf-8")
   @ResponseBody
   public ResultMap doPay(PayForm params, HttpServletRequest request) {
     ResultMap resultMap;
@@ -130,7 +118,7 @@ public class APIController extends BaseController {
     Result<String> result = payManager.createOrder(paramsMap);
     if (!Result.isSuccess(result)) {
       logger.error("[doPay][createOrder][Failed] params={}, result={}", JSONUtil.Bean2JSON(paramsMap),
-              JSONUtil.Bean2JSON(result));
+          JSONUtil.Bean2JSON(result));
       return (ResultMap) resultMap.withError(result.getStatus());
     }
     paramsMap.put("payId", result.getReturnValue());
@@ -139,7 +127,7 @@ public class APIController extends BaseController {
     ResultMap result2 = payManager.payOrder(paramsMap);
     if (!Result.isSuccess(result2)) {
       logger.error("[doPay][payOrder][Failed] params={}, result={}", JSONUtil.Bean2JSON(paramsMap),
-              JSONUtil.Bean2JSON(result2));
+          JSONUtil.Bean2JSON(result2));
       return (ResultMap) resultMap.withError(result2.getStatus());
     }
     //调用支付网关
@@ -147,7 +135,7 @@ public class APIController extends BaseController {
     resultMap = payPortal.preparePay(payGateParams);
     if (!Result.isSuccess(resultMap)) {
       logger.error("[doPay][preparePay][Failed] params={}, result={}", JSONUtil.Bean2JSON(payGateParams),
-              JSONUtil.Bean2JSON(resultMap));
+          JSONUtil.Bean2JSON(resultMap));
     }
 
     //返回结果
@@ -155,17 +143,14 @@ public class APIController extends BaseController {
   }
 
   //订单查询
-  @Profiled(el = true, logger = "webTimingLogger", tag = "/api/pay/query",
-          timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-  @RequestMapping(value = "/pay/query", method = RequestMethod.GET,
-          produces = "application/json; charset=utf-8")
+  @Profiled(el = true, logger = "webTimingLogger", tag = "/api/pay/query", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+  @RequestMapping(value = "/pay/query", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
   @ResponseBody
   public ResultMap queryPay(PayQueryForm params, HttpServletRequest request) {
     ResultMap resultMap;
     //检查参数
     resultMap = commonCheck(params);
-    if (!Result.isSuccess(resultMap))
-      return resultMap;
+    if (!Result.isSuccess(resultMap)) return resultMap;
 
     PMap paramsMap = (PMap) resultMap.getReturnValue();
 
@@ -177,16 +162,14 @@ public class APIController extends BaseController {
     resultMap = payManager.queryPayOrder(payOrderModel);
     if (!Result.isSuccess(resultMap)) {
       logger.error("[queryPay][queryPayOrder][Failed] params={}, result={}", JSONUtil.Bean2JSON(payOrderModel),
-              JSONUtil.Bean2JSON(resultMap));
+          JSONUtil.Bean2JSON(resultMap));
     }
     return resultMap;
   }
 
   //订单退款
-  @Profiled(el = true, logger = "webTimingLogger", tag = "/api/refund",
-          timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-  @RequestMapping(value = "/refund", method = RequestMethod.POST,
-          produces = "application/json; charset=utf-8")
+  @Profiled(el = true, logger = "webTimingLogger", tag = "/api/refund", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+  @RequestMapping(value = "/refund", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
   @ResponseBody
   public ResultMap doRefund(RefundForm params, HttpServletRequest request) {
     String ip = ServletUtil.getRealIp(request);
@@ -194,40 +177,36 @@ public class APIController extends BaseController {
     ResultMap resultMap;
     //检查参数
     resultMap = commonCheck(params);
-    if (!Result.isSuccess(resultMap))
-      return resultMap;
+    if (!Result.isSuccess(resultMap)) return resultMap;
 
     PMap paramsMap = (PMap) resultMap.getReturnValue();
     App app = (App) paramsMap.get("app");
 
     //处理订单退款
     RefundModel refundModel = new RefundModel();
-    refundModel.setApp(app);              //业务线id
+    refundModel.setApp(app); //业务线id
     refundModel.setOrderId(params.getOrderId());//订单id
-    if (params.getRefundAmount() != null)//退款金额可选
-      refundModel.setRefundAmount(new BigDecimal(params.getRefundAmount()));  //订单退款金额
-    refundModel.setBgurl(params.getBgUrl());                                //回调url
+    if (params.getRefundAmount() != null) //退款金额可选
+      refundModel.setRefundAmount(new BigDecimal(params.getRefundAmount())); //订单退款金额
+    refundModel.setBgurl(params.getBgUrl()); //回调url
     resultMap = refundManager.refundOrder(refundModel);
     if (!Result.isSuccess(resultMap)) {
       logger.error("[doRefund] refund failed, IP={}, params={}, result={}", ip, JSONUtil.Bean2JSON(refundModel),
-              JSONUtil.Bean2JSON(resultMap));
+          JSONUtil.Bean2JSON(resultMap));
     }
     logger.debug("[doRefund] refund request end, IP={}, result={}", ip, JSONUtil.Bean2JSON(resultMap));
     return resultMap;
   }
 
-  @Profiled(el = true, logger = "webTimingLogger", tag = "/api/refund/query",
-          timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-  @RequestMapping(value = "/refund/query", method = RequestMethod.GET,
-          produces = "application/json; charset=utf-8")
+  @Profiled(el = true, logger = "webTimingLogger", tag = "/api/refund/query", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+  @RequestMapping(value = "/refund/query", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
   @ResponseBody
   public ResultMap queryRefund(RefundQueryForm params) {
     logger.debug("[queryRefund] query refund request coming, params={}", JSONUtil.Bean2JSON(params));
     ResultMap resultMap;
     //检查参数
     resultMap = commonCheck(params);
-    if (!Result.isSuccess(resultMap))
-      return resultMap;
+    if (!Result.isSuccess(resultMap)) return resultMap;
 
     PMap paramsMap = (PMap) resultMap.getReturnValue();
     App app = (App) paramsMap.get("app");
@@ -235,21 +214,19 @@ public class APIController extends BaseController {
     //处理订单退款查询
     QueryRefundModel model = new QueryRefundModel();
     model.setApp(app); //业务线id
-    model.setOrderId(params.getOrderId());               //订单id
-    model.setSign(params.getSign());                     //签名
-    model.setSignType(params.getSignType());            //签名类型
+    model.setOrderId(params.getOrderId()); //订单id
+    model.setSign(params.getSign()); //签名
+    model.setSignType(params.getSignType()); //签名类型
     resultMap = refundManager.queryRefund(model);
     if (!Result.isSuccess(resultMap)) {
       logger.error("[queryRefund] queryRefund failed, params={}, result={}", JSONUtil.Bean2JSON(model),
-              JSONUtil.Bean2JSON(resultMap));
+          JSONUtil.Bean2JSON(resultMap));
     }
     logger.debug("[queryRefund] query refund request end, params={}", JSONUtil.Bean2JSON(resultMap));
     return resultMap;
   }
 
-
-  @RequestMapping(value = "/pay/sign", method = RequestMethod.GET,
-          produces = "application/json; charset=utf-8")
+  @RequestMapping(value = "/pay/sign", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
   @ResponseBody
   public ResultMap signData(@RequestParam Map<String, String> paramsMap) {
     int appId = Integer.parseInt(paramsMap.get("appId"));
@@ -259,7 +236,7 @@ public class APIController extends BaseController {
       return null;
     }
     secureManager.doAppSign(paramsMap, signExcludes, app.getSignKey());
-    return ResultMap.build().addItem("sign",paramsMap.get("sign"));
+    return ResultMap.build().addItem("sign", paramsMap.get("sign"));
   }
 
 }
