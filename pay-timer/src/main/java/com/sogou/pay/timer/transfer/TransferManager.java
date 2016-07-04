@@ -3,6 +3,7 @@ package com.sogou.pay.timer.transfer;
 import com.sogou.pay.common.types.*;
 import com.sogou.pay.common.enums.PayTransferStatus;
 import com.sogou.pay.common.enums.PayTransferBatchStatus;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.timer.PayPortal;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.service.entity.PayTransfer;
@@ -33,6 +34,7 @@ public class TransferManager {
   @Autowired
   private PayPortal payPortal;
 
+  //付款单查询
   public Result queryTransfer(String appId, String batchNo) {
 
     Result result = ResultBean.build();
@@ -51,24 +53,31 @@ public class TransferManager {
     return result;
   }
 
+  //付款单查询
   public Result queryTransfer(PayTransferBatch payTransferBatch) {
     ResultBean result = ResultBean.build();
     try {
-      PMap params = BeanUtil.Bean2PMap(payTransferBatch);
+      PMap params = new PMap();
+      PMap payTransferBatchPMap = BeanUtil.Bean2PMap(payTransferBatch);
+      params.put("agencyCode", "CMBC");
+      params.put("isDetail", false);
+      params.put("payTransferBatch", payTransferBatchPMap);
+      //查询概要信息
       ResultMap resultMap = payPortal.queryTransfer(params);
       if (!Result.isSuccess(resultMap)) {
-        logger.error("");
-        return result.withError(ResultStatus.SYSTEM_ERROR);
+        logger.error("[queryTransfer] failed, params={}, result={}", JSONUtil.Bean2JSON(params), JSONUtil.Bean2JSON(resultMap));
+        return resultMap;
       }
       PMap updatePayTransferBatch = (PMap) resultMap.getItem("result");
 
       String reqNbr = updatePayTransferBatch.getString("reqNbr");
       params.put("isDetail", true);
       params.put("reqNbr", reqNbr);
+      //查询详情
       resultMap = payPortal.queryTransfer(params);
       if (!Result.isSuccess(resultMap)) {
-        logger.error("");
-        return result.withError(ResultStatus.SYSTEM_ERROR);
+        logger.error("[queryTransfer] failed, params={}, result={}", JSONUtil.Bean2JSON(params), JSONUtil.Bean2JSON(resultMap));
+        return resultMap;
       }
       List<PMap> updateList = (List<PMap>) resultMap.getItem("result");
 
@@ -84,10 +93,7 @@ public class TransferManager {
     return result;
   }
 
-  /**
-   * 修改代付单批次及代付单 信息
-   * 事务处理
-   */
+  //修改代付单批次及代付单信息
   @Transactional
   public void updateBatchAndDetail(List<PMap> updateList, PMap updatePayTransferBatch) {
 
@@ -95,15 +101,16 @@ public class TransferManager {
       PayTransfer payTransfer = null;
       payTransferBatchService.updateTransferBatch(BeanUtil.Map2Bean(updatePayTransferBatch, PayTransferBatch.class));
       for (PMap updatePayTransfer : updateList) {
-        //首选查询一遍，如果代付单状态为成功，要修改为失败，说明是退票
         payTransfer = payTransferService.queryBySerialNo(updatePayTransfer.getString("SerialNo"));
         if (payTransfer == null) {
           logger.warn("[updateBatchAndDetail] PayTransfer not exists, serialNo={}", updatePayTransfer.getString("SerialNo"));
           continue;
         }
+        //比较本地状态和最新状态
         if (payTransfer.getPayStatus() != updatePayTransfer.getInt("PayStatus")) {
           if (payTransfer.getPayStatus() == PayTransferStatus.SUCCESS.getValue()
                   && updatePayTransfer.getInt("PayStatus") == PayTransferStatus.FAIL.getValue()) {
+            //如果代付单状态为成功，最新状态为失败，说明是退票
             payTransferService.updateStatusBySerialNo(updatePayTransfer.getString("SerialNo"),
                     PayTransferStatus.REFUND.getValue(), updatePayTransfer.getString("ResultDesc"));
           } else {
@@ -117,55 +124,52 @@ public class TransferManager {
     }
   }
 
+  //提交付款单
   public Result transfer(String appId, String batchNo) {
-    logger.info("[transfer] begin, appId={}, batchNo={}, {}", appId, batchNo);
+    logger.info("[transfer] begin, appId={}, batchNo={}", appId, batchNo);
     ResultBean result = ResultBean.build();
     try {
       PayTransferBatch payTransferBatch = payTransferBatchService.queryByBatchNo(appId, batchNo);
       //验证代发单批次是否存在
       if (payTransferBatch == null) {
         logger.error("[transfer] PayTransferBatch not exists, appId={}, batchNo={}", appId, batchNo);
-        result.withError(ResultStatus.PAY_TRANSFER_BATCH_NOT_EXIST);
-        return result;
+        return result.withError(ResultStatus.PAY_TRANSFER_BATCH_NOT_EXIST);
       }
       if (payTransferBatch.getTradeState() != PayTransferBatchStatus.FINAL_APPROVED.getValue()) {
         logger.error("[transfer] PayTransferBatch not approved, appId={}, batchNo={}", appId, batchNo);
-        result.withError(ResultStatus.PAY_TRANSFER_BATCH_STATUS_NOT_AUDIT_PASS);
-        return result;
+        return result.withError(ResultStatus.PAY_TRANSFER_BATCH_STATUS_NOT_AUDIT_PASS);
       }
       //验证代发单是否存在
       List<PayTransfer> payTransferList = payTransferService.queryByBatchNo(appId, batchNo);
       if (CollectionUtils.isEmpty(payTransferList)) {
         logger.error("[transfer] PayTransfer not exists, appId={}, batchNo={}", appId, batchNo);
-        result.withError(ResultStatus.PAY_TRANSFER_NOT_EXIST);
-        return result;
+        return result.withError(ResultStatus.PAY_TRANSFER_NOT_EXIST);
       }
-
+      //是否已提交
       if (payTransferBatch.getTradeState() == PayTransferBatchStatus.IN_PROCESSING.getValue()) {
         logger.error("[transfer] PayTransferBatch already in processing, appId={}, batchNo={}", appId, batchNo);
-        result.withError(ResultStatus.PAY_TRANSFER_BATCH_ALREADY_SUBMITTED);
-        return result;
+        return result.withError(ResultStatus.PAY_TRANSFER_BATCH_ALREADY_SUBMITTED);
       }
       PMap payTransferBatchPMap = BeanUtil.Bean2PMap(payTransferBatch);
       List<PMap> payTransferPMapList = new ArrayList<>();
       for (PayTransfer payTransfer : payTransferList)
         payTransferPMapList.add(BeanUtil.Bean2PMap(payTransfer));
 
-
       PMap params = new PMap();
+      params.put("agencyCode", "CMBC");
       params.put("payTransferBatch", payTransferBatchPMap);
       params.put("payTransferList", payTransferPMapList);
+      //提交到银行
       ResultMap resultMap = payPortal.queryTransfer(params);
       if (!Result.isSuccess(resultMap)) {
-        logger.error("");
+        logger.error("[transfer] failed, params={}, result={}", JSONUtil.Bean2JSON(params), JSONUtil.Bean2JSON(resultMap));
       }
+      logger.info("[transfer] finish, appId={}, batchNo={}", appId, batchNo);
       return resultMap;
     } catch (Exception e) {
       logger.error("[transfer] failed, appId={}, batchNo={}, {}", appId, batchNo, e);
-      result.withError(ResultStatus.SYSTEM_ERROR);
+      return result.withError(ResultStatus.SYSTEM_ERROR);
     }
-    logger.info("[transfer] finish, appId={}, batchNo={}, {}", appId, batchNo);
-    return result;
   }
 
   /**
@@ -179,18 +183,18 @@ public class TransferManager {
       PMap params = new PMap();
       params.put("beginDate", beginDate);
       params.put("endDate", endDate);
+      params.put("agencyCode", "CMBC");
       ResultMap resultMap = payPortal.queryTransferRefund(params);
       if (!Result.isSuccess(resultMap)) {
-        logger.error("");
+        logger.error("[queryTransferRefund] failed, params={}, result={}", JSONUtil.Bean2JSON(params), JSONUtil.Bean2JSON(resultMap));
         return resultMap;
       }
 
       List<String> yurrefList = (List<String>) resultMap.getItem("result");
       logger.info("[queryTransferRefund] found refund, yurrefList={}", yurrefList);
-      PayTransferBatch payTransferBatch = null;
       if (CollectionUtils.isNotEmpty(yurrefList)) {
         for (String yurref : yurrefList) {
-          payTransferBatch = payTransferBatchService.queryByYurref(yurref);
+          PayTransferBatch payTransferBatch = payTransferBatchService.queryByYurref(yurref);
           if (payTransferBatch == null) {
             logger.info("[queryTransferRefund] PayTransferBatch not exists, yurref={}", yurref);
             continue;
