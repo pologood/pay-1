@@ -22,7 +22,7 @@ public class TransferTest extends BaseTest {
     @Test
     public void testTransfer() {
         String appId="1999";
-        String batchNo = "20151012172007358004";
+        String batchNo = "ZZ20160701114709760100";
         Result result = transferManager.transfer(appId,batchNo);
         System.out.println(JSONUtil.Bean2JSON(result));
     }
@@ -30,7 +30,7 @@ public class TransferTest extends BaseTest {
     @Test
     public void testQuery() {
         String appId="1999";
-        String batchNo = "20160126161500157001";
+        String batchNo = "ZZ20160701114709760100";
         transferManager.queryTransfer(appId,batchNo);
     }
 

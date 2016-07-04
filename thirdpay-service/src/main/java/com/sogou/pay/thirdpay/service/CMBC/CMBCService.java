@@ -31,6 +31,30 @@ public class CMBCService implements ThirdpayService {
 
   public static final String INPUT_CHARSET = "UTF-8";    // 字符编码格式
 
+  /**
+   * 业务模式编号
+   */
+  public static final String BUS_MOD_1 = "00001";
+
+  /**
+   * 业务类别
+   */
+  //代发工资
+  public static final String BUSCOD_SALARY = "N03010";
+  //代发
+  public static final String BUSCOD_PAY = "N03020";
+  //代扣
+  public static final String BUSCOD_WITHHOLDING = "N03030";
+
+  /**
+   * 交易代码名称
+   */
+  //代发工资
+  public static final String PAY_SALARY = "BYSA";
+  //代发其他
+  public static final String PAY_OTHER = "BYBK";
+
+
   @Override
   public ResultMap queryOrder(PMap params) throws ServiceException {
     throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
@@ -176,52 +200,51 @@ public class CMBCService implements ThirdpayService {
     throw new ServiceException(ResultStatus.INTERFACE_NOT_IMPLEMENTED);
   }
 
+  //直接代发代扣
   private String getTransferParams(PMap params) {
 
     PMap payTransferBatch = params.getPMap("payTransferBatch");
     List<PMap> payTransferList = (List<PMap>) params.get("payTransferList");
 
-    // 构造直接代发代扣的请求报文
-    XmlPacket xmlPkt = new XmlPacket("AgentRequest", params.getString("merchantNo"));
-    Map payTransferOverview = new Properties();
-    //业务类别
-    payTransferOverview.put("BUSCOD", payTransferBatch.getString("BusCod"));
-    //业务模式编号
-    payTransferOverview.put("BUSMOD", payTransferBatch.getString("BusMod"));
-    //交易代码名称
-    //payTransferOverview.put("C_TRSTYP", "");
-    //交易代码
-    payTransferOverview.put("TRSTYP", payTransferBatch.getString("TrsTyp"));
-    //转出账号/转入账号
-    payTransferOverview.put("DBTACC", payTransferBatch.getString("DbtAcc"));
-    //分行代码
-    payTransferOverview.put("BBKNBR", payTransferBatch.getString("BbkNbr"));
-    //总笔数
-    payTransferOverview.put("TOTAL", payTransferBatch.getString("PlanTotal"));
-    //总金额
-    payTransferOverview.put("SUM", payTransferBatch.getString("PlanAmt"));
-    //业务参考号
-    payTransferOverview.put("YURREF", payTransferBatch.getString("Yurref"));
-    //用途
-    payTransferOverview.put("MEMO", payTransferBatch.getString("Memo"));
-    xmlPkt.putProperty("SDKATSRQX", payTransferOverview);
-    Map payTransferMap = null;
+    PMap INFO = new PMap();
+    INFO.put("FUNNAM", "AgentRequest");//接口名称
+    INFO.put("DATTYP", "2");//请求包格式xml
+    INFO.put("LGNNAM", params.getString("merchantNo"));//登录用户名
+
+    PMap SDKATSRQX = new PMap();
+    SDKATSRQX.put("BUSCOD", BUSCOD_PAY);//业务类别
+    SDKATSRQX.put("BUSMOD", payTransferBatch.getString("BusMod"));//业务模式编号
+    SDKATSRQX.put("TRSTYP", payTransferBatch.getString("TrsTyp"));//交易代码
+    SDKATSRQX.put("DBTACC", payTransferBatch.getString("DbtAcc"));//转出账号/转入账号
+    SDKATSRQX.put("BBKNBR", payTransferBatch.getString("BbkNbr"));//分行代码
+    SDKATSRQX.put("SUM", payTransferBatch.getString("PlanAmt"));//总金额
+    SDKATSRQX.put("TOTAL", payTransferBatch.getString("PlanTotal"));//总笔数
+    SDKATSRQX.put("YURREF", payTransferBatch.getString("Yurref"));//业务参考号
+    SDKATSRQX.put("MEMO", payTransferBatch.getString("Memo"));//用途
+
+    List<PMap> SDKATDRQX = new ArrayList<>();
+
     for (PMap payTransfer : payTransferList) {
-      payTransferMap = new Properties();
-      payTransferMap.put("ACCNBR", payTransfer.getString("RecBankAcc"));
-      payTransferMap.put("CLTNAM", payTransfer.getString("RecName"));
-      payTransferMap.put("TRSAMT", payTransfer.getString("PayAmt"));
+      PMap transfer = new PMap();
+      transfer.put("ACCNBR", payTransfer.getString("RecBankAcc"));
+      transfer.put("CLTNAM", payTransfer.getString("RecName"));
+      transfer.put("TRSAMT", payTransfer.getString("PayAmt"));
       //跨行
       if (StringUtils.equals("N", payTransfer.getString("BankFlag"))) {
-        payTransferMap.put("BNKFLG", payTransfer.getString("BankFlag"));
-        payTransferMap.put("EACBNK", payTransfer.getString("OtherBank"));
-        payTransferMap.put("EACCTY", payTransfer.getString("OtherCity"));
+        transfer.put("BNKFLG", payTransfer.getString("BankFlag"));
+        transfer.put("EACBNK", payTransfer.getString("OtherBank"));
+        transfer.put("EACCTY", payTransfer.getString("OtherCity"));
       }
       //单笔序列号 付款说明中就是单笔序列号
-      payTransferMap.put("TRSDSP", payTransfer.getString("SerialNo"));
-      xmlPkt.putProperty("SDKATDRQX", payTransferMap);
+      transfer.put("TRSDSP", payTransfer.getString("SerialNo"));
+      SDKATDRQX.add(transfer);
     }
-    return xmlPkt.toXmlString();
+
+    PMap requestPMap = new PMap();
+    requestPMap.put("INFO", INFO);
+    requestPMap.put("SDKATSRQX", SDKATSRQX);
+    requestPMap.put("SDKATDRQX", SDKATDRQX);
+    return XMLUtil.Map2XML("xml", requestPMap);
   }
 
   /**
@@ -234,22 +257,22 @@ public class CMBCService implements ThirdpayService {
     XmlPacket xmlPkt = new XmlPacket("GetAgentInfo", params.getString("merchantNo"));
     Map queryMap = new Properties();
     //业务类别
-    queryMap.put("BUSCOD", payTransferBatch.getString("BusCod"));
+    queryMap.put("BUSCOD", payTransferBatch.getString("busCod"));
     //起始日期
-    queryMap.put("BGNDAT", payTransferBatch.getString("CreateTime"));
+    queryMap.put("BGNDAT", payTransferBatch.getString("createTime"));
     //结束日期
     queryMap.put("ENDDAT", DateUtil.formatCompactDate(new Date()));
-    queryMap.put("BGNDAT", params.getString("QueryDate"));
+    queryMap.put("BGNDAT", params.getString("queryDate"));
     //结束日期
-    queryMap.put("ENDDAT", params.getString("QueryDate"));
+    queryMap.put("ENDDAT", params.getString("queryDate"));
     //业务参考号
-    queryMap.put("YURREF", payTransferBatch.getString("Yurref"));
+    queryMap.put("YURREF", payTransferBatch.getString("yurref"));
     xmlPkt.putProperty("SDKATSQYX", queryMap);
     return xmlPkt.toQueryXmlString();
   }
 
   /**
-   * 生成概要详情请求报文
+   * 生成详情请求报文
    */
   private String getTransferDetailQueryParams(PMap params) {
 

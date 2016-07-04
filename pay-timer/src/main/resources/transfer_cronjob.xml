@@ -53,7 +53,7 @@
             <ref bean="transferJob"/>
         </property>
         <property name="cronExpression">
-            <!-- 每间隔五分钟-->
+            <!-- 每间隔1分钟-->
             <value>0 */1 * * * ?</value>
         </property>
     </bean>
@@ -63,7 +63,7 @@
             <ref bean="queryTransferJob"/>
         </property>
         <property name="cronExpression">
-            <!-- 每间隔五分钟-->
+            <!-- 每间隔1分钟-->
             <value>0 */1 * * * ?</value>
         </property>
     </bean>

@@ -358,8 +358,9 @@ public class CheckManager {
   public void updatePayCheckResult(Date checkDate, String agencyCode) throws Exception {
     String checkDateStr = DateUtil.format(checkDate, DateUtil.DATE_FORMAT_DAY_SHORT);
 
-    // 先删除再插入
+    //先删除历史统计
     payCheckResultService.delete(checkDateStr, agencyCode);
+    //插入最新统计
     payCheckResultService.insert(checkDateStr, agencyCode);
 
     List<PayCheckResult> payCheckResultList = payCheckResultService.queryByDateAndAgency(checkDateStr, agencyCode);
@@ -395,8 +396,9 @@ public class CheckManager {
   private void updatePayCheckFeeResult(Date checkDate, String agencyCode) throws Exception {
     String checkDateStr = DateUtil.format(checkDate, DateUtil.DATE_FORMAT_DAY_SHORT);
 
-    // 先删除再插入
+    //先删除历史统计
     payCheckFeeResultService.delete(checkDateStr, agencyCode);
+    //插入最新统计
     payCheckFeeResultService.insert(checkDateStr, agencyCode);
 
     List<PayCheckFeeResult> payCheckFeeResultList = payCheckFeeResultService.queryByDateAndAgency(checkDateStr, agencyCode);
