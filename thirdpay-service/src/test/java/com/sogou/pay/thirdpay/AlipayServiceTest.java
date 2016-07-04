@@ -54,7 +54,7 @@ public class AlipayServiceTest extends BaseTest {
     @Test
     public void testGetCertId(){
         try{
-            FileInputStream fis = new FileInputStream("e:\\pay_key\\700000000000001_acp.pfx");
+            FileInputStream fis = new FileInputStream("e:\\pay_key\\acp_test_sign.pfx");
             KeyStore trustKeyStore = KeyStore.getInstance("PKCS12");
             trustKeyStore.load(fis, "000000".toCharArray());
             Enumeration<String> aliasenum = trustKeyStore.aliases();

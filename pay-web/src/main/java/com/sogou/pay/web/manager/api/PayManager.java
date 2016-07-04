@@ -49,7 +49,7 @@ public class PayManager {
     //PC账户支付
     thirdPayMap.put("1_2", PayType.PC_ACCOUNT);
     //PC企业网银支付
-    thirdPayMap.put("1_3", PayType.PC_GATEWAY);
+    thirdPayMap.put("1_3", PayType.PC_GATEWAY_B2B);
     //扫码支付
     thirdPayMap.put("4_2", PayType.QRCODE);
     //SDK账户支付

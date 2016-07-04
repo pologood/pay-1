@@ -1,6 +1,5 @@
 package com.sogou.pay.web.portal;
 
-import com.google.common.collect.ImmutableMap;
 import com.sogou.pay.common.Model.StdPayRequest;
 import com.sogou.pay.common.Model.StdPayRequest.PayType;
 import com.sogou.pay.common.exception.ServiceException;
@@ -34,23 +33,18 @@ import java.util.Objects;
 public class PayPortal {
 
   private static Logger log = LoggerFactory.getLogger(PayPortal.class);
-
   @Autowired
   private AlipayService alipayService;
-
   @Autowired
   private TenpayService tenpayService;
-
   @Autowired
   private WechatService wechatService;
-
   @Autowired
   private UnionpayService unionpayService;
-
   @Autowired
   private ApplepayService applepayService;
-
-  private HashMap<String, ThirdpayService> serviceHashMap;
+  private static HashMap<String, ThirdpayService> serviceHashMap;
+  private Map<PayType, Pay> PAYMENTMAP;
 
   @Autowired
   public void init() {
@@ -65,6 +59,13 @@ public class PayPortal {
     serviceHashMap.put(AgencyCode.TEST_WECHAT.name(), wechatService);
     serviceHashMap.put(AgencyCode.TEST_UNIONPAY.name(), unionpayService);
     serviceHashMap.put(AgencyCode.TEST_APPLEPAY.name(), applepayService);
+    PAYMENTMAP = new HashMap<>();
+    PAYMENTMAP.put(PayType.PC_ACCOUNT, (service, request) -> service.preparePayInfoAccount(request));
+    PAYMENTMAP.put(PayType.PC_GATEWAY, (service, request) -> service.preparePayInfoGatway(request));
+    PAYMENTMAP.put(PayType.PC_GATEWAY_B2B, (service, request) -> service.preparePayInfoGatway(request));
+    PAYMENTMAP.put(PayType.QRCODE, (service, request) -> service.preparePayInfoQRCode(request));
+    PAYMENTMAP.put(PayType.MOBILE_SDK, (service, request) -> service.preparePayInfoSDK(request));
+    PAYMENTMAP.put(PayType.MOBILE_WAP, (service, request) -> service.preparePayInfoWap(request));
   }
 
   public ResultMap preparePay(StdPayRequest params) {
@@ -73,7 +74,7 @@ public class PayPortal {
 
     //验证共同参数是否为空
     if (Objects.isNull(params.getPayType()) || Objects.isNull(params.getOrderAmount())
-        || StringUtils.isEmpty(params.getAgencyCode()) || StringUtils.isEmpty(params.getMd5Key())) {
+            || StringUtils.isEmpty(params.getAgencyCode()) || StringUtils.isEmpty(params.getMd5Key())) {
       log.error("[preparePay] params invalid, params={}", JSONUtil.Bean2JSON(params));
       return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
@@ -105,8 +106,8 @@ public class PayPortal {
 
     //验证共同参数是否为空
     if (StringUtils.isEmpty(params.getString("agencyCode")) || StringUtils.isEmpty(params.getString("md5securityKey"))
-        || StringUtils.isEmpty(params.getString("refundAmount"))
-        || StringUtils.isEmpty(params.getString("totalAmount"))) {
+            || StringUtils.isEmpty(params.getString("refundAmount"))
+            || StringUtils.isEmpty(params.getString("totalAmount"))) {
       log.error("[refundOrder] params invalid, params={}", JSONUtil.Bean2JSON(params));
       return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
@@ -141,7 +142,7 @@ public class PayPortal {
 
     //验证共同参数是否为空
     if (StringUtils.isEmpty(params.getString("agencyCode"))
-        || StringUtils.isEmpty(params.getString("md5securityKey"))) {
+            || StringUtils.isEmpty(params.getString("md5securityKey"))) {
       log.error("[queryOrder] params invalid, params={}", JSONUtil.Bean2JSON(params));
       return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
@@ -166,7 +167,7 @@ public class PayPortal {
 
     //验证共同参数是否为空
     if (StringUtils.isEmpty(params.getString("agencyCode"))
-        || StringUtils.isEmpty(params.getString("md5securityKey"))) {
+            || StringUtils.isEmpty(params.getString("md5securityKey"))) {
       log.error("[queryRefund] params invalid, params={}", JSONUtil.Bean2JSON(params));
       return (ResultMap) result.withError(ResultStatus.THIRD_PARAM_ERROR);
     }
@@ -271,12 +272,5 @@ public class PayPortal {
     public ResultMap<?> pay(ThirdpayService service, StdPayRequest param) throws ServiceException;
 
   }
-
-  private static final Map<PayType, Pay> PAYMENTMAP = ImmutableMap.of(PayType.PC_ACCOUNT,
-      (service, request) -> service.preparePayInfoAccount(request), PayType.PC_GATEWAY,
-      (service, request) -> service.preparePayInfoGatway(request), PayType.QRCODE,
-      (service, request) -> service.preparePayInfoQRCode(request), PayType.MOBILE_SDK,
-      (service, request) -> service.preparePayInfoSDK(request), PayType.MOBILE_WAP,
-      (service, request) -> service.preparePayInfoWap(request));
 
 }

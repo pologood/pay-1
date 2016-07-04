@@ -116,7 +116,10 @@ public class UnionpayService implements ThirdpayService {
     requestPMap.put("signMethod", SIGNMETHOD);//签名方法
     requestPMap.put("txnType", UnionpayTxnType.CONSUMPTION.getValue());//交易类型
     requestPMap.put("txnSubType", UnionpaySubTxnType.SELF_SERVICE_CONSUMPTION.getValue());//交易子类
-    requestPMap.put("bizType", UnionpayBizType.B2C_GATEWAY_PAYMENT.getValue());//产品类型
+    if (params.getPayType() == StdPayRequest.PayType.PC_GATEWAY_B2B)
+      requestPMap.put("bizType", UnionpayBizType.B2B.getValue());//产品类型
+    else
+      requestPMap.put("bizType", UnionpayBizType.B2C_GATEWAY_PAYMENT.getValue());//产品类型
     requestPMap.put("channelType", channelType);//渠道类型
     requestPMap.put("frontUrl", params.getPageNotifyUrl());//前台返回商户结果时使用，前台类交易需上送
     requestPMap.put("backUrl", params.getServerNotifyUrl());//后台通知地址
@@ -184,7 +187,7 @@ public class UnionpayService implements ThirdpayService {
   }
 
   private String getKey(String path) {
-    String key = SignUtil.loadKeyFromFile(path);
+    String key = SignUtil.loadKeyFromFile("e:"+path);
     if (StringUtils.isEmpty(key)) LOG.error("[getKey]error:{}", path);
     return key;
   }

@@ -20,9 +20,10 @@ public class StdPayRequest {
   public enum PayType {
     PC_ACCOUNT(0), //账户支付
     PC_GATEWAY(1), //网关(网银)支付
-    QRCODE(2), //扫码支付
-    MOBILE_SDK(3), //SDK支付
-    MOBILE_WAP(4);//WAP支付
+    PC_GATEWAY_B2B(2), //网关(网银)支付
+    QRCODE(3), //扫码支付
+    MOBILE_SDK(4), //SDK支付
+    MOBILE_WAP(5);//WAP支付
 
     private int value;
 
