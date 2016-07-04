@@ -66,16 +66,6 @@ public class GWController extends BaseController {
     }
   };
 
-  private static PMap cashierSignExcludes = new PMap();
-  private static PMap signExcludes = new PMap();
-
-  static {
-    signExcludes.put("sign", true);
-    cashierSignExcludes.put("sign", true);
-    cashierSignExcludes.put("bankId", true);
-    cashierSignExcludes.put("accessPlatform", true);
-  }
-
   private ModelAndView createCashierView(PMap payParams, PMap queryParams, String platform) {
     //银行适配
     ResultBean<PayChannelAdapts> result = channelAdaptMaanger.getChannelAdapts(

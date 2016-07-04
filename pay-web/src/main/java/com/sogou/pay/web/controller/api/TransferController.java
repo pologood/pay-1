@@ -51,12 +51,6 @@ public class TransferController extends BaseController {
   @Autowired
   private SecureManager secureManager;
 
-  private static PMap signExcludes = new PMap();
-
-  static {
-    signExcludes.put("sign", true);
-  }
-
   private ResultMap commonCheck(Object params) {
     ResultMap resultMap = ResultMap.build();
     //验证参数
