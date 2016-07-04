@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
+
 public class PMap<K, V> extends HashMap<K, V> {
 
   private static final long serialVersionUID = 2294806098649305447L;
@@ -29,8 +31,7 @@ public class PMap<K, V> extends HashMap<K, V> {
    * @return
    */
   public String getString(K key) {
-    Object value = this.get(key);
-    return value == null ? null : value.toString();
+    return MapUtils.getString(this, key);
   }
 
   public String[] getStrings(K key) {
@@ -38,25 +39,26 @@ public class PMap<K, V> extends HashMap<K, V> {
   }
 
   public int getInt(K key) {
-    return ConvertUtil.toInt(this.get(key));
+    return MapUtils.getIntValue(this, key);
   }
 
   public long getLong(K key) {
-    return ConvertUtil.toLong(this.get(key));
+    return MapUtils.getLongValue(this, key);
   }
 
   public boolean getBoolean(K key) {
-    return ConvertUtil.toBool(this.get(key));
+    return MapUtils.getBooleanValue(this, key);
   }
 
   public double getDouble(K key) {
-    return ConvertUtil.toDouble(this.get(key));
+    return MapUtils.getDoubleValue(this, key);
   }
 
   public Date getDate(K key) {
     return ConvertUtil.toDate(this.get(key));
   }
 
+  @SuppressWarnings("unchecked")
   public PMap<String, ?> getPMap(K key) {
     try {
       return (PMap<String, ?>) this.get(key);
