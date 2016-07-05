@@ -138,6 +138,10 @@ public class RefundNotifyManager {
     map.put("refundSuccessTime", DateUtil.format(new Date(), DateUtil.DATE_FORMAT_SECOND_SHORT));
     map.put("signType", "0");
     ResultMap result = (ResultMap) secureManager.doAppSign(map, null, app.getSignKey());
+    if (!Result.isSuccess(result)) {
+      logger.error("[notifyApp] doAppSign failed, {}", result);
+      return;
+    }
     Map resultMap = (Map) result.getReturnValue();
     resultMap.put("appBgUrl", refundInfo.getAppBgUrl());
     queueNotifyProducer.sendRefundMessage(resultMap);

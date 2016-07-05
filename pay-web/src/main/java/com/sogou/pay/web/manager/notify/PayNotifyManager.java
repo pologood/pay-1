@@ -139,6 +139,10 @@ public class PayNotifyManager {
     map.put("tradeStatus", OrderStatus.SUCCESS.name());
     map.put("successTime", DateUtil.formatShortTime(patyNotifyModel.getAgencyPayTime()));
     ResultMap result = (ResultMap) secureManager.doAppSign(map, null, app.getSignKey());
+    if (!Result.isSuccess(result)) {
+      logger.error("[asyncNotifyApp] doAppSign failed, {}", result);
+      return;
+    }
     Map resultMap = (Map) result.getReturnValue();
     resultMap.put("appBgUrl", payOrderInfo.getAppBgUrl());
     queueNotifyProducer.sendPayMessage(resultMap);
@@ -163,7 +167,7 @@ public class PayNotifyManager {
     notifyMap.put("successTime", DateUtil.format(payOrderInfo.getPaySuccessTime(), DateUtil.DATE_FORMAT_SECOND_SHORT));
     Result result = secureManager.doAppSign(notifyMap, null, app.getSignKey());
     if (!Result.isSuccess(result)) {
-      logger.error("[syncNotifyApp] 获取同步通知参数失败, {}", result.getStatus().getMessage());
+      logger.error("[syncNotifyApp] doAppSign failed, {}", result);
       return ResultMap.build(result.getStatus());
     }
     ResultMap resultMap = ResultMap.build();
