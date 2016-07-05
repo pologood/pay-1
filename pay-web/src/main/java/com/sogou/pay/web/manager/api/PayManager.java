@@ -221,7 +221,6 @@ public class PayManager {
 
   //支付订单
   public ResultMap payOrder(PMap params) {
-    ResultMap result = ResultMap.build();
     //创建支付流水单
     ResultMap payResult = createAgencyOrder(params);
     if (!Result.isSuccess(payResult)) {

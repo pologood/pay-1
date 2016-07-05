@@ -19,11 +19,14 @@
     </settings>
 
 
-
     <!-- 命名空间 -->
     <typeAliases>
-        <typeAlias alias="NotifyErrorLog" type="com.sogou.pay.notify.entity.NotifyErrorLog"/>
+        <typeAlias alias="NotifyToDo" type="com.sogou.pay.notify.entity.NotifyToDo"/>
     </typeAliases>
+
+    <typeHandlers>
+        <typeHandler handler="com.sogou.pay.common.utils.LocalDateTimeTypeHandler"/>
+    </typeHandlers>
 
     <!-- 映射map -->
     <mappers>

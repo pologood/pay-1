@@ -129,14 +129,14 @@ public class PayNotifyManager {
       logger.error("[asyncNotifyApp] app not exists, appId={}", payOrderInfo.getAppId());
       return;
     }
-    PMap<String, String> map = new PMap<String, String>();
+    PMap<String, String> map = new PMap<>();
     map.put("isSuccess", "T");
     map.put("appId", payOrderInfo.getAppId().toString());
     map.put("signType", "0");
     map.put("orderId", payOrderInfo.getOrderId());
     map.put("payId", payOrderInfo.getPayId());
     map.put("orderMoney", payOrderInfo.getOrderMoney().toString());
-    map.put("tradeStatus", "SUCCESS");
+    map.put("tradeStatus", OrderStatus.SUCCESS.name());
     map.put("successTime", DateUtil.formatShortTime(patyNotifyModel.getAgencyPayTime()));
     ResultMap result = (ResultMap) secureManager.doAppSign(map, null, app.getSignKey());
     Map resultMap = (Map) result.getReturnValue();

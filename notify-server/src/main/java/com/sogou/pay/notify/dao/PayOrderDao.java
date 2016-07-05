@@ -5,21 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 
-/**
- * @Author qibaichao
- * @ClassName PayOrderDao
- * @Date 2014年8月12日
- * @Description:支付单dao
- */
 @Repository
 public interface PayOrderDao {
     /**
-     * @param payId
-     * @return
-     * @Author qibaichao
-     * @MethodName updateNotifyStatus
-     * @Date 2014年9月22日
-     * @Description:修改支付单通知状态
+     * 修改支付单通知状态
      */
     public int updateNotifyStatus(@Param("payId") String payId, @Param("notifyStatus") int notifyStatus);
 

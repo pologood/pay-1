@@ -25,7 +25,7 @@
         <property name="idleTimeout" value="86400000"/>
     </bean>
 
-    <bean id="queuePayNotifyListener" class="com.sogou.pay.notify.listener.QueuePayNotifyListener"/>
+    <bean id="queuePayNotifyListener" class="com.sogou.pay.notify.listener.PayNotifyListener"/>
 
     <!-- Message队列消息监听 -->
     <bean id="listenerContainerForPayNotify"
@@ -40,7 +40,7 @@
     </bean>
 
 
-    <bean id="queueRefundNotifyListener" class="com.sogou.pay.notify.listener.QueueRefundNotifyListener"/>
+    <bean id="queueRefundNotifyListener" class="com.sogou.pay.notify.listener.RefundNotifyListener"/>
 
     <bean id="listenerContainerForRefundNotify"
           class="org.springframework.jms.listener.DefaultMessageListenerContainer">

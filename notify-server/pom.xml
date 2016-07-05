@@ -16,16 +16,11 @@
             <artifactId>commons</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.sogou.pay</groupId>
-            <artifactId>pay-service</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>commons-io</groupId>-->
+            <!--<artifactId>commons-io</artifactId>-->
+            <!--<version>2.4</version>-->
+        <!--</dependency>-->
 
         <!-- logging -->
         <dependency>
@@ -49,21 +44,10 @@
         </dependency>
 
         <!-- helper libraries -->
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.2.1</version>
-        </dependency>
-
         <!--<dependency>-->
-        <!--<groupId>commons-pool</groupId>-->
-        <!--<artifactId>commons-pool</artifactId>-->
-        <!--<version>1.6</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.apache.activemq</groupId>-->
-        <!--<artifactId>activemq-all</artifactId>-->
-        <!--<version>5.11.1</version>-->
+            <!--<groupId>commons-collections</groupId>-->
+            <!--<artifactId>commons-collections</artifactId>-->
+            <!--<version>3.2.1</version>-->
         <!--</dependency>-->
 
         <!-- activeMq start -->
@@ -78,21 +62,12 @@
             <version>5.11.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-broker</artifactId>
-            <version>5.11.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-leveldb-store</artifactId>
-            <version>5.11.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
-            <version>5.11.1</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.activemq</groupId>-->
+            <!--<artifactId>activemq-broker</artifactId>-->
+            <!--<version>5.11.1</version>-->
+        <!--</dependency>-->
+
         <!-- activeMq end -->
 
 
@@ -108,18 +83,18 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-aop</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jms</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-expression</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-expression</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
@@ -159,62 +134,14 @@
         </dependency>
     </dependencies>
 
-    <!--<profiles>-->
-        <!--<profile>-->
-            <!--<id>test</id>-->
-            <!--<properties>-->
-                <!--<env>test</env>-->
-                <!--<config_file>-->
-                    <!--src/main/resources/config_TEST.properties-->
-                <!--</config_file>-->
-            <!--</properties>-->
-            <!--<activation>-->
-                <!--<activeByDefault>true</activeByDefault>-->
-            <!--</activation>-->
-        <!--</profile>-->
-        <!--<profile>-->
-            <!--<id>prod</id>-->
-            <!--<properties>-->
-                <!--<env>prod</env>-->
-                <!--<config_file>-->
-                    <!--src/main/resources/config_PROD.properties-->
-                <!--</config_file>-->
-            <!--</properties>-->
-        <!--</profile>-->
-    <!--</profiles>-->
-
-
     <build>
-<!--        <filters>
-            <filter>src/main/resources/config.properties</filter>
-        </filters>-->
-
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
             </resource>
         </resources>
-
         <plugins>
-            <!--&lt;!&ndash; 控制资源文件的拷贝 &ndash;&gt;-->
-            <!--<plugin>-->
-                <!--<artifactId>maven-antrun-plugin</artifactId>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<phase>process-sources</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>run</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<tasks>-->
-                                <!--<delete file="src/main/resources/config.properties"/>-->
-                                <!--<copy file="${config_file}" tofile="src/main/resources/config.properties"/>-->
-                            <!--</tasks>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

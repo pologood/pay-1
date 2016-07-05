@@ -129,13 +129,13 @@ public class RefundNotifyManager {
     }
     PMap<String, String> map = new PMap<>();
     map.put("isSuccess", "T");
+    map.put("appId", String.valueOf(refundInfo.getAppId()));
     map.put("orderId", refundInfo.getOrderId());
     map.put("payId", refundInfo.getPayId());
     map.put("payAmount", String.valueOf(refundInfo.getOrderMoney().doubleValue()));
     map.put("refundAmount", String.valueOf(refundInfo.getRefundMoney().doubleValue()));
+    map.put("refundStatus", RefundStatus.SUCCESS.name());
     map.put("refundSuccessTime", DateUtil.format(new Date(), DateUtil.DATE_FORMAT_SECOND_SHORT));
-    map.put("appId", String.valueOf(refundInfo.getAppId()));
-    map.put("refundStatus", "SUCCESS");
     map.put("signType", "0");
     ResultMap result = (ResultMap) secureManager.doAppSign(map, null, app.getSignKey());
     Map resultMap = (Map) result.getReturnValue();
