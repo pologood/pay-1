@@ -1,18 +1,9 @@
 package com.sogou.pay.common.utils;
 
 import com.google.common.collect.Lists;
-
-import com.sogou.pay.common.annotation.MapField;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections.MapIterator;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -20,9 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Created by hujunfei Date: 15-1-7 Time: 下午12:32
- */
+
 public final class MapUtil {
 
   public static String buildSignSource(Map<String, ?> map, boolean needSorting) {

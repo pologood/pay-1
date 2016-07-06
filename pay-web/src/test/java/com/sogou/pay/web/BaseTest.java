@@ -1,6 +1,6 @@
 package com.sogou.pay.web;
 
-import com.sogou.pay.common.http.utils.HttpUtil;
+import com.sogou.pay.common.utils.HttpUtil;
 import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.common.utils.MapUtil;
 
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,17 +25,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 import static java.lang.System.*;
 

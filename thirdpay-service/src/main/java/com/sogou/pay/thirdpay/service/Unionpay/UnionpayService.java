@@ -1,9 +1,9 @@
 package com.sogou.pay.thirdpay.service.Unionpay;
 
-import com.sogou.pay.common.Model.StdPayRequest;
+import com.sogou.pay.common.model.StdPayRequest;
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.http.utils.HttpUtil;
+import com.sogou.pay.common.utils.HttpUtil;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultMap;

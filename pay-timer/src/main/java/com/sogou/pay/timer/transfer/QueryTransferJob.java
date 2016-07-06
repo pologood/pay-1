@@ -2,7 +2,7 @@ package com.sogou.pay.timer.transfer;
 
 import com.sogou.pay.service.entity.PayTransferBatch;
 import com.sogou.pay.common.enums.PayTransferBatchStatus;
-import com.sogou.pay.service.payment.PayTransferBatchService;
+import com.sogou.pay.service.service.PayTransferBatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

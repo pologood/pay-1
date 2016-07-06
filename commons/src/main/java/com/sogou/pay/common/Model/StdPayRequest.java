@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2015 Sogou.com. All Rights Reserved.
  */
-package com.sogou.pay.common.Model;
+package com.sogou.pay.common.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sogou.pay.common.utils.LocalDateTimeJsonSerializer;

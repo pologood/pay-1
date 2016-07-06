@@ -7,11 +7,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import com.sogou.pay.enums.AccessPlatform;
-import com.sogou.pay.manager.model.PayCheckUpdateModel;
+import com.sogou.pay.service.enums.AccessPlatform;
+import com.sogou.pay.service.model.PayCheckUpdateModel;
 import com.sogou.pay.service.enums.AgencyCode;
 import com.sogou.pay.service.enums.OrderType;
-import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
+import com.sogou.pay.service.utils.SequenceFactory;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

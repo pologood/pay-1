@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayBankRouter;
-import com.sogou.pay.service.payment.PayBankRouterService;
+import com.sogou.pay.service.service.PayBankRouterService;
 /**
  * @Author huangguoqing
  * @Date 2015/3/3 18:53

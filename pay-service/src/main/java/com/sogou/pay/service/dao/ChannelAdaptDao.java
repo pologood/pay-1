@@ -1,6 +1,6 @@
 package com.sogou.pay.service.dao;
 
-import com.sogou.pay.manager.model.PayChannelAdapt;
+import com.sogou.pay.service.model.PayChannelAdapt;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

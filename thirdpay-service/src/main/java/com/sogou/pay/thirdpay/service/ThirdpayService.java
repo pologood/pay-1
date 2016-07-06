@@ -1,6 +1,6 @@
 package com.sogou.pay.thirdpay.service;
 
-import com.sogou.pay.common.Model.StdPayRequest;
+import com.sogou.pay.common.model.StdPayRequest;
 import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;

@@ -3,7 +3,7 @@ package com.sogou.pay.service.dao;
 import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayResDetail;
-import com.sogou.pay.service.payment.PayResDetailService;
+import com.sogou.pay.service.service.PayResDetailService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

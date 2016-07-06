@@ -1,13 +1,13 @@
 package com.sogou.pay.web.controller.api;
 
-import com.sogou.pay.common.Model.StdPayRequest;
+import com.sogou.pay.common.model.StdPayRequest;
 import com.sogou.pay.common.types.*;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.common.utils.JSONUtil;
-import com.sogou.pay.manager.model.PayChannelAdapts;
-import com.sogou.pay.manager.model.PayChannelAdapt;
+import com.sogou.pay.service.model.PayChannelAdapts;
+import com.sogou.pay.service.model.PayChannelAdapt;
 import com.sogou.pay.web.manager.ChannelAdaptManager;
-import com.sogou.pay.service.payment.AppService;
+import com.sogou.pay.service.service.AppService;
 import com.sogou.pay.web.manager.api.PayManager;
 import com.sogou.pay.web.manager.SecureManager;
 import com.sogou.pay.service.entity.App;

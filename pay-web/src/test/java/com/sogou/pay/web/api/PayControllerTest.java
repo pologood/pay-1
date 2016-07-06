@@ -2,7 +2,7 @@ package com.sogou.pay.web.api;
 
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.common.utils.DateUtil;
-import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
+import com.sogou.pay.service.utils.SequenceFactory;
 import com.sogou.pay.web.BaseTest;
 import com.sogou.pay.web.controller.api.APIController;
 import com.sogou.pay.web.controller.api.GWController;

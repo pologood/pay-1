@@ -2,7 +2,7 @@ package com.sogou.pay.web.controller.internal;
 
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.types.ResultMap;
-import com.sogou.pay.manager.model.PayNotifyModel;
+import com.sogou.pay.service.model.PayNotifyModel;
 import com.sogou.pay.web.controller.BaseController;
 import com.sogou.pay.web.manager.notify.PayNotifyManager;
 import com.sogou.pay.web.manager.notify.RefundNotifyManager;
@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.Map;
 
 
 /**

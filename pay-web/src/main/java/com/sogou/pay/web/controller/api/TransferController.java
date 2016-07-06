@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.service.entity.App;
-import com.sogou.pay.service.payment.AppService;
+import com.sogou.pay.service.service.AppService;
 import com.sogou.pay.web.form.TransferForm;
 
 import org.apache.commons.lang3.StringUtils;

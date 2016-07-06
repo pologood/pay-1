@@ -1,7 +1,7 @@
 package com.sogou.pay.web.portal;
 
-import com.sogou.pay.common.Model.StdPayRequest;
-import com.sogou.pay.common.Model.StdPayRequest.PayType;
+import com.sogou.pay.common.model.StdPayRequest;
+import com.sogou.pay.common.model.StdPayRequest.PayType;
 import com.sogou.pay.common.exception.ServiceException;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.PMap;

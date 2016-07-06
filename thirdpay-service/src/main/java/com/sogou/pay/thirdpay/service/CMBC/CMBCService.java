@@ -1,11 +1,9 @@
 package com.sogou.pay.thirdpay.service.CMBC;
 
-import com.sogou.pay.common.enums.OrderRefundStatus;
-import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.common.enums.PayTransferStatus;
 import com.sogou.pay.common.enums.PayTransferBatchStatus;
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.http.client.HttpService;
+import com.sogou.pay.common.http.HttpService;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultMap;

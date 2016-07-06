@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 
-import com.sogou.pay.service.payment.PayResIdService;
+import com.sogou.pay.service.service.PayResIdService;
 
 public class PayResIdServiceTest extends BaseTest {
 

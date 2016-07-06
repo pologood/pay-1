@@ -1,12 +1,11 @@
 package com.sogou.pay.timer.check;
 
-import com.sogou.pay.PayPlatformBizServiceLocator;
-import com.sogou.pay.common.annotation.Load;
 import com.sogou.pay.service.enums.AgencyCode;
-import com.sogou.pay.service.payment.PayCheckResultService;
+import com.sogou.pay.service.service.PayCheckResultService;
 import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,18 +20,17 @@ public class CheckTimer {
   private static String DATE_FORMAT = "yyyyMMdd";
 
   private List<String> agencyCodeList = new ArrayList<String>();
+  @Autowired
+  private CheckManager checkManager;
+  @Autowired
+  private PayCheckResultService payCheckResultService;
 
   {
     agencyCodeList.add(AgencyCode.ALIPAY.name());
     agencyCodeList.add(AgencyCode.TENPAY.name());
     agencyCodeList.add(AgencyCode.WECHAT.name());
+    agencyCodeList.add(AgencyCode.UNIONPAY.name());
   }
-
-  @Load(locator = PayPlatformBizServiceLocator.class)
-  private CheckManager checkManager;
-
-  @Load(locator = PayPlatformBizServiceLocator.class)
-  private PayCheckResultService payCheckResultService;
 
   /**
    * 支付宝对账任务

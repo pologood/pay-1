@@ -1,6 +1,6 @@
 package com.sogou.pay.notify.service;
 
-import com.sogou.pay.common.http.client.HttpService;
+import com.sogou.pay.common.http.HttpService;
 import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.notify.dao.NotifyToDoDao;
@@ -118,7 +118,7 @@ public class NotifyService {
     try {
       //是否达到重试上限
       if (isNotifiable(notifyToDo)) {
-        doNotify(NotifyType.values()[notifyToDo.getNotifyType()],
+        doNotify(NotifyType.values()[notifyToDo.getNotifyType()-1],
                 notifyToDo.getPayId(),
                 notifyToDo.getNotifyUrl(),
                 (Map<String, String>) JSONUtil.JSON2Map(notifyToDo.getNotifyParams()),

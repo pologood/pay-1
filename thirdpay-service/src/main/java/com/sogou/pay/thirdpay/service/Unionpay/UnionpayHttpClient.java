@@ -1,7 +1,7 @@
 package com.sogou.pay.thirdpay.service.Unionpay;
 
 
-import com.sogou.pay.common.http.client.HttpService;
+import com.sogou.pay.common.http.HttpService;
 import com.sogou.pay.common.types.Result;
 import javax.net.ssl.*;
 import java.security.cert.CertificateException;

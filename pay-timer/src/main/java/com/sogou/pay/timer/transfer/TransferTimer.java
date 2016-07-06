@@ -1,10 +1,9 @@
 package com.sogou.pay.timer.transfer;
 
-import com.sogou.pay.PayPlatformBizServiceLocator;
-import com.sogou.pay.common.annotation.Load;
 import com.sogou.pay.common.utils.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Calendar;
 
@@ -17,13 +16,13 @@ public class TransferTimer {
 
   private static String DATE_FORMAT = "yyyyMMdd";
 
-  @Load(locator = PayPlatformBizServiceLocator.class)
+  @Autowired
   private TransferJob transferJob;
 
-  @Load(locator = PayPlatformBizServiceLocator.class)
+  @Autowired
   private QueryTransferJob queryTransferJob;
 
-  @Load(locator = PayPlatformBizServiceLocator.class)
+  @Autowired
   private QueryTransferRefundJob queryTransferRefundJob;
 
   /**

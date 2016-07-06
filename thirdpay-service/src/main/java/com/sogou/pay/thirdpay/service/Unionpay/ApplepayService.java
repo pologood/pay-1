@@ -1,6 +1,6 @@
 package com.sogou.pay.thirdpay.service.Unionpay;
 
-import com.sogou.pay.common.Model.StdPayRequest;
+import com.sogou.pay.common.model.StdPayRequest;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.thirdpay.biz.enums.UnionpayBizType;
 import com.sogou.pay.thirdpay.biz.enums.UnionpaySubTxnType;

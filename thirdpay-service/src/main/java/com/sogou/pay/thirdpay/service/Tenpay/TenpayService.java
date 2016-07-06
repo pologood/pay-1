@@ -1,14 +1,14 @@
 package com.sogou.pay.thirdpay.service.Tenpay;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.http.utils.HttpUtil;
+import com.sogou.pay.common.utils.HttpUtil;
 import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.*;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
-import com.sogou.pay.common.Model.StdPayRequest;
+import com.sogou.pay.common.model.StdPayRequest;
 import com.sogou.pay.common.enums.OrderRefundStatus;
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;

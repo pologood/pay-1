@@ -1,7 +1,7 @@
 package com.sogou.pay.service;
 
 import com.sogou.pay.BaseTest;
-import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
+import com.sogou.pay.service.utils.SequenceFactory;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

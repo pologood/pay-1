@@ -9,7 +9,7 @@ public enum AgencyCode {
     ALIPAY(1000),
     TENPAY(2000),
     WECHAT(3000),
-    CMBC(4000),
+    CMB(4000),
     UNIONPAY(5000),
     APPLEPAY(6000),
     TEST_ALIPAY(1001),
@@ -31,7 +31,7 @@ public enum AgencyCode {
         mappings.put(ALIPAY.name().toUpperCase(), ALIPAY);
         mappings.put(TENPAY.name().toUpperCase(), TENPAY);
         mappings.put(WECHAT.name().toUpperCase(), WECHAT);
-        mappings.put(CMBC.name().toUpperCase(), CMBC);
+        mappings.put(CMB.name().toUpperCase(), CMB);
         mappings.put(UNIONPAY.name().toUpperCase(), UNIONPAY);
         mappings.put(APPLEPAY.name().toUpperCase(), APPLEPAY);
         mappings.put(TEST_ALIPAY.name().toUpperCase(), TEST_ALIPAY);

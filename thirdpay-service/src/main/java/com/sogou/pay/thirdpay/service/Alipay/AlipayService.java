@@ -1,7 +1,8 @@
 package com.sogou.pay.thirdpay.service.Alipay;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.http.utils.HttpUtil;
+import com.sogou.pay.common.http.HttpService;
+import com.sogou.pay.common.utils.HttpUtil;
 import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
@@ -11,12 +12,12 @@ import com.sogou.pay.common.types.PMap;
 import com.sogou.pay.common.utils.MapUtil;
 import com.sogou.pay.common.utils.XMLUtil;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
-import com.sogou.pay.common.Model.StdPayRequest;
+import com.sogou.pay.common.model.StdPayRequest;
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
 import com.sogou.pay.thirdpay.biz.model.TransferRecord;
 import com.sogou.pay.thirdpay.biz.utils.SecretKeyUtil;
-import com.sogou.pay.common.http.client.*;
+import com.sogou.pay.common.http.*;
 import com.sogou.pay.thirdpay.biz.enums.AlipayTradeCode;
 import com.sogou.pay.thirdpay.service.ThirdpayService;
 

@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import com.sogou.pay.manager.model.PayCheckUpdateModel;
+import com.sogou.pay.service.model.PayCheckUpdateModel;
 import com.sogou.pay.service.entity.PayCheck;
 import com.sogou.pay.thirdpay.biz.model.OutCheckRecord;
 

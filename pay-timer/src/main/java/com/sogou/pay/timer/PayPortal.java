@@ -51,7 +51,7 @@ public class PayPortal {
         serviceHashMap.put(AgencyCode.ALIPAY.name(), alipayService);
         serviceHashMap.put(AgencyCode.TENPAY.name(), tenpayService);
         serviceHashMap.put(AgencyCode.WECHAT.name(), wechatService);
-        serviceHashMap.put(AgencyCode.CMBC.name(), cmbcService);
+        serviceHashMap.put(AgencyCode.CMB.name(), cmbcService);
         serviceHashMap.put(AgencyCode.UNIONPAY.name(), unionpayService);
         serviceHashMap.put(AgencyCode.TEST_UNIONPAY.name(), unionpayService);
         serviceHashMap.put(AgencyCode.APPLEPAY.name(), applepayService);

@@ -8,18 +8,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import com.sogou.pay.common.Model.StdPayRequest;
-import com.sogou.pay.common.Model.StdPayRequest.PayType;
+import com.sogou.pay.common.model.StdPayRequest;
+import com.sogou.pay.common.model.StdPayRequest.PayType;
 import com.sogou.pay.common.enums.OrderStatus;
 import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.common.utils.JSONUtil;
-import com.sogou.pay.enums.BankCardType;
-import com.sogou.pay.enums.ChannelType;
-import com.sogou.pay.manager.model.PayOrderQueryModel;
-import com.sogou.pay.manager.model.PayNotifyModel;
+import com.sogou.pay.service.enums.BankCardType;
+import com.sogou.pay.service.enums.ChannelType;
+import com.sogou.pay.service.model.PayOrderQueryModel;
+import com.sogou.pay.service.model.PayNotifyModel;
 import com.sogou.pay.service.entity.*;
 import com.sogou.pay.service.enums.RelationStatus;
-import com.sogou.pay.service.payment.*;
+import com.sogou.pay.service.service.*;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
 import com.sogou.pay.web.portal.PayPortal;
 import org.apache.commons.lang.StringUtils;
@@ -35,7 +35,7 @@ import com.sogou.pay.common.types.Result;
 import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.types.PMap;
-import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
+import com.sogou.pay.service.utils.SequenceFactory;
 
 @Component
 public class PayManager {

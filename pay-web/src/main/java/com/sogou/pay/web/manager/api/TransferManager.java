@@ -7,10 +7,9 @@ import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.service.entity.PayTransfer;
 import com.sogou.pay.service.entity.PayTransferBatch;
-import com.sogou.pay.service.payment.PayTransferBatchService;
-import com.sogou.pay.service.payment.PayTransferService;
-import com.sogou.pay.service.utils.Constant;
-import com.sogou.pay.service.utils.orderNoGenerator.SequenceFactory;
+import com.sogou.pay.service.service.PayTransferBatchService;
+import com.sogou.pay.service.service.PayTransferService;
+import com.sogou.pay.service.utils.SequenceFactory;
 import com.sogou.pay.web.form.TransferRecord;
 import org.apache.commons.collections.CollectionUtils;
 import org.perf4j.aop.Profiled;
@@ -235,9 +234,9 @@ public class TransferManager {
     batch.setBbkNbr(params.getString("bbkNbr"));
     batch.setDbtAcc(params.getString("dbtAcc"));
     batch.setCompanyName(params.getString("companyName"));
-    batch.setBusCod(Constant.BUS_COD_OTHER);//代发
-    batch.setBusMod(Constant.BUS_MOD_1);//业务模式编码
-    batch.setTrsTyp(Constant.PAY_OTHER);//代发其他
+//    batch.setBusCod(Constant.BUS_COD_OTHER);//代发
+//    batch.setBusMod(Constant.BUS_MOD_1);//业务模式编码
+//    batch.setTrsTyp(Constant.PAY_OTHER);//代发其他
     batch.setMemo(params.getString("memo"));
     batch.setCreateTime(now);
     batch.setModifyTime(now);

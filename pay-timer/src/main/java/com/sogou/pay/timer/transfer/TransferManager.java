@@ -8,8 +8,8 @@ import com.sogou.pay.timer.PayPortal;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.service.entity.PayTransfer;
 import com.sogou.pay.service.entity.PayTransferBatch;
-import com.sogou.pay.service.payment.PayTransferBatchService;
-import com.sogou.pay.service.payment.PayTransferService;
+import com.sogou.pay.service.service.PayTransferBatchService;
+import com.sogou.pay.service.service.PayTransferService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ public class TransferManager {
     try {
       PMap params = new PMap();
       PMap payTransferBatchPMap = BeanUtil.Bean2PMap(payTransferBatch);
-      params.put("agencyCode", "CMBC");
+      params.put("agencyCode", "CMB");
       params.put("isDetail", false);
       params.put("payTransferBatch", payTransferBatchPMap);
       //查询概要信息
@@ -156,7 +156,7 @@ public class TransferManager {
         payTransferPMapList.add(BeanUtil.Bean2PMap(payTransfer));
 
       PMap params = new PMap();
-      params.put("agencyCode", "CMBC");
+      params.put("agencyCode", "CMB");
       params.put("payTransferBatch", payTransferBatchPMap);
       params.put("payTransferList", payTransferPMapList);
       //提交到银行
@@ -183,7 +183,7 @@ public class TransferManager {
       PMap params = new PMap();
       params.put("beginDate", beginDate);
       params.put("endDate", endDate);
-      params.put("agencyCode", "CMBC");
+      params.put("agencyCode", "CMB");
       ResultMap resultMap = payPortal.queryTransferRefund(params);
       if (!Result.isSuccess(resultMap)) {
         logger.error("[queryTransferRefund] failed, params={}, result={}", JSONUtil.Bean2JSON(params), JSONUtil.Bean2JSON(resultMap));

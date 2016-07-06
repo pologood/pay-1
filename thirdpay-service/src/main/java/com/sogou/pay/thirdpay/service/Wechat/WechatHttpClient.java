@@ -1,7 +1,7 @@
 package com.sogou.pay.thirdpay.service.Wechat;
 
 
-import com.sogou.pay.common.http.client.HttpService;
+import com.sogou.pay.common.http.HttpService;
 import com.sogou.pay.common.types.Result;
 import com.sogou.pay.thirdpay.biz.utils.HttpClientUtil;
 

@@ -14,5 +14,4 @@
     <import resource="classpath:spring-mq-producer.xml"/>
     <import resource="classpath:spring-mybatis.xml"/>
     <import resource="classpath:spring-redis.xml"/>
-    <import resource="classpath:spring-freemarker.xml"/>
 </beans>

@@ -1,6 +1,6 @@
 package com.sogou.pay.service.dao;
 
-import com.sogou.pay.manager.model.PayCheckUpdateModel;
+import com.sogou.pay.service.model.PayCheckUpdateModel;
 import com.sogou.pay.service.entity.PayCheckWaiting;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;

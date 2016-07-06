@@ -5,7 +5,7 @@ import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.service.entity.PayCheckWaiting;
-import com.sogou.pay.service.payment.PayCheckWaitingService;
+import com.sogou.pay.service.service.PayCheckWaitingService;
 import com.sogou.pay.thirdpay.biz.enums.CheckType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * @Author xiepeidong
