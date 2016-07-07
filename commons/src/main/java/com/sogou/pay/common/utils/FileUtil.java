@@ -23,7 +23,7 @@ public class FileUtil {
     try {
       return StringUtils.join(Files.readAllLines(Paths.get(path)), null);
     } catch (Exception e) {
-      LOGGER.error(String.format("[getStringFromFile]path=%s", path), e);
+      LOGGER.error(String.format("[getStringFromFile] path=%s", path), e);
       return null;
     }
   }

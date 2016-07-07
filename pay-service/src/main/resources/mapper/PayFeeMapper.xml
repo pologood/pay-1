@@ -12,8 +12,8 @@
         <result column="fee_type" property="feeType"/>
         <result column="fee" property="fee"/>
         <result column="fee_rate" property="feeRate"/>
-        <result column="lower_limit" property="lowerLimit"/>
-        <result column="upper_limit" property="upperLimit"/>
+        <result column="low_limit" property="lowLimit"/>
+        <result column="high_limit" property="highLimit"/>
         <result column="status" property="status"/>
         <result column="create_time" property="createTime"/>
         <result column="modify_time" property="modifyTime"/>
@@ -25,9 +25,9 @@
     <select id="getPayFee" resultMap="payFee">
         SELECT * FROM t_pay_fee
         WHERE merchant_no = #{merchantNo}
-              AND (pay_fee_type = #{payFeeType} or pay_fee_type = 99)
-              AND (access_platform = #{accessPlatform} or access_platform = 99)
-              AND status = 1
+              AND (pay_fee_type = #{payFeeType} or pay_fee_type IS NULL)
+              AND (access_platform = #{accessPlatform} or access_platform IS NULL)
+              AND `status` = 1
         ORDER BY access_platform ASC limit 0,1
     </select>
  

@@ -22,6 +22,7 @@
         <result column="balance_refund" property="balanceRefund"/>
         <result column="refund_status" property="refundStatus"/>
         <result column="task_status" property="taskStatus"/>
+        <result column="notify_status" property="notifyStatus"/>
         <result column="refund_error_code" property="refundErrorCode"/>
         <result column="refund_error_info" property="refundErrorInfo"/>
         <result column="refund_req_time" property="refundReqTime"/>
@@ -30,8 +31,8 @@
     </resultMap>
     <sql id="tableColumns">
         refund_id,agency_refund_id,pay_detail_id,pay_id,order_id,app_id,app_bg_url,agency_code,merchant_no,buyer_account
-        ,refund_fee_type,order_money,use_balance,refund_money,bank_refund,balance_refund,refund_status,task_status,refund_error_code
-        ,refund_error_info,refund_req_time,refund_res_time,check_date
+        ,refund_fee_type,order_money,use_balance,refund_money,bank_refund,balance_refund,refund_status,task_status,
+        notify_status,refund_error_code,refund_error_info,refund_req_time,refund_res_time,check_date
     </sql>
     <insert id="insert" parameterType="RefundInfo" keyProperty="refund_id">
         insert into t_refund_info(
@@ -53,6 +54,7 @@
             balance_refund,
             refund_status,
             task_status,
+            notify_status,
             refund_error_code,
             refund_error_info,
             refund_req_time,
@@ -77,6 +79,7 @@
             #{balanceRefund},
             #{refundStatus},
             #{taskStatus},
+            #{notifyStatus},
             #{refundErrorCode},
             #{refundErrorInfo},
             #{refundReqTime},

@@ -26,9 +26,9 @@ public class PayFee {
     //手续费率，费率类型为按比例
     private BigDecimal feeRate;
     //手续费保底，单位：分，-1表示下不保底；定额费率此项无效
-    private BigDecimal lowerLimit;
+    private BigDecimal lowLimit;
     //手续费封顶，单位：分，-1表示上不封顶；定额费率此项无效
-    private BigDecimal upperLimit;
+    private BigDecimal highLimit;
     //启用状态0：未启用；1：已启用
     private Integer status;
     //创建时间
@@ -108,20 +108,20 @@ public class PayFee {
         this.feeRate = feeRate;
     }
 
-    public BigDecimal getLowerLimit() {
-        return lowerLimit;
+    public BigDecimal getLowLimit() {
+        return lowLimit;
     }
 
-    public void setLowerLimit(BigDecimal lowerLimit) {
-        this.lowerLimit = lowerLimit;
+    public void setLowLimit(BigDecimal lowLimit) {
+        this.lowLimit = lowLimit;
     }
 
-    public BigDecimal getUpperLimit() {
-        return upperLimit;
+    public BigDecimal getHighLimit() {
+        return highLimit;
     }
 
-    public void setUpperLimit(BigDecimal upperLimit) {
-        this.upperLimit = upperLimit;
+    public void setHighLimit(BigDecimal highLimit) {
+        this.highLimit = highLimit;
     }
 
     public Integer getStatus() {

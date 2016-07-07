@@ -35,14 +35,14 @@ public class PayFeeService {
 //        scaleLen = 5;
       feeRate = feeInfo.getFeeRate();
       fee = payAmount.multiply(feeRate).setScale(2, BigDecimal.ROUND_HALF_UP);
-      if (feeInfo.getLowerLimit().compareTo(BigDecimal.valueOf(-1).setScale(2)) != 0) {
+      if (feeInfo.getLowLimit().compareTo(BigDecimal.valueOf(-1).setScale(2)) != 0) {
         //有保底值,小于保底值则取保底值
-        BigDecimal lower = feeInfo.getLowerLimit().setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal lower = feeInfo.getLowLimit().setScale(2, BigDecimal.ROUND_HALF_UP);
         fee = fee.compareTo(lower) < 0 ? lower : fee;
       }
-      if (feeInfo.getUpperLimit().compareTo(BigDecimal.valueOf(-1).setScale(2)) != 0) {
+      if (feeInfo.getHighLimit().compareTo(BigDecimal.valueOf(-1).setScale(2)) != 0) {
         //有封顶值，大于封顶值则取封顶值
-        BigDecimal upper = feeInfo.getUpperLimit().setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal upper = feeInfo.getHighLimit().setScale(2, BigDecimal.ROUND_HALF_UP);
         fee = fee.compareTo(upper) < 0 ? fee : upper;
       }
     } else if (feeInfo.getFeeType() == PayFee.FEETYPE_FEE) {

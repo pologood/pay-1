@@ -1,156 +1,150 @@
 package com.sogou.pay.service.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @Author huangguoqing
- * @Date 2015/3/4 13:29
- * @Description: 支付机构商户信息
+ * 支付机构商户信息
  */
-public class PayAgencyMerchant implements Serializable{
+public class PayAgencyMerchant {
 
-    //ID
-    private Integer id;
+  //ID
+  private Integer merchantId;
+  //所属公司编码 (1:搜狗网络 2:搜狗科技)
+  private Integer companyId;
+  //业务平台ID
+  private Integer appId;
+  //加密方式 (1：签名；2：非对称加密 3：对账加密)
+  private Integer encryptionType;
+  //状态，1：启用 2：禁用
+  private Integer status;
+  //路由权重
+  private Double weight;
+  //支付机构编码
+  private String agencyCode;
+  //商户号
+  private String merchantNo;
+  //第三方开设的收款账号对应（邮箱）或者为微信公众号
+  private String sellerEmail;
+  //加密密钥
+  private String encryptKey;
+  //第三方公钥证书路径
+  private String pubKeypath;
+  //本地私钥证书路径
+  private String privateKeypath;
+  //创建时间
+  private Date createTime;
+  //修改时间
+  private Date modifyTime;
 
-    //业务平台ID
-    private Integer appId;
-    
-    //支付机构编码
-    private String agencyCode;
+  public Integer getMerchantId() {
+    return merchantId;
+  }
 
-    //所属公司编码 (1:搜狗网络 2:搜狗科技)
-    private Integer companyCode;
+  public void setMerchantId(Integer merchantId) {
+    this.merchantId = merchantId;
+  }
 
-    //商户号
-    private String merchantNo;
+  public Integer getCompanyId() {
+    return companyId;
+  }
 
-    //第三方开设的收款账号对应（邮箱）或者为微信公众号
-    private String sellerEmail;
+  public void setCompanyId(Integer companyId) {
+    this.companyId = companyId;
+  }
 
-    //加密方式 (1：签名；2：非对称加密 3：对账加密)
-    private Integer encryptionType;
+  public Integer getAppId() {
+    return appId;
+  }
 
-    //加密密钥
-    private String encryptKey;
+  public void setAppId(Integer appId) {
+    this.appId = appId;
+  }
 
-    //第三方公钥证书路径
-    private String pubKeypath;
+  public Integer getEncryptionType() {
+    return encryptionType;
+  }
 
-    //本地私钥证书路径
-    private String privateKeypath;
+  public void setEncryptionType(Integer encryptionType) {
+    this.encryptionType = encryptionType;
+  }
 
+  public Integer getStatus() {
+    return status;
+  }
 
-    //是否启用 (0:未启用  1:已启用)
-    private Integer isUsed;
+  public void setStatus(Integer status) {
+    this.status = status;
+  }
 
-    //创建时间
-    private Date createTime;
+  public Double getWeight() {
+    return weight;
+  }
 
-    //修改时间
-    private Date modifyTime;
+  public void setWeight(Double weight) {
+    this.weight = weight;
+  }
 
-    public Integer getId() {
-        return id;
-    }
+  public String getAgencyCode() {
+    return agencyCode;
+  }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+  public void setAgencyCode(String agencyCode) {
+    this.agencyCode = agencyCode;
+  }
 
-    public String getAgencyCode() {
-        return agencyCode;
-    }
+  public String getMerchantNo() {
+    return merchantNo;
+  }
 
-    public void setAgencyCode(String agencyCode) {
-        this.agencyCode = agencyCode;
-    }
+  public void setMerchantNo(String merchantNo) {
+    this.merchantNo = merchantNo;
+  }
 
-    public Integer getCompanyCode() {
-        return companyCode;
-    }
+  public String getSellerEmail() {
+    return sellerEmail;
+  }
 
-    public void setCompanyCode(Integer companyCode) {
-        this.companyCode = companyCode;
-    }
+  public void setSellerEmail(String sellerEmail) {
+    this.sellerEmail = sellerEmail;
+  }
 
-    public String getSellerEmail() {
-        return sellerEmail;
-    }
+  public String getEncryptKey() {
+    return encryptKey;
+  }
 
-    public void setSellerEmail(String sellerEmail) {
-        this.sellerEmail = sellerEmail;
-    }
+  public void setEncryptKey(String encryptKey) {
+    this.encryptKey = encryptKey;
+  }
 
-    public Integer getEncryptionType() {
-        return encryptionType;
-    }
+  public String getPubKeypath() {
+    return pubKeypath;
+  }
 
-    public void setEncryptionType(Integer encryptionType) {
-        this.encryptionType = encryptionType;
-    }
+  public void setPubKeypath(String pubKeypath) {
+    this.pubKeypath = pubKeypath;
+  }
 
-    public String getEncryptKey() {
-        return encryptKey;
-    }
+  public String getPrivateKeypath() {
+    return privateKeypath;
+  }
 
-    public void setEncryptKey(String encryptKey) {
-        this.encryptKey = encryptKey;
-    }
+  public void setPrivateKeypath(String privateKeypath) {
+    this.privateKeypath = privateKeypath;
+  }
 
-    public String getPubKeypath() {
-        return pubKeypath;
-    }
+  public Date getCreateTime() {
+    return createTime;
+  }
 
-    public void setPubKeypath(String pubKeypath) {
-        this.pubKeypath = pubKeypath;
-    }
+  public void setCreateTime(Date createTime) {
+    this.createTime = createTime;
+  }
 
-    public String getPrivateKeypath() {
-        return privateKeypath;
-    }
+  public Date getModifyTime() {
+    return modifyTime;
+  }
 
-    public void setPrivateKeypath(String privateKeypath) {
-        this.privateKeypath = privateKeypath;
-    }
-
-    public Integer getIsUsed() {
-        return isUsed;
-    }
-
-    public void setIsUsed(Integer isUsed) {
-        this.isUsed = isUsed;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getModifyTime() {
-        return modifyTime;
-    }
-
-    public void setModifyTime(Date modifyTime) {
-        this.modifyTime = modifyTime;
-    }
-
-    public String getMerchantNo() {
-        return merchantNo;
-    }
-
-    public void setMerchantNo(String merchantNo) {
-        this.merchantNo = merchantNo;
-    }
-
-    public Integer getAppId() {
-        return appId;
-    }
-
-    public void setAppId(Integer appId) {
-        this.appId = appId;
-    }
+  public void setModifyTime(Date modifyTime) {
+    this.modifyTime = modifyTime;
+  }
 }

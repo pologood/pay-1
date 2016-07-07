@@ -60,7 +60,7 @@ public class RefundNotifyController {
     requestPMap.put("data", new PMap(params));
 
     //验签
-    PayAgencyMerchant payAgencyMerchant = payAgencyMerchantService.selectPayAgencyMerchantById(Integer.parseInt(merchantId));
+    PayAgencyMerchant payAgencyMerchant = payAgencyMerchantService.getMerchantById(Integer.parseInt(merchantId));
     if (payAgencyMerchant == null) {
       log.error("[handleNotifyAsync] 查询商户信息失败, merchantId={}", merchantId);
       return "success";

@@ -33,7 +33,7 @@
     <select id="getAgencyInfoByCode" resultMap="agencyInfo">
 
       SELECT * FROM t_pay_agency_info
-         WHERE agency_code = #{agencyCode} and (access_platform = #{accessPlatform} or access_platform=99)
+         WHERE agency_code = #{agencyCode} and (access_platform = #{accessPlatform} or access_platform IS NULL)
          order by access_platform ASC limit 1
     </select>
 

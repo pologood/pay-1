@@ -5,7 +5,7 @@ import com.sogou.pay.common.types.*;
 import com.sogou.pay.common.utils.BeanUtil;
 import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.service.model.PayChannelAdapts;
-import com.sogou.pay.service.model.PayChannelAdapt;
+import com.sogou.pay.service.entity.PayChannel;
 import com.sogou.pay.web.manager.ChannelAdaptManager;
 import com.sogou.pay.service.service.AppService;
 import com.sogou.pay.web.manager.api.PayManager;
@@ -78,13 +78,13 @@ public class GWController extends BaseController {
     //获得支付渠道
     PayChannelAdapts adapts = result.getValue();
     //第三方支付列表
-    List<PayChannelAdapt> thirdPayList = adapts.getThirdPayList();
+    List<PayChannel> thirdPayList = adapts.getThirdPayList();
     //扫码支付列表
-    List<PayChannelAdapt> qrCodeList = adapts.getQrCodeList();
+    List<PayChannel> qrCodeList = adapts.getQrCodeList();
     //网银支付列表
-    List<PayChannelAdapt> bankList = adapts.getBankDebitList();
+    List<PayChannel> bankList = adapts.getBankDebitList();
     //B2B支付列表
-    List<PayChannelAdapt> b2bList = adapts.getB2bList();
+    List<PayChannel> b2bList = adapts.getB2bList();
 
     if (bankList.isEmpty() && thirdPayList.isEmpty() && qrCodeList.isEmpty() && b2bList.isEmpty()) {
       logger.error("[doPay] PayChannelAdapts is empty, params={}", JSONUtil.Bean2JSON(payParams));
@@ -103,7 +103,7 @@ public class GWController extends BaseController {
     ModelAndView view = new ModelAndView("cashier");
     view.addObject("payParams", payParams);
     view.addObject("queryParams", queryParams);
-    view.addObject("companyName", COMPANYMAP.get(app.getBelongCompany()));
+    view.addObject("companyName", COMPANYMAP.get(app.getCompanyId()));
     view.addObject("thirdPayList", thirdPayList);
     view.addObject("qrCodeList", qrCodeList);
     view.addObject("bankList", bankList);

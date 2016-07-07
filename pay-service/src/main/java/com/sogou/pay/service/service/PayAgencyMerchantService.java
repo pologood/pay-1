@@ -15,23 +15,23 @@ public class PayAgencyMerchantService {
   @Autowired
   private PayAgencyMerchantDao payAgencyMerchantDao;
 
-
-  public PayAgencyMerchant selectPayAgencyMerchant(PayAgencyMerchant payAgencyMerchant) {
-    return payAgencyMerchantDao.selectPayAgencyMerchant(payAgencyMerchant);
+  public PayAgencyMerchant getMerchant(PayAgencyMerchant payAgencyMerchant) {
+    return payAgencyMerchantDao.getMerchant(payAgencyMerchant);
   }
 
-
-  public PayAgencyMerchant selectPayAgencyMerchantById(int id) {
-    return payAgencyMerchantDao.selectPayAgencyMerchantById(id);
+  public PayAgencyMerchant getMerchantById(int id) {
+    return payAgencyMerchantDao.getMerchantById(id);
   }
 
-
-  public List<PayAgencyMerchant> selectPayAgencyMerchants(String agencyCode) {
-    return payAgencyMerchantDao.selectPayAgencyMerchants(agencyCode);
+  public List<PayAgencyMerchant> getMerchantsByAgencyCode(String agencyCode) {
+    return payAgencyMerchantDao.getMerchantsByAgencyCode(agencyCode);
   }
 
+  public PayAgencyMerchant getMerchantByAgencyCodeAndMerchantNo(String agencyCode, String merchantNo) {
+    return payAgencyMerchantDao.getMerchantByAgencyCodeAndMerchantNo(agencyCode, merchantNo);
+  }
 
-  public PayAgencyMerchant selectByAgencyAndMerchant(String agencyCode, String merchantNo) {
-    return payAgencyMerchantDao.selectByAgencyAndMerchant(agencyCode, merchantNo);
+  public List<PayAgencyMerchant> routeMerchants(Integer channelId, Integer appId, Integer companyId) {
+    return payAgencyMerchantDao.routeMerchants(channelId, appId, companyId);
   }
 }

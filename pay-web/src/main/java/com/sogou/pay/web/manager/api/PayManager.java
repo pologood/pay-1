@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +16,7 @@ import com.sogou.pay.common.utils.DateUtil;
 import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.service.enums.BankCardType;
 import com.sogou.pay.service.enums.ChannelType;
+import com.sogou.pay.service.entity.PayChannel;
 import com.sogou.pay.service.model.PayOrderQueryModel;
 import com.sogou.pay.service.model.PayNotifyModel;
 import com.sogou.pay.service.entity.*;
@@ -61,7 +63,7 @@ public class PayManager {
   @Autowired
   private AppService appService;
   @Autowired
-  private ChannelService channelService;
+  private PayChannelService channelService;
   @Autowired
   private PayOrderService payOrderService;
   @Autowired
@@ -69,9 +71,7 @@ public class PayManager {
   @Autowired
   private PayReqDetailService payReqDetailService;
   @Autowired
-  private PayBankRouterService payBankRouterService;
-  @Autowired
-  private PayAgencyMerchantService payAgencyMerchantService;
+  private PayAgencyMerchantService merchantService;
   @Autowired
   private PayOrderRelationService payOrderRelationService;
   @Autowired
@@ -124,34 +124,6 @@ public class PayManager {
     logger.info("[createAgencyOrder] params={}", params);
     ResultMap result = ResultMap.build();
 
-    //判断渠道是否是第三方支付
-    String agencyCode = null;//最终调用的支付机构编码，通过channelCode路由得到
-    int accessPlatform = params.getInt("accessPlatform");//接入平台
-    String channelCode = params.getString("channelCode");//支付渠道编码
-    int channelType;//支付渠道类型
-    if (params.getString("channelType") == null) {
-      Channel channel = channelService.selectChannelByCode(channelCode, accessPlatform);
-      if (channel == null) {
-        logger.error("[createAgencyOrder] channel not exists, params={}", JSONUtil.Bean2JSON(params));
-        return (ResultMap) result.withError(ResultStatus.PAY_CHANNEL_NOT_EXIST);
-      }
-      channelType = channel.getChannelType();
-    } else {
-      channelType = params.getInt("channelType");
-    }
-
-    if (channelType == ChannelType.CHANNELTYPE_AGENCY) {
-      //渠道为第三方机构
-      agencyCode = channelCode;
-    } else if (channelType == ChannelType.CHANNELTYPE_BANK || channelType == ChannelType.CHANNELTYPE_B2B) {
-      //渠道为网银支付,路由出第三方支付机构
-      agencyCode = routeBank(params);
-      if (agencyCode == null) {
-        logger.error("[createAgencyOrder] bank router not exists, params={}", JSONUtil.Bean2JSON(params));
-        return (ResultMap) result.withError(ResultStatus.BANK_ROUTER_NOT_EXIST);
-      }
-    }
-
     //获取业务线信息
     App app = appService.selectApp(params.getInt("appId"));
     if (app == null) {
@@ -160,17 +132,26 @@ public class PayManager {
       return (ResultMap) result.withError(ResultStatus.APPID_NOT_EXIST);
     }
 
-    //获取在第三方支付开通的商户信息
-    PayAgencyMerchant agencyMerchant = new PayAgencyMerchant();
-    agencyMerchant.setAgencyCode(agencyCode);
-    agencyMerchant.setCompanyCode(app.getBelongCompany());
-    agencyMerchant.setAppId(app.getAppId());
-    PayAgencyMerchant merchant = payAgencyMerchantService.selectPayAgencyMerchant(agencyMerchant);
-    if (merchant == null) {
-      //第三方支付商户不存在
-      logger.error("[createAgencyOrder] merchant not exists, params={}", JSONUtil.Bean2JSON(params));
+    //判断业务线是否开通相应渠道
+    int appId = app.getAppId();
+    int accessPlatform = params.getInt("accessPlatform");//接入平台
+    String channelCode = params.getString("channelCode");//支付渠道编码
+    PayChannel payChannel = channelService.routeChannel(appId, channelCode, accessPlatform);
+    if (payChannel == null) {
+      logger.error("[createAgencyOrder] route to channel failed, params={}", JSONUtil.Bean2JSON(params));
+      return (ResultMap) result.withError(ResultStatus.PAY_CHANNEL_NOT_EXIST);
+    }
+    int channelType = payChannel.getChannelType();//支付渠道类型
+
+    //支付渠道路由，获取在第三方支付开通的商户信息
+    List<PayAgencyMerchant> agencyMerchants =
+            merchantService.routeMerchants(payChannel.getChannelId(), appId, app.getCompanyId());
+    if (agencyMerchants.size() == 0) {
+      logger.info("[createAgencyOrder] route to merchant failed, params={}", JSONUtil.Bean2JSON(params));
       return (ResultMap) result.withError(ResultStatus.THIRD_MERCHANT_NOT_EXIST);
     }
+    PayAgencyMerchant agencyMerchant = chooseMerchant(agencyMerchants);
+    String agencyCode = agencyMerchant.getAgencyCode();//路由到的支付机构编码
 
     //生成支付流水单
     String payReqId = sequencerGenerator.getPayDetailId();
@@ -187,7 +168,7 @@ public class PayManager {
     payReqDetail.setTrueMoney(new BigDecimal(params.getString("orderAmount")));
     payReqDetail.setAgencyCode(agencyCode);
     payReqDetail.setBankCode(channelCode);
-    payReqDetail.setMerchantNo(merchant.getMerchantNo());
+    payReqDetail.setMerchantNo(agencyMerchant.getMerchantNo());
     payReqDetail.setBankCardType(bankCardType);
     payReqDetail.setCreateTime(payTime);
     try {
@@ -212,7 +193,7 @@ public class PayManager {
     //返回第三方支付、银行、第三方支付商户、支付流水号、支付方式、支付时间
     result.addItem("agencyCode", agencyCode);
     result.addItem("bankCode", channelCode);
-    result.addItem("agencyMerchant", merchant);
+    result.addItem("agencyMerchant", agencyMerchant);
     result.addItem("payDetailId", payReqId);
     result.addItem("payFeeType", channelType);
     result.addItem("payTime", payTime);
@@ -236,40 +217,23 @@ public class PayManager {
     return getThirdPayServiceParams(params);
   }
 
-  //根据路由信息选择网银对应的第三方支付
-  private String routeBank(PMap params) {
-    PayBankRouter payBankRouter = new PayBankRouter();
-    payBankRouter.setBankCode(params.getString("channelCode"));
-    if (!StringUtils.isEmpty(params.getString("bankCardType"))) {
-      payBankRouter.setBankCardType(params.getInt("bankCardType"));
-    }
-    payBankRouter.setAppId(params.getInt("appId"));
-    payBankRouter.setRouterStatus(1);//已启用
-    //查询第三方支付路由信息
-    List<PayBankRouter> routerList = payBankRouterService.selectPayBankRouterList(payBankRouter);
-    if (routerList == null) {
-      logger.info("[routeBank] bank router not exists, params={}", JSONUtil.Bean2JSON(params));
-      return null;
-    }
-    //选择一个第三方支付
-    return selectAgency(routerList);
-  }
-
   //随机选择一个第三方支付，考虑权重
-  private String selectAgency(List<PayBankRouter> routerList) {
-    int random = (int) (Math.random() * 10000) + 1;
-    logger.info("[selectAgency] selected random number is {}", random);
-    int totalScale = 0;
-    int size = routerList.size();
-    for (int i = 0; i < size; i++) {
-      PayBankRouter router = routerList.get(i);
-      totalScale += router.getScale() * 10000;
-      if (random <= totalScale) {
-        logger.info("[selectAgency] selected agencyCode is {}", router.getAgencyCode());
-        return router.getAgencyCode();
+  private PayAgencyMerchant chooseMerchant(List<PayAgencyMerchant> merchants) {
+    PayAgencyMerchant merchant = merchants.get(0);
+    int size = merchants.size();
+    if (size > 1 && merchant.getAppId() == null) {
+      int total = 0;
+      int random = (int) (Math.random() * 10000) + 1;
+      logger.debug("[chooseMerchant] generated random number is {}", random);
+      for (int i = 0; i < size; i++) {
+        merchant = merchants.get(i);
+        total += merchant.getWeight() * 10000;
+        if (random <= total) break;
       }
     }
-    return routerList.get(0).getAgencyCode();
+    logger.info("[chooseMerchant] selected agencyCode={}, merchantNo={}", merchant.getAgencyCode(),
+            merchant.getMerchantNo());
+    return merchant;
   }
 
   //插入支付单信息
@@ -334,29 +298,24 @@ public class PayManager {
         logger.error("[getThirdPayServiceParams] agency not exists, params={}", JSONUtil.Bean2JSON(params));
         return (ResultMap) result.withError(ResultStatus.THIRD_AGENCY_NOT_EXIST);
       }
-      if (ChannelType.CHANNELTYPE_BANK == payFeeType) {
+      if (ChannelType.CHANNELTYPE_BANK == payFeeType ||
+              ChannelType.CHANNELTYPE_B2B == payFeeType) {
         //网银支付 判断该支付机构的银行是否有别名
         request.setBankCode(bankCode);
-        Integer bankCardType;
         Integer aliasFlag;
         if (StringUtils.isEmpty(params.getString("bankCardType"))) {
           //没有传递银行卡类型
-          bankCardType = null;
           aliasFlag = AgencyInfo.ALIASFLAG_ALL;
         } else {
           //传递了银行卡类型
-          bankCardType = params.getInt("bankCardType");
-          aliasFlag = bankCardType;
+          aliasFlag = params.getInt("bankCardType");
         }
         if (AgencyInfo.ALIASFLAG_ALL == agencyInfo.getAliasFlag() || aliasFlag == agencyInfo.getAliasFlag()) {
           //银行有别名，检索银行别名
-          PayBankAlias payBankAlias = payBankAliasService.selectPayBankAlias(agencyCode, bankCode, bankCardType);
+          PayBankAlias payBankAlias = payBankAliasService.selectPayBankAlias(agencyCode, bankCode);
           if (null != payBankAlias) bankCode = payBankAlias.getAliasName();
           request.setBankCode(bankCode);
         }
-      } else if (ChannelType.CHANNELTYPE_B2B == payFeeType) {
-        //企业网银支付
-        request.setBankCode(bankCode);
       }
       request.setAgencyCode(agencyCode);
       request.setPayType(getThirdPayChannel(accessPlatfrom, payFeeType));
@@ -393,7 +352,6 @@ public class PayManager {
       request.setPayId(params.getString("payDetailId"));
       result.withReturn(request);
     } catch (Exception e) {
-      e.printStackTrace();
       logger.error("[getThirdPayServiceParams] error, {}", e);
       result.withError(ResultStatus.SYSTEM_ERROR);
     }
@@ -447,8 +405,8 @@ public class PayManager {
         PayAgencyMerchant merchant = new PayAgencyMerchant();
         merchant.setAgencyCode(payReqDetail.getAgencyCode());
         merchant.setAppId(app.getAppId());
-        merchant.setCompanyCode(app.getBelongCompany());
-        PayAgencyMerchant merchantQuery = payAgencyMerchantService.selectPayAgencyMerchant(merchant);
+        merchant.setCompanyId(app.getCompanyId());
+        PayAgencyMerchant merchantQuery = merchantService.getMerchant(merchant);
         if (merchantQuery == null) {
           logger.error("[queryPayOrder] PayAgencyMerchant not found, params={}", JSONUtil.Bean2JSON(merchant));
           return (ResultMap) result.withError(ResultStatus.THIRD_MERCHANT_NOT_EXIST);

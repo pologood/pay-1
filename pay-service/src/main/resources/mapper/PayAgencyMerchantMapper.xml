@@ -4,75 +4,97 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sogou.pay.service.dao.PayAgencyMerchantDao">
 
-    <resultMap id="payAgencyMerchantMap" type="com.sogou.pay.service.entity.PayAgencyMerchant">
-        <result column="id" property="id"/>
+    <resultMap id="payAgencyMerchant" type="com.sogou.pay.service.entity.PayAgencyMerchant">
+        <result column="merchant_id" property="merchantId"/>
+        <result column="company_id" property="companyId"/>
+        <result column="app_id" property="appId"/>
+        <result column="encryption_type" property="encryptionType"/>
+        <result column="status" property="status"/>
+        <result column="weight" property="weight"/>
         <result column="agency_code" property="agencyCode"/>
-        <result column="company_code" property="companyCode"/>
         <result column="merchant_no" property="merchantNo"/>
         <result column="seller_email" property="sellerEmail"/>
-        <result column="encryption_type" property="encryptionType"/>
         <result column="encrypt_key" property="encryptKey"/>
         <result column="pub_keypath" property="pubKeypath"/>
         <result column="private_keypath" property="privateKeypath"/>
-        <result column="is_used" property="isUsed"/>
         <result column="create_time" property="createTime"/>
         <result column="modify_time" property="modifyTime"/>
     </resultMap>
 
     <sql id="columnList">
-        id,
+        merchant_id,
+        company_id,
+        app_id,
+        encryption_type,
+        `status`,
         agency_code,
-        company_code,
         merchant_no,
         seller_email,
-        encryption_type,
         encrypt_key,
         pub_keypath,
         private_keypath,
-        is_used,
         create_time,
         modify_time
     </sql>
 
     <cache eviction="LRU" type="com.sogou.pay.common.cache.MybatisRedisCache"/>
 
-    <select id="selectPayAgencyMerchant" parameterType="PayAgencyMerchant" resultMap="payAgencyMerchantMap">
+    <select id="getMerchant" parameterType="PayAgencyMerchant" resultMap="payAgencyMerchant">
         SELECT
-        <include refid="columnList" />
+        <include refid="columnList"/>
         FROM t_pay_agency_merchant
-        WHERE is_used = 1
-        <if test = "agencyCode != null">
-          AND agency_code=#{agencyCode}
+        WHERE `status` = 1
+        <if test="agencyCode != null">
+            AND agency_code=#{agencyCode}
         </if>
-        <if test = "companyCode != null">
-          AND (company_code=#{companyCode} OR company_code IS NULL )
+        <if test="companyId != null">
+            AND (company_id=#{companyId} OR company_id IS NULL )
         </if>
-        <if test = "appId != null">
-          AND (app_id=#{appId} OR app_id IS NULL)
+        <if test="appId != null">
+            AND (app_id=#{appId} OR app_id IS NULL)
         </if>
-        ORDER BY app_id DESC, company_code DESC LIMIT 1
+        ORDER BY app_id DESC, company_id DESC LIMIT 1
     </select>
 
-    <select id="selectPayAgencyMerchantById" parameterType="int" resultMap="payAgencyMerchantMap">
+    <select id="getMerchantById" parameterType="int" resultMap="payAgencyMerchant">
         SELECT
-        <include refid="columnList" />
+        <include refid="columnList"/>
         FROM t_pay_agency_merchant
-        WHERE id = #{id}
+        WHERE merchant_id = #{merchantId}
     </select>
 
-    <select id="selectPayAgencyMerchants"  resultMap="payAgencyMerchantMap">
+    <select id="getMerchantsByAgencyCode" resultMap="payAgencyMerchant">
         SELECT
-        <include refid="columnList" />
+        <include refid="columnList"/>
         FROM t_pay_agency_merchant
-        WHERE agency_code = #{agencyCode} and is_used=1
+        WHERE agency_code = #{agencyCode} and `status` = 1
     </select>
 
-    <select id="selectByAgencyAndMerchant"  resultMap="payAgencyMerchantMap">
+    <select id="getMerchantByAgencyCodeAndMerchantNo" resultMap="payAgencyMerchant">
         SELECT
-        <include refid="columnList" />
+        <include refid="columnList"/>
         FROM t_pay_agency_merchant
         WHERE agency_code = #{agencyCode} and merchant_no=#{merchantNo} limit 1
     </select>
 
+    <select id="routeMerchants" resultMap="payAgencyMerchant">
+        SELECT merchant2.*, router2.weight FROM
+        (SELECT * FROM t_pay_channel_router router
+        WHERE router.status = 1 AND router.channel_id=#{channelId}) router2
+        INNER JOIN
+        (SELECT
+        <include refid="columnList"/>
+        FROM t_pay_agency_merchant merchant
+        WHERE merchant.status = 1
+        <if test="appId != null">
+            AND (merchant.app_id=#{appId} OR merchant.app_id IS NULL)
+        </if>
+        <if test="companyId != null">
+            AND (merchant.company_id=#{companyId} OR merchant.company_id IS NULL)
+        </if>
+        ) merchant2
+        ON router2.merchant_id = merchant2.merchant_id
+        ORDER BY app_id DESC, company_id DESC
+    </select>
 
 </mapper>

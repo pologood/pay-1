@@ -144,7 +144,7 @@ public class RefundManager {
     String agencyCode = payResDetail.getAgencyCode(); //支付机构编码
     String merchantNo = payResDetail.getMerchantNo(); //支付机构商户号
     PayAgencyMerchant agencyMerchant = payAgencyMerchantService
-            .selectByAgencyAndMerchant(agencyCode, merchantNo);
+            .getMerchantByAgencyCodeAndMerchantNo(agencyCode, merchantNo);
     if (agencyMerchant == null) {
       logger.error("[refundPay] PayAgencyMerchant not exists, agencyCode={}, merchantNo={}", agencyCode, merchantNo);
       return ResultMap.build(ResultStatus.THIRD_MERCHANT_NOT_EXIST);
@@ -230,7 +230,7 @@ public class RefundManager {
       pMap.put("agencyCode", payResDetail.getAgencyCode());                                     //支付机构编码
       pMap.put("merchantNo", payResDetail.getMerchantNo());                                     //商户号
       pMap.put("refundUrl", agencyInfo.getRefundUrl());                                         //退款请求url
-      String notifyUrl = agencyInfo.getRefundNotifyBackUrl() + "/" + agencyMerchant.getId();
+      String notifyUrl = agencyInfo.getRefundNotifyBackUrl() + "/" + agencyMerchant.getMerchantId();
       pMap.put("refundNotifyUrl", notifyUrl);                                                   //异步回调url
       pMap.put("md5securityKey", agencyMerchant.getEncryptKey());                               //MD5加密秘钥
       pMap.put("publicCertFilePath", agencyMerchant.getPubKeypath());                           //公钥证书地址
@@ -351,9 +351,9 @@ public class RefundManager {
       String agencyCode = refundInfo.getAgencyCode();
       PayAgencyMerchant queryMerchant = new PayAgencyMerchant();
       queryMerchant.setAgencyCode(agencyCode);
-      queryMerchant.setCompanyCode(queryRefundModel.getApp().getBelongCompany());
+      queryMerchant.setCompanyId(queryRefundModel.getApp().getCompanyId());
       queryMerchant.setAppId(queryRefundModel.getApp().getAppId());
-      PayAgencyMerchant agencyMerchant = payAgencyMerchantService.selectPayAgencyMerchant(queryMerchant);
+      PayAgencyMerchant agencyMerchant = payAgencyMerchantService.getMerchant(queryMerchant);
       if (agencyMerchant == null) {
         logger.error("[queryRefund] PayAgencyMerchant not exists, params={}", JSONUtil.Bean2JSON(queryRefundModel));
         return ResultMap.build(ResultStatus.THIRD_MERCHANT_NOT_EXIST);

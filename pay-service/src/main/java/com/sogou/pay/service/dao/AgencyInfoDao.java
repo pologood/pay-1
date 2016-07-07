@@ -6,9 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by wujingpan on 2015/3/2.
- */
+
 @Repository
 public interface AgencyInfoDao {
 

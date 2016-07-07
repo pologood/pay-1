@@ -6,36 +6,36 @@
 
     <resultMap id="appMap" type="com.sogou.pay.service.entity.App" autoMapping="true">
         <result column="id" property="id"/>
-        <result column="app_name" property="appName"/>
         <result column="app_id" property="appId"/>
-        <result column="belong_company" property="belongCompany"/>
-        <result column="sign_key" property="signKey"/>
+        <result column="company_id" property="companyId"/>
         <result column="status" property="status"/>
+        <result column="app_name" property="appName"/>
+        <result column="sign_key" property="signKey"/>
+        <result column="wx_service_no" property="wxServiceNo"/>
         <result column="create_time" property="createTime"/>
         <result column="modify_time" property="modifyTime"/>
-        <result column="wx_service_no" property="wxServiceNo"/>
     </resultMap>
 
     <cache eviction="LRU" type="com.sogou.pay.common.cache.MybatisRedisCache"/>
 
     <insert id="insertApp" parameterType="App">
         insert into t_app(
-        app_name,
         app_id,
-        belong_company,
+        company_id,
+        `status`,
+        app_name,
         sign_key,
-        status,
         wx_service_no,
         create_time,
         modify_time
         )
         values
         (
-        #{appName},
         #{appId},
-        #{belongCompany},
-        #{signKey},
+        #{companyId},
         #{status},
+        #{appName},
+        #{signKey},
         #{wxServiceNo},
         #{createTime},
         #{modifyTime}
@@ -43,11 +43,11 @@
     </insert>
 
     <select id="selectApp"  resultMap="appMap">
-        SELECT * FROM t_app WHERE app_id=#{appId} AND status = 1
+        SELECT * FROM t_app WHERE app_id=#{appId} AND `status` = 1
     </select>
 
     <delete id="deleteApp" parameterType="int">
-        DELETE FROM t_app WHERE appid=#{appid}
+        DELETE FROM t_app WHERE app_id=#{appId}
     </delete>
 
     <select id="selectAppList" resultMap="appMap">

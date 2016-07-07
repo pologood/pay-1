@@ -87,7 +87,7 @@ public class PayNotifyController extends BaseController {
       return ResultMap.build(ResultStatus.REQ_DETAIL_NOT_EXIST);
     }
     String merchantNo = payReqDetail.getMerchantNo();
-    PayAgencyMerchant payAgencyMerchant = payAgencyMerchantService.selectByAgencyAndMerchant(agencyCode, merchantNo);
+    PayAgencyMerchant payAgencyMerchant = payAgencyMerchantService.getMerchantByAgencyCodeAndMerchantNo(agencyCode, merchantNo);
     if (payAgencyMerchant == null) {
       log.error("[parseNotifyParams] 查询商户信息失败, agencyCode={}, merchantNo={}", agencyCode, merchantNo);
       return ResultMap.build(ResultStatus.THIRD_MERCHANT_NOT_EXIST);

@@ -24,7 +24,7 @@ public class AppTest extends BaseTest {
         App app = new App();
         app.setAppName("搜狗某产品");
         app.setAppId(2001);
-        app.setBelongCompany(1);
+        app.setCompanyId(1);
         app.setSignKey("862653da5865293b1ec8cc");
         app.setStatus(1);
         app.setCreateTime(new Date());

@@ -22,9 +22,9 @@ public class PayAgencyMerchantTest extends BaseTest {
     public void selectPayAgencyMerchant(){
         PayAgencyMerchant payAgencyMerchant = new PayAgencyMerchant();
         payAgencyMerchant.setAgencyCode("TENPAY");
-        payAgencyMerchant.setCompanyCode(1);
+        payAgencyMerchant.setCompanyId(1);
         payAgencyMerchant.setAppId(1999);
-        PayAgencyMerchant result = payAgencyMerchantService.selectPayAgencyMerchant(payAgencyMerchant);
+        PayAgencyMerchant result = payAgencyMerchantService.getMerchant(payAgencyMerchant);
         assertEquals("1234274801",result.getMerchantNo());
     }
 
@@ -33,7 +33,7 @@ public class PayAgencyMerchantTest extends BaseTest {
 
         try {
             String agencyCode = AgencyCode.ALIPAY.name();
-            List<PayAgencyMerchant>  list =  payAgencyMerchantService.selectPayAgencyMerchants(agencyCode);
+            List<PayAgencyMerchant>  list =  payAgencyMerchantService.getMerchantsByAgencyCode(agencyCode);
             System.out.println( list);
         }catch (Exception e){
             e.printStackTrace();

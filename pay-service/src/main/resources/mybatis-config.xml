@@ -32,11 +32,11 @@
         <typeAlias alias="AgencyInfo" type="com.sogou.pay.service.entity.AgencyInfo"/>
         <typeAlias alias="PayReqDetail" type="com.sogou.pay.service.entity.PayReqDetail"/>
         <typeAlias alias="PayResDetail" type="com.sogou.pay.service.entity.PayResDetail"/>
-        <typeAlias alias="PayBankRouter" type="com.sogou.pay.service.entity.PayBankRouter"/>
+        <typeAlias alias="PayBankRouter" type="com.sogou.pay.service.entity.PayChannelRouter"/>
         <typeAlias alias="PayAgencyMerchant" type="com.sogou.pay.service.entity.PayAgencyMerchant"/>
         <typeAlias alias="PayOrderRelation" type="com.sogou.pay.service.entity.PayOrderRelation"/>
         <typeAlias alias="PayBankAlias" type="com.sogou.pay.service.entity.PayBankAlias"/>
-        <typeAlias alias="Channel" type="com.sogou.pay.service.entity.Channel"/>
+        <typeAlias alias="PayChannel" type="com.sogou.pay.service.entity.PayChannel"/>
         <typeAlias alias="OrderNotify" type="com.sogou.pay.service.entity.OrderNotify"/>
         <typeAlias alias="PayTransfer" type="com.sogou.pay.service.entity.PayTransfer"/>
         <typeAlias alias="PayTransferBatch" type="com.sogou.pay.service.entity.PayTransferBatch"/>

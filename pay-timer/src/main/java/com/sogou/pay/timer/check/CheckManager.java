@@ -102,7 +102,7 @@ public class CheckManager {
     try {
 
       //查询商户
-      List<PayAgencyMerchant> payAgencyMerchants = payAgencyMerchantService.selectPayAgencyMerchants(agencyCode);
+      List<PayAgencyMerchant> payAgencyMerchants = payAgencyMerchantService.getMerchantsByAgencyCode(agencyCode);
       if (payAgencyMerchants == null || payAgencyMerchants.size() == 0) {
         log.warn("[downloadOrder] PayAgencyMerchant not exists, agencyCode={}", agencyCode);
         return;
