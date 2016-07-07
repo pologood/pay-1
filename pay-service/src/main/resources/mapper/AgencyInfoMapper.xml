@@ -34,7 +34,7 @@
 
       SELECT * FROM t_pay_agency_info
          WHERE agency_code = #{agencyCode} and (access_platform = #{accessPlatform} or access_platform IS NULL)
-         order by access_platform ASC limit 1
+         order by access_platform DESC limit 1
     </select>
 
     <!-- 根据ID获取单条信息-->
