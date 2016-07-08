@@ -6,59 +6,59 @@
 
     <resultMap id="notifyToDoMap" type="com.sogou.pay.notify.entity.NotifyToDo" autoMapping="true">
         <result column="id" property="id"/>
-        <result column="create_time" property="createTime"/>
-        <result column="update_time" property="updateTime"/>
         <result column="pay_id" property="payId"/>
-        <result column="error_info" property="errorInfo"/>
         <result column="notify_num" property="notifyNum"/>
         <result column="notify_status" property="notifyStatus"/>
         <result column="notify_type" property="notifyType"/>
-        <result column="notify_url" property="notifyUrl"/>
         <result column="notify_params" property="notifyParams"/>
+        <result column="notify_url" property="notifyUrl"/>
+        <result column="error_info" property="errorInfo"/>
         <result column="next_time" property="nextTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
     </resultMap>
 
     <sql id="tableColumns">
 		id,
-		create_time,
-		update_time,
 		pay_id,
-		error_info,
 		notify_num,
 		notify_status,
 		notify_type,
-		notify_url,
 		notify_params,
-		next_time
+		notify_url,
+		error_info,
+		next_time,
+		create_time,
+		update_time
 	</sql>
 
     <!--生成错误日志 -->
     <insert id="insertNotifyToDo" parameterType="NotifyToDo">
 		INSERT INTO
 		t_notify_todo (
-		create_time,
-		update_time,
 		pay_id,
-		error_info,
 		notify_num,
 		notify_status,
 		notify_type,
-		notify_url,
 		notify_params,
-		next_time
+		notify_url,
+		error_info,
+		next_time,
+		create_time,
+		update_time
 		)
 		VALUES
 		(
-		now(),
-		now(),
-		#{payId,},
-		#{errorInfo},
+		#{payId},
 		1,
 		0,
 		#{notifyType},
-		#{notifyUrl},
 		#{notifyParams},
-		#{nextTime}
+		#{notifyUrl},
+		#{errorInfo},
+		#{nextTime},
+		now(),
+		now()
 		)
 	</insert>
 

@@ -132,12 +132,12 @@ public class PayNotifyManager {
     PMap<String, String> map = new PMap<>();
     map.put("isSuccess", "T");
     map.put("appId", payOrderInfo.getAppId().toString());
-    map.put("signType", "0");
     map.put("orderId", payOrderInfo.getOrderId());
     map.put("payId", payOrderInfo.getPayId());
     map.put("orderMoney", payOrderInfo.getOrderMoney().toString());
-    map.put("tradeStatus", OrderStatus.SUCCESS.name());
+    map.put("payStatus", OrderStatus.SUCCESS.name());
     map.put("successTime", DateUtil.formatShortTime(patyNotifyModel.getAgencyPayTime()));
+    map.put("signType", "0");
     ResultMap result = (ResultMap) secureManager.doAppSign(map, null, app.getSignKey());
     if (!Result.isSuccess(result)) {
       logger.error("[asyncNotifyApp] doAppSign failed, {}", result);
@@ -160,11 +160,11 @@ public class PayNotifyManager {
     Map<String, String> notifyMap = new HashMap<>();
     notifyMap.put("isSuccess", "T");
     notifyMap.put("appId", payOrderInfo.getAppId().toString());
-    notifyMap.put("signType", "0");
     notifyMap.put("orderId", payOrderInfo.getOrderId());
     notifyMap.put("payId", payOrderInfo.getPayId());
     notifyMap.put("payChannelCode", payOrderInfo.getChannelCode());
     notifyMap.put("successTime", DateUtil.format(payOrderInfo.getPaySuccessTime(), DateUtil.DATE_FORMAT_SECOND_SHORT));
+    notifyMap.put("signType", "0");
     Result result = secureManager.doAppSign(notifyMap, null, app.getSignKey());
     if (!Result.isSuccess(result)) {
       logger.error("[syncNotifyApp] doAppSign failed, {}", result);

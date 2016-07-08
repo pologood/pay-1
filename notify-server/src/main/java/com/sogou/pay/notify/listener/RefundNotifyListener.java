@@ -32,7 +32,7 @@ public class RefundNotifyListener implements MessageListener {
         Map notifyParam = (Map) objectMessage.getObject();
         logger.info("[onMessage] begin, {}", notifyParam);
         String payId = String.valueOf(notifyParam.get("payId"));
-        String appBgURL = String.valueOf(notifyParam.remove("appBgURL"));
+        String appBgURL = String.valueOf(notifyParam.remove("appBgUrl"));
         notifyService.firstNotify(NotifyType.REFUND_NOTIFY, payId, appBgURL, notifyParam);
 
         logger.info("[onMessage] finish, {}", notifyParam);
