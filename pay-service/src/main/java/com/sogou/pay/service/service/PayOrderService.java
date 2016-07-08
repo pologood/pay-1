@@ -23,9 +23,6 @@ public class PayOrderService {
 
   /**
    * 插入支付单信息
-   *
-   * @param payOrderInfo 支付单实体
-   * @return 是否成功标识
    */
 
   public int insertPayOrder(PayOrderInfo payOrderInfo) {
@@ -34,9 +31,6 @@ public class PayOrderService {
 
   /**
    * 根据ID查询支付单信息
-   *
-   * @param payId 支付单ID
-   * @return 支付单信息
    */
 
   public PayOrderInfo selectPayOrderById(String payId) {
@@ -45,9 +39,6 @@ public class PayOrderService {
 
   /**
    * 根据支付单流水号查询支付单信息
-   *
-   * @param reqId 支付单流水号
-   * @return 支付单List
    */
 
   public List<PayOrderInfo> selectPayOrderByPayIdList(List<PayOrderRelation> relationList) {
@@ -65,9 +56,6 @@ public class PayOrderService {
 
   /**
    * 根据ID查询支付单信息
-   *
-   * @param payOrderInfo 支付单信息
-   * @return 支付单信息
    */
 
   public void updatePayOrder(PayOrderInfo payOrderInfo) {
@@ -76,24 +64,13 @@ public class PayOrderService {
 
   /**
    * 根据支付流水单更新支付单状态
-   *
-   * @param payId          支付单ID
-   * @param payOrderStatus 更新的状态
-   * @param successTime    成功时间
-   * @return 是否成功
    */
 
-  public void updatePayOrderByPayId(String payId, String bankCode, int payOrderStatus, Date successTime) {
-    payOrderDao.updatePayOrderByPayId(payId, bankCode, payOrderStatus, successTime);
+  public void updatePayOrderByPayId(String payId, String channelCode, int payStatus, Date paySuccessTime) {
+    payOrderDao.updatePayOrderByPayId(payId, channelCode, payStatus, paySuccessTime);
   }
 
-  /**
-   * @param orderId
-   * @return 支付单信息
-   * @Author huangguoqing
-   * @MethodName selectPayOrderInfoByOrderId
-   * @Date 2015年3月17日
-   * @Description:根据订单ID查询支付单信息
+  /**根据订单ID查询支付单信息
    */
   @Profiled(el = true, logger = "dbTimingLogger", tag = "PayOrderService_selectPayOrderInfoByOrderId",
           timeThreshold = 100, normalAndSlowSuffixesEnabled = true)

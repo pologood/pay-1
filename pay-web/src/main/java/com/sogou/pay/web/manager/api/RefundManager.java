@@ -104,7 +104,7 @@ public class RefundManager {
         return ResultMap.build(ResultStatus.ORDER_NOT_EXIST);
       }
       //检查是否成功支付
-      if (OrderStatus.SUCCESS.getValue() != payOrderInfo.getPayOrderStatus()) {
+      if (OrderStatus.SUCCESS.getValue() != payOrderInfo.getPayStatus()) {
         logger.error("[isOrderRefundable] order not paid, params={}, result={}", JSONUtil.Bean2JSON(model),
                 JSONUtil.Bean2JSON(payOrderInfo));
         return ResultMap.build(ResultStatus.ORDER_NOT_PAY);
@@ -360,7 +360,7 @@ public class RefundManager {
       }
       //获得支付机构信息
       AgencyInfo agencyInfo = agencyInfoService
-              .getAgencyInfoByCode(agencyCode, payOrderInfo.getAccessPlatForm());
+              .getAgencyInfoByCode(agencyCode, payOrderInfo.getAccessPlatform());
       if (agencyInfo == null) {
         //支付机构不存在
         logger.error("[queryRefund] AgencyInfo not exists, params={}", JSONUtil.Bean2JSON(queryRefundModel));

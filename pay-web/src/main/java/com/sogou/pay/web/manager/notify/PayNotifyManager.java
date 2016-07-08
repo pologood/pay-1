@@ -90,7 +90,7 @@ public class PayNotifyManager {
       payManager.completePay(payNotifyModel, payOrderInfo, payReqDetail);
 
       //最后,检验重复支付
-      if (OrderStatus.SUCCESS.getValue() == payOrderInfo.getPayOrderStatus()) {
+      if (OrderStatus.SUCCESS.getValue() == payOrderInfo.getPayStatus()) {
         //重复支付，需退款
         logger.warn("[handlePayNotify] 重复支付，需退款: {}", JSONUtil.Bean2JSON(payNotifyModel));
         App app = new App();

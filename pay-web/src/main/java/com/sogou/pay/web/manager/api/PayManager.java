@@ -17,6 +17,7 @@ import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.service.enums.BankCardType;
 import com.sogou.pay.service.enums.ChannelType;
 import com.sogou.pay.service.entity.PayChannel;
+import com.sogou.pay.service.enums.RefundFlag;
 import com.sogou.pay.service.model.PayOrderQueryModel;
 import com.sogou.pay.service.model.PayNotifyModel;
 import com.sogou.pay.service.entity.*;
@@ -103,11 +104,12 @@ public class PayManager {
       PayOrderInfo info = payOrderService.selectPayOrderInfoByOrderId(orderId, appId);
       if (info == null) {
         return insertPayOrder(params);
-      } else if (info.getPayOrderStatus() == OrderStatus.SUCCESS.getValue()) {
+      } else if (info.getPayStatus() == OrderStatus.SUCCESS.getValue()) {
         //该支付单已经支付成功，直接返回业务线
         result.withError(ResultStatus.ORDER_ALREADY_DONE);
       }
       //继续支付
+      restorePayOrder((PMap<String, Object>) params, info);
       result.withReturn(info.getPayId());
     } catch (Exception e) {
       logger.error("[createOrder] failed, params={}, {}", JSONUtil.Bean2JSON(params), e);
@@ -157,9 +159,6 @@ public class PayManager {
     String payReqId = sequencerGenerator.getPayDetailId();
     Date payTime = new Date();
     int bankCardType = BankCardType.BANKCARDTYPE_ANY;
-    if (!StringUtils.isEmpty(params.getString("bankCardType"))) {
-      bankCardType = params.getInt("bankCardType");
-    }
     PayReqDetail payReqDetail = new PayReqDetail();
     payReqDetail.setPayDetailId(payReqId);
     payReqDetail.setAccessPlatform(accessPlatform);
@@ -237,34 +236,27 @@ public class PayManager {
   }
 
   //插入支付单信息
-  public ResultMap<String> insertPayOrder(PMap<String, ?> params) {
+  private ResultMap<String> insertPayOrder(PMap<String, ?> params) {
     ResultMap<String> result = ResultMap.build();
     try {
-      StringBuilder productInfo = new StringBuilder()
-              .append("商品名称:").append(params.get("productName"))
-              .append(",商品数量:").append(params.get("productNum"));
-      if (!StringUtils.isEmpty(params.getString("productDesc"))) {
-        productInfo.append(",商品描述:").append(params.get("productDesc"));
-      }
       Date date = new Date();
       String payId = sequencerGenerator.getPayId();
       PayOrderInfo payOrderInfo = new PayOrderInfo();
       payOrderInfo.setPayId(payId);
       payOrderInfo.setOrderType(1);
       payOrderInfo.setOrderId(params.getString("orderId"));
-      payOrderInfo.setProductInfo(productInfo.toString());
+      payOrderInfo.setProductInfo(params.getString("productName"));
       payOrderInfo.setOrderMoney(new BigDecimal(params.getString("orderAmount")));
-      payOrderInfo.setBuyHomeIp(params.getString("userIp"));
-      payOrderInfo.setBuyHomeAccount(params.getString("accountId"));
-      payOrderInfo.setAccessPlatForm(Integer.parseInt(params.getString("accessPlatform")));
-      payOrderInfo.setChannelCode(params.getString("bankId"));
-      payOrderInfo.setPayOrderStatus(1);//未支付
+      payOrderInfo.setBuyerIp(params.getString("userIp"));
+      payOrderInfo.setBuyerAccount(params.getString("accountId"));
+      payOrderInfo.setAccessPlatform(Integer.parseInt(params.getString("accessPlatform")));
+      payOrderInfo.setChannelCode(params.getString("channelCode"));
+      payOrderInfo.setPayStatus(OrderStatus.NOTPAY.getValue());//未支付
       payOrderInfo.setRefundMoney(BigDecimal.ZERO);
-      payOrderInfo.setRefundFlag(1);//未退款
+      payOrderInfo.setRefundFlag(RefundFlag.INIT.getValue());//未退款
       payOrderInfo.setAppPageUrl(params.getString("pageUrl"));
       payOrderInfo.setAppBgUrl(params.getString("bgUrl"));
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-      payOrderInfo.setOrderCreateTime(sdf.parse(params.getString("orderTime")));
+      payOrderInfo.setOrderCreateTime(DateUtil.parse(params.getString("orderTime"), DateUtil.DATE_FORMAT_SECOND_SHORT));
       payOrderInfo.setCreateTime(date);
       payOrderInfo.setPaySuccessTime(date);
       payOrderInfo.setAppId(Integer.parseInt(params.getString("appId")));
@@ -283,8 +275,17 @@ public class PayManager {
     return result;
   }
 
+  //恢复支付订单
+  private void restorePayOrder(PMap<String, Object> params, PayOrderInfo info) {
+    params.put("orderAmount", String.valueOf(info.getOrderMoney()));
+    params.put("accessPlatform", String.valueOf(info.getAccessPlatform()));
+    params.put("channelCode", info.getChannelCode());
+    params.put("productName", info.getProductInfo());
+    params.put("accountId", info.getBuyerAccount());
+  }
+
   //组装调用支付网关所需的参数
-  public ResultMap getThirdPayServiceParams(PMap params) {
+  private ResultMap getThirdPayServiceParams(PMap params) {
     ResultMap<StdPayRequest> result = ResultMap.build();
     StdPayRequest request = new StdPayRequest();
     try {
@@ -302,14 +303,7 @@ public class PayManager {
               ChannelType.CHANNELTYPE_B2B == payFeeType) {
         //网银支付 判断该支付机构的银行是否有别名
         request.setBankCode(bankCode);
-        Integer aliasFlag;
-        if (StringUtils.isEmpty(params.getString("bankCardType"))) {
-          //没有传递银行卡类型
-          aliasFlag = AgencyInfo.ALIASFLAG_ALL;
-        } else {
-          //传递了银行卡类型
-          aliasFlag = params.getInt("bankCardType");
-        }
+        Integer aliasFlag = AgencyInfo.ALIASFLAG_ALL;
         if (AgencyInfo.ALIASFLAG_ALL == agencyInfo.getAliasFlag() || aliasFlag == agencyInfo.getAliasFlag()) {
           //银行有别名，检索银行别名
           PayBankAlias payBankAlias = payBankAliasService.selectPayBankAlias(agencyCode, bankCode);
@@ -375,7 +369,7 @@ public class PayManager {
         return (ResultMap) result.withError(ResultStatus.ORDER_NOT_EXIST);
       }
       //检查支付单里的支付状态是否成功，成功则返回
-      boolean orderSuccess = payOrderInfo.getPayOrderStatus() == OrderStatus.SUCCESS.getValue();
+      boolean orderSuccess = payOrderInfo.getPayStatus() == OrderStatus.SUCCESS.getValue();
       if (orderSuccess && !model.isFromCashier()) {
         //result.addItem("payStatus", OrderStatus.SUCCESS);
         //return result;
@@ -503,7 +497,7 @@ public class PayManager {
     BigDecimal payAmount = payNotifyModel.getTrueMoney();
     String merchantNo = payReqDetail.getMerchantNo();
     int payFeeType = payReqDetail.getPayFeeType();
-    int accessPlatform = payOrderInfo.getAccessPlatForm();
+    int accessPlatform = payOrderInfo.getAccessPlatform();
     return payFeeService.getPayFee(payAmount, merchantNo, payFeeType, accessPlatform);
   }
 
