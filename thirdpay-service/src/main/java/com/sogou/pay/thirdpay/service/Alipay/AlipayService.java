@@ -255,6 +255,7 @@ public class AlipayService implements ThirdpayService {
     }
     ResultMap<?> result = ResultMap.build();
     result.addItem("orderInfo", payInfo);
+    result.addItem("agencyCode", params.getAgencyCode());
     result.addItem("aliPublicKey", publicCertKey);
     return result;
   }

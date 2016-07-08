@@ -111,8 +111,8 @@ public class WechatService implements ThirdpayService {
 
     //检查返回参数
     if (StringUtils.isEmpty(responsePMap.getString("return_code"))
-        || StringUtils.isEmpty(responsePMap.getString("result_code"))
-        || StringUtils.isEmpty(responsePMap.getString("sign"))) {
+            || StringUtils.isEmpty(responsePMap.getString("result_code"))
+            || StringUtils.isEmpty(responsePMap.getString("sign"))) {
       LOGGER.error("[prepay] response error, request={}, response={}", requestPMap, responsePMap);
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
@@ -189,7 +189,9 @@ public class WechatService implements ThirdpayService {
     result = signMD5(requestPMap, params.getMd5Key());
     if (!Result.isSuccess(result)) return result;
 
-    return ResultMap.build().addItem("orderInfo", requestPMap);
+    return ResultMap.build().
+            addItem("orderInfo", requestPMap).
+            addItem("agencyCode", params.getAgencyCode());
   }
 
   /**
@@ -286,7 +288,7 @@ public class WechatService implements ThirdpayService {
     requestPMap.put("out_refund_no", params.getString("refundSerialNumber")); //商户退款号
 
     ResultMap<?> result = doRequest(params.getString("queryRefundUrl"), params.getString("md5securityKey"),
-        requestPMap);
+            requestPMap);
     if (!Result.isSuccess(result)) {
       LOGGER.error("[queryRefundOrder] failed, params={}", params);
       return result;
@@ -337,7 +339,7 @@ public class WechatService implements ThirdpayService {
     //发起请求
     String paramsStr = XMLUtil.Map2XML("xml", requestPMap);
     Result<?> httpResponse = HttpService.getInstance().doPost(params.getString("downloadUrl"), paramsStr, INPUT_CHARSET,
-        null);
+            null);
     if (!Result.isSuccess(httpResponse)) {
       LOGGER.error("[downloadOrder] http request failed, url={}, params={}", params.getString("downloadUrl"), paramsStr);
       return ResultMap.build(ResultStatus.THIRD_HTTP_ERROR);

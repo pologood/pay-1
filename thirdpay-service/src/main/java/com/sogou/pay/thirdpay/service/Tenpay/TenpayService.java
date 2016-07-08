@@ -82,8 +82,8 @@ public class TenpayService implements ThirdpayService {
     // 资金回流到商户的现金帐号, 需要商户人工干预, 通过线下或者财付通转账的方式进行退款。
     REFUND_STATUS.put("7", OrderRefundStatus.OFFLINE.name());
     REFUND_STATUS.put("DEFAULT", OrderRefundStatus.UNKNOWN.name());//默认
-    REFUND_OPUSER.put("1234274801", new String[] { "1234274801123", "1234567809ted", "813368" });//搜狗网络商户账号、操作员账号、密码、证书导入密码
-    REFUND_OPUSER.put("1234639901", new String[] { "1234639901123", "1234567809ted", "145404" });//搜狗科技商户账号、操作员账号、密码、证书导入密码
+    REFUND_OPUSER.put("1234274801", new String[]{"1234274801123", "1234567809ted", "813368"});//搜狗网络商户账号、操作员账号、密码、证书导入密码
+    REFUND_OPUSER.put("1234639901", new String[]{"1234639901123", "1234567809ted", "145404"});//搜狗科技商户账号、操作员账号、密码、证书导入密码
   }
 
   private ResultMap<?> preparePayInfo(StdPayRequest params, String bankCode) throws ServiceException {
@@ -170,7 +170,9 @@ public class TenpayService implements ThirdpayService {
       log.error("[preparePayInfoMobile] response error, request={}, response={}", requestPMap, tenpayMap);
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
-    return ResultMap.build().addItem("token_id", token_id);
+    return ResultMap.build().
+            addItem("orderInfo", token_id).
+            addItem("agencyCode", params.getAgencyCode());
   }
 
   @Override
@@ -363,7 +365,7 @@ public class TenpayService implements ThirdpayService {
     Result<?> httpResponse = httpClient.doGet(params.getString("queryRefundUrl"), requestPMap);
     if (httpResponse.getStatus() != ResultStatus.SUCCESS) {
       log.error("[queryRefundOrder] http request failed, url={}, params={}", params.getString("queryRefundUrl"),
-          requestPMap);
+              requestPMap);
       return ResultMap.build(ResultStatus.THIRD_HTTP_ERROR);
     }
     String resContent = (String) httpResponse.getReturnValue();
