@@ -7,15 +7,15 @@ import static groovyx.net.http.ContentType.URLENC
 
 class PayRoutines {
 
-    static String gwPay(BDD bdd, def ctx, def bankId, def accessPlatform, def payUrl, def orderId, def status) {
+    static String gwPay(BDD bdd, def ctx, def channelCode, def accessPlatform, def payUrl, def orderId, def status) {
         def payAgain = false
         if (PayUtils.isEmpty(orderId))
             orderId = "OD" + PayUtils.getSequenceNo()
         else
             payAgain = true
 
-        if (!bankId.startsWith("TEST_"))
-            bankId = "TEST_" + bankId
+        if (!channelCode.startsWith("TEST_"))
+            channelCode = "TEST_" + channelCode
 
         //网页支付API
         def params = [
@@ -27,7 +27,7 @@ class PayRoutines {
                 orderTime     : PayUtils.getCurrentTime(),
                 productName   : "测试商品",
                 productNum    : "1",
-                bankId        : bankId,
+                channelCode        : channelCode,
                 appId         : ctx.appId,
                 signType      : "0",
                 accessPlatform: accessPlatform
@@ -74,25 +74,25 @@ class PayRoutines {
     }
 
     //PC网页支付
-    static String gwPayWeb(BDD bdd, def ctx, def bankId, def orderId, def status = "SUCCESS") {
-        return gwPay(bdd, ctx, bankId, "1", ctx.gwPayWebUrl, orderId, status);
+    static String gwPayWeb(BDD bdd, def ctx, def channelCode, def orderId, def status = "SUCCESS") {
+        return gwPay(bdd, ctx, channelCode, "1", ctx.gwPayWebUrl, orderId, status);
     }
 
     //手机网页支付
-    static String gwPayWap(BDD bdd, def ctx, def bankId, def orderId, def status = "SUCCESS") {
-        return gwPay(bdd, ctx, bankId, "2", ctx.gwPayWapUrl, orderId, status);
+    static String gwPayWap(BDD bdd, def ctx, def channelCode, def orderId, def status = "SUCCESS") {
+        return gwPay(bdd, ctx, channelCode, "2", ctx.gwPayWapUrl, orderId, status);
     }
 
     //手机App支付
-    static String apiPaySDK(BDD bdd, def ctx, def bankId, def orderId, def status = "SUCCESS") {
+    static String apiPaySDK(BDD bdd, def ctx, def channelCode, def orderId, def status = "SUCCESS") {
         def payAgain = false
         if (PayUtils.isEmpty(orderId))
             orderId = "OD" + PayUtils.getSequenceNo()
         else
             payAgain = true
 
-        if (!bankId.startsWith("TEST_"))
-            bankId = "TEST_" + bankId
+        if (!channelCode.startsWith("TEST_"))
+            channelCode = "TEST_" + channelCode
 
         //SDK支付API
         def params = [
@@ -104,7 +104,7 @@ class PayRoutines {
                 orderTime     : PayUtils.getCurrentTime(),
                 productName   : "测试商品",
                 productNum    : "1",
-                bankId        : bankId,
+                channelCode        : channelCode,
                 appId         : ctx.appId,
                 signType      : "0",
                 accessPlatform: "3"
@@ -131,12 +131,12 @@ class PayRoutines {
             return orderId
         }
 
-        if (bankId == "TEST_ALIPAY")
+        if (channelCode == "TEST_ALIPAY")
             orderInfo = PayUtils.urlEncode(orderInfo)
-        else if (bankId == "TEST_WECHAT")
+        else if (channelCode == "TEST_WECHAT")
             orderInfo = PayUtils.jsonSerialize(orderInfo)
 
-        def sdkUrl = ctx.fakeURL["$bankId"]
+        def sdkUrl = ctx.fakeURL["$channelCode"]
         def host = PayUtils.parseHost(sdkUrl)
         def header_host = [host: "$host"]
 
@@ -156,15 +156,15 @@ class PayRoutines {
     }
 
     //PC扫码支付
-    static String apiPayQRCode(BDD bdd, def ctx, def bankId, def orderId, def status = "SUCCESS") {
+    static String apiPayQRCode(BDD bdd, def ctx, def channelCode, def orderId, def status = "SUCCESS") {
         def payAgain = false
         if (PayUtils.isEmpty(orderId))
             orderId = "OD" + PayUtils.getSequenceNo()
         else
             payAgain = true
 
-        if (!bankId.startsWith("TEST_"))
-            bankId = "TEST_" + bankId
+        if (!channelCode.startsWith("TEST_"))
+            channelCode = "TEST_" + channelCode
 
         //SDK支付API
         def params = [
@@ -176,7 +176,7 @@ class PayRoutines {
                 orderTime     : PayUtils.getCurrentTime(),
                 productName   : "测试商品",
                 productNum    : "1",
-                bankId        : bankId,
+                channelCode        : channelCode,
                 appId         : ctx.appId,
                 signType      : "0",
                 accessPlatform: "4"
@@ -205,9 +205,9 @@ class PayRoutines {
 
         //模拟扫码
         def qrcodeUrl = null
-        if (bankId == "TEST_ALIPAY")
+        if (channelCode == "TEST_ALIPAY")
             qrcodeUrl = qrCode
-        else if (bankId == "TEST_WECHAT")
+        else if (channelCode == "TEST_WECHAT")
         //从二维码中提取支付链接
             qrcodeUrl = PayUtils.QRCode2Text(qrCode)
 
