@@ -89,8 +89,10 @@ public class UnionpayService implements ThirdpayService {
       return result;
     }
 
+    PMap<String, Object> orderInfo = new PMap<>();
+    orderInfo.put("tn", result.getItem("tn"));
     return ResultMap.build().
-            addItem("orderInfo", result.getData()).
+            addItem("orderInfo", orderInfo).
             addItem("agencyCode", params.getAgencyCode());
   }
 

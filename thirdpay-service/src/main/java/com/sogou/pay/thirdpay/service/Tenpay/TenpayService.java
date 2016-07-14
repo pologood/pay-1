@@ -170,8 +170,10 @@ public class TenpayService implements ThirdpayService {
       log.error("[preparePayInfoMobile] response error, request={}, response={}", requestPMap, tenpayMap);
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
+    PMap<String, Object> orderInfo = new PMap<>();
+    orderInfo.put("token_id", token_id);
     return ResultMap.build().
-            addItem("orderInfo", token_id).
+            addItem("orderInfo", orderInfo).
             addItem("agencyCode", params.getAgencyCode());
   }
 
