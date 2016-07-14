@@ -278,8 +278,8 @@ public class PayManager {
   //恢复支付订单
   private void restorePayOrder(PMap<String, Object> params, PayOrderInfo info) {
     params.put("orderAmount", String.valueOf(info.getOrderMoney()));
-    params.put("accessPlatform", String.valueOf(info.getAccessPlatform()));
-    params.put("channelCode", info.getChannelCode());
+//    params.put("accessPlatform", String.valueOf(info.getAccessPlatform()));
+//    params.put("channelCode", info.getChannelCode());
     params.put("productName", info.getProductInfo());
     params.put("accountId", info.getBuyerAccount());
   }

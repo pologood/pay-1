@@ -162,7 +162,7 @@ public class PayNotifyManager {
     notifyMap.put("appId", payOrderInfo.getAppId().toString());
     notifyMap.put("orderId", payOrderInfo.getOrderId());
     notifyMap.put("payId", payOrderInfo.getPayId());
-    notifyMap.put("payChannelCode", payOrderInfo.getChannelCode());
+    notifyMap.put("channelCode", payOrderInfo.getChannelCode());
     notifyMap.put("successTime", DateUtil.format(payOrderInfo.getPaySuccessTime(), DateUtil.DATE_FORMAT_SECOND_SHORT));
     notifyMap.put("signType", "0");
     Result result = secureManager.doAppSign(notifyMap, null, app.getSignKey());

@@ -30,7 +30,7 @@
                     params[target.prop("name")] = target.prop("value");
                 }
         );
-        params["bankId"] = channelCode;
+        params["channelCode"] = channelCode;
         params["accessPlatform"] = 4;
         $.ajax({
             url: "/api/pay/qrcode",
@@ -194,7 +194,7 @@
                                 <c:forEach var="thirdPay" items="${thirdPayList}" varStatus="status">
                                     <li>
                                         <label>
-                                            <input type="radio" name="bankId" value="${thirdPay.channelCode}"
+                                            <input type="radio" name="channelCode" value="${thirdPay.channelCode}"
                                                    <c:if test="${status.count==1}">checked="checked"</c:if> class="sm"
                                                    data-flag="THIRD"/>
                                             <img src="${thirdPay.logo}"/>
@@ -211,7 +211,7 @@
                                 <c:forEach var="qrCodePay" items="${qrCodeList}">
                                     <li>
                                         <label>
-                                            <input type="radio" name="bankId" value="${qrCodePay.channelCode}"
+                                            <input type="radio" name="channelCode" value="${qrCodePay.channelCode}"
                                                    class="sm"
                                                    data-flag="QRCODE"/>
                                             <img src="${qrCodePay.logo}"/>
@@ -244,7 +244,7 @@
                                 <c:forEach var="bankPay" items="${bankList}">
                                     <li>
                                         <label>
-                                            <input type="radio" name="bankId" value="${bankPay.channelCode}" class="sm"
+                                            <input type="radio" name="channelCode" value="${bankPay.channelCode}" class="sm"
                                                    data-flag="BANK"/>
                                             <img src="${bankPay.logo}"/>
                                         </label>
@@ -264,7 +264,7 @@
                                 <c:forEach var="b2bPay" items="${b2bList}">
                                     <li>
                                         <label>
-                                            <input type="radio" name="bankId" value="${b2bPay.channelCode}" class="sm"
+                                            <input type="radio" name="channelCode" value="${b2bPay.channelCode}" class="sm"
                                                    data-flag="BANKB2B"/>
                                             <img src="${b2bPay.logo}"/>
                                         </label>

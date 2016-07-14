@@ -136,7 +136,7 @@ public class GWController extends BaseController {
       logger.error("[doPay][selectApp][Failed] appid not exists, params={}", JSONUtil.Bean2JSON(payParamsMap));
       return setErrorPage(ResultStatus.APPID_NOT_EXIST, platform);
     }
-    //如果是收银台请求，则排除bankId, accessPlatform再验签
+    //如果是收银台请求，则排除channelCode, accessPlatform再验签
     boolean fromCashier = Objects.equals(payForm.getFromCashier(), "true");
     Result result = secureManager.verifyAppSign(payParamsMap, fromCashier ? cashierSignExcludes : signExcludes, app.getSignKey());
     if (!Result.isSuccess(result)) {
@@ -145,7 +145,7 @@ public class GWController extends BaseController {
       return setErrorPage(result.getStatus(), platform);
     }
 
-    if (StringUtils.isBlank(payForm.getBankId())) {
+    if (StringUtils.isBlank(payForm.getChannelCode())) {
       //未指定支付渠道，返回收银台页面
       //组装重新支付参数
       payParamsMap.put("fromCashier", "true");
@@ -171,7 +171,6 @@ public class GWController extends BaseController {
     } else {
       //指定了支付渠道
       payParamsMap.put("userIp", ServletUtil.getRealIp(request));
-      payParamsMap.put("channelCode", payForm.getBankId());
       //创建支付订单
       Result result2 = payManager.createOrder(payParamsMap);
       if (!Result.isSuccess(result2)) {

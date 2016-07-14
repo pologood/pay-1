@@ -23,65 +23,64 @@ import javax.validation.constraints.Min;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class PayForm {
 
-  @NotBlank(message = "版本号不能为空！")
+  @NotBlank(message = "version不能为空")
   private String version;     //版本号
 
-  @NotBlank(message = "商户订单号不能为空！")
+  @NotBlank(message = "orderId不能为空")
   @Length(max = 32)
   private String orderId;     //商户订单号
 
-  @NotBlank(message = "订单金额不能空,！")
+  @NotBlank(message = "orderAmount不能空")
   @DecimalMin(value = "0.01", message = "金额最小为0.01元")
-  @Amount(message = "订单金额格式为必须是大于0的浮点数，整数部分最多10位，两位小数")
+  @Amount(message = "orderAmount必须是大于0的浮点数，整数部分最多10位，两位小数")
   private String orderAmount;  //订单金额
 
   @Date
   private String orderTime;   //订单时间
 
-  @Length(max = 20)
+  @Length(max = 32)
   private String accountId;   //付款方账号
 
-  @NotBlank(message = "商品名称不能为空！")
+  @NotBlank(message = "productName不能为空")
   @Length(max = 128)
   private String productName; //商品名称
 
-  @NotBlank(message = "商品数量不能为空")
-  @Length(max = 6, message = "商品数量最多为6位")
+  @Length(max = 6, message = "productNum最多为6位整数")
   @PositiveNumber
   private String productNum;   //商品数量
 
-  @Length(max = 512, message = "商品描述最多400位")
+  @Length(max = 512, message = "productDesc最多512个字符")
   private String productDesc;  //商品描述
 
-  private String bankId;       //  渠道ID(一期做有银行ID)
+  private String channelCode;//  渠道ID
 
-  @NotBlank(message = "业务ID不能为空！")
-  @Digits(integer = 6, fraction = 0, message = "业务平台ID必须为整数")
+  @NotBlank(message = "appId不能为空")
+  @Digits(integer = 6, fraction = 0, message = "appId必须为整数")
   private String appId;        //业务平台ID
 
   @Digits(integer = 1, fraction = 0)
-  @Min(value = 1, message = "接入平台代码最小为1！")
-  @Max(value = 4, message = "接入平台代码最大为3！")
+  @Min(value = 1, message = "accessPlatform最小为1")
+  @Max(value = 4, message = "accessPlatform最大为4")
   private String accessPlatform;//接入平台 1:PC 2:WAP 3:SDK 4:QRCODE
 
-  @Digits(integer = 1, fraction = 0, message = "签名类型必须为整数！")
-  @Min(value = 0, message = "签名类型数值最小是0！")
-  @Max(value = 1, message = "签名类型数值最大为1！")
+  @NotBlank(message = "signType不能为空")
+  @Digits(integer = 1, fraction = 0, message = "signType必须为整数")
+  @Min(value = 0, message = "signType最小是0")
+  @Max(value = 1, message = "signType最大为1")
   private String signType;     //签名类型 0：MD5 1：RSA
 
+  @NotBlank(message = "sign不能为空")
   private String sign;         //签名值
 
-  @NotBlank(message = "前台通知地址不能为空！")
-  @URL(message = "前台通知地址必须为URL格式！")
+  @NotBlank(message = "pageUrl不能为空")
+  @URL(message = "pageUrl必须为URL格式")
   @Length(max = 256)
   private String pageUrl;       // 前台通知地址
 
-  @NotBlank(message = "后台通知地址不能为空！")
-  @URL(message = "后台通知地址必须为URL格式！")
+  @NotBlank(message = "bgUrl不能为空")
+  @URL(message = "bgUrl必须为URL格式")
   @Length(max = 256)
   private String bgUrl;       // 后台通知地址
-
-  private String appData;      //透传参数
 
   @BankCardType
   private String bankCardType; //银行卡类型
@@ -152,12 +151,12 @@ public class PayForm {
     this.productDesc = productDesc;
   }
 
-  public String getBankId() {
-    return bankId;
+  public String getChannelCode() {
+    return channelCode;
   }
 
-  public void setBankId(String bankId) {
-    this.bankId = StringUtils.trim(bankId);
+  public void setChannelCode(String channelCode) {
+    this.channelCode = channelCode;
   }
 
   public String getAppId() {
@@ -206,14 +205,6 @@ public class PayForm {
 
   public void setBgUrl(String bgUrl) {
     this.bgUrl = StringUtils.trim(bgUrl);
-  }
-
-  public String getAppData() {
-    return appData;
-  }
-
-  public void setAppData(String appData) {
-    this.appData = StringUtils.trim(appData);
   }
 
   public String getBankCardType() {

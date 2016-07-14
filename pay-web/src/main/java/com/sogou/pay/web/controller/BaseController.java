@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class BaseController {
 
-  protected static Set<String> cashierSignExcludes = Sets.newHashSet("sign", "bankId", "accessPlatform");
+  protected static Set<String> cashierSignExcludes = Sets.newHashSet("sign", "channelCode", "accessPlatform");
 
   protected static Set<String> signExcludes = Sets.newHashSet("sign");
 

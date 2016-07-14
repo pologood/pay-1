@@ -72,7 +72,7 @@ public class APIController extends BaseController {
     List validateResult = ControllerUtil.validateParams(params);
     if (validateResult.size() > 0) {
       logger.error("[commonCheck][validateParams][Failed]{}",
-          validateResult.toString().substring(1, validateResult.toString().length() - 1));
+              validateResult.toString().substring(1, validateResult.toString().length() - 1));
       return (ResultMap) resultMap.withError(ResultStatus.PARAM_ERROR);
     }
     PMap paramsMap = BeanUtil.Bean2PMap(params);
@@ -98,8 +98,8 @@ public class APIController extends BaseController {
 
   //sdk支付、扫码支付
   @Profiled(el = true, logger = "webTimingLogger", tag = "/api/pay", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-  @RequestMapping(value = { "/pay/sdk",
-      "/pay/qrcode" }, method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+  @RequestMapping(value = {"/pay/sdk",
+          "/pay/qrcode"}, method = RequestMethod.POST, produces = "application/json; charset=utf-8")
   @ResponseBody
   public ResultMap doPay(PayForm params, HttpServletRequest request) {
     ResultMap resultMap;
@@ -112,13 +112,12 @@ public class APIController extends BaseController {
     PMap<String, Object> paramsMap = (PMap) resultMap.getReturnValue();
 
     paramsMap.put("userIp", ServletUtil.getRealIp(request));
-    paramsMap.put("channelCode", params.getBankId());
 
     //创建支付订单
     Result<String> result = payManager.createOrder(paramsMap);
     if (!Result.isSuccess(result)) {
       logger.error("[doPay][createOrder][Failed] params={}, result={}", JSONUtil.Bean2JSON(paramsMap),
-          JSONUtil.Bean2JSON(result));
+              JSONUtil.Bean2JSON(result));
       return (ResultMap) resultMap.withError(result.getStatus());
     }
     paramsMap.put("payId", result.getReturnValue());
@@ -127,7 +126,7 @@ public class APIController extends BaseController {
     ResultMap result2 = payManager.payOrder(paramsMap);
     if (!Result.isSuccess(result2)) {
       logger.error("[doPay][payOrder][Failed] params={}, result={}", JSONUtil.Bean2JSON(paramsMap),
-          JSONUtil.Bean2JSON(result2));
+              JSONUtil.Bean2JSON(result2));
       return (ResultMap) resultMap.withError(result2.getStatus());
     }
     //调用支付网关
@@ -135,10 +134,11 @@ public class APIController extends BaseController {
     resultMap = payPortal.preparePay(payGateParams);
     if (!Result.isSuccess(resultMap)) {
       logger.error("[doPay][preparePay][Failed] params={}, result={}", JSONUtil.Bean2JSON(payGateParams),
-          JSONUtil.Bean2JSON(resultMap));
+              JSONUtil.Bean2JSON(resultMap));
     }
 
     //返回结果
+    resultMap.addItem("orderId", params.getOrderId());
     return resultMap;
   }
 
@@ -162,7 +162,7 @@ public class APIController extends BaseController {
     resultMap = payManager.queryPayOrder(payOrderModel);
     if (!Result.isSuccess(resultMap)) {
       logger.error("[queryPay][queryPayOrder][Failed] params={}, result={}", JSONUtil.Bean2JSON(payOrderModel),
-          JSONUtil.Bean2JSON(resultMap));
+              JSONUtil.Bean2JSON(resultMap));
     }
     return resultMap;
   }
@@ -192,7 +192,7 @@ public class APIController extends BaseController {
     resultMap = refundManager.refundOrder(refundModel);
     if (!Result.isSuccess(resultMap)) {
       logger.error("[doRefund] refund failed, IP={}, params={}, result={}", ip, JSONUtil.Bean2JSON(refundModel),
-          JSONUtil.Bean2JSON(resultMap));
+              JSONUtil.Bean2JSON(resultMap));
     }
     logger.debug("[doRefund] refund request end, IP={}, result={}", ip, JSONUtil.Bean2JSON(resultMap));
     return resultMap;
@@ -220,7 +220,7 @@ public class APIController extends BaseController {
     resultMap = refundManager.queryRefund(model);
     if (!Result.isSuccess(resultMap)) {
       logger.error("[queryRefund] queryRefund failed, params={}, result={}", JSONUtil.Bean2JSON(model),
-          JSONUtil.Bean2JSON(resultMap));
+              JSONUtil.Bean2JSON(resultMap));
     }
     logger.debug("[queryRefund] query refund request end, params={}", JSONUtil.Bean2JSON(resultMap));
     return resultMap;

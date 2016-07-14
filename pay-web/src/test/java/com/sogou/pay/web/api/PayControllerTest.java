@@ -37,7 +37,7 @@ public class PayControllerTest extends BaseTest {
         params.setProductName("测试商品");
         params.setProductNum("1");
         params.setProductDesc("测试商品描述");
-        params.setBankId("TEST_TENPAY");
+        params.setChannelCode("TEST_TENPAY");
         params.setAppId("1000");
         params.setAccessPlatform("1");
         params.setSignType("0");
@@ -61,7 +61,7 @@ public class PayControllerTest extends BaseTest {
         params.setProductName("测试商品");
         params.setProductNum("2");
         params.setProductDesc("测试商品描述");
-        params.setBankId("ALIPAY");
+        params.setChannelCode("ALIPAY");
         params.setAppId("1999");
         params.setAccessPlatform("2");
         params.setSignType("0");
@@ -86,7 +86,7 @@ public class PayControllerTest extends BaseTest {
         params.setProductName("测试商品");
         params.setProductNum("2");
         params.setProductDesc("测试商品描述");
-        params.setBankId("WECHAT");
+        params.setChannelCode("WECHAT");
         params.setAppId("1999");
         params.setAccessPlatform("1");
         params.setSignType("0");
@@ -108,7 +108,7 @@ public class PayControllerTest extends BaseTest {
         params.setProductName("测试商品");
         params.setProductNum("2");
         params.setProductDesc("测试商品描述");
-        params.setBankId("WECHAT");
+        params.setChannelCode("WECHAT");
         params.setAppId("5000");
         params.setAccessPlatform("3");
         params.setSignType("0");

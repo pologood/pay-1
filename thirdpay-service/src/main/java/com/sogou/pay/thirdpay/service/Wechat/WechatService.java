@@ -215,12 +215,12 @@ public class WechatService implements ThirdpayService {
     PMap<String, ?> responsePMap = result.getData();
 
     //返回交易状态
-    return ResultMap.build().addItem("payStatus", getTradeStatus(responsePMap.getString("trade_state").toUpperCase()));
+    return ResultMap.build().addItem("payStatus", getTradeStatus(responsePMap.getString("trade_state")));
   }
 
   private String getTradeStatus(String wechatTradeStatus) {
     if (wechatTradeStatus == null) return TRADE_STATUS.get("DEFAULT");
-    String trade_status = TRADE_STATUS.get(wechatTradeStatus);
+    String trade_status = TRADE_STATUS.get(wechatTradeStatus.toUpperCase());
     if (trade_status == null) return TRADE_STATUS.get("DEFAULT");
     return trade_status;
   }

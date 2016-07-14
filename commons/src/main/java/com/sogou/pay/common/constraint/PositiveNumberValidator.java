@@ -1,5 +1,7 @@
 package com.sogou.pay.common.constraint;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -17,6 +19,6 @@ public class PositiveNumberValidator implements ConstraintValidator<PositiveNumb
     public boolean isValid(String value, ConstraintValidatorContext context) {
         // 正数，不超过11位
         String regPosNumber = "^[1-9][0-9]{0,10}$";
-        return value == null || value.matches(regPosNumber);
+        return StringUtils.isEmpty(value) || value.matches(regPosNumber);
     }
 }
