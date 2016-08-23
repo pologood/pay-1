@@ -20,10 +20,6 @@
                 <ref bean="tenpayCheckDataJobTrigger"/>
                 <ref bean="wechatCheckDataJobTrigger"/>
                 <ref bean="reCheckDataJobTrigger"/>
-                <!-- 代付任务-->
-                <!--<ref bean="transferJobTrigger"/>-->
-                <!--<ref bean="queryTransferJobTrigger"/>-->
-                <!--<ref bean="queryTransferRefundJobTrigger"/>-->
             </list>
         </property>
     </bean>

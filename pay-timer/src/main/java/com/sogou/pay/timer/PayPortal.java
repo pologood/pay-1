@@ -7,7 +7,6 @@ import com.sogou.pay.common.types.ResultMap;
 import com.sogou.pay.common.types.ResultStatus;
 import com.sogou.pay.service.enums.AgencyCode;
 import com.sogou.pay.thirdpay.service.Alipay.AlipayService;
-import com.sogou.pay.thirdpay.service.CMBC.CMBCService;
 import com.sogou.pay.thirdpay.service.Tenpay.TenpayService;
 import com.sogou.pay.thirdpay.service.ThirdpayService;
 import com.sogou.pay.thirdpay.service.Unionpay.ApplepayService;
@@ -35,9 +34,6 @@ public class PayPortal {
     private WechatService wechatService;
 
     @Autowired
-    private CMBCService cmbcService;
-
-    @Autowired
     private UnionpayService unionpayService;
 
     @Autowired
@@ -51,7 +47,6 @@ public class PayPortal {
         serviceHashMap.put(AgencyCode.ALIPAY.name(), alipayService);
         serviceHashMap.put(AgencyCode.TENPAY.name(), tenpayService);
         serviceHashMap.put(AgencyCode.WECHAT.name(), wechatService);
-        serviceHashMap.put(AgencyCode.CMB.name(), cmbcService);
         serviceHashMap.put(AgencyCode.UNIONPAY.name(), unionpayService);
         serviceHashMap.put(AgencyCode.TEST_UNIONPAY.name(), unionpayService);
         serviceHashMap.put(AgencyCode.APPLEPAY.name(), applepayService);

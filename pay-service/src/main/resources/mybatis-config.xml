@@ -38,9 +38,6 @@
         <typeAlias alias="PayBankAlias" type="com.sogou.pay.service.entity.PayBankAlias"/>
         <typeAlias alias="PayChannel" type="com.sogou.pay.service.entity.PayChannel"/>
         <typeAlias alias="OrderNotify" type="com.sogou.pay.service.entity.OrderNotify"/>
-        <typeAlias alias="PayTransfer" type="com.sogou.pay.service.entity.PayTransfer"/>
-        <typeAlias alias="PayTransferBatch" type="com.sogou.pay.service.entity.PayTransferBatch"/>
-        <typeAlias alias="PayTransferLog" type="com.sogou.pay.service.entity.PayTransferLog"/>
     </typeAliases>
 
     <!-- 映射map -->

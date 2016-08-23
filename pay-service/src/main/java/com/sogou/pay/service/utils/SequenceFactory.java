@@ -24,10 +24,6 @@ public class SequenceFactory {
   @Resource
   private RefundPayDetailNo refundPayDetailNo;
   @Resource
-  private PayTransferBatchNo payTransferBatchNo;
-  @Resource
-  private PayTransferNo payTransferNo;
-  @Resource
   private OrderNo orderNo;
 
   /**
@@ -62,30 +58,6 @@ public class SequenceFactory {
     String no = null;
     try {
       no = ZFD + payNo.getNo();
-    } catch (Exception e) {
-    }
-    return no;
-  }
-
-  /**
-   * 代付批次单号
-   */
-  public String getTransferBatchNo() {
-    String no = null;
-    try {
-      no = ZZ + payTransferBatchNo.getNo();
-    } catch (Exception e) {
-    }
-    return no;
-  }
-
-  /**
-   * 代付单号
-   */
-  public String getTransferNo() {
-    String no = null;
-    try {
-      no = ZZ + payTransferNo.getNo();
     } catch (Exception e) {
     }
     return no;
