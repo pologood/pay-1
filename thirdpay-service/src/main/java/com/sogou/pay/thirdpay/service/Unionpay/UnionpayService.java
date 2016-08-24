@@ -45,7 +45,7 @@ public class UnionpayService implements ThirdpayService {
   private static final Logger LOG = LoggerFactory.getLogger(UnionpayService.class);
 
   @Value(value = "${unionpay.bill.tmpdir}")
-  public static String tmpdir = "e:";
+  public static String tmpdir = "/tmp";
   protected static String VERSION = "5.0.0";
   protected static String CHARSET = "UTF-8";
   protected static String ACCESSTYPE = "0";//0普通商户; 1首单机构; 2平台商户
