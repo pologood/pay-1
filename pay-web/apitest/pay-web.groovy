@@ -8,8 +8,8 @@ def server = "http://$host"
 def ctx = [
         appId            : "1000",
         md5_key          : "862653da5865293b1ec8cc",
-        pageUrl          : "http://$host/notify/testBgUrl",
-        bgUrl            : "http://$host/notify/testBgUrl",
+        pageUrl          : "$server/notify/testBgUrl",
+        bgUrl            : "$server/notify/testBgUrl",
         gwPayWebUrl      : "/gw/pay/web",
         gwPayWapUrl      : "/gw/pay/wap",
         apiPaySDKUrl     : "/api/pay/sdk",

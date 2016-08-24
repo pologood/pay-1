@@ -32,10 +32,10 @@
 <body>
 支付单查询
 
-<form action="api/pay/query" method="post" name="dbform">
-    <input type="text" id="appId" name="appId" value="4000">业务线ID<br>
+<form action="api/pay/query" method="get" name="dbform">
+    <input type="text" id="appId" name="appId" value="1999">业务线ID<br>
     <input type="text" id="orderId" name="orderId"
-           value="OD1440657659558">业务线订单号<br>
+           value="OD20150901115018285">业务线订单号<br>
     <input type="text" id="sign" name="sign">签名值（不可为空）<br>
     <input type="text" id="signType" name="signType"
            value="0">签名类型（可空 0：MD5 1:RSA）<br>
