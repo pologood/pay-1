@@ -45,7 +45,7 @@ public class SequenceFactory {
   public String getRefundDetailId() {
     String no = null;
     try {
-      no = TK + refundPayDetailNo.getNo();
+      no = refundPayDetailNo.getNo() + TK;
     } catch (Exception e) {
     }
     return no;
