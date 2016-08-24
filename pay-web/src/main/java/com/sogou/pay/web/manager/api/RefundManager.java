@@ -349,11 +349,9 @@ public class RefundManager {
       RefundInfo refundInfo = refundInfoList.get(0);
       //获得商户信息
       String agencyCode = refundInfo.getAgencyCode();
-      PayAgencyMerchant queryMerchant = new PayAgencyMerchant();
-      queryMerchant.setAgencyCode(agencyCode);
-      queryMerchant.setCompanyId(queryRefundModel.getApp().getCompanyId());
-      queryMerchant.setAppId(queryRefundModel.getApp().getAppId());
-      PayAgencyMerchant agencyMerchant = payAgencyMerchantService.getMerchant(queryMerchant);
+      PayAgencyMerchant agencyMerchant = payAgencyMerchantService.getMerchantByAgencyCodeAndMerchantNo(
+              agencyCode,
+              refundInfo.getMerchantNo());
       if (agencyMerchant == null) {
         logger.error("[queryRefund] PayAgencyMerchant not exists, params={}", JSONUtil.Bean2JSON(queryRefundModel));
         return ResultMap.build(ResultStatus.THIRD_MERCHANT_NOT_EXIST);

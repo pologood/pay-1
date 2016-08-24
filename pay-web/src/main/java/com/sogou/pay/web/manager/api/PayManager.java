@@ -396,13 +396,13 @@ public class PayManager {
       }
       for (PayReqDetail payReqDetail : payReqDetailList) {
         payReqId = payReqDetail.getPayDetailId();
-        PayAgencyMerchant merchant = new PayAgencyMerchant();
-        merchant.setAgencyCode(payReqDetail.getAgencyCode());
-        merchant.setAppId(app.getAppId());
-        merchant.setCompanyId(app.getCompanyId());
-        PayAgencyMerchant merchantQuery = merchantService.getMerchant(merchant);
+        PayAgencyMerchant merchantQuery = merchantService.getMerchantByAgencyCodeAndMerchantNo(
+                payReqDetail.getAgencyCode(),
+                payReqDetail.getMerchantNo());
         if (merchantQuery == null) {
-          logger.error("[queryPayOrder] PayAgencyMerchant not found, params={}", JSONUtil.Bean2JSON(merchant));
+          logger.error("[queryPayOrder] PayAgencyMerchant not found, agencyCode={}, merchantNo={}",
+                  payReqDetail.getAgencyCode(),
+                  payReqDetail.getMerchantNo());
           return (ResultMap) result.withError(ResultStatus.THIRD_MERCHANT_NOT_EXIST);
         }
         AgencyInfo agencyInfo = agencyInfoService.getAgencyInfoByCode(payReqDetail.getAgencyCode(),
