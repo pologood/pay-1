@@ -329,8 +329,8 @@ public class AlipayService implements ThirdpayService {
     }
     PMap<String, ?> responsePMap = alipayMap.getPMap("response").getPMap("trade");
     //验签
-    result = verifySignMD5(responsePMap, md5securityKey, alipayMap.getString("sign"));
-    if (!Result.isSuccess(result)) return result;
+//    result = verifySignMD5(responsePMap, md5securityKey, alipayMap.getString("sign"));
+//    if (!Result.isSuccess(result)) return result;
 
     //提取关键信息
     String trade_status = getTradeStatus(responsePMap.getString("trade_status"));
