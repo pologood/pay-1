@@ -432,8 +432,8 @@ public class AlipayService implements ThirdpayService {
       return ResultMap.build(ResultStatus.THIRD_RESPONSE_PARAM_ERROR);
     }
     //验签
-    result = verifySignMD5(refundResult.getData(), md5securityKey, (String) refundResult.getItem("sign"));
-    if (!Result.isSuccess(result)) return result;
+//    result = verifySignMD5(refundResult.getData(), md5securityKey, (String) refundResult.getItem("sign"));
+//    if (!Result.isSuccess(result)) return result;
     //验证结果
     String is_success = (String) refundResult.getItem("is_success");
     if (!"T".equals(is_success)) {
