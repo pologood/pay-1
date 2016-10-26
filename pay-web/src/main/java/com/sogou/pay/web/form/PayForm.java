@@ -38,7 +38,7 @@ public class PayForm {
   @Date
   private String orderTime;   //订单时间
 
-  @Length(max = 32)
+  @Length(max = 128)
   private String accountId;   //付款方账号
 
   @NotBlank(message = "productName不能为空")
