@@ -1,7 +1,8 @@
 package com.sogou.pay.web.aspect;
 
-import com.sogou.pay.common.utils.JsonUtil;
-import com.sogou.pay.common.utils.StringUtil;
+import com.sogou.pay.common.utils.JSONUtil;
+
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -118,7 +119,7 @@ public class TransactionLogAspect {
 
     private void recordReturning(JoinPoint joinPoint, Object retVal) {
         StringBuilder sb = newSb(joinPoint);
-        sb.append("\t").append(JsonUtil.beanToJson(retVal).replaceAll("[\\t\\n]", " "));
+        sb.append("\t").append(JSONUtil.Bean2JSON(retVal).replaceAll("[\\t\\n]", " "));
         record(sb.toString());
     }
 
@@ -167,7 +168,7 @@ public class TransactionLogAspect {
         sb.append("\t").append(start);
         sb.append("\t").append(stop);
         sb.append("\t").append(stop - start);
-        sb.append("\t").append(JsonUtil.beanToJson(filterArgs).replaceAll("[\\t\\n]", " "));
+        sb.append("\t").append(JSONUtil.Bean2JSON(filterArgs).replaceAll("[\\t\\n]", " "));
 
         return sb;
     }
@@ -190,10 +191,10 @@ public class TransactionLogAspect {
     }
 
     private static String getLocalIp(HttpServletRequest request) {
-        if (StringUtil.isEmpty(LOCALIP)) {
+        if (StringUtils.isEmpty(LOCALIP)) {
             synchronized (TransactionLogAspect.class) {
                 try {
-                    if (StringUtil.isEmpty(LOCALIP)) {
+                    if (StringUtils.isEmpty(LOCALIP)) {
                         LOCALIP = InetAddress.getLocalHost().getHostAddress();
                     }
                 } catch (Exception e) {

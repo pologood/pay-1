@@ -1,11 +1,6 @@
 package com.sogou.pay.service.enums;
 
-/**
- * @Author qibaichao
- * @ClassName ReconcilationStatus
- * @Date 2014年11月11日
- * @Description:
- */
+
 public enum CheckStatus {
 
     INIT(0), SUCCESS(1), UNBALANCE(2), LOST(3);
@@ -16,7 +11,7 @@ public enum CheckStatus {
         this.value = value;
     }
 
-    public int value() {
+    public int getValue() {
         return value;
     }
 

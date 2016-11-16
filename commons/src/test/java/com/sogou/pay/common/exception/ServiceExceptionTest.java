@@ -1,7 +1,7 @@
 package com.sogou.pay.common.exception;
 
 import com.sogou.pay.common.BaseTest;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.ResultStatus;
 
 import org.junit.Test;
 

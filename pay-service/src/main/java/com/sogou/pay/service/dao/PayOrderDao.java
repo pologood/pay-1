@@ -11,9 +11,7 @@ import com.sogou.pay.service.entity.PayOrderInfo;
 import com.sogou.pay.service.entity.PayOrderRelation;
 
 /**
- * @User: huangguoqing
- * @Date: 2015/03/03
- * @Description: 支付单信息Dao
+ * 支付单信息Dao
  */
 @Repository
 public interface PayOrderDao {
@@ -24,13 +22,13 @@ public interface PayOrderDao {
 
     public List<PayOrderInfo> selectPayOrderByPayIdList(List<PayOrderRelation> relationList);
 
-    public int updateAddRefundMoney(@Param("payId") String payId, @Param("refundAmount") BigDecimal refundAmount, @Param("refundFlag") int refundFlag);
+    public int updateAddRefundMoney(@Param("payId") String payId, @Param("refundAmount") BigDecimal refundAmount,
+                                    @Param("refundFlag") int refundFlag);
 
     public int updatePayOrder(PayOrderInfo payOrderInfo);
 
-    public int updatePayOrderByPayId(@Param("payId") String payId,@Param("bankCode") String bankCode,@Param("payOrderStatus") Integer payOrderStatus, @Param("successTime") Date successTime);
-    
-    public int updatePayOrderNotifyByReqId(String payReqId);
+    public int updatePayOrderByPayId(@Param("payId") String payId,@Param("channelCode") String channelCode,
+                                     @Param("payStatus") Integer payStatus, @Param("paySuccessTime") Date paySuccessTime);
     
     public PayOrderInfo selectPayOrderByOrderId(@Param("orderId")String orderId,@Param("appId")Integer appId);
 }

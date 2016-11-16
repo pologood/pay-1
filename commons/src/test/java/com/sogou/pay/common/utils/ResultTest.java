@@ -1,10 +1,10 @@
 package com.sogou.pay.common.utils;
 
 import com.sogou.pay.common.BaseTest;
-import com.sogou.pay.common.result.Result;
-import com.sogou.pay.common.result.ResultList;
-import com.sogou.pay.common.result.ResultMap;
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.Result;
+import com.sogou.pay.common.types.ResultList;
+import com.sogou.pay.common.types.ResultMap;
+import com.sogou.pay.common.types.ResultStatus;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public class ResultTest extends BaseTest {
     public void testResultStatus() {
         assertEquals(ResultStatus.SUCCESS.toString(), "SUCCESS");
         assertTrue(ResultStatus.SUCCESS.getCode() == 0);
-        assertEquals(ResultStatus.SUCCESS.getName(), "SUCCESS");
+        assertEquals(ResultStatus.SUCCESS.name(), "SUCCESS");
         assertEquals(ResultStatus.SUCCESS.getMessage(), "成功");
     }
 
@@ -27,7 +27,7 @@ public class ResultTest extends BaseTest {
         ResultMap result = ResultMap.build();
         assertTrue(result.getStatus() == ResultStatus.SUCCESS);
         result.withError(ResultStatus.SYSTEM_ERROR);
-        assertEquals(result.getStatus().getName(), "SYSTEM_ERROR");
+        assertEquals(result.getStatus().name(), "SYSTEM_ERROR");
         assertEquals(result.getMessage(), ResultStatus.SYSTEM_ERROR.getMessage());
         result.withMessage("系统错误！！！");
         assertEquals(result.getMessage(), "系统错误！！！");

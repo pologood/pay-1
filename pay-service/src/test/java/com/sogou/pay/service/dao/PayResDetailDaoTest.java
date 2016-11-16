@@ -1,9 +1,9 @@
 package com.sogou.pay.service.dao;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayResDetail;
-import com.sogou.pay.service.payment.PayResDetailService;
+import com.sogou.pay.service.service.PayResDetailService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,7 +38,6 @@ public class PayResDetailDaoTest extends BaseTest {
         payResDetail.setPayDetailId("ppppp");
         payResDetail.setTrueMoney(BigDecimal.valueOf(10.00));
         payResDetail.setPayDetailId("dddd1");
-        payResDetail.setRefundCode(null);
         payResDetail.setPayFee(new BigDecimal("0.1"));
         payResDetail.setFeeRate(new BigDecimal("0.01"));
         

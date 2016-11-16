@@ -2,12 +2,13 @@ package com.sogou.pay.service;
 
 import java.math.BigDecimal;
 
+import com.sogou.pay.BaseTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sogou.pay.common.exception.ServiceException;
-import com.sogou.pay.common.utils.PMap;
-import com.sogou.pay.service.payment.PayFeeService;
+import com.sogou.pay.common.types.PMap;
+import com.sogou.pay.service.service.PayFeeService;
 
 /**
  * Created by wujingpan on 2015/3/5.

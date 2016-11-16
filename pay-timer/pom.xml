@@ -2,24 +2,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>pay-timer</artifactId>
     <parent>
         <artifactId>sogou-pay</artifactId>
         <groupId>com.sogou.pay</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>pay-timer</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>com.sogou.pay</groupId>
+            <artifactId>commons</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.sogou.pay</groupId>
             <artifactId>pay-service</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sogou.pay</groupId>
-            <artifactId>commons</artifactId>
+            <artifactId>thirdpay-service</artifactId>
         </dependency>
-        <!-- 定时 quartz begin -->
+
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
@@ -30,7 +34,7 @@
             <artifactId>quartz-jobs</artifactId>
             <version>2.2.0</version>
         </dependency>
-        <!--log  start-->
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -51,12 +55,6 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
-<!--        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-access</artifactId>
-        </dependency>-->
-        <!--log  end-->
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
@@ -66,7 +64,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
         </dependency>
-        <!-- spring end -->
 
         <!-- helper libraries -->
         <dependency>
@@ -78,15 +75,14 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
-            <classifier>cdi1.0</classifier>
         </dependency>
 
 
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.7.2</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.aspectj</groupId>-->
+            <!--<artifactId>aspectjweaver</artifactId>-->
+            <!--<version>1.7.2</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>mysql</groupId>
@@ -95,43 +91,11 @@
 
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <env>dev</env>
-            </properties>
-            <!--<activation>-->
-                <!--<activeByDefault>true</activeByDefault>-->
-            <!--</activation>-->
-        </profile>
-        <profile>
-            <id>test</id>
-            <properties>
-                <env>test</env>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <profile>
-            <id>release</id>
-            <properties>
-                <env>release</env>
-            </properties>
-        </profile>
-    </profiles>
-
     <build>
-        <filters>
-            <filter>src/main/filters/filter-${env}.properties</filter>
-        </filters>
-
-        <!-- 控制资源文件的拷贝 -->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <filtering>true</filtering>
+                <filtering>false</filtering>
             </resource>
         </resources>
 

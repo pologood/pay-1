@@ -11,9 +11,7 @@
 
     <!-- 连接工厂：消息消费者的配置，指明MQ服务所在的服务器 -->
     <bean id="amqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL">
-            <value>${activemq.producer.url}</value>
-        </property>
+        <property name="brokerURL" value="${activemq.producer.url}"/>
         <!-- ActiveMQ异步发送设置 -->
         <property name="dispatchAsync" value="true"/>
         <property name="useAsyncSend" value="true"/>

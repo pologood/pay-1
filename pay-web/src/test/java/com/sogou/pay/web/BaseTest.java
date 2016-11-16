@@ -1,8 +1,10 @@
 package com.sogou.pay.web;
 
-import com.sogou.pay.common.http.utils.HttpUtil;
+import com.sogou.pay.common.utils.HttpUtil;
+import com.sogou.pay.common.utils.JSONUtil;
 import com.sogou.pay.common.utils.MapUtil;
 
+import com.sogou.pay.common.utils.XMLUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,17 +25,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 import static java.lang.System.*;
 
@@ -92,37 +87,51 @@ public class BaseTest extends Assert {
         testGet(url, null, null);
     }
 
-    protected void testPost(String url) {
-        testPost(url, null, null);
-    }
-
     protected void testGet(String url, Map params) {
         testGet(url, params, null);
     }
 
-    protected void testPost(String url, Map params) {
-        testPost(url, params, null);
-    }
-
-    @SuppressWarnings("unchecked")
     protected void testGet(String url, Map params, Map headers) {
-        handle(HttpMethod.GET, url, params, headers);
+        MediaType mediaType = MediaType.parseMediaType(MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+        handle(HttpMethod.GET, url, params, headers, mediaType);
     }
 
-    @SuppressWarnings("unchecked")
+    protected void testPost(String url) {
+        testPost(url, null, null, null);
+    }
+
+    protected void testPost(String url, Map params) {
+        testPost(url, params, null, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+    }
+
+    protected void testPost(String url, Map params, String contentType) {
+        testPost(url, params, null, contentType);
+    }
+
     protected void testPost(String url, Map params, Map headers) {
-        handle(HttpMethod.POST, url, params, headers);
+        testPost(url, params, headers, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
     }
 
-    private void handle(HttpMethod method, String url, Map<String, Object> params, Map<String, Object> headers) {
+    protected void testPost(String url, Map params, Map headers, String contentType) {
+        MediaType mediaType = MediaType.parseMediaType(contentType);
+        handle(HttpMethod.POST, url, params, headers, mediaType);
+    }
+
+    private void handle(HttpMethod method, String url, Map<String, Object> params, Map<String, Object> headers, MediaType mediaType) {
         try {
             MockHttpServletRequestBuilder builder = request(method, url);
-            addParams(builder, params);
             addHeaders(builder, headers);
+            builder.contentType(mediaType);
+            builder.characterEncoding("UTF-8");
+//            if (method == HttpMethod.POST) {
+//                addBody(builder, params, mediaType);
+//            } else {
+                addParams(builder, params);
+//            }
 
-            String mediaType = "application/json; charset=UTF-8";
-            // String mediaType = "application/x-www-form-urlencoded; charset=UTF-8";
-            builder.accept(MediaType.parseMediaType(mediaType));
+            //String mediaType = "application/json; charset=UTF-8";
+            //String mediaType = "application/x-www-form-urlencoded; charset=UTF-8";
+            //String mediaType = "text/plain; charset=UTF-8";
 
             ResultActions resultActions = mockMvc.perform(builder);
             // resultActions.andDo(print());
@@ -167,6 +176,18 @@ public class BaseTest extends Assert {
                 builder.param(entry.getKey(), entry.getValue().toString());
             }
         }
+    }
+
+    private void addBody(MockHttpServletRequestBuilder builder, Map<String, Object> params, MediaType mediaType) {
+        String body = null;
+        if (mediaType.equals(MediaType.APPLICATION_JSON)) {
+            body = JSONUtil.Map2JSON(params);
+        } else if (mediaType.equals(MediaType.APPLICATION_XML) || mediaType.equals(MediaType.TEXT_XML)) {
+            body = XMLUtil.Map2XML("xml", params);
+        } else {
+            body = HttpUtil.packUrlParams(params);
+        }
+        builder.content(body);
     }
 
     private void addHeaders(MockHttpServletRequestBuilder builder, Map<String, Object> headers) {

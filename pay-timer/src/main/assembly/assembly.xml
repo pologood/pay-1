@@ -12,7 +12,7 @@
 	</dependencySets>
 	<fileSets>
 		<fileSet>
-			<filtered>true</filtered>
+			<filtered>false</filtered>
 			<directory>src/main/resources</directory>
 			<outputDirectory>/config</outputDirectory>
 		</fileSet>

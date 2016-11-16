@@ -1,14 +1,13 @@
 package com.sogou.pay.service.dao;
 
 import com.sogou.pay.common.utils.DateUtil;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.RefundInfo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by hjf on 15-3-2.
@@ -27,10 +26,10 @@ public class RefundInfoDAOTest extends BaseTest {
         refundInfo.setOrderId("3000001");
         refundInfo.setAgencyCode("test");
         refundInfo.setMerchantNo("test");
-        refundInfo.setPayFeeType(2);
+        refundInfo.setRefundFeeType(2);
         refundInfo.setBalanceRefund(new BigDecimal(500));
         refundInfo.setAppId(1000);
-        refundInfo.setNetBalanceRefund(new BigDecimal(500.01));
+        refundInfo.setBankRefund(new BigDecimal(500.01));
         refundInfo.setOrderMoney(new BigDecimal(2000.03));
         refundInfo.setRefundMoney(new BigDecimal(1000.01));
         refundInfo.setRefundReqTime(new Date());

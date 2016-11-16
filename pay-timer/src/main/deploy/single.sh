@@ -8,16 +8,19 @@ DEFAULT_JAVA_OPTS=" -server -Xmx1g -Xms1g -Xmn256m -XX:PermSize=128m -Xss256k -X
 
 
 #引入外部参数配置文件:
-SHELL_PARAMS="$BASE_PATH/params.conf"
-if [ -f "$SHELL_PARAMS" ]; then 
-	. $SHELL_PARAMS
+SPRING_CFG="/etc/default/spring"
+if [ -f "$SPRING_CFG" ]; then
+	. $SPRING_CFG
 fi
 
 #定义变量:
 APP_PATH=${APP_PATH:-`dirname "$BASE_PATH"`}
 CLASS_PATH=${CLASS_PATH:-$APP_PATH/config:$APP_PATH/lib/*}
 JAVA_OPTS=${JAVA_OPTS:-$DEFAULT_JAVA_OPTS}
-MAIN_CLASS=${MAIN_CLASS:-"com.sogou.timer.TimerRunner"}
+JAVA_OPTS=${JAVA_OPTS}${SPRING_OPTS}
+MAIN_CLASS=${MAIN_CLASS:-"com.sogou.pay.timer.TimerRunner"}
+
+(echo $JAVA_OPTS | grep '\-Dspring.profiles.active=') || { echo 'spring.profiles.active not defined'; exit 1; }
 
 DATE=`date +"%Y-%m-%d"`
 
@@ -45,7 +48,7 @@ start(){
 				exit 1
 		else
 	    	cd $APP_PATH
-				nohup java $JAVA_OPTS -cp $CLASS_PATH $MAIN_CLASS $APP_PATH > $STDOUT_FILE 2>&1 &
+				nohup java $JAVA_OPTS -cp $CLASS_PATH $MAIN_CLASS $APP_PATH >$STDOUT_FILE 2>&1 &
 				echo "Timer is started."
 		fi
 }
@@ -58,7 +61,7 @@ stop(){
         kwait=5
         echo "Timer is stopping, please wait..."
         kill -15 $runningPID
-					until [ `ps --pid $runningPID 2> /dev/null | grep -c $runningPID 2> /dev/null` -eq '0' ] || [ $count -gt $kwait ]
+					until [ `ps --pid $runningPID 2> /dev/null | grep -c $runningPID 2>/dev/null` -eq '0' ] || [ $count -gt $kwait ]
 		        do
 		            sleep 1
 		            let count=$count+1;

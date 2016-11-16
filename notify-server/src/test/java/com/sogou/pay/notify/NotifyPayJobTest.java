@@ -1,25 +1,23 @@
 package com.sogou.pay.notify;
 
-import com.sogou.pay.notify.dao.NotifyErrorLogDao;
-import com.sogou.pay.notify.entity.NotifyErrorLog;
-import com.sogou.pay.notify.job.NotifyPayJob;
-import com.sogou.pay.notify.service.impl.NotifyServiceImpl;
+import com.sogou.pay.notify.dao.NotifyToDoDao;
+import com.sogou.pay.notify.entity.NotifyToDo;
+import com.sogou.pay.notify.job.PayNotifyJob;
+import com.sogou.pay.notify.service.NotifyService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * Created by qibaichao on 2015/4/9.
- */
+
 public class NotifyPayJobTest extends BaseTest {
 
     @Autowired
-    private NotifyPayJob notifyPayJob;
+    private PayNotifyJob notifyPayJob;
 
     @Autowired
-    private NotifyErrorLogDao notifyErrorLogDao;
+    private NotifyToDoDao notifyToDoDao;
 
     @Autowired
-    private NotifyServiceImpl notifyService;
+    private NotifyService notifyService;
 
     @Test
     public void doJob() {
@@ -29,8 +27,8 @@ public class NotifyPayJobTest extends BaseTest {
     @Test
     public void doJobById() {
 
-        NotifyErrorLog notifyErrorLog=notifyErrorLogDao.queryById(48L);
-        notifyService.scheduledNotify(notifyErrorLog);
+        NotifyToDo notifyToDo = notifyToDoDao.queryById(439L);
+        notifyService.scheduleNotify(notifyToDo);
     }
 
 

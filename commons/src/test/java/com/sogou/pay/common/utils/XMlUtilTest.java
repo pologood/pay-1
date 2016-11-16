@@ -2,6 +2,7 @@ package com.sogou.pay.common.utils;
 
 import com.sogou.pay.common.BaseTest;
 
+import com.sogou.pay.common.types.PMap;
 import org.jdom.JDOMException;
 import org.junit.Test;
 
@@ -19,7 +20,7 @@ public class XMlUtilTest extends BaseTest {
         ss.put("s1df", "112341");
         ss.put("s1df1", "1112");
         ss.put("s1111df", "13451111");
-        String xmlwss = XMLUtil.mapToXmlString("xml", ss);
+        String xmlwss = XMLUtil.Map2XML("xml", ss);
         System.out.println(xmlwss);
     }
 
@@ -141,10 +142,10 @@ public class XMlUtilTest extends BaseTest {
                 "        </return_ticket_set>\n" +
                 "    </result>\n" +
                 "</root>";
-        PMap xmlwss = XMLParseUtil.doXMLParse(str);
+        PMap xmlwss = XMLUtil.XML2PMap(str);
         String resultxml = xmlwss.getString("result");
         resultxml = "<result>"+resultxml+"</result>";
-        PMap result = XMLParseUtil.doXMLParse(resultxml);
+        PMap result = XMLUtil.XML2PMap(resultxml);
         System.out.println(xmlwss);
     }
 }

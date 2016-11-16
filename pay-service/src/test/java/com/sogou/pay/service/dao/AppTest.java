@@ -1,8 +1,8 @@
 package com.sogou.pay.service.dao;
 
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.App;
-import com.sogou.pay.service.payment.AppService;
+import com.sogou.pay.service.service.AppService;
 import org.junit.Test;
 import org.mockito.internal.matchers.Contains;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class AppTest extends BaseTest {
         App app = new App();
         app.setAppName("搜狗某产品");
         app.setAppId(2001);
-        app.setBelongCompany(1);
+        app.setCompanyId(1);
         app.setSignKey("862653da5865293b1ec8cc");
         app.setStatus(1);
         app.setCreateTime(new Date());

@@ -1,15 +1,12 @@
 package com.sogou.pay.service.dao;
 
-import com.sogou.pay.common.utils.JsonUtil;
-import com.sogou.pay.manager.model.PayCheckUpdateModle;
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.common.utils.JSONUtil;
+import com.sogou.pay.service.model.PayCheckUpdateModel;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayCheck;
-import com.sogou.pay.service.entity.PayCheckWaiting;
-import com.sogou.pay.service.enums.AgencyType;
-import com.sogou.pay.service.enums.CheckStatus;
+import com.sogou.pay.service.enums.AgencyCode;
 import com.sogou.pay.service.enums.OrderType;
-import com.sogou.pay.service.enums.TerminalType;
-import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
+import com.sogou.pay.service.utils.SequenceFactory;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,7 +31,7 @@ public class PayCheckDaoTest extends BaseTest {
     private PayCheckWaitingDao payCheckWaitingDao;
 
     @Autowired
-    private SequencerGenerator sequencerGenerator;
+    private SequenceFactory sequencerGenerator;
 
     @Test
     public void batchInsertCheck() {
@@ -42,7 +39,7 @@ public class PayCheckDaoTest extends BaseTest {
         try {
             String merchantNo = "sogoucaipiao";
             String checkDate = "20150303";
-            String agencyCode = AgencyType.ALIPAY.name();
+            String agencyCode = AgencyCode.ALIPAY.name();
 
             List<PayCheck> payCheckList = new ArrayList<PayCheck>();
             PayCheck payCheck = null;
@@ -53,7 +50,7 @@ public class PayCheckDaoTest extends BaseTest {
                 String instructId = sequencerGenerator.getPayDetailId();
                 payCheck.setInstructId(instructId);
                 payCheck.setOutOrderId(instructId);
-                payCheck.setBizCode(OrderType.PAYCASH.getValue());
+                payCheck.setCheckType(OrderType.PAY.getValue());
                 payCheck.setOutTransTime(new Date());
                 float f = rand.nextFloat() * 1000;
                 payCheck.setBizAmt(new BigDecimal(dcmFmt.format(f)));
@@ -82,20 +79,20 @@ public class PayCheckDaoTest extends BaseTest {
     public void batchUpdateStatus() {
 
         try {
-            List<PayCheckUpdateModle> list = new ArrayList<PayCheckUpdateModle>();
-            PayCheckUpdateModle payCheckUpdateVo = new PayCheckUpdateModle();
+            List<PayCheckUpdateModel> list = new ArrayList<PayCheckUpdateModel>();
+            PayCheckUpdateModel payCheckUpdateVo = new PayCheckUpdateModel();
             payCheckUpdateVo.setInstructId("ZF20150318104155391002");
             payCheckUpdateVo.setPayCheckStatus(3);
             payCheckUpdateVo.setPayCheckId(3754);
             list.add(payCheckUpdateVo);
 
-            PayCheckUpdateModle payCheckUpdateVo2 = new PayCheckUpdateModle();
+            PayCheckUpdateModel payCheckUpdateVo2 = new PayCheckUpdateModel();
             payCheckUpdateVo2.setInstructId("1111234274801201503182132785");
             payCheckUpdateVo2.setPayCheckStatus(3);
             payCheckUpdateVo2.setPayCheckId(3755);
             list.add(payCheckUpdateVo2);
 
-            PayCheckUpdateModle payCheckUpdateVo3 = new PayCheckUpdateModle();
+            PayCheckUpdateModel payCheckUpdateVo3 = new PayCheckUpdateModel();
             payCheckUpdateVo3.setInstructId("1111234274801201503182146373");
             payCheckUpdateVo3.setPayCheckStatus(3);
             payCheckUpdateVo3.setPayCheckId(3756);
@@ -115,8 +112,8 @@ public class PayCheckDaoTest extends BaseTest {
         try {
             String instructId = "ZF20150317160007997002";
             int bizCode = 1;
-            PayCheck payCheck =payCheckDao.getByInstructIdAndBizCode(instructId, bizCode);
-            System.out.println(JsonUtil.beanToJson(payCheck));
+            PayCheck payCheck =payCheckDao.getByInstructIdAndCheckType(instructId, bizCode);
+            System.out.println(JSONUtil.Bean2JSON(payCheck));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,8 +126,8 @@ public class PayCheckDaoTest extends BaseTest {
         try {
             String merchantNo = "sogoucaipiao";
             String checkDate = "20150303";
-            String agencyCode = AgencyType.ALIPAY.name();
-            int bizCode = OrderType.PAYCASH.getValue();
+            String agencyCode = AgencyCode.ALIPAY.name();
+            int bizCode = OrderType.PAY.getValue();
 
             int BATCH_SIZE = 500;
             int page = 1;
@@ -140,7 +137,7 @@ public class PayCheckDaoTest extends BaseTest {
             while (hasNext) {
                 // 查询指定渠道、日期范围内，未对账成功的记录，每次查500条
                 List<Map<String, Object>> list = payCheckDao
-                        .queryByMerAndDateAndBizCode(checkDate, agencyCode,
+                        .queryByMerAndDateAndCheckType(checkDate, agencyCode,
                                  bizCode,
                                 (page - 1) * BATCH_SIZE, BATCH_SIZE);
 

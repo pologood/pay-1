@@ -6,11 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * User: Liwei
- * Date: 2014/12/25
- * Time: 10:18
- */
+
 @Repository
 public interface AppDao {
 
@@ -20,7 +16,7 @@ public interface AppDao {
 
     public void updateApp(App app);
 
-    public void deleteApp(int appid);
+    public void deleteApp(@Param("appId")int appId);
 
     public List selectAppList();
 }

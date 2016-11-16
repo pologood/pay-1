@@ -1,15 +1,15 @@
 package com.sogou.pay.service;
 
+import com.sogou.pay.BaseTest;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 
-import com.sogou.pay.manager.payment.impl.PayManagerImpl;
-import com.sogou.pay.service.payment.PayResIdService;
+import com.sogou.pay.service.service.PayResIdService;
 
-public class PayResIdServiceTest extends BaseTest{
+public class PayResIdServiceTest extends BaseTest {
 
     @Autowired
     private PayResIdService payResIdService;

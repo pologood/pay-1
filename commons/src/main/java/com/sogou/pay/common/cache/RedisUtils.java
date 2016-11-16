@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.sogou.pay.common.utils.JacksonJsonUtil;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -27,7 +26,8 @@ public class RedisUtils {
 
     private static Logger logger = LoggerFactory.getLogger(RedisUtils.class);
     private static final Logger redisMissLogger = LoggerFactory.getLogger("redisMissLogger");
-    private static ObjectMapper jsonMapper = JacksonJsonUtil.getMapper();
+    private static ObjectMapper jsonMapper = new ObjectMapper();
+
 
     private RedisTemplate redisTemplate;
 

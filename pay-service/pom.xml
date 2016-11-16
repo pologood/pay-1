@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.sogou.pay</groupId>
         <artifactId>sogou-pay</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,19 +21,10 @@
             <groupId>com.sogou.pay</groupId>
             <artifactId>commons</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
         </dependency>
 
         <!-- 阿里巴巴数据源包 -->
@@ -103,6 +94,7 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-client</artifactId>
+            <version>5.11.1</version>
         </dependency>
 
         <dependency>
@@ -141,11 +133,11 @@
             <version>1.0</version>
         </dependency>-->
         <!-- email -->
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.5.0-b01</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>javax.mail</groupId>-->
+            <!--<artifactId>mail</artifactId>-->
+            <!--<version>1.5.0-b01</version>-->
+        <!--</dependency>-->
 
         <!-- freemarker的jar -->
         <dependency>
@@ -160,8 +152,7 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>3.0-alpha-1</version>
+            <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.perf4j</groupId>
@@ -174,71 +165,62 @@
         </dependency>
     </dependencies>
 
+    <!--<profiles>-->
+        <!--<profile>-->
+            <!--<id>test</id>-->
+            <!--<properties>-->
+                <!--<config_file>-->
+                    <!--src/main/resources/config_TEST.properties-->
+                <!--</config_file>-->
+            <!--</properties>-->
+            <!--<activation>-->
+                <!--<activeByDefault>true</activeByDefault>-->
+            <!--</activation>-->
+        <!--</profile>-->
+        <!--<profile>-->
+            <!--<id>prod</id>-->
+            <!--<properties>-->
+                <!--<config_file>-->
+                    <!--src/main/resources/config_PROD.properties-->
+                <!--</config_file>-->
+            <!--</properties>-->
+        <!--</profile>-->
+    <!--</profiles>-->
+
     <build>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <filtering>true</filtering>
+                <filtering>false</filtering>
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <delete file="src/main/resources/config.properties"/>
-                                <copy file="${config_file}" tofile="src/main/resources/config.properties"/>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
+            <!--<plugin>-->
+                <!--<artifactId>maven-antrun-plugin</artifactId>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>process-sources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>run</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<tasks>-->
+                                <!--<delete file="src/main/resources/config.properties"/>-->
+                                <!--<copy file="${config_file}" tofile="src/main/resources/config.properties"/>-->
+                            <!--</tasks>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <config_file>
-                    src/main/resources/config_DEV.properties
-                </config_file>
-            </properties>
-
-        </profile>
-        <profile>
-            <id>test</id>
-            <properties>
-                <config_file>
-                    src/main/resources/config_TEST.properties
-                </config_file>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <profile>
-            <id>prod</id>
-            <properties>
-                <config_file>
-                    src/main/resources/config_PROD.properties
-                </config_file>
-            </properties>
-        </profile>
-    </profiles>
 </project>

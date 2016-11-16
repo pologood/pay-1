@@ -1,11 +1,9 @@
 package com.sogou.pay.service.dao;
 
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayAgencyMerchant;
-import com.sogou.pay.service.entity.PayBankRouter;
-import com.sogou.pay.service.enums.AgencyType;
-import com.sogou.pay.service.payment.PayAgencyMerchantService;
-import com.sogou.pay.service.payment.PayBankRouterService;
+import com.sogou.pay.service.enums.AgencyCode;
+import com.sogou.pay.service.service.PayAgencyMerchantService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,9 +22,9 @@ public class PayAgencyMerchantTest extends BaseTest {
     public void selectPayAgencyMerchant(){
         PayAgencyMerchant payAgencyMerchant = new PayAgencyMerchant();
         payAgencyMerchant.setAgencyCode("TENPAY");
-        payAgencyMerchant.setCompanyCode(1);
+        payAgencyMerchant.setCompanyId(1);
         payAgencyMerchant.setAppId(1999);
-        PayAgencyMerchant result = payAgencyMerchantService.selectPayAgencyMerchant(payAgencyMerchant);
+        PayAgencyMerchant result = payAgencyMerchantService.getMerchant(payAgencyMerchant);
         assertEquals("1234274801",result.getMerchantNo());
     }
 
@@ -34,8 +32,8 @@ public class PayAgencyMerchantTest extends BaseTest {
     public void  selectPayAgencyMerchants(){
 
         try {
-            String agencyCode = AgencyType.ALIPAY.name();
-            List<PayAgencyMerchant>  list =  payAgencyMerchantService.selectPayAgencyMerchants(agencyCode);
+            String agencyCode = AgencyCode.ALIPAY.name();
+            List<PayAgencyMerchant>  list =  payAgencyMerchantService.getMerchantsByAgencyCode(agencyCode);
             System.out.println( list);
         }catch (Exception e){
             e.printStackTrace();

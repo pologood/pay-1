@@ -7,16 +7,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import com.sogou.pay.manager.model.PayCheckUpdateModle;
-import com.sogou.pay.service.entity.PayCheck;
-import com.sogou.pay.service.enums.AgencyType;
+import com.sogou.pay.service.enums.AccessPlatform;
+import com.sogou.pay.service.model.PayCheckUpdateModel;
+import com.sogou.pay.service.enums.AgencyCode;
 import com.sogou.pay.service.enums.OrderType;
-import com.sogou.pay.service.enums.TerminalType;
-import com.sogou.pay.service.utils.orderNoGenerator.SequencerGenerator;
+import com.sogou.pay.service.utils.SequenceFactory;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayCheckWaiting;
 
 /**
@@ -33,7 +32,7 @@ public class PayCheckWaitingDaoTest extends BaseTest {
 
 
     @Autowired
-    private SequencerGenerator sequencerGenerator;
+    private SequenceFactory sequencerGenerator;
 
     @Test
     public void insert() {
@@ -43,19 +42,19 @@ public class PayCheckWaitingDaoTest extends BaseTest {
 
             String merchantNo="sogoucaipiao";
             String checkDate ="20150303";
-            String agencycode=AgencyType.ALIPAY.name();
+            String agencycode= AgencyCode.ALIPAY.name();
 
             PayCheckWaiting payCheckWaiting = new PayCheckWaiting();
             String instructId = sequencerGenerator.getPayDetailId();
             payCheckWaiting.setInstructId(instructId);
             payCheckWaiting.setOutOrderId(instructId);
-            payCheckWaiting.setBizCode(OrderType.PAYCASH.getValue());
+            payCheckWaiting.setCheckType(OrderType.PAY.getValue());
             payCheckWaiting.setOutTransTime(new Date());
             float f = rand.nextFloat() * 1000;
             payCheckWaiting.setBizAmt(new BigDecimal(dcmFmt.format(f)));
             payCheckWaiting.setFeeRate(BigDecimal.valueOf(0.001));
             payCheckWaiting.setCommissionFeeAmt(BigDecimal.valueOf(1));
-            payCheckWaiting.setAccessPlatform(TerminalType.WEB.getValue());
+            payCheckWaiting.setAccessPlatform(AccessPlatform.ACCESSPLATFORM_PC);
             payCheckWaiting.setAppId(1);
             payCheckWaiting.setPayType(1);
             payCheckWaiting.setBankCode("abc");
@@ -83,14 +82,14 @@ public class PayCheckWaitingDaoTest extends BaseTest {
                 String instructId = sequencerGenerator.getPayDetailId();
                 payCheckWaiting.setInstructId(instructId);
                 payCheckWaiting.setOutOrderId(instructId);
-                payCheckWaiting.setBizCode(OrderType.PAYCASH.getValue());
+                payCheckWaiting.setCheckType(OrderType.PAY.getValue());
                 payCheckWaiting.setOutTransTime(new Date());
                 float f = rand.nextFloat() * 1000;
                 payCheckWaiting.setBizAmt(new BigDecimal(dcmFmt.format(f)));
                 payCheckWaiting.setCommissionFeeAmt(BigDecimal.valueOf(1));
                 payCheckWaiting.setCheckDate("20150303");
-                payCheckWaiting.setAgencyCode(AgencyType.ALIPAY.name());
-                payCheckWaiting.setAccessPlatform(TerminalType.WEB.getValue());
+                payCheckWaiting.setAgencyCode(AgencyCode.ALIPAY.name());
+                payCheckWaiting.setAccessPlatform(AccessPlatform.ACCESSPLATFORM_PC);
                 payCheckWaiting.setAppId(1);
                 payCheckWaiting.setMerchantNo(merchantNo);
                 list.add(payCheckWaiting);
@@ -124,12 +123,12 @@ public class PayCheckWaitingDaoTest extends BaseTest {
     public void batchUpdateStatus() {
 
         try {
-            List<PayCheckUpdateModle> list = new ArrayList<PayCheckUpdateModle>();
-            PayCheckUpdateModle payCheckUpdateVo = new PayCheckUpdateModle();
+            List<PayCheckUpdateModel> list = new ArrayList<PayCheckUpdateModel>();
+            PayCheckUpdateModel payCheckUpdateVo = new PayCheckUpdateModel();
             payCheckUpdateVo.setInstructId("111");
             payCheckUpdateVo.setPayCheckWaitingStatus(3);
             list.add(payCheckUpdateVo);
-            PayCheckUpdateModle payCheckUpdateVo2 = new PayCheckUpdateModle();
+            PayCheckUpdateModel payCheckUpdateVo2 = new PayCheckUpdateModel();
             payCheckUpdateVo2.setInstructId("222");
             payCheckUpdateVo2.setPayCheckWaitingStatus(1);
             list.add(payCheckUpdateVo2);

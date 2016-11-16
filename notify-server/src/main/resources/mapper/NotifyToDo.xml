@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sogou.pay.notify.dao.NotifyToDoDao">
+
+    <resultMap id="notifyToDoMap" type="com.sogou.pay.notify.entity.NotifyToDo" autoMapping="true">
+        <result column="id" property="id"/>
+        <result column="pay_id" property="payId"/>
+        <result column="notify_num" property="notifyNum"/>
+        <result column="notify_status" property="notifyStatus"/>
+        <result column="notify_type" property="notifyType"/>
+        <result column="notify_params" property="notifyParams"/>
+        <result column="notify_url" property="notifyUrl"/>
+        <result column="error_info" property="errorInfo"/>
+        <result column="next_time" property="nextTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="tableColumns">
+		id,
+		pay_id,
+		notify_num,
+		notify_status,
+		notify_type,
+		notify_params,
+		notify_url,
+		error_info,
+		next_time,
+		create_time,
+		update_time
+	</sql>
+
+    <!--生成错误日志 -->
+    <insert id="insertNotifyToDo" parameterType="NotifyToDo">
+		INSERT INTO
+		t_notify_todo (
+		pay_id,
+		notify_num,
+		notify_status,
+		notify_type,
+		notify_params,
+		notify_url,
+		error_info,
+		next_time,
+		create_time,
+		update_time
+		)
+		VALUES
+		(
+		#{payId},
+		1,
+		0,
+		#{notifyType},
+		#{notifyParams},
+		#{notifyUrl},
+		#{errorInfo},
+		#{nextTime},
+		now(),
+		now()
+		)
+	</insert>
+
+    <delete id="deleteNotifyToDo">
+        DELETE FROM t_notify_todo WHERE id = #{id}
+    </delete>
+
+
+    <!-- 修改日志 为已处理 -->
+    <update id="updateNotifyToDo" parameterType="NotifyToDo">
+        UPDATE
+        t_notify_todo
+        SET
+        <if test="errorInfo !=null">
+            error_info =#{errorInfo},
+        </if>
+        <if test="notifyStatus !=0">
+            notify_status = #{notifyStatus},
+        </if>
+        <if test="nextTime !=null">
+            next_time = #{nextTime},
+        </if>
+        <if test="notifyNum !=null">
+            notify_num = #{notifyNum},
+        </if>
+        update_time = now()
+        WHERE id =#{id}
+    </update>
+
+
+    <select id="queryByNotifyTypeStatus" resultMap="notifyToDoMap">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_notify_todo
+        WHERE notify_status =#{notifyStatus}
+        AND next_time &lt; #{currentTime}
+        limit 50
+    </select>
+
+    <select id="queryById" resultMap="notifyToDoMap">
+        SELECT
+        <include refid="tableColumns"/>
+        FROM t_notify_todo
+        WHERE id =#{id}
+    </select>
+
+</mapper>

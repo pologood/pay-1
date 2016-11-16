@@ -3,13 +3,13 @@ package com.sogou.pay.service.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * 支付机构对象
- *
- * @author 武景畔
- * @version 0.0.1
- */
-public class AgencyInfo implements Serializable{
+
+public class AgencyInfo {
+    public static final int ALIASFLAG_NONE = 0;//银行卡没有别名
+    public static final int ALIASFLAG_DEBIT = 1;//储蓄卡有别名
+    public static final int ALIASFLAG_CREDIT = 2;//信用卡有别名
+    public static final int ALIASFLAG_ALL = 3;//都有别名
+
 
     private Integer id;
     /**
@@ -32,10 +32,6 @@ public class AgencyInfo implements Serializable{
      */
     private Integer aliasFlag;
 
-    /**
-     * 机构类型
-     */
-    private Integer agencyType;
 
     /**
      * 预支付URL
@@ -63,9 +59,26 @@ public class AgencyInfo implements Serializable{
     private String queryRefundUrl;
 
     /**
+     * 下载对账单URL
+     */
+    private String downloadUrl;
+
+    /**
      * 发手机验证码URL
      */
     private String sendPhoneUrl;
+
+    //支付之后页面回调地址
+    private String pageBackUrl;
+
+    //支付之后服务后端回调地址
+    private String notifyBackUrl;
+
+    //退款之后服务后端回调地址
+    private String refundNotifyBackUrl;
+
+    //转账之后服务后端回调地址
+    private String transferNotifyBackUrl;
 
     /**
      * 创建时间
@@ -108,14 +121,6 @@ public class AgencyInfo implements Serializable{
 
     public void setAliasFlag(Integer aliasFlag) {
         this.aliasFlag = aliasFlag;
-    }
-
-    public Integer getAgencyType() {
-        return agencyType;
-    }
-
-    public void setAgencyType(Integer agencyType) {
-        this.agencyType = agencyType;
     }
 
     public String getPayUrl() {
@@ -166,6 +171,46 @@ public class AgencyInfo implements Serializable{
         this.prepayUrl = prepayUrl;
     }
 
+    public String getDownloadUrl() {
+        return downloadUrl;
+    }
+
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
+    }
+
+    public String getPageBackUrl() {
+        return pageBackUrl;
+    }
+
+    public void setPageBackUrl(String pageBackUrl) {
+        this.pageBackUrl = pageBackUrl;
+    }
+
+    public String getNotifyBackUrl() {
+        return notifyBackUrl;
+    }
+
+    public void setNotifyBackUrl(String notifyBackUrl) {
+        this.notifyBackUrl = notifyBackUrl;
+    }
+
+    public String getRefundNotifyBackUrl() {
+        return refundNotifyBackUrl;
+    }
+
+    public void setRefundNotifyBackUrl(String refundNotifyBackUrl) {
+        this.refundNotifyBackUrl = refundNotifyBackUrl;
+    }
+
+    public String getTransferNotifyBackUrl() {
+        return transferNotifyBackUrl;
+    }
+
+    public void setTransferNotifyBackUrl(String transferNotifyBackUrl) {
+        this.transferNotifyBackUrl = transferNotifyBackUrl;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -188,17 +233,6 @@ public class AgencyInfo implements Serializable{
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    @Override
-    public String toString() {
-        return "AgencyInfo [agencyCode=" + agencyCode + ", accessPlatform="
-                + accessPlatform + ", agencyName=" + agencyName
-                + ", aliasFlag=" + aliasFlag + ", agencyType=" + agencyType
-                + ", prepayUrl=" + prepayUrl + ", payUrl=" + payUrl
-                + ", queryUrl=" + queryUrl + ", refundUrl=" + refundUrl
-                + ", sendPhoneUrl=" + sendPhoneUrl + ", createTime="
-                + createTime + ", modifyTime=" + modifyTime + "]";
     }
 
 }

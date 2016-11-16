@@ -1,3 +1,4 @@
+
 package com.sogou.pay.notify.job;
 
 import org.slf4j.Logger;
@@ -8,129 +9,63 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @Author qibaichao
- * @ClassName BatchScheduledJob
- * @Date 2014年9月18日
- * @Description: 批处理定时任务
+ * 批处理定时任务
  */
 @Service
-public abstract class BatchScheduledJob extends AbstractScheduledJob {
+public abstract class BatchScheduledJob {
 
-    private static final Logger logger = LoggerFactory.getLogger(BatchScheduledJob.class);
+  private static final Logger logger = LoggerFactory.getLogger(BatchScheduledJob.class);
 
-    /**
-     * @Author qibaichao
-     * @MethodName doAction
-     * @Date 2014年9月22日
-     * @Description:
-     */
-    @Override
-    protected void doAction() {
-
-        /**
-         * 初始化
-         */
-        init();
-
-        while (true) {
-
-            /**
-             * 分批次获取数据
-             */
-            List<Object> objectList = getProcessObjectList();
-            /**
-             * 结束判断
-             */
-            if (isStop(objectList)) {
-                break;
-            }
-            /**
-             * 批量处理
-             */
-            batchProcess(objectList);
-            /**
-             * GC
-             */
-            objectList = null;
-        }
-        /**
-         * 任务结束，清理内存
-         */
-        finish();
-
+  protected void doAction() {
+    List<Object> objectList = getProcessObjectList();
+    if (isStop(objectList)) {
+      return;
     }
+    batchProcess(objectList);
+    objectList = null;
+  }
 
-    /**
-     * @Author qibaichao
-     * @MethodName init
-     * @Date 2014年9月18日
-     * @Description:生成查询对象.
-     */
-    public void init() {
-
+  /**
+   * Checks if is stop.
+   */
+  public boolean isStop(List<Object> objectList) {
+    if (null == objectList || objectList.isEmpty()) {
+      return true;
     }
+    return false;
+  }
 
-    /**
-     * @Author qibaichao
-     * @MethodName finish
-     * @Date 2014年9月18日
-     * @Description:任务结束
-     */
-    public void finish() {
+  /**
+   * Gets the process object list.
+   */
+  public abstract List<Object> getProcessObjectList();
 
-    }
+  /**
+   * Batch process.
+   */
+  public abstract void batchProcess(List<Object> objectList);
 
-    /**
-     * @param objectList
-     * @return
-     * @Author qibaichao
-     * @MethodName isStop
-     * @Date 2014年9月22日
-     * @Description:
-     */
-    public boolean isStop(List<Object> objectList) {
-        /**
-         * 当对象为空时，停止处理
-         */
-        if (null == objectList || objectList.isEmpty()) {
-            return true;
-        }
+  /**
+   * Cast to object list.
+   */
+  public List<Object> castToObjectList(List<?> list) {
+    List<Object> objectList = new ArrayList<>();
+    objectList.addAll(list);
+    return objectList;
+  }
 
-        return false;
-    }
+  public void doProcessor() {
+    long startTime = System.currentTimeMillis();
+    logger.info("[doProcessor] {} start", getProcessorName());
+    doAction();
+    long endTime = System.currentTimeMillis();
+    logger.info("[doProcessor] {} end, time cost={} ms", getProcessorName(), endTime - startTime);
+  }
 
-    /**
-     * @return
-     * @Author qibaichao
-     * @MethodName getProcessObjectList
-     * @Date 2014年9月18日
-     * @Description:查询任务
-     */
-    public abstract List<Object> getProcessObjectList();
 
-    /**
-     * @param objectList
-     * @Author qibaichao
-     * @MethodName batchProcess
-     * @Date 2014年9月18日
-     * @Description:批量处理任务
-     */
-    public abstract void batchProcess(List<Object> objectList);
-
-    /**
-     * @param list
-     * @return
-     * @Author qibaichao
-     * @MethodName castToObjectList
-     * @Date 2014年9月22日
-     * @Description:
-     */
-    public List<Object> castToObjectList(List<?> list) {
-
-        List<Object> objectList = new ArrayList<Object>();
-        objectList.addAll(list);
-
-        return objectList;
-    }
+  /**
+   * 任务名称
+   */
+  protected abstract String getProcessorName();
 
 }

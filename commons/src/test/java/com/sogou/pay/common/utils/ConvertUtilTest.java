@@ -36,7 +36,7 @@ public class ConvertUtilTest extends BaseTest {
 
     private void convertInt(Object obj) {
         try {
-            System.out.println(ConvertUtil.toInt(obj));
+            //System.out.println(ConvertUtil.toInt(obj));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

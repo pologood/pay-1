@@ -2,12 +2,12 @@ package com.sogou.pay.service.dao;
 
 import java.util.Date;
 
-import com.sogou.pay.service.enums.AgencyType;
-import com.sogou.pay.service.enums.OperationLogStatus;
+import com.sogou.pay.service.enums.AgencyCode;
+import com.sogou.pay.service.enums.CheckLogStatus;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 import com.sogou.pay.service.entity.PayCheckDayLog;
 
 /**
@@ -25,7 +25,7 @@ public class PayCheckDayLogDaoTest extends BaseTest {
     public void insert() {
 
         try {
-            String agencyCode = AgencyType.ALIPAY.name();
+            String agencyCode = AgencyCode.ALIPAY.name();
             String checkDate = "20150303";
             String merchantNo = "sogoucaipiao";
             PayCheckDayLog payCheckDayLog = new PayCheckDayLog();
@@ -43,7 +43,7 @@ public class PayCheckDayLogDaoTest extends BaseTest {
     public void getByCheckDateAndAgency() {
 
         try {
-            String agencyCode = AgencyType.ALIPAY.name();
+            String agencyCode = AgencyCode.ALIPAY.name();
             String checkDate = "20150303";
             PayCheckDayLog payCheckDayLog = payCheckDayLogDao
                     .getByCheckDateAndAgency(checkDate, agencyCode);
@@ -59,7 +59,7 @@ public class PayCheckDayLogDaoTest extends BaseTest {
 
         try {
             long id = 9;
-            int status = OperationLogStatus.SUCCESS.value();
+            int status = CheckLogStatus.SUCCESS.value();
             int version = 0;
             String remark = "aaa";
             int num = payCheckDayLogDao.updateStatus(id, status, version,

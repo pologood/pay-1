@@ -1,16 +1,10 @@
 package com.sogou.pay.service.entity;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-/**
- * User: Liwei
- * Date: 15/3/5
- * Time: 上午10:27
- * Description:响应流水实体
- */
-public class PayResDetail implements Serializable {
+//响应流水实体
+public class PayResDetail {
     //支付流水单ID
     private String payDetailId;
 
@@ -52,9 +46,6 @@ public class PayResDetail implements Serializable {
 
     // 平台支付时间
     private Date agencyPayTime;
-
-    // 退款识别码
-    private String refundCode;
 
     // 支付状态
     private int payStatus;
@@ -174,14 +165,6 @@ public class PayResDetail implements Serializable {
         this.agencyPayTime = agencyPayTime;
     }
 
-    public String getRefundCode() {
-        return refundCode;
-    }
-
-    public void setRefundCode(String refundCode) {
-        this.refundCode = refundCode;
-    }
-
     public int getPayStatus() {
         return payStatus;
     }
@@ -196,28 +179,5 @@ public class PayResDetail implements Serializable {
 
     public void setFeeRate(BigDecimal feeRate) {
         this.feeRate = feeRate;
-    }
-
-    @Override
-    public String toString() {
-        return "PayResDetail{" +
-                "payDetailId='" + payDetailId + '\'' +
-                ", accessPlatform=" + accessPlatform +
-                ", payFeeType=" + payFeeType +
-                ", balance=" + balance +
-                ", trueMoney=" + trueMoney +
-                ", payFee=" + payFee +
-                ", feeRate=" + feeRate +
-                ", merchantNo='" + merchantNo + '\'' +
-                ", agencyCode='" + agencyCode + '\'' +
-                ", agencyOrderId='" + agencyOrderId + '\'' +
-                ", bankCode='" + bankCode + '\'' +
-                ", bankOrderId='" + bankOrderId + '\'' +
-                ", bankCardType=" + bankCardType +
-                ", agencyPayTime=" + agencyPayTime +
-                ", refundCode='" + refundCode + '\'' +
-                ", payStatus=" + payStatus +
-                ", createTime=" + createTime +
-                '}';
     }
 }

@@ -5,16 +5,20 @@
     <resultMap type="com.sogou.pay.service.entity.AgencyInfo" id="agencyInfo">
         <result property="id" column="id"/>
         <result property="agencyCode" column="agency_code"/>
-        <result property="accessPlatform" column="access_platform"/>
         <result property="agencyName" column="agency_name"/>
+        <result property="accessPlatform" column="access_platform"/>
         <result property="aliasFlag" column="alias_flag"/>
-        <result property="agencyType" column="agency_type"/>
         <result property="prepayUrl" column="prepay_url"/>
         <result property="payUrl" column="pay_url"/>
         <result property="queryUrl" column="query_url"/>
         <result property="refundUrl" column="refund_url"/>
         <result property="queryRefundUrl" column="query_refund_url"/>
+        <result property="downloadUrl" column="download_url"/>
         <result property="sendPhoneUrl" column="send_phone_url"/>
+        <result property="pageBackUrl" column="page_back_url"/>
+        <result property="notifyBackUrl" column="notify_back_url"/>
+        <result property="refundNotifyBackUrl" column="refund_notify_back_url"/>
+        <result property="transferNotifyBackUrl" column="transfer_notify_back_url"/>
         <result column="createTime" property="create_time"/>
         <result column="modifyTime" property="modify_time"/>
     </resultMap>
@@ -26,11 +30,11 @@
     </select>
 
     <!--根据查询条件获取支付机构基本信息 -->
-    <select id="getAgencyInfoByConn" parameterType="String" resultMap="agencyInfo">
+    <select id="getAgencyInfoByCode" resultMap="agencyInfo">
 
       SELECT * FROM t_pay_agency_info
-         WHERE agency_code = #{agencyCode} and (access_platform = #{accessPlatform} or access_platform=99) and
-            (agency_type = #{agencyType} or agency_type=99) order by access_platform,agency_type limit 1
+         WHERE agency_code = #{agencyCode} and (access_platform = #{accessPlatform} or access_platform IS NULL)
+         order by access_platform DESC limit 1
     </select>
 
     <!-- 根据ID获取单条信息-->

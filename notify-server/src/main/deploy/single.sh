@@ -8,16 +8,19 @@ DEFAULT_JAVA_OPTS=" -server -Xmx1g -Xms1g -Xmn256m -XX:PermSize=128m -Xss256k -X
 
 
 #引入外部参数配置文件:
-SHELL_PARAMS="$BASE_PATH/params.conf"
-if [ -f "$SHELL_PARAMS" ]; then 
-	. $SHELL_PARAMS
+SPRING_CFG="/etc/default/spring"
+if [ -f "$SPRING_CFG" ]; then
+	. $SPRING_CFG
 fi
 
 #定义变量:
 APP_PATH=${APP_PATH:-`dirname "$BASE_PATH"`}
 CLASS_PATH=${CLASS_PATH:-$APP_PATH/config:$APP_PATH/lib/*}
 JAVA_OPTS=${JAVA_OPTS:-$DEFAULT_JAVA_OPTS}
+JAVA_OPTS=${JAVA_OPTS}${SPRING_OPTS}
 MAIN_CLASS=${MAIN_CLASS:-"com.sogou.pay.notify.server.NotifyRunner"}
+
+(echo $JAVA_OPTS | grep '\-Dspring.profiles.active=') || { echo 'spring.profiles.active not defined'; exit 1; }
 
 DATE=`date +"%Y-%m-%d"`
 
@@ -41,24 +44,24 @@ exist(){
 
 start(){
 		if exist; then
-				echo "Timer is already running."
+				echo "Notify is already running."
 				exit 1
 		else
 	    	cd $APP_PATH
-				nohup java $JAVA_OPTS -cp $CLASS_PATH $MAIN_CLASS $APP_PATH > $STDOUT_FILE 2>&1 &
-				echo "Timer is started."
+				nohup java $JAVA_OPTS -cp $CLASS_PATH $MAIN_CLASS $APP_PATH >$STDOUT_FILE 2>&1 &
+				echo "Notify is started."
 		fi
 }
 
 stop(){
 		runningPID=`pgrep -f "$MAIN_CLASS $APP_PATH"`
 		if [ "$runningPID" ]; then
-				echo "Timer pid: $runningPID"
+				echo "Notify pid: $runningPID"
         count=0
         kwait=5
-        echo "Timer is stopping, please wait..."
+        echo "Notify is stopping, please wait..."
         kill -15 $runningPID
-					until [ `ps --pid $runningPID 2> /dev/null | grep -c $runningPID 2> /dev/null` -eq '0' ] || [ $count -gt $kwait ]
+					until [ `ps --pid $runningPID 2> /dev/null | grep -c $runningPID 2>/dev/null` -eq '0' ] || [ $count -gt $kwait ]
 		        do
 		            sleep 1
 		            let count=$count+1;
@@ -68,18 +71,18 @@ stop(){
 	            kill -9 $runningPID
 	        fi
         clear
-        echo "Timer is stopped."
+        echo "Notify is stopped."
     else
-    		echo "Timer has not been started."
+    		echo "Notify has not been started."
     fi
 }
 
 check(){
    if exist; then
-   	 echo "Timer is alive."
+   	 echo "Notify is alive."
    	 exit 0
    else
-   	 echo "Timer is dead."
+   	 echo "Notify is dead."
    	 exit -1
    fi
 }

@@ -19,7 +19,7 @@ public interface RefundInfoDAO {
 
     public List<RefundInfo> selectByPayId(String payId);
 
-    public List<RefundInfo> selectRefundByOrderIdAndTimeDesc(String orderId);
+    public List<RefundInfo> selectRefundByOrderId(String orderId);
 
     public List<RefundInfo> selectByPayIdAndRefundStatus(@Param("payId") String payId, @Param("refundStatus") int refundStatus);
 
@@ -35,7 +35,7 @@ public interface RefundInfoDAO {
                                           @Param("newStatus") int newStatus,
                                           @Param("oldStatus") int oldStatus,
                                           @Param("errorCode") String errorCode,
-                                          @Param("errorInfo") String errorInfo,
+                                          @Param("errorMsg") String errorMsg,
                                           @Param("resTime") Date resTime);
 
     /**
@@ -46,8 +46,9 @@ public interface RefundInfoDAO {
      * @return 更新记录数
      */
     public int updateRefundStatus(@Param("refundId") String refundId,
+                                  @Param("agencyRefundId") String agencyRefundId,
                                   @Param("newStatus") int newStatus,
                                   @Param("errorCode") String errorCode,
-                                  @Param("errorInfo") String errorInfo,
+                                  @Param("errorMsg") String errorMsg,
                                   @Param("resTime") Date resTime);
 }

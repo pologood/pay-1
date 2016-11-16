@@ -5,106 +5,21 @@
        xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <!-- 自动发现bean，包括@Component@Service@Controller等 -->
-    <context:component-scan base-package="com.sogou.pay"/>
-
     <import resource="spring-service.xml"/>
-    <import resource="spring-mybatis.xml"/>
-
-    <!--<aop:config>-->
-        <!--<aop:aspect id="timing" ref="timingAspect">-->
-            <!--<aop:pointcut id="timingcut"-->
-                          <!--expression="execution(* com.sogou.pay..*.*(..)) and @annotation(profiled)"/>-->
-            <!--<aop:around pointcut-ref="timingcut" method="doPerfLogging"/>-->
-        <!--</aop:aspect>-->
-    <!--</aop:config>-->
+    <mvc:annotation-driven/>
 
     <aop:aspectj-autoproxy proxy-target-class="true">
         <aop:include name="timingAspect"/>
     </aop:aspectj-autoproxy>
 
-
     <bean id="timingAspect" class="org.perf4j.slf4j.aop.TimingAspect"/>
-
-    <!--<aop:aspectj-autoproxy />-->
-    <!--<aop:config>-->
-        <!--<aop:aspect id="transactionLog" ref="transactionLogAspect">-->
-            <!--&lt;!&ndash;配置com.spring.service包下所有类或接口的所有方法&ndash;&gt;-->
-            <!--<aop:pointcut id="service"-->
-                          <!--expression="(within(com.sogou.pay.service..*)) || (within(com.sogou.pay.manager..*))" />-->
-            <!--&lt;!&ndash;expression="(execution(* com.sogou.pay.service..*.*(..))) || (execution(* com.sogou.pay.manager..*.*(..))) || (execution(* com.sogou.pay.web.api..*.*(..))) || (execution(* com.sogou.pay.web.notify..*.*(..)))" />&ndash;&gt;-->
-            <!--<aop:before pointcut-ref="service" method="beforeService"/>-->
-            <!--<aop:after-returning pointcut-ref="service" method="afterReturningService" returning="retVal"/>-->
-            <!--<aop:after-throwing pointcut-ref="service" method="afterThrowingService" throwing="ex"/>-->
-
-        <!--</aop:aspect>-->
-    <!--</aop:config>-->
-    <!--<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
-        <property name="proxyTargetClass" value="true"/>
-    </bean>-->
 
     <mvc:default-servlet-handler/>
 
-    <!--<mvc:resources mapping="/favicon.ico" location="/static/favicon.ico"/>-->
     <mvc:resources mapping="/static/**" location="/static/"/>
-
-    <bean id="stringHttpMessageConverter"
-          class="org.springframework.http.converter.StringHttpMessageConverter">
-        <property name="supportedMediaTypes">
-            <list>
-                <value>text/plain;charset=UTF-8</value>
-            </list>
-        </property>
-        <property name="writeAcceptCharset" value="false"/>  <!--解决响应头Accept-Charset很大，耗费流量的问题-->
-    </bean>
-
-    <bean id="mappingJacksonHttpMessageConverter"
-          class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-        <!-- 解决 wap HttpMediaTypeNotAcceptableException: Could not find acceptable representation -->
-        <property name="supportedMediaTypes">
-            <list>
-                <value>application/json;charset=UTF-8</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-        <property name="messageConverters">
-            <list>
-                <ref bean="stringHttpMessageConverter"/>
-                <ref bean="mappingJacksonHttpMessageConverter"/>
-            </list>
-        </property>
-    </bean>
 
     <bean class="org.springframework.web.context.support.AnnotationConfigWebApplicationContext"/>
 
-    <!-- 拦截器配置 -->
-    <!--<mvc:interceptors>
-        <mvc:interceptor>
-            <mvc:mapping path="/**"/>
-            <bean class="com.sogou.pay.web.security.SignInterceptor"></bean>
-        </mvc:interceptor>
-    </mvc:interceptors>-->
-
-    <mvc:annotation-driven/>
-
-    <!-- 配置Velocity视图解析器 -->
-    <!--<bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
-        <property name="cache" value="false"/>
-        <property name="order" value="1"/>
-        <property name="suffix" value=".vm"/>
-        <property name="contentType" value="text/html;charset=UTF-8"/>
-        <property name="toolboxConfigLocation" value="WEB-INF/velocity/toolbox.xml"/>
-    </bean>
-
-    &lt;!&ndash; 配置Velocity引擎 &ndash;&gt;
-    <bean id="velocityConfigurer" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
-        <property name="resourceLoaderPath" value="/WEB-INF/velocity/vm/"/>
-        <property name="configLocation" value="classpath:velocity.properties"/>
-    </bean>-->
-
-    <!-- 针对JSP的视图配置 -->
     <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/jsp/"/>

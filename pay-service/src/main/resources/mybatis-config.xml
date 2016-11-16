@@ -6,7 +6,7 @@
 
     <settings>
         <!-- 全局的缓存启用或禁用缓存 -->
-        <setting name="cacheEnabled" value="true" />
+        <setting name="cacheEnabled" value="false" />
         <!-- 对于未知的SQL查询，允许返回不同的结果集以达到通用的效果 -->
         <setting name="multipleResultSetsEnabled" value="true"/>
         <!-- 配置默认的执行器。SIMPLE 执行器没有什么特别之处。REUSE 执行器重用预处理语句。BATCH 执行器重用语句和批量更新 -->
@@ -32,15 +32,12 @@
         <typeAlias alias="AgencyInfo" type="com.sogou.pay.service.entity.AgencyInfo"/>
         <typeAlias alias="PayReqDetail" type="com.sogou.pay.service.entity.PayReqDetail"/>
         <typeAlias alias="PayResDetail" type="com.sogou.pay.service.entity.PayResDetail"/>
-        <typeAlias alias="PayBankRouter" type="com.sogou.pay.service.entity.PayBankRouter"/>
+        <typeAlias alias="PayBankRouter" type="com.sogou.pay.service.entity.PayChannelRouter"/>
         <typeAlias alias="PayAgencyMerchant" type="com.sogou.pay.service.entity.PayAgencyMerchant"/>
         <typeAlias alias="PayOrderRelation" type="com.sogou.pay.service.entity.PayOrderRelation"/>
         <typeAlias alias="PayBankAlias" type="com.sogou.pay.service.entity.PayBankAlias"/>
-        <typeAlias alias="Channel" type="com.sogou.pay.service.entity.Channel"/>
+        <typeAlias alias="PayChannel" type="com.sogou.pay.service.entity.PayChannel"/>
         <typeAlias alias="OrderNotify" type="com.sogou.pay.service.entity.OrderNotify"/>
-        <typeAlias alias="PayTransfer" type="com.sogou.pay.service.entity.PayTransfer"/>
-        <typeAlias alias="PayTransferBatch" type="com.sogou.pay.service.entity.PayTransferBatch"/>
-        <typeAlias alias="PayTransferLog" type="com.sogou.pay.service.entity.PayTransferLog"/>
     </typeAliases>
 
     <!-- 映射map -->

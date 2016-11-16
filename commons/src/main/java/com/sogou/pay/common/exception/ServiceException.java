@@ -1,7 +1,7 @@
 package com.sogou.pay.common.exception;
 
 
-import com.sogou.pay.common.result.ResultStatus;
+import com.sogou.pay.common.types.ResultStatus;
 
 public class ServiceException extends Exception {
     private ResultStatus status;
@@ -35,6 +35,6 @@ public class ServiceException extends Exception {
     }
 
     public String getErrorName() {
-        return status.getName();
+        return status.name();
     }
 }

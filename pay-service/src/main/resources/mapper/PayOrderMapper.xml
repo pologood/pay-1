@@ -5,78 +5,78 @@
 <mapper namespace="com.sogou.pay.service.dao.PayOrderDao">
 
     <resultMap id="resultMap" type="com.sogou.pay.service.entity.PayOrderInfo">
+        <result column="app_id" property="appId"/>
+        <result column="access_platform" property="accessPlatform"/>
         <result column="pay_id" property="payId"/>
-        <result column="order_type" property="orderType"/>
         <result column="order_id" property="orderId"/>
-        <result column="product_info" property="productInfo"/>
-        <result column="order_money" property="orderMoney"/>
-        <result column="buy_home_account" property="buyHomeAccount"/>
-        <result column="buy_home_ip" property="buyHomeIp"/>
-        <result column="sell_home_account" property="sellHomeAccount"/>
-        <result column="access_platform" property="accessPlatForm"/>
         <result column="channel_code" property="channelCode"/>
-        <result column="pay_order_status" property="payOrderStatus"/>
+        <result column="product_info" property="productInfo"/>
+        <result column="buyer_account" property="buyerAccount"/>
+        <result column="buyer_ip" property="buyerIp"/>
+        <result column="seller_account" property="sellerAccount"/>
+        <result column="order_money" property="orderMoney"/>
         <result column="refund_money" property="refundMoney"/>
-        <result column="refund_flag" property="refundFlag"/>
         <result column="order_create_time" property="orderCreateTime"/>
         <result column="create_time" property="createTime"/>
         <result column="pay_success_time" property="paySuccessTime"/>
-        <result column="app_id" property="appId"/>
+        <result column="pay_status" property="payStatus"/>
+        <result column="refund_flag" property="refundFlag"/>
         <result column="notify_status" property="notifyStatus"/>
+        <result column="order_type" property="orderType"/>
         <result column="app_page_url" property="appPageUrl"/>
         <result column="app_bg_url" property="appBgUrl"/>
     </resultMap>
 
     <insert id="insertPayOrder" parameterType="PayOrderInfo">
         insert into t_pay_order_info(
-            pay_id,
-            order_type,
-            order_id,
-            product_info,
-            order_money,
-            buy_home_account,
-            buy_home_ip,
-            sell_home_account,
+            app_id,
             access_platform,
+            pay_id,
+            order_id,
             channel_code,
-            pay_order_status,
+            product_info,
+            buyer_account,
+            buyer_ip,
+            seller_account,
+            order_money,
             refund_money,
-            refund_flag,
             order_create_time,
             create_time,
             pay_success_time,
-            app_id,
+            pay_status,
+            refund_flag,
             notify_status,
+            order_type,
             app_page_url,
             app_bg_url
         )
         values
         (
+            #{appId},
+            #{accessPlatform},
             #{payId},
-            #{orderType},
             #{orderId},
-            #{productInfo},
-            #{orderMoney},
-            #{buyHomeAccount},
-            #{buyHomeIp},
-            #{sellHomeAccount},
-            #{accessPlatForm},
             #{channelCode},
-            #{payOrderStatus},
+            #{productInfo},
+            #{buyerAccount},
+            #{buyerIp},
+            #{sellerAccount},
+            #{orderMoney},
             #{refundMoney},
-            #{refundFlag},
             #{orderCreateTime},
             #{createTime},
             #{paySuccessTime},
-            #{appId},
+            #{payStatus},
+            #{refundFlag},
             #{notifyStatus},
+            #{orderType},
             #{appPageUrl},
             #{appBgUrl}
         )
     </insert>
 
     <select id="selectPayOrderById" resultMap="resultMap">
-        SELECT pay_id,order_id,app_id,refund_money,pay_order_status,order_money,access_platform,app_bg_url
+        SELECT app_id,access_platform,pay_id,order_id,order_money,refund_money,pay_status,app_bg_url
         FROM t_pay_order_info WHERE pay_id = #{payId}
     </select>
 
@@ -84,15 +84,11 @@
         UPDATE t_pay_order_info SET refund_money = refund_money + #{refundAmount}, refund_flag = #{refundFlag} WHERE pay_id=#{payId} AND order_money - refund_money >= #{refundAmount}
     </update>
 
-    <!--<update id="updateBackRefundMoney">
-        UPDATE t_pay_order_info SET refund_money = refund_money - #{refundAmount} WHERE pay_id=#{payId} AND refund_money >= #{refundAmount}
-    </update>-->
-
     <update id="updatePayOrder" parameterType="PayOrderInfo">
         UPDATE t_pay_order_info
         <set>
-            <if test="payOrderStatus != null">
-                pay_order_status = #{payOrderStatus}
+            <if test="payStatus != null">
+                pay_status = #{payStatus}
             </if>
             <if test="paySuccessTime != null">
                 pay_success_time = #{paySuccessTime}
@@ -100,31 +96,31 @@
             <if test="notifyStatus != null">
                 notify_status = #{notifyStatus}
             </if>
-        <where>
-            <if test="payId != null">
-                pay_id = #{payId}
-            </if>
-        </where>
+            <where>
+                <if test="payId != null">
+                    pay_id = #{payId}
+                </if>
+            </where>
         </set>
     </update>
 
     <update id="updatePayOrderByPayId">
         UPDATE t_pay_order_info
-        SET channel_code= #{bankCode}, pay_order_status = #{payOrderStatus} , pay_success_time = #{successTime}
+        SET channel_code= #{channelCode}, pay_status = #{payStatus} , pay_success_time = #{paySuccessTime}
         WHERE pay_id = #{payId}
     </update>
 
     <select id="selectPayOrderByPayIdList" parameterType="java.util.List" resultMap="resultMap">
-        SELECT pay_id,order_id,app_page_url,app_id,order_money,pay_success_time FROM t_pay_order_info
-        WHERE pay_id IN 
-        	  <foreach item="item" index="index" collection="list" 
-                       open="(" separator="," close=")">
-                      #{item.payId}
-              </foreach>
+        SELECT app_id,pay_id,order_id,order_money,pay_success_time,app_page_url FROM t_pay_order_info
+        WHERE pay_id IN
+        <foreach item="item" index="index" collection="list"
+                 open="(" separator="," close=")">
+            #{item.payId}
+        </foreach>
     </select>
-    
+
     <select id="selectPayOrderByOrderId" resultMap="resultMap">
-    	SELECT pay_id,order_id,order_money,access_platform,refund_money,refund_flag,pay_order_status 
+    	SELECT access_platform,pay_id,order_id,channel_code,product_info,buyer_account,order_money,refund_money,refund_flag,pay_status
     	FROM t_pay_order_info
     	WHERE order_id = #{orderId} AND app_id = #{appId}
     </select>

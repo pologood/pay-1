@@ -1,6 +1,6 @@
 package com.sogou.pay.service.logback;
 
-import com.sogou.pay.service.BaseTest;
+import com.sogou.pay.BaseTest;
 
 import org.junit.Test;
 import org.slf4j.Logger;
