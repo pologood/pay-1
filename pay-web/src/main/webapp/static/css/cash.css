@@ -241,9 +241,9 @@ a {
 	width: 45px;
 	height: 32px;
 	position: absolute;
-	bottom: 0px;
+	bottom: 13px;
 	right: 50px;
-	background: url('../img/down.png') no-repeat 30px 0px;
+	background: url('../img/down.png') no-repeat 30px 4px;
 	color: #535353;
 }
 
@@ -252,9 +252,9 @@ a {
 	width: 45px;
 	height: 32px;
 	position: absolute;
-	bottom: 15px;
+	bottom: 25px;
 	right: 50px;
-	background: url(../img/up.png) no-repeat 30px 0px;
+	background: url(../img/up.png) no-repeat 30px 5px;
 	color: #535353;
 }
 
@@ -324,7 +324,7 @@ a {
 }
 
 .wxArea {
-  position: fixed;
+	position: fixed;
   width: 580px;
   height: 520px;
   background: white;
@@ -359,7 +359,6 @@ a {
   width: 260px;
   margin: 0 auto;
 }
-
 /* 弹出层 */
 .modal-backdrop {
   position: fixed !important;
