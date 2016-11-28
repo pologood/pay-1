@@ -311,7 +311,7 @@
                         </c:if>
                     </dd>
                     <div class="clearfix">
-                        <a href="javascript:void(0)" class="paySubmit" target="blank" data-target="paySubmit"><span>确认付款</span></a>
+                        <a href="javascript:void(0)" class="paySubmit" data-target="paySubmit"><span>确认付款</span></a>
                     </div>
                 </dl>
 
