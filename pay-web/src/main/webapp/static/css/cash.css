@@ -1,0 +1,490 @@
+body {
+  font-family: Helvetica Neue,Helvetica,Segoe UI,DejaVu Sans,Arial,PingFang SC,Hiragino Sans GB,Source Han Sans,Microsoft Yahei,Heiti SC,sans-serif;
+  font-size: 12px;
+  color: #676767;
+  background: #fff;
+}
+
+* {
+	margin: 0 ;
+	padding: 0;
+}
+ul {
+	list-style: none;
+}
+.clearfix:after {
+  display: block;
+  height: 0;
+  overflow: hidden;
+  clear: both;
+  content: ".";
+}
+.clearfix {
+	zoom: 1;
+}
+
+a {
+	text-decoration: none;
+}
+
+
+
+
+
+
+.hm_style{
+	width: 100%;
+	/*height: 1600px;*/
+  background-image: url('../img/bg-top.png'),url('../img/bg-bottom.png'), url('../img/bg.png');
+  background-position: center top, center bottom, center center;
+  background-size:auto, auto, auto;
+  background-repeat:no-repeat, no-repeat, repeat-y;
+}
+
+.logo-area {
+	width: 1000px;
+	height: 50px;
+	margin: 0 auto;
+	padding: 25px 0;
+}
+.logo {
+	width: 50px;
+	height: 50px;
+	background-image: url('../img/logo.png');
+	float: left;
+}
+.logo-title {
+	font-size: 36px;
+	color: #36a9da;
+	/*font-family: 'Microsoft Yahei';*/
+	margin-left: 25px;
+	margin-right: 25px; 
+	float: left;
+}
+.logo-line {
+	width: 2px;
+	height: 27px;
+	background: #dcdcdc;
+	float: left;
+	margin-top: 12px;
+	margin-right: 24px
+}
+.logo-aside {
+	float: left;
+	font-size: 32px;
+	color: #959595;
+	/*font-family: 'Microsoft Yahei';*/
+	margin-top: 1px
+}
+.wm {
+	font-size: 16px;
+	width: 140px;
+	height: 29px;
+	background: #da3b2c;
+	text-align: center;
+	float: right;
+	margin-top: 6px;
+	padding-top: 6px	
+}
+.wm a {
+	display: block;
+	height: 35px;
+	color: #ffffff;
+ 	text-decoration: none;
+}
+.wrapper {
+	width: 1000px;
+	/*height: 973px;*/
+	margin: 0 auto;
+	padding-top: 246px;
+	position: relative 
+}
+.dog {
+	width: 323px;
+	height: 165px;
+	background-image: url('../img/dog.png');
+	position: absolute;
+	top: 129px;
+	right: -39px;
+}
+.pay-info {
+	width: 880px;
+	height: 223px;
+	background-image: url('../img/one.png');
+	background-repeat: no-repeat;
+	margin-bottom: -20px;
+	padding-top: 120px;
+	padding-left: 120px
+}
+.pay-details {
+	position: relative;
+}
+.dlsett {
+	margin-bottom: 25px
+}
+.pay-details-title {
+	float: left;
+	clear: both;
+	font-size: 14px;
+	color: #535353;
+	margin-right: 25px
+}
+.pay-details-title + dd{
+	font-size: 14px;
+	color: #535353;
+}
+.pay-details-goods > dt , .pay-details-goods > dd{
+	margin-right: 20px;
+	font-size: 24px;
+	color: #da392b;
+/*	font-family: 'Microsoft Yahei';*/
+	margin-bottom: 45px
+}
+.pay-details-collection {
+	margin-right: 26px;
+}
+.pay-money {
+	position: absolute;
+	right: 123px;
+	bottom: -5px;
+}
+.money-title {
+	float: left;
+	font-size: 14px;
+	color: #535353;
+	margin-top: 18px;
+}
+.money-title + dd {
+	float: left;
+}
+.money {
+	font-size: 30px;
+	color: #da3a2c;
+	font-family: 'Microsoft Yahei';
+	margin-left: 15px;
+}
+.payStyle {
+  width: 880px;
+
+  background-image: url('../img/payM-top.png'), url('../img/payM-bottom.png');
+  background-position: center top, center bottom;
+  background-size: auto;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  position: relative;
+  padding-top: 90px;
+  padding-left: 120px;
+  z-index: 9;
+}
+.payStyle::before {
+  content: "";
+  position: absolute;
+  top: 101px;
+  bottom: 120px;
+  width: 100%;
+  left: 0;
+  background: #000 url('../img/payM-center.png') repeat-y;
+  z-index: -1;
+}
+.pay-title {
+	font-size: 18px;
+	color: #da3a2c;
+/*	font-family: 'Microsoft Yahei';*/
+}
+.payStyle-list {
+	margin-bottom: 60px;
+}
+
+.dotb {
+	height: 74px;
+	padding-top: 1px; 
+	overflow: hidden;
+	position: relative;
+}
+
+.dotb-code {
+	/*height: auto;*/
+}
+.QRCode-WECHAT, .QRCode-ALIPAY {
+	margin-left: 100px;
+	display: none;
+}
+.dotb-bank-card, .dotb-company {
+	overflow: hidden;
+}
+.dotb > h3 {
+	width: 100px;
+	font-size: 14px;
+	color: #db3a2c;
+/*	font-family: 'Microsoft Yahei';*/
+	float: left;
+	margin-top: 25px;
+}
+.dotb ul {
+	width: 728px;
+	margin-left: 100px;
+	margin-top: 19px;
+}
+.dotb ul li {
+	float: left;
+	margin-right: 30px;
+	margin-bottom: 30px;
+}
+
+.payM dl.payStyle ul li input {
+	float: left;
+	margin-top: 11px;
+	margin-right: 10px;
+}
+
+.bankDown , .bankDown2 {
+	display: block;
+	width: 45px;
+	height: 32px;
+	position: absolute;
+	bottom: 13px;
+	right: 50px;
+	background: url('../img/down.png') no-repeat 30px 4px;
+	color: #535353;
+}
+
+.bankUp ,.bankUp2 {
+	display: none;
+	width: 45px;
+	height: 32px;
+	position: absolute;
+	bottom: 25px;
+	right: 50px;
+	background: url(../img/up.png) no-repeat 30px 5px;
+	color: #535353;
+}
+
+
+.paySubmit {
+	display: block;
+	width: 140px;
+	height: 35px;
+	line-height: 35px;
+	text-decoration: none;
+	text-align: center;
+	background: #da392b;
+	color: #ffffff;
+	border-bottom: 5px solid #a92b1f;
+	margin-left: 320px;
+	margin-bottom: 80px
+}
+
+.question-list {
+	width: 810px;
+	height: 240px;
+	font-size: 12px;
+	line-height: 2.2;
+	color: #87736e;
+/*	font-family: "Microsoft Yahei";*/
+	padding: 20px 100px 10px 90px;
+	border-bottom: 1px dashed #87736e;
+}
+
+.question-title {
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.question-q {
+	font-size: 14px
+}
+
+.question-a {
+	margin-left: 23px;
+}
+
+.copyright {
+	width: 1000px;
+	height: 85px;
+	padding: 10px 0 35px 0;
+	text-align: center;
+	font-size: 12px;
+	color: #87736e;
+}
+
+.copyright a {
+	color: #87736e;	
+}
+
+
+.mask {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-color: #000;
+  opacity: 0.6;
+  top: 0;
+  left: 0;
+  display: none;
+  z-index: 99;
+}
+
+.wxArea {
+	position: fixed;
+  width: 580px;
+  height: 520px;
+  background: white;
+  top: 50%;
+  left: 50%;
+  margin-top: -260px;
+  margin-left: -290px;
+  display: none;
+  z-index: 1000;
+}
+
+.wxArea .wxClose {
+  background: url(../img/wxclose.gif) no-repeat;
+  font-size: 0;
+  height: 15px;
+  line-height: 0;
+  position: absolute;
+  right: 11px;
+  top: 10px;
+  width: 15px;
+}
+
+.wxArea dt {
+  height: 300px;
+  width: 300px;
+  margin: 50px auto 10px;
+}
+
+.wxArea dd {
+  background: url(../img/wx.png) no-repeat;
+  height: 106px;
+  width: 260px;
+  margin: 0 auto;
+}
+/* 弹出层 */
+.modal-backdrop {
+  position: fixed !important;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1040;
+  background-color: #000;
+  filter: alpha(opacity=0);
+  opacity: 0;
+
+  _position: absolute;
+  _top: 0;
+}
+.modal-backdrop.in {
+  filter: alpha(opacity=30);
+  opacity: .3;
+}
+.modal {
+  position: fixed !important;
+  top: 50%;
+  left: 50%;
+  z-index: 1050;
+  display: none;
+  width: 468px;
+  height: 276px;
+  padding: 10px;
+  margin-top: -139px;
+  margin-left: -295px;
+  font-family: "微软雅黑";
+  /* background:url(../img/background.png) no-repeat; */
+  background-clip: padding-box;
+  outline: none;
+
+  _position: absolute;
+  _top: 13%;
+  _margin-top: 0;
+}
+.modal .close {
+  margin-right: 10px;
+}
+.modal-body {
+  width: 448px;
+  height: 256px;
+  background: #fff;
+}
+.modal-content {
+  padding: 20px;
+}
+/* 支付弹出层样式 */
+.modal-title {
+  font-size: 14px;
+  line-height: 2.4;
+  color: #000;
+}
+
+.pay-content .success,
+.pay-content .fail {
+  width: 50%;
+  margin: 36px 0;
+  text-align: left;
+}
+.pay-content .success p,
+.pay-content .fail p {
+  padding-top: 26px;
+  clear: both;
+  font-size: 12px;
+  line-height: 2;
+  color: #888;
+}
+.pay-content .success .btn,
+.pay-content .fail .btn {
+  margin: 0 10px;
+}
+.pay-content .success .btn span,
+.pay-content .fail .btn span {
+  width: 100px;
+}
+/* 关闭按钮 */
+.close {
+  float: right;
+  font-size: 37px;
+  line-height: 1;
+  color: #000;
+  cursor: pointer;
+  background: transparent;
+  filter: alpha(opacity=20);
+  border: 0;
+  outline: 0;
+  opacity: .2;
+
+  *height: 37px;
+}
+.close:hover {
+  filter: alpha(opacity=40);
+  opacity: .4;
+}
+
+.modal-header {
+  padding: 6px 0 6px 20px;
+  font-size: 18px;
+  line-height: 37px;
+  background: #f3f3f3;
+}
+
+.btn {
+  width: 120px;
+  height: 36px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 36px;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  background: #ff8500;
+  box-shadow: 1px 1px 0 #cf7c24;
+}
+.btn:hover {
+  background: #ff9019;
+}
+.btn.def {
+  color: #333;
+  background: #ededed;
+  box-shadow: 1px 1px 0 #d2d2d2;
+}
+.btn.def:hover {
+  background: #f2f2f2;
+}
