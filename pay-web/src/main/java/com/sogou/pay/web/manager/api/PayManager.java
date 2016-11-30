@@ -385,7 +385,10 @@ public class PayManager {
       //如果是收银台请求，则可以返回
       if (orderSuccess && model.isFromCashier()) {
         result.addItem("payStatus", OrderStatus.SUCCESS);
-        result.addItem("payReqId", relationList.get(0).getPayDetailId());
+        result.addItem("payReqId",
+            relationList.stream()
+                .filter(relation -> Objects.equals(relation.getInfoStatus(), PayOrderRelation.INFOSTATUS_SUCCESS))
+                .findFirst().get().getPayDetailId());
         return result;
       }
       //查询支付单流水信息
