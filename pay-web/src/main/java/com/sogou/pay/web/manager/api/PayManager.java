@@ -107,6 +107,8 @@ public class PayManager {
       } else if (info.getPayStatus() == OrderStatus.SUCCESS.getValue()) {
         //该支付单已经支付成功，直接返回业务线
         result.withError(ResultStatus.ORDER_ALREADY_DONE);
+      } else if (!Objects.equals(info.getOrderMoney(), new BigDecimal(params.getString("orderAmount")))) {
+        result.withError(ResultStatus.ORDER_MONEY_ERROR);
       }
       //继续支付
       restorePayOrder((PMap<String, Object>) params, info);
