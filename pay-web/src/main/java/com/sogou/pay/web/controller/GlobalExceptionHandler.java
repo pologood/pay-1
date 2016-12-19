@@ -67,8 +67,8 @@ public class GlobalExceptionHandler {
   }
 
   private String getBody(Exception e) {
-    return new StringBuilder(LocalDateTime.now().toString()).append(" ").append(e.getMessage()).append(" ")
-        .append(Throwables.getStackTraceAsString(e)).toString();
+    return new StringBuilder(LocalDateTime.now().toString()).append(" ").append(Throwables.getStackTraceAsString(e))
+        .toString();
   }
 
 }
