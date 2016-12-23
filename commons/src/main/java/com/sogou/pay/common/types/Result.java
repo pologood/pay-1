@@ -1,9 +1,17 @@
 package com.sogou.pay.common.types;
 
+import java.util.Objects;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogou.pay.common.utils.JSONUtil;
 
-public abstract class Result<T> {
+public class Result<T> {
     private ResultStatus status;
     private String message;
 
@@ -11,9 +19,10 @@ public abstract class Result<T> {
     @JsonIgnore
     private T returnValue;
 
-    protected Result(ResultStatus status, String message) {
+    public Result(ResultStatus status, String message) {
         this.status = status;
         this.message = message == null ? status.getMessage() : message;
+        if(ResultStatus.isError(status)) setErrorHint();
     }
 
     /**
@@ -35,6 +44,7 @@ public abstract class Result<T> {
     public Result<T> withError(ResultStatus status) {
         this.status = status;
         this.message = status.getMessage();
+        if(ResultStatus.isError(status)) setErrorHint();
         return this;
     }
 
@@ -76,7 +86,9 @@ public abstract class Result<T> {
         return JSONUtil.Bean2JSON(this);
     }
 
-    public abstract Object getData();
+    public Object getData() {
+      return null;
+    }
 
     @JsonIgnore
     public T getReturnValue() {
@@ -89,6 +101,17 @@ public abstract class Result<T> {
 
     public String getMessage() {
         return message == null ? status.getMessage() : message;
+    }
+    
+    void setErrorHint() {
+      HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+      if (Objects.isNull(request)) return;
+      String error = String.valueOf(status.getCode()) + ":" + message;
+      String errHeader = error.length() > 90 ? error.substring(0, 90) : error;
+
+      HttpServletResponse response = (HttpServletResponse) request.getAttribute("response__");
+      if (response != null) response.setHeader("ApiResultError", errHeader);
+      request.setAttribute("ApiResultError", error);
     }
 
 }
