@@ -1,19 +1,10 @@
 package com.sogou.pay.common.types;
 
-import java.util.Set;
-
-import com.google.common.collect.Sets;
+import java.util.Objects;
 
 public enum ResultStatus {
     SUCCESS(0, "成功"),
-    
-    BAD_REQUEST(401, "bad request"),
-    UNAUTHORIZED(401, "unauthorized"),
-    NOT_FOUND(404, "entity not found"),
-    NOT_ACCEPT(406, "not acceptable"),
-    INTERNAL_ERROR(500, "internal server error"),
-    SERVICE_UNAVAILABLE(503, "service unavailable"),
- 
+        
     SYSTEM_ERROR(1000, "系统错误"),
     SYSTEM_DB_ERROR(1001, "数据库错误"),
     PARAM_ERROR(2000, "缺少必选参数或存在非法参数"),
@@ -56,17 +47,7 @@ public enum ResultStatus {
     REFUND_ALREADY_DONE(4008, "退款单已退款成功"),
     REFUND_FAILED(4007, "退款单退款失败"),
 
-    SAVE_BILL_FAILED(5001, "保存支付流水对帐单错误"),
-
-
-    //----------------------代付单业务码--------7100至7199------------
-    PAY_TRANSFER_BATCH_NOT_EXIST(7100, "代付单批次不存在"),
-    PAY_TRANSFER_BATCH_ALREADY_EXIST(7108, "代付批次号重复"),
-    PAY_TRANSFER_BATCH_ALREADY_SUBMITTED(7102, "该批次单已经提交到银行，请勿重复提交"),
-    PAY_TRANSFER_BATCH_STATUS_NOT_AUDIT_PASS(7101, "代付单批次审核状态不是通过状态"),
-    PAY_TRANSFER_NOT_EXIST(7103, "代付单不存在"),
-    PAY_TRANSFER_ALREADY_EXIST(7107, "代付单号重复"),
-    ;
+    SAVE_BILL_FAILED(5001, "保存支付流水对帐单错误");
 
     private int code;
     private String message;
@@ -86,10 +67,8 @@ public enum ResultStatus {
     public String getMessage() {
         return message;
     } 
-    
-    private static final Set<ResultStatus> ERROR_SET = Sets.newHashSet(BAD_REQUEST, UNAUTHORIZED, NOT_FOUND, NOT_ACCEPT, INTERNAL_ERROR, SERVICE_UNAVAILABLE);
-    
+   
     public static boolean isError(ResultStatus status) {
-      return ERROR_SET.contains(status);
+      return Objects.isNull(status) || !Objects.equals(status.code, SUCCESS.code);
     }
 }

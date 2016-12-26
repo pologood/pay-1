@@ -110,7 +110,7 @@ public class PayManager {
       } else if (!Objects.equals(info.getOrderMoney(), new BigDecimal(params.getString("orderAmount")))) {
         result.withError(ResultStatus.ORDER_MONEY_ERROR);
       }
-      //继续支付
+      //return order info
       restorePayOrder((PMap<String, Object>) params, info);
       result.withReturn(info.getPayId());
     } catch (Exception e) {

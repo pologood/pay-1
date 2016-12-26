@@ -19,32 +19,32 @@ public class GlobalExceptionHandler {
   @ResponseBody
   public Result<?> internalServerError(Exception e) {
     e.printStackTrace();
-    return new Result<>(ResultStatus.INTERNAL_ERROR, Throwables.getStackTraceAsString(e));
+    return new Result<>(ResultStatus.SYSTEM_ERROR, Throwables.getStackTraceAsString(e));
   }
 
   @ExceptionHandler(DataAccessException.class)
   @ResponseBody
   public Result<?> dataAccessExcption(Exception e) {
     e.printStackTrace();
-    return new Result<>(ResultStatus.INTERNAL_ERROR, "interal db error");
+    return new Result<>(ResultStatus.SYSTEM_DB_ERROR, "interal db error");
   }
 
   @ExceptionHandler(ServletRequestBindingException.class)
   @ResponseBody
   public Result<?> servletRequestBindingException(Exception e) {
-    return new Result<>(ResultStatus.BAD_REQUEST, Throwables.getStackTraceAsString(e));
+    return new Result<>(ResultStatus.PARAM_ERROR, Throwables.getStackTraceAsString(e));
   }
 
   @ExceptionHandler(TypeMismatchException.class)
   @ResponseBody
   public Result<?> typeMismatchException(Exception e) {
-    return new Result<>(ResultStatus.BAD_REQUEST, e.toString());
+    return new Result<>(ResultStatus.PARAM_ERROR, e.toString());
   }
 
   @ExceptionHandler(ResourceAccessException.class)
   @ResponseBody
   public Result<?> resourceAccessException(Exception e) {
     e.printStackTrace();
-    return new Result<>(ResultStatus.INTERNAL_ERROR, e.getMessage());
+    return new Result<>(ResultStatus.SYSTEM_ERROR, e.getMessage());
   }
 }
