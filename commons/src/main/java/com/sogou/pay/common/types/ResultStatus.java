@@ -1,7 +1,5 @@
 package com.sogou.pay.common.types;
 
-import java.util.Objects;
-
 public enum ResultStatus {
     SUCCESS(0, "成功"),
         
@@ -69,6 +67,6 @@ public enum ResultStatus {
     } 
    
     public static boolean isError(ResultStatus status) {
-      return !Objects.equals(status.code, SUCCESS.code);
+      return status.code != SUCCESS.code;
     }
 }
