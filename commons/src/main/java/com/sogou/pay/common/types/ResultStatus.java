@@ -69,6 +69,6 @@ public enum ResultStatus {
     } 
    
     public static boolean isError(ResultStatus status) {
-      return Objects.isNull(status) || !Objects.equals(status.code, SUCCESS.code);
+      return !Objects.equals(status.code, SUCCESS.code);
     }
 }
